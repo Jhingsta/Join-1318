@@ -4,6 +4,8 @@ body {
   
   .main-container {
     display: flex;
+    margin-top: 264px;
+    margin-left: 235px;
   }
   
   .main-content {
