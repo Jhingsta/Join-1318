@@ -23,7 +23,7 @@
     z-index: 210;
   }
   @media (max-width: 768px) {
-    .header-join-logo-absolute {
+    .header-left-logo {
       top: 12px;
       left: 10px;
       width: 32px;
@@ -180,10 +180,10 @@
     .dropdown-menu-small li {
       padding: 8px 14px;
     }
-    .header-join-logo-absolute {
-      width: 32px;
-      height: 32px;
-    }
+         .header-left-logo {
+       width: 32px;
+       height: 32px;
+     }
   }
   
   /* Show mobile-only elements on small screens */

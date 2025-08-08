@@ -1,0 +1,35 @@
+.logo-title {
+        padding-right: 50px;
+      }
+      .sidebar-footer a.nav-item-footer.active {
+        background: #4589FF;
+        color: #fff !important;
+        font-weight: 700;
+        border-radius: 8px;
+        padding: 8px 12px;
+        display: inline-block;
+        box-shadow: 0 2px 8px 0 rgba(69,137,255,0.13);
+        margin-bottom: 2px;
+        letter-spacing: 0.03em;
+        min-width: 0;
+        width: auto;
+        text-align: center;
+      }
+      .sidebar-footer a.nav-item-footer {
+        background: none;
+        color: #8a8a8a;
+        font-size: 14px;
+        text-decoration: none;
+        padding: 0;
+        margin-bottom: 4px;
+        font-weight: 400;
+        transition: background 0.13s, color 0.13s;
+        min-width: 0;
+        width: auto;
+        display: inline-block;
+        text-align: center;
+      }
+      .sidebar-footer a.nav-item-footer:not(.active):hover {
+        color: #4589FF;
+        background: none;
+      }
