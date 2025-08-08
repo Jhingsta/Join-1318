@@ -167,56 +167,84 @@ input::placeholder {
     gap: 10px;
 }
 
+/* native checkbox unsichtbar, aber zugänglich */
 input[type="checkbox"] {
-   width: 16px;
-   height: 16px;
-   border: 2px solid #4589FF;
-   border-radius: 3px;
-   background-color: white;
-   appearance: none;
-   -webkit-appearance: none;
-   -moz-appearance: none;
-   cursor: pointer;
-   position: relative;
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-input[type="checkbox"]:hover {
-   background-color: #EDF2FA;
-}
-
-input[type="checkbox"]:checked {
-   border: 2px solid #4589FF;
-}
-
-input[type="checkbox"]:checked::after {
-   content: '✓';
-   position: absolute;
-   top: -11px;
-   left: 1px;
-   color: #4589FF;
-   font-size: 20px;
-   font-weight: bold;
-}
-
+/* Label & SVG */
 .checkbox-label {
-    font-size: 16px;
-    font-weight: 400;
-    color: #42526E;
-    line-height: 120%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 400;
+  color: #42526E;
+  line-height: 120%;
 }
 
+.custom-checkbox {
+  display: inline-block;
+  width: 24px;
+  height: 25px;
+  flex-shrink: 0;
+  transition: transform .12s ease;
+  margin-bottom: 3px;  
+}
+
+/* Standardfarben (alle SVG-Pfade bekommen dieselbe Stroke-Farbe) */
+.custom-checkbox .box-default,
+.custom-checkbox .box-checked,
+.custom-checkbox .check {
+  stroke: #4589FF;
+  transition: opacity .12s ease, fill .12s ease;
+}
+
+/* Default: show rect, hide checked-outline + check */
+.custom-checkbox .box-default { opacity: 1; }
+.custom-checkbox .box-checked { opacity: 0; }
+.custom-checkbox .check { opacity: 0; }
+
+/* Hover über das Label -> nur Hintergrundfarbe der sichtbaren Box ändern */
+.checkbox-label:hover .custom-checkbox .box-default,
+.checkbox-label:hover .custom-checkbox .box-checked {
+  fill: #EDF2FA;
+}
+
+/* Checked: show checked-outline + check, hide default rect */
+input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .box-default {
+  opacity: 0;
+}
+input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .box-checked {
+  opacity: 1;
+}
+input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .check {
+  opacity: 1;
+}
+
+/* Fokus für Tastaturnutzer */
+/* input[type="checkbox"]:focus + .checkbox-label .custom-checkbox {
+  box-shadow: 0 0 0 4px rgba(69,137,255,0.12);
+  border-radius: 4px;
+} */
+
+/* Linkstyles */
 .checkbox-label a {
-    color: #005DFF;
-    text-decoration: none;
+  color: #005DFF;
+  text-decoration: none;
 }
-
 .checkbox-label a:hover {
-    text-decoration: underline;
-    font-weight: bold;
-}
-
-.checkbox-label:has(a:hover) input[type="checkbox"] {
-    background-color: #EDF2FA;
+  text-decoration: underline;
+  font-weight: bold;
 }
 
 button {
@@ -236,15 +264,13 @@ button {
 button:hover {
     background-color: #005DFF;
     box-shadow: 0px 4px 8px 0px #00000033;
-    animation-timing-function: ease-in-out;
-    animation-duration: 100ms;
+    transform: translateX(-1px);
 }
 
 button:active {
     background-color: #FFFFFF;
     color: #4589FF;
     box-shadow: 0px 4px 8px 0px #00000033;
-    transition: all 0ms;
 }
 
 footer {
