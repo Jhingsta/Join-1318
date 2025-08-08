@@ -1,7 +1,7 @@
 * {
-   margin: 0; 
-   padding:0;
-   box-sizing: border-box;
+  margin: 0; 
+  padding:0;
+  box-sizing: border-box;
 }
 
 html, body {			
@@ -11,74 +11,74 @@ html, body {
 }
 
 body {
-    background-color: #4589FF;
+  background-color: #4589FF;
 }
 
 main {
-    max-width: 1440px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 }
 
 .icon-logo {
-    position: absolute;
-    top: 80px;
-    left: 77px;
-    width: 100px;
-    height: auto;
+  position: absolute;
+  top: 80px;
+  left: 77px;
+  width: 100px;
+  height: auto;
 }
 
 .sign-up-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 10px;
-    background-color: white;
-    max-width: 598px;
-    width: 100%;
-    border-radius: 30px;
-    padding: 48px 88px;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px;
+  background-color: white;
+  max-width: 598px;
+  width: 100%;
+  border-radius: 30px;
+  padding: 48px 88px;
+  position: relative;
 }
 
 .sign-up-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .arrow-left {
-    position: absolute;
-    left: 50.5px;
-    top: 66.5px;
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-    background-image: url('./assets/icons/arrow-left.svg');
-    background-size: contain;
-    background-position: center;
+  position: absolute;
+  left: 50.5px;
+  top: 66.5px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  background-image: url('./assets/icons/arrow-left.svg');
+  background-size: contain;
+  background-position: center;
 }
 
 .arrow-left:hover {
-    background-image: url('./assets/icons/arrow-left-hover.svg');
+  background-image: url('./assets/icons/arrow-left-hover.svg');
 }
 
 h1 {
-    font-size: 48px;
+  font-size: 48px;
 }
 
 hr.solid {
-    border-top: 3px solid #4589FF;
-    width: 120px;
-    margin-top: 10px;
-    margin-bottom: 35px;
+  border-top: 3px solid #4589FF;
+  width: 120px;
+  margin-top: 10px;
+  margin-bottom: 35px;
 }
 
 .visually-hidden {
@@ -94,77 +94,77 @@ hr.solid {
 }
 
 form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 422px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 422px;
 }
 
 .sign-up-form {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
 }
 
 .form-group {
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
 }
 
 input[type="text"],
 input[type="email"], 
 input[type="password"] {
-    width: 100%;
-    padding: 12px 50px 12px 21px;
-    border: none;
-    border-bottom: 1px solid #D1D1D1;
-    font-size: 19px;
-    font-weight: 400;;
-    line-height: 120%;
-    color: #D1D1D1;
-    transition: all 0.3s ease;
-    gap: 10px;
-    cursor: pointer;
+  width: 100%;
+  padding: 12px 50px 12px 21px;
+  border: none;
+  border-bottom: 1px solid #D1D1D1;
+  font-size: 19px;
+  font-weight: 400;;
+  line-height: 120%;
+  color: #D1D1D1;
+  transition: all 0.3s ease;
+  gap: 10px;
+  cursor: pointer;
 }
 
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus {
-    outline: none;
-    border-bottom: 1px solid #005DFF;
+  outline: none;
+  border-bottom: 1px solid #005DFF;
 }
 
 input::placeholder {
-    color: #D1D1D1;
-    font-size: 19px;
+  color: #D1D1D1;
+  font-size: 19px;
 }
 
 .input-icon {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
-    color: #A8A8A8;
-    cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: #A8A8A8;
+  cursor: pointer;
 }
 
 .sign-up-checkbox {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    margin: 36px 0 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 36px 0 35px;
 }
 
 .checkbox-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* native checkbox unsichtbar, aber zugänglich */
@@ -248,57 +248,57 @@ input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .check {
 }
 
 button {
-    margin-top: auto;
-    padding: 10px 18px;
-    border-radius: 8px;
-    background-color: #4589FF;
-    color: white;
-    font-size: 19px;
-    font-weight:400;
-    line-height: 120%;
-    border: none;
-    cursor: pointer;
-    transition: all 100ms ease-in-out;
+  margin-top: auto;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background-color: #4589FF;
+  color: white;
+  font-size: 19px;
+  font-weight:400;
+  line-height: 120%;
+  border: none;
+  cursor: pointer;
+  transition: all 100ms ease-in-out;
 }
 
 button:hover {
-    background-color: #005DFF;
-    box-shadow: 0px 4px 8px 0px #00000033;
-    transform: translateX(-1px);
+  background-color: #005DFF;
+  box-shadow: 0px 4px 8px 0px #00000033;
+  transform: translateX(-1px);
 }
 
 button:active {
-    background-color: #FFFFFF;
-    color: #4589FF;
-    box-shadow: 0px 4px 8px 0px #00000033;
+  background-color: #FFFFFF;
+  color: #4589FF;
+  box-shadow: 0px 4px 8px 0px #00000033;
 }
 
 footer {
-    max-width: 1440px;
-    display: flex;
-    flex-direction: row;
-    margin-left: auto;
-    margin-right: auto;
+  max-width: 1440px;
+  display: flex;
+  flex-direction: row;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 nav {
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 42px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 42px;
 }
 
 ul {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    list-style: none;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  list-style: none;
 }
 
 nav a {
-    text-decoration: none;
-    color: white;
-    padding: 8px;
-    font-size: 16px;
-    line-height: 120%;
-    font-weight: 400;
+  text-decoration: none;
+  color: white;
+  padding: 8px;
+  font-size: 16px;
+  line-height: 120%;
+  font-weight: 400;
 }
