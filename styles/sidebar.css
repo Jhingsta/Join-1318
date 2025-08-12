@@ -115,7 +115,7 @@
 /* Mobile-First */
 @media (min-width: 769px) {
   .sidebar {
-    position: fixed;
+    position: aboslute;
     left: 0;
     top: 0;
     height: 100vh;
