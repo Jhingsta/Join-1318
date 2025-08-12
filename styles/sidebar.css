@@ -4,6 +4,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  
 }
 
 .sidebar-logo-header {
@@ -115,10 +116,10 @@
 /* Mobile-First */
 @media (min-width: 769px) {
   .sidebar {
-    position: aboslute;
+    position: absolute;
     left: 0;
     top: 0;
-    height: 100vh;
+    min-height: calc(100vh - 80px);
     flex-direction: column;
     width: 232px;
   }
