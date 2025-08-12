@@ -54,13 +54,13 @@ main {
   width: 32px;
   height: 32px;
   cursor: pointer;
-  background-image: url('./assets/icons/arrow-left.svg');
+  background-image: url('../assets/icons-signup/arrow-left.svg');
   background-size: contain;
   background-position: center;
 }
 
 .arrow-left:hover {
-  background-image: url('./assets/icons/arrow-left-hover.svg');
+  background-image: url('../assets/icons-signup/arrow-left-hover.svg');
 }
 
 h1 {
