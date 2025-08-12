@@ -1,3 +1,10 @@
+.layout {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 232px 1fr;
+}
+
 body {
     min-height: 100vh;
     display: flex;
@@ -51,4 +58,16 @@ h3 {
 
 .light-blue {
     color: #4589FF;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  aside {
+    order: 2;
+  }
+  main {
+    order: 1;
+  }
 }
