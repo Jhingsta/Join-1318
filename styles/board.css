@@ -1,23 +1,23 @@
 body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  font-size: 16px;
-  font-weight: 400;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    font-size: 16px;
+    font-weight: 400;
 }
 
 .layout {
-  max-width: 1440px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 232px 1fr;
-  position: relative;
-  width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 232px 1fr;
+    position: relative;
+    width: 100%;
 }
 
 main {
-  min-height: calc(100vh - 80px); 
+    min-height: calc(100vh - 80px);
 }
 
 .top {
@@ -63,7 +63,7 @@ svg {
 }
 
 input[type="text"]::-webkit-search-cancel-button {
-  display: none;
+    display: none;
 }
 
 .add-task-btn {
@@ -122,6 +122,19 @@ input[type="text"]::-webkit-search-cancel-button {
     color: #42526e;
 }
 
+.task-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #4589ff;
+
+}
+
 .bottom {
     display: flex;
     flex-direction: row;
@@ -135,7 +148,7 @@ input[type="text"]::-webkit-search-cancel-button {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-        flex: 1;
+    flex: 1;
     width: 25%;
 }
 
@@ -154,6 +167,22 @@ input[type="text"]::-webkit-search-cancel-button {
 }
 
 .task-card {
-        padding: 16px;
+    padding: 16px;
+    gap: 24px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 24px;
+    box-shadow: 0px 0px 10px 3px #00000014;
+    width:252px;
+}
 
+.task-info{
+    color:#a8a8a8;
+}
+
+.priority{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
