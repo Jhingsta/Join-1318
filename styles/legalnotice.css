@@ -16,7 +16,7 @@ body {
 }
 
 main {
-  flex: 1;
+  min-height: calc(100vh - 80px);
 }
 
 .content {
@@ -29,7 +29,6 @@ h1 {
   font-size: 61px;
   font-weight: 700;
   margin-bottom: 48px;
-  line-height: 1.05;
   text-wrap: balance;
 }
 
@@ -52,7 +51,6 @@ section {
 
 h3 {
   font-size: 19px;
-  font-style: bold;
   font-weight: 700;
   color: #005DFF;
 }
