@@ -178,6 +178,12 @@ input:focus {
   transform: scale(0.97);
 }
 
+.login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #ccc;
+}
+
 .guest-btn {
   width: 197px;
   height: 48px;
