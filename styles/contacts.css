@@ -13,6 +13,7 @@ body {
   display: grid;
   grid-template-columns: 232px 1fr;
   position: relative;
+  width: 100%;
 }
 
 main {
@@ -132,7 +133,8 @@ main {
 
 /* Rechter Bereich */
 .right-panel {
-    background-color: #6b7a7c;
+    background-color: #c7cbcb;
+    width: 100%;
 }
 
 /* Scrollbar-Styling für bessere Optik (optional) */
