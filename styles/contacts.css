@@ -1,0 +1,213 @@
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.layout {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 232px 1fr;
+  position: relative;
+  width: 100%;
+}
+
+main {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  width: 100%;
+}
+
+.content {
+    flex-basis: 456px;
+    flex-shrink: 1;
+    flex-grow: 0;
+    /* flex: 0 1 456px; */
+    min-width: 300px;
+    box-shadow: 4px 0px 6px 0px #00000014;
+    padding: 0 28.5px 0 27.5px;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+}
+
+.contacts {
+    width: 100%;
+    padding: 32px 24px;
+}
+
+.add-contact-btn {
+    background-color: #4589FF;
+    color: white;
+    border-radius: 10px;
+    text-align: center;
+    padding: 16px 10px;
+    font-size: 23px;
+    font-weight: 400;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    width: 100%;
+}
+
+.add-contact-btn:hover {
+    background-color: #005DFF;
+    box-shadow: 0px 4px 8px 0px #00000033;
+}
+
+.add-contact-btn:active {
+    background-color: white;
+    box-shadow: 0px 4px 8px 0px #00000033;
+    color: #4589FF;
+}
+
+.add-contact-btn-mobile {
+    display: none;
+    width: 64px;
+    height: 64px;
+    position: fixed;
+    right: 32px;
+    top: 643px;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0px 4px 8px 0px #00000033;
+    background-color: #4589FF;
+    color: white;
+    border: none;
+    z-index: 100;
+    cursor: pointer;
+}
+
+.add-contact-btn-mobile:hover {
+    background-color: #005DFF;
+}
+
+.add-contact-btn-mobile:active {
+    background-color: white;
+    color: #4589FF;
+}
+
+.letter {
+    padding: 17px 36px;
+    font-size: 16px;
+    font-weight: 400;
+    background-color: #fff;
+}
+
+.hl {
+    width: 100%;
+    border-radius: 3px;
+    border-width: 1px;
+    border-top: 1px solid #D1D1D1;
+    padding-top: 8px;
+    margin-top: 8px;
+}
+
+.contact {
+    display: flex;
+    align-items: center;
+    padding: 15px 24px;
+    gap: 35px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 400;
+    color: white;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.name {
+    font-weight: 400;
+    font-size: 19px;
+}
+
+.email {
+    font-size: 16px;
+    font-weight: 400;;
+    color: #4589FF;
+}
+
+.contact:hover {
+    background-color: #D2E3FF;
+}
+
+.contact:active {
+    background-color: #4589FF;
+    color: white;
+}
+
+.contact:active .email {
+    color: white;
+}
+
+/* Rechter Bereich */
+.right-panel {
+    background-color: #c7cbcb;
+    flex: 1;
+}
+
+/* Scrollbar-Styling für bessere Optik (optional) */
+.content::-webkit-scrollbar-track {
+    background: white;
+    border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background: #A8A8A8;
+    border-radius: 8px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  aside {
+    order: 2;
+  }
+  main {
+    order: 1;
+  }
+  .content {
+    flex: 1 1 300px;
+    width: 100%;
+    margin: 0 auto;
+    box-shadow: none;   
+    height: auto;
+    overflow-y: visible;
+  }
+  .right-panel {
+    display: none;
+  }
+  .add-contact-btn {
+    display: none;
+  }
+  .add-contact-btn-mobile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
