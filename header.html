@@ -9,13 +9,21 @@
 
     <div class="header-right">
 
-      <span class="header-right-text">Kanban Project Management Tool</span>
+      <span class="header-right-text"           
+          onclick="toggleDropdown()" 
+          role="button" 
+          tabindex="0"
+          aria-expanded="false"
+          aria-haspopup="menu"
+          aria-controls="dropdownMenu">
+        Kanban Project Management Tool
+      </span>
 
       <a href="help.html" class="help-icon">
         <img src="./assets/help-icon.svg" alt="Help">
       </a>
       
-      <svg class="user-logo-svg" width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <svg class="user-logo-svg" onclick="toggleDropdown()" role="button" tabindex="0" aria-label="Open menu" width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
         <!-- innerer Hintergrund-Kreis -->
         <circle class="bg" cx="28" cy="28" r="23" fill="white" />
         <!-- Text (Initialen) -->
@@ -27,7 +35,20 @@
         <circle class="border" cx="28" cy="28" r="26.5" stroke="white" stroke-width="3" fill="none"/>
       </svg>
 
-      
+      <div class="header-dropdown-menu" id="header-dropdown-menu" role="menu" aria-hidden="true">
+          <button onclick="window.location.href='help.html'" class="dropdown-item" role="menuitem">
+            Help
+          </button>
+          <button onclick="window.location.href='legalnotice.html'" class="dropdown-item" role="menuitem">
+            Legal Notice
+          </button>
+          <button onclick="window.location.href='privacypolicy.html'" class="dropdown-item" role="menuitem">
+            Privacy Policy
+          </button>
+          <button onclick="logout()" class="dropdown-item" role="menuitem">
+            Log out
+          </button>
+        </div>
 
     </div>
 
