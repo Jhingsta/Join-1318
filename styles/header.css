@@ -65,7 +65,6 @@ header {
 
 /* Eigenen Focus-Style hinzufügen */
 .user-logo-svg:focus-visible,
-.header-right-text:focus-visible,
 .help-icon:focus-visible {
   outline: 4px solid #005DFF;
   outline-offset: 2px;
@@ -108,6 +107,10 @@ header {
   color: #005DFF;
 }
 
+.menu-item-help {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .header-content {
     height: 80px;
@@ -124,5 +127,8 @@ header {
   }
   .help-icon {
     display: none;
+  }
+  .menu-item-help {
+    display: block;
   }
 }
