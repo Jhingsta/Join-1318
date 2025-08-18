@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="./styles/board.css">
     <link rel="stylesheet" href="./styles/addTask.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
+
     <title>Board</title>
 </head>
 
@@ -32,7 +33,8 @@
         <div class="main-container-wrapper">
             <div class="main-container">
                 <div class="title-container">
-                    <input type="text" class="title-input" placeholder="Enter a title">
+                    <input type="text" class="title-input" placeholder="Enter a title" required>
+                    <span class="error-message">This field is required</span>
                 </div>
 
                 <div class="description-container">
@@ -46,21 +48,27 @@
                 <div class="due-date-container">
                     <div class="due-date-header">Due date</div>
                     <div class="due-date-content">
-                        <div class="due-date-input">dd/mm/yyyy</div>
+                        <input type="text" class="due-date-input" placeholder="dd/mm/yyyy" required>
                         <div class="due-date-icon-container">
                             <div class="due-date-icon"></div>
                         </div>
                     </div>
+                    <span class="error-message">This field is required</span>
                 </div>
+
 
                 <div class="priority-container">
                     <div class="priority-header">Priority</div>
                     <div class="priority-content">
-                        <img src="/assets/icons-addTask/Frame 14.png" alt="High Priority" class="priority-frame">
-                        <img src="/assets/icons-addTask/Frame 25.png" alt="Low Priority" class="priority-frame">
-                        <img src="/assets/icons-addTask/Frame 26.png" alt="Medium Priority" class="priority-frame">
+                        <button type="button" class="priority-frame">Urgent <img
+                                src="./assets/icons-addTask/Prio alta.svg" alt=""></button>
+                        <button type="button" class="priority-frame active">Medium <img
+                                src="./assets/icons-addTask/Capa 2.svg" alt=""></button>
+                        <button type="button" class="priority-frame">Low <img src="./assets/icons-addTask/Prio baja.svg"
+                                alt=""></button>
                     </div>
                 </div>
+
                 <div class="assigned-container">
                     <div class="assigned-header">
                         Assigned to <span class="optional">(optional)</span>
@@ -68,43 +76,50 @@
                     <div class="assigned-content">
                         <div class="assigned-text">Select contacts to assign</div>
                         <div class="assigned-arrow-container">
-                            <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts" class="assigned-arrow-icon">
+                            <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts"
+                                class="assigned-arrow-icon">
                         </div>
-                    </div>
+                        <div class="dropdown-menu" id="assigned-dropdown"></div>
 
+
+                    </div>
                 </div>
-                <div class="assigned-container">
+                <div class="category-container">
                     <div class="assigned-header">
                         Category
                     </div>
-                    <div class="assigned-content">
+                    <div class="category-content">
                         <div class="assigned-text">Select task category</div>
                         <div class="assigned-arrow-container">
-                            <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts" class="assigned-arrow-icon">
+                            <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts"
+                                class="assigned-arrow-icon">
                         </div>
                     </div>
 
                 </div>
-                <div class="assigned-container">
+                <div class="task-container">
                     <div class="assigned-header">
                         Subtasks <span class="optional">(optional)</span>
                     </div>
-                    <div class="assigned-content">
+                    <div class="task-content-addtask">
                         <div class="subtask-text">Add new subtask</div>
                         <div class="assigned-arrow-container">
-                            <img src="/assets/icons-addTask/Subtask's icons.png" alt="Select contacts" class="assigned-arrow-icon">
+                            <img src="/assets/icons-addTask/Subtask's icons.png" alt="Select contacts"
+                                class="assigned-arrow-icon">
                         </div>
                     </div>
-
+                    <ul class="subtask-list"></ul>
                 </div>
                 <div class="end-spacer"></div>
             </div>
         </div>
         <div class="button-container">
-            <button class="guest-btn">Clear <img src="./assets/icons-addTask/iconoir_cancel (1).png" alt=""></button>            
+            <button class="guest-btn">Clear <img src="./assets/icons-addTask/iconoir_cancel (1).png" alt=""></button>
             <button class="sign-up-btn">Create Task <img src="./assets/icons-addTask/check (1).png" alt=""></button>
         </div>
-
+        <script src="./script.js"></script>
+        <script src="./scripts/addTask.js"></script>
 </body>
+
 
 </html>
