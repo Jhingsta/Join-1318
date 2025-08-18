@@ -152,6 +152,111 @@ input[type="text"]::-webkit-search-cancel-button {
     width: 25%;
 }
 
+.tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.modal {
+    background: #fff;
+    width: 640px;
+    max-width: calc(100% - 48px);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e7e7e7;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #42526e;
+}
+
+.modal-close {
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    color: #42526e;
+}
+
+.modal-body {
+    display: grid;
+    gap: 16px;
+    padding: 16px 20px 20px;
+}
+
+.modal-field {
+    display: grid;
+    gap: 8px;
+}
+
+.modal-field > span {
+    color: #42526e;
+    font-weight: 600;
+}
+
+.modal-field > input,
+.modal-field > textarea,
+.modal-field > select {
+    border: 1px solid #a8a8a8;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font: inherit;
+}
+
+.modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.modal-grid.mini {
+    grid-template-columns: 1fr 1fr;
+}
+
+.modal-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.btn-secondary {
+    font-size: 16px;
+    border: 1px solid #4589ff;
+    color: #4589ff;
+    background: transparent;
+    border-radius: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+}
+
 .task-placeholder {
     display: flex;
     align-items: center;
