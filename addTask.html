@@ -17,6 +17,11 @@
 <body>
     <header>
         <div w3-include-html="./header.html"></div>
+
+        <script>
+            w3.includeHTML();
+        </script>
+
     </header>
 
     <div class="layout">
@@ -24,19 +29,27 @@
         <aside>
             <div w3-include-html="./sidebar.html"></div>
             <script>
+
                 w3.includeHTML(() => {
                     const plusBtn = document.querySelector("#plus-btn");
                     plusBtn.addEventListener("click", () => {
                     });
 
                 });
+=======
+                w3.includeHTML();
+
             </script>
         </aside>
         <div class="main-container-wrapper">
             <div class="main-container">
                 <div class="title-container">
+
                     <input type="text" class="title-input" placeholder="Enter a title" required>
                     <span class="error-message">This field is required</span>
+
+                   
+
                 </div>
 
                 <div class="description-container">
@@ -50,11 +63,16 @@
                 <div class="due-date-container">
                     <div class="due-date-header">Due date</div>
                     <div class="due-date-content">
+
                         <input type="text" class="due-date-input" placeholder="dd/mm/yyyy" required>
+
+                        <div class="due-date-input">dd/mm/yyyy</div>
+
                         <div class="due-date-icon-container">
                             <div class="due-date-icon"></div>
                         </div>
                     </div>
+
                     <span class="error-message">This field is required</span>
                 </div>
 
@@ -71,6 +89,7 @@
                     </div>
                 </div>
 
+
                 <div class="assigned-container">
                     <div class="assigned-header">
                         Assigned to <span class="optional">(optional)</span>
@@ -78,6 +97,7 @@
                     <div class="assigned-content">
                         <div class="assigned-text">Select contacts to assign</div>
                         <div class="assigned-arrow-container">
+
                             <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts"
                                 class="assigned-arrow-icon">
                         </div>
@@ -95,10 +115,12 @@
                         <div class="assigned-arrow-container">
                             <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts"
                                 class="assigned-arrow-icon">
+
                         </div>
                     </div>
 
                 </div>
+
                 <div class="task-container">
                     <div class="assigned-header">
                         Subtasks <span class="optional">(optional)</span>
@@ -134,6 +156,7 @@
             </div>
         </div>
         <div class="button-container">
+
             <button class="guest-btn">Clear <img src="./assets/icons-addTask/iconoir_cancel (1).png" alt=""></button>
             <button class="sign-up-btn">Create Task <img src="./assets/icons-addTask/check (1).png" alt=""></button>
         </div>
