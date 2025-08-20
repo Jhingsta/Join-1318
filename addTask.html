@@ -17,9 +17,6 @@
 <body>
     <header>
         <div w3-include-html="./header.html"></div>
-        <script>
-            w3.includeHTML();
-        </script>
     </header>
 
     <div class="layout">
@@ -27,7 +24,12 @@
         <aside>
             <div w3-include-html="./sidebar.html"></div>
             <script>
-                w3.includeHTML();
+                w3.includeHTML(() => {
+                    const plusBtn = document.querySelector("#plus-btn");
+                    plusBtn.addEventListener("click", () => {
+                    });
+
+                });
             </script>
         </aside>
         <div class="main-container-wrapper">
@@ -101,15 +103,33 @@
                     <div class="assigned-header">
                         Subtasks <span class="optional">(optional)</span>
                     </div>
+
                     <div class="task-content-addtask">
-                        <div class="subtask-text">Add new subtask</div>
+                        <input type="text" id="subtask-text" class="subtask-text" placeholder="Add new subtask">
+
                         <div class="assigned-arrow-container">
-                            <img src="/assets/icons-addTask/Subtask's icons.png" alt="Select contacts"
+
+                            <img id="plus-btn" src="/assets/icons-addTask/Subtask's icons.png" alt="Add subtask"
                                 class="assigned-arrow-icon">
+
+                            <img id="cancel-btn" src="/assets/icons-addTask/Subtask cancel.png" alt="Cancel subtask"
+                                class="assigned-arrow-icon" style="display:none;">
+
+                            <img id="check-btn" src="/assets/icons-addTask/Subtask's icons (1).png"
+                                alt="Confirm subtask" class="assigned-arrow-icon" style="display:none;">
+
                         </div>
                     </div>
-                    <ul class="subtask-list"></ul>
+
+
+                    <div id="task-dropdown" class="task-dropdown" style="display:none;">
+
+                    </div>
+
+                    <ul id="subtask-list" class="subtask-list"></ul>
                 </div>
+
+
                 <div class="end-spacer"></div>
             </div>
         </div>
@@ -117,7 +137,7 @@
             <button class="guest-btn">Clear <img src="./assets/icons-addTask/iconoir_cancel (1).png" alt=""></button>
             <button class="sign-up-btn">Create Task <img src="./assets/icons-addTask/check (1).png" alt=""></button>
         </div>
-        <script src="./script.js"></script>
+
         <script src="./scripts/addTask.js"></script>
 </body>
 
