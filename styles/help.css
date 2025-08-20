@@ -12,7 +12,6 @@ body {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 232px 1fr;
-  position: relative;
 }
 
 main {
@@ -99,7 +98,7 @@ h3 {
 }
 
 li:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .big-numbers .number {
@@ -114,15 +113,15 @@ li:last-child {
 
 /* Screenreader */
 .big-numbers {
-  list-style: decimal; /* Nummerierung bleibt semantisch */
+  list-style: decimal;
 }
 
 .big-numbers li {
-  list-style-position: outside; /* Nummer im DOM sichtbar für Screenreader, aber kein Text-Verschub */
+  list-style-position: outside;
 }
 
 .big-numbers li::marker {
-  color: transparent; /* Visuell unsichtbar, aber DOM bleibt */
+  color: transparent;
 }
 
 @media (max-width: 768px) {
