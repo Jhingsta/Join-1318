@@ -15,7 +15,7 @@ body {
 }
 
 main {
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 100px);
 }
 
 .content {
@@ -133,5 +133,6 @@ li:last-child {
   }
   main {
     order: 1;
+    min-height: calc(100vh - 80px);
   }
 }
