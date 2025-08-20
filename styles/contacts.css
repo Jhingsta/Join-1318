@@ -26,7 +26,6 @@ main {
     flex-basis: 456px;
     flex-shrink: 1;
     flex-grow: 0;
-    /* flex: 0 1 456px; */
     min-width: 300px;
     box-shadow: 4px 0px 6px 0px #00000014;
     padding: 0 28.5px 0 27.5px;
