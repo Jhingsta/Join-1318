@@ -16,7 +16,7 @@ body {
 }
 
 main {
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 100px);
 }
 
 .content {
@@ -72,5 +72,6 @@ h3 {
   }
   main {
     order: 1;
+    min-height: calc(100vh - 80px);
   }
 }
