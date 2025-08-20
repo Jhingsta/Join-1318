@@ -198,6 +198,7 @@ main {
     box-shadow: none;   
     height: auto;
     overflow-y: visible;
+    height: calc(100vh - 80px);
   }
   .right-panel {
     display: none;
