@@ -51,6 +51,7 @@ header {
 
 .user-logo-svg, .guest-logo-svg {
   cursor: pointer;
+  display: none;
 }
 
 .user-logo-svg:hover .bg, .guest-logo-svg:hover .bg {
@@ -58,7 +59,7 @@ header {
   fill: #EDF2FA;
 }
 
-.user-logo-svg:focus, .guest-logo-svg {
+.user-logo-svg:focus, .guest-logo-svg:focus {
   outline: none;
 }
 

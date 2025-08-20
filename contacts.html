@@ -14,18 +14,12 @@
     
     <header>
         <div w3-include-html="header.html"></div>
-        <script>
-            w3.includeHTML();
-        </script>
     </header>
 
     <div class="layout">
 
         <aside>
             <div w3-include-html="sidebar.html"></div>
-            <script>
-                w3.includeHTML();
-            </script>
         </aside>
 
         <main>
@@ -119,5 +113,12 @@
 
         </main>
 
+    <script src="./scripts/header.js"></script>
+    <script src="./scripts/auth.js"></script>
+    <script>
+        w3.includeHTML(() => {
+        updateVisibility();
+        });
+    </script>
 </body>
 </html>

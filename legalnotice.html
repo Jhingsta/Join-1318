@@ -8,25 +8,18 @@
     <link rel="stylesheet" href="./styles/sidebar.css">
     <link rel="stylesheet" href="./styles/legalnotice.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
-    <script src="./scripts/header.js"></script>
     <title>Legal Notice</title>
 </head>
 <body>
     
     <header role="banner">
         <div w3-include-html="./header.html"></div>
-        <script>
-            w3.includeHTML();
-        </script>
     </header>
 
     <div class="layout">
 
         <aside role="complementary" aria-label="Sidebar navigation">
             <div w3-include-html="./sidebar.html"></div>
-            <script>
-                w3.includeHTML();
-            </script>
         </aside>
 
         <main>
@@ -128,5 +121,12 @@
         </main>
     </div>
 
+    <script src="./scripts/header.js"></script>
+    <script src="./scripts/auth.js"></script>
+    <script>
+        w3.includeHTML(() => {
+        updateVisibility();
+        });
+    </script>
 </body>
 </html>
