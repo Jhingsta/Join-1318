@@ -51,7 +51,6 @@ header {
 
 .user-logo-svg, .guest-logo-svg {
   cursor: pointer;
-  display: none;
 }
 
 .user-logo-svg:hover .bg, .guest-logo-svg:hover .bg {

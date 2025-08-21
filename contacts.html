@@ -117,8 +117,11 @@
     <script src="./scripts/auth.js"></script>
     <script>
         w3.includeHTML(() => {
-        updateVisibility();
-        });
+            console.log("📦 w3.includeHTML abgeschlossen");
+            
+            // Verwende die neue Retry-Funktion
+            updateVisibilityWithRetry();
+            });
     </script>
 </body>
 </html>

@@ -3,3 +3,75 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+/* === HEADER-ELEMENTE === */
+/* Verstecke Header-Elemente standardmäßig */
+.show-when-logged-in,
+[data-show-when="logged-in"] {
+    display: none;
+}
+
+.show-when-guest,
+[data-show-when="guest"] {
+    display: none;
+}
+
+/* Zeige Header-Elemente basierend auf Body-Klassen */
+body.user-logged-in .show-when-logged-in,
+body.user-logged-in [data-show-when="logged-in"] {
+    display: block !important;
+}
+
+body.guest-logged-in .show-when-guest,
+body.guest-logged-in [data-show-when="guest"] {
+    display: block !important;
+}
+
+
+/* Zeige Elemente basierend auf Body-Klassen */
+body.user-logged-in .show-when-logged-in {
+    display: block; /* oder display: flex, je nach Element */
+}
+
+body.guest-logged-in .show-when-guest {
+    display: block;
+}
+
+/* === SPEZIELLE SEITEN (legalnotice, privacy-policy) === */
+/* Für Gäste: Nur Login-Button sichtbar */
+body.special-page.guest-logged-in .nav-item.standard {
+    display: none !important;
+}
+
+body.special-page.guest-logged-in .nav-item.special {
+    display: block !important;
+}
+
+/* Für eingeloggte User: Alle Standard-Buttons sichtbar, Special versteckt */
+body.special-page.user-logged-in .nav-item.standard {
+    display: block !important;
+}
+
+body.special-page.user-logged-in .nav-item.special {
+    display: none !important;
+}
+
+/* === NORMALE SEITEN (alle anderen) === */
+/* Standard-Verhalten: Immer alle Standard-Buttons sichtbar, Special versteckt */
+body:not(.special-page) .nav-item.standard {
+    display: block !important;
+}
+
+body:not(.special-page) .nav-item.special {
+    display: none !important;
+}
+
+/* Für Flex-Container in der Sidebar (falls verwendet) */
+body.special-page.guest-logged-in .nav-item.special {
+    display: flex !important;
+}
+
+body.special-page.user-logged-in .nav-item.standard,
+body:not(.special-page) .nav-item.standard {
+    display: flex !important;
+}
