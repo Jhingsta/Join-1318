@@ -1,7 +1,7 @@
 header {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
   background: #4589FF;
   box-shadow: 0px 4px 4px 0px #0000001A;
 }

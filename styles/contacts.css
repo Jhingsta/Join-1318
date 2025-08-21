@@ -72,7 +72,7 @@ main {
   height: 64px;
   position: fixed;
   right: 32px;
-  top: 643px;
+  bottom: 100px;
   border-radius: 10px;
   padding: 16px;
   box-shadow: 0px 4px 8px 0px #00000033;
@@ -94,7 +94,7 @@ main {
 
 .letter {
   padding: 17px 36px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 400;
   background-color: #fff;
 }
@@ -190,6 +190,7 @@ main {
   main {
     order: 1;
     min-height: calc(100vh - 80px);
+    margin-bottom: 100px;
   }
   .content {
     flex: 1 1 300px;
@@ -199,6 +200,7 @@ main {
     height: auto;
     overflow-y: visible;
     height: calc(100vh - 80px);
+    margin-bottom: 100px;
   }
   .right-panel {
     display: none;
@@ -210,5 +212,21 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .contacts {
+    padding: 24px 12px;
+  }
+}
+
+@media (max-width:480px) {
+  .content {
+    padding: 0 1rem; 
+  }
+  .contacts {
+    padding: 24px 0;
+  }
+  .contact {
+    max-width: 360px;
+    padding: 15px 10px;
   }
 }

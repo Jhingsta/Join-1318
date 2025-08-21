@@ -27,7 +27,6 @@ body.guest-logged-in [data-show-when="guest"] {
     display: block !important;
 }
 
-
 /* Zeige Elemente basierend auf Body-Klassen */
 body.user-logged-in .show-when-logged-in {
     display: block; /* oder display: flex, je nach Element */
@@ -39,17 +38,18 @@ body.guest-logged-in .show-when-guest {
 
 /* === SPEZIELLE SEITEN (legalnotice, privacy-policy) === */
 /* Für Gäste: Nur Login-Button sichtbar */
+
 body.special-page.guest-logged-in .nav-item.standard {
     display: none !important;
 }
 
 body.special-page.guest-logged-in .nav-item.special {
-    display: block !important;
+    display: flex !important;
 }
 
 /* Für eingeloggte User: Alle Standard-Buttons sichtbar, Special versteckt */
 body.special-page.user-logged-in .nav-item.standard {
-    display: block !important;
+    display: flex !important;
 }
 
 body.special-page.user-logged-in .nav-item.special {
@@ -58,9 +58,6 @@ body.special-page.user-logged-in .nav-item.special {
 
 /* === NORMALE SEITEN (alle anderen) === */
 /* Standard-Verhalten: Immer alle Standard-Buttons sichtbar, Special versteckt */
-body:not(.special-page) .nav-item.standard {
-    display: block !important;
-}
 
 body:not(.special-page) .nav-item.special {
     display: none !important;
@@ -74,4 +71,24 @@ body.special-page.guest-logged-in .nav-item.special {
 body.special-page.user-logged-in .nav-item.standard,
 body:not(.special-page) .nav-item.standard {
     display: flex !important;
+}
+
+/* === SIDEBAR FOOTER - RESPONSIVE VERHALTEN === */
+
+/* Mobile (max-width: 768px): Footer nur für Gäste sichtbar */
+@media (max-width: 768px) {
+    /* Verstecke Footer standardmäßig auf Mobile */
+    .sidebar-footer {
+        display: none;
+    }
+    
+    /* Zeige Footer nur für Gäste */
+    body.guest-logged-in .sidebar-footer {
+        display: flex !important;
+    }
+    
+    /* Für eingeloggte User bleibt Footer versteckt */
+    body.user-logged-in .sidebar-footer {
+        display: none !important;
+    }
 }

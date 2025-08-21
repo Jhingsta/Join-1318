@@ -134,5 +134,9 @@ li:last-child {
   main {
     order: 1;
     min-height: calc(100vh - 80px);
+    margin-bottom: 80px;
+  }
+  .content {
+    padding: 64px 1rem; 
   }
 }
