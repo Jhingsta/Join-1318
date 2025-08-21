@@ -4,38 +4,6 @@
     box-sizing: border-box;
 }
 
-/* === HEADER-ELEMENTE === */
-/* Verstecke Header-Elemente standardmäßig */
-.show-when-logged-in,
-[data-show-when="logged-in"] {
-    display: none;
-}
-
-.show-when-guest,
-[data-show-when="guest"] {
-    display: none;
-}
-
-/* Zeige Header-Elemente basierend auf Body-Klassen */
-body.user-logged-in .show-when-logged-in,
-body.user-logged-in [data-show-when="logged-in"] {
-    display: block !important;
-}
-
-body.guest-logged-in .show-when-guest,
-body.guest-logged-in [data-show-when="guest"] {
-    display: block !important;
-}
-
-/* Zeige Elemente basierend auf Body-Klassen */
-body.user-logged-in .show-when-logged-in {
-    display: block; /* oder display: flex, je nach Element */
-}
-
-body.guest-logged-in .show-when-guest {
-    display: block;
-}
-
 /* === SPEZIELLE SEITEN (legalnotice, privacy-policy) === */
 /* Für Gäste: Nur Login-Button sichtbar */
 
@@ -74,7 +42,6 @@ body:not(.special-page) .nav-item.standard {
 }
 
 /* === SIDEBAR FOOTER - RESPONSIVE VERHALTEN === */
-
 /* Mobile (max-width: 768px): Footer nur für Gäste sichtbar */
 @media (max-width: 768px) {
     /* Verstecke Footer standardmäßig auf Mobile */
@@ -83,12 +50,12 @@ body:not(.special-page) .nav-item.standard {
     }
     
     /* Zeige Footer nur für Gäste */
-    body.guest-logged-in .sidebar-footer {
+    body.special-page.guest-logged-in .sidebar-footer {
         display: flex !important;
     }
     
     /* Für eingeloggte User bleibt Footer versteckt */
-    body.user-logged-in .sidebar-footer {
+    body.special-page.user-logged-in .sidebar-footer {
         display: none !important;
     }
 }
