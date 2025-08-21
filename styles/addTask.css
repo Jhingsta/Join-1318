@@ -55,16 +55,19 @@ body {
 
 #subtask-list li:hover {
     background: #E3EEFF;
-    opacity: 1; /* explizit, auch wenn default */
+    opacity: 1;
+    /* explizit, auch wenn default */
 }
 
 .subtask-icons {
-    display: none; /* Standard ausgeblendet */
+    display: none;
+    /* Standard ausgeblendet */
     gap: 8px;
 }
 
 .subtask-list li:hover .subtask-icons {
-    display: flex; /* Sichtbar beim Hover */
+    display: flex;
+    /* Sichtbar beim Hover */
 }
 
 .subtask-edit-input {
@@ -77,9 +80,12 @@ body {
 }
 
 .subtask-text:focus {
-    outline: none;           /* entfernt den schwarzen Standardrahmen */
-    box-shadow: none;        /* entfernt evtl. zusätzliches Browser-Highlight */
-    border-color: transparent; /* falls du gar keinen sichtbaren Rahmen willst */
+    outline: none;
+    /* entfernt den schwarzen Standardrahmen */
+    box-shadow: none;
+    /* entfernt evtl. zusätzliches Browser-Highlight */
+    border-color: transparent;
+    /* falls du gar keinen sichtbaren Rahmen willst */
 }
 
 .title-container {
@@ -99,7 +105,16 @@ body {
     border: none;
     border-bottom: 1px solid #D1D1D1;
     box-sizing: border-box;
-    font-size: 16px;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 32px;
+    line-height: 120%;
+    letter-spacing: 0;
+}
+
+.title-input:hover {
+    border-bottom: 1px solid #4589FF;
 }
 
 .title-input::placeholder {
@@ -190,10 +205,12 @@ body {
     padding: 8px 12px;
     box-sizing: border-box;
     font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    color: #D1D1D1;
+    font-size: 19px;
+    line-height: 120%;
+    color: #000000;
     position: relative;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .description-input::placeholder {
@@ -244,25 +261,39 @@ body {
     opacity: 1;
     padding: 12px 16px;
     background-color: #FFFFFF;
-    border-bottom: 1px solid #D1D1D1;
+
     box-sizing: border-box;
 }
 
-.due-date-input {
-    /* width: 111px; */
-    height: 23px;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
-    color: #D1D1D1;
-    border: none;
-    padding: 0 4px;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
+.due-date-input::-webkit-calendar-picker-indicator {
+    display: none;
+    /* Chrome, Safari, Edge */
 }
+
+.due-date-input {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  font-style: normal; /* Regular */
+  font-size: 19px;
+  line-height: 120%;
+  letter-spacing: 0;
+  color: #000; /* <-- schwarzer Text für gewähltes Datum */
+  border: none;
+  padding: 0 4px;
+  box-sizing: border-box;
+  height: 23px;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Platzhalter grau */
+.due-date-input::placeholder {
+  color: #D1D1D1;
+}
+
+
 
 .due-date-icon-container {
     width: 24px;
@@ -281,6 +312,12 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
 }
+
+.due-date-input:focus {
+    outline: none;
+    /* entfernt den schwarzen Rahmen */
+}
+
 
 .priority-container {
     width: 440px;
@@ -400,8 +437,16 @@ body {
     border-bottom: 2px solid transparent;
 }
 
-.assigned-container,
-.task-container,
+.assigned-container {
+    width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 1;
+    box-sizing: border-box;
+    margin-bottom: 24px;
+}
+
 .category-container {
     width: 440px;
     height: 79px;
@@ -412,6 +457,18 @@ body {
     box-sizing: border-box;
     margin-bottom: 24px;
 }
+
+.task-container {
+    width: 440px;
+    height: 79px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 1;
+    box-sizing: border-box;
+    margin-bottom: 24px;
+}
+
 
 .assigned-header {
     width: 199px;
@@ -442,6 +499,24 @@ body {
     border-bottom: 1px solid #D1D1D1;
     box-sizing: border-box;
     opacity: 1;
+}
+
+#selected-avatars {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.selected-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 .category-content {
@@ -481,7 +556,6 @@ body {
     /* flex-direction: column; */
     gap: 8px;
     margin-bottom: 24px;
-
 }
 
 .dropdown-menu {
@@ -497,18 +571,15 @@ body {
     z-index: 10;
 }
 
-.dropdown-item {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-size: 19px;
-    line-height: 120%;
-    color: #42526E;
-    opacity: 1;
-    height: 56px;
-    line-height: 56px;
-    padding: 0 16px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
+.dropdown-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 12px;
 }
 
 .dropdown-item:last-child {
@@ -600,22 +671,60 @@ body {
     z-index: 100;
 }
 
+.assigned-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 42px;
+}
+
+.assigned-wrapper span {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    vertical-align: middle;
+    height: 23px;
+    display: flex;
+    align-items: center;
+}
+
 .dropdown-item {
     width: 416px;
     height: 56px;
     padding: 0 16px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     cursor: pointer;
-}
-
-.subtask-text {
-    font-family: 'Open Sans', sans-serif;
+    font-family: Open Sans;
     font-weight: 400;
     font-size: 19px;
     line-height: 120%;
-    color: #D1D1D1;
+    vertical-align: middle;
+}
+
+.dropdown-item:hover {
+    background: #D2E3FF;
+
+}
+
+.subtask-text {
+font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 120%;
+    color: #42526E;
     opacity: 1;
+}
+
+.selected-avatars-container {
+    display: none;
+    /* Nur sichtbar, wenn Avatare vorhanden */
+    width: 142px;
+    height: 42px;
+    gap: 8px;
 }
 
 
@@ -696,14 +805,19 @@ body {
 }
 
 .task-dropdown {
-    position: absolute;   /* wichtig, damit es über anderen Elementen liegt */
+    position: absolute;
+    /* wichtig, damit es über anderen Elementen liegt */
     background: white;
     border: 1px solid #ccc;
-    width: 200px;         /* passend zum Input/Div */
-    z-index: 100;         /* über Icons */
+    width: 200px;
+    /* passend zum Input/Div */
+    z-index: 100;
+    /* über Icons */
 }
+
 .task-container {
-    position: relative;   /* Bezugspunkt für absolutes Dropdown */
+    position: relative;
+    /* Bezugspunkt für absolutes Dropdown */
 }
 
 .end-spacer {
