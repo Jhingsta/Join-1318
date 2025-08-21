@@ -17,6 +17,7 @@ body {
     background-color: #fff;
 }
 
+
 /* addTask.css */
 .dropdown-menu {
     display: none;
@@ -88,6 +89,7 @@ body {
     /* falls du gar keinen sichtbaren Rahmen willst */
 }
 
+
 .title-container {
     width: 440px;
     min-height: 84px;
@@ -132,6 +134,7 @@ body {
 
 .title-input:focus {
     outline: none;
+
     border-bottom: 1px solid #005DFF;
 }
 
@@ -150,7 +153,6 @@ body {
     font-size: 14px;
     display: none;
 }
-
 
 
 .description-container {
@@ -271,26 +273,18 @@ body {
 }
 
 .due-date-input {
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 400;
-  font-style: normal; /* Regular */
-  font-size: 19px;
-  line-height: 120%;
-  letter-spacing: 0;
-  color: #000; /* <-- schwarzer Text für gewähltes Datum */
-  border: none;
-  padding: 0 4px;
-  box-sizing: border-box;
-  height: 23px;
-
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-/* Platzhalter grau */
-.due-date-input::placeholder {
-  color: #D1D1D1;
+    height: 23px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0;
+    color: #D1D1D1;
+    border: none;
+    padding: 0 4px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
 }
 
 
@@ -311,11 +305,6 @@ body {
     background-image: url("/assets/icons-addTask/event.png");
     background-size: contain;
     background-repeat: no-repeat;
-}
-
-.due-date-input:focus {
-    outline: none;
-    /* entfernt den schwarzen Rahmen */
 }
 
 
@@ -437,16 +426,6 @@ body {
     border-bottom: 2px solid transparent;
 }
 
-.assigned-container {
-    width: 440px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    opacity: 1;
-    box-sizing: border-box;
-    margin-bottom: 24px;
-}
-
 .category-container {
     width: 440px;
     height: 79px;
@@ -488,6 +467,7 @@ body {
 }
 
 .assigned-content {
+
     position: relative;
     cursor: pointer;
     width: 440px;
@@ -522,6 +502,7 @@ body {
 .category-content {
     position: relative;
     cursor: pointer;
+
     width: 440px;
     height: 48px;
     display: flex;
@@ -630,6 +611,7 @@ body {
     display: block;
 }
 
+
 .assigned-text {
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
@@ -653,6 +635,7 @@ body {
     width: 24px;
     height: 24px;
 }
+
 
 #assigned-dropdown {
     width: 440px;
@@ -698,17 +681,8 @@ body {
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    font-family: Open Sans;
-    font-weight: 400;
-    font-size: 19px;
-    line-height: 120%;
-    vertical-align: middle;
 }
 
-.dropdown-item:hover {
-    background: #D2E3FF;
-
-}
 
 .subtask-text {
 font-family: 'Open Sans', sans-serif;
@@ -753,7 +727,6 @@ font-family: 'Open Sans', sans-serif;
     gap: 10px;
     font-weight: 400;
     justify-content: center;
-    ;
 }
 
 .guest-btn:hover {
@@ -819,6 +792,7 @@ font-family: 'Open Sans', sans-serif;
     position: relative;
     /* Bezugspunkt für absolutes Dropdown */
 }
+
 
 .end-spacer {
     width: 440px;
