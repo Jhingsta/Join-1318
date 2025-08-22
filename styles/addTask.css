@@ -823,3 +823,39 @@ body {
     height: 48px;
     opacity: 0;
 }
+
+.assigned-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #D1D1D1;
+    padding: 12px 16px;
+}
+
+.assigned-text,
+.assigned-input {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.assigned-input {
+    display: none;
+    border: none;
+    outline: none;
+}
+
+.assigned-arrow-container-fixed {
+    position: absolute;
+    right: 16px;  /* gleiche Position wie padding */
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* optional, damit Klicks auf Input gehen */
+}
+
+.assigned-arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.assigned-arrow-icon.open {
+    transform: rotate(180deg);
+}

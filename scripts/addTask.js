@@ -117,6 +117,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     const BASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/";
     const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
     const assignedDropdown = document.getElementById('assigned-dropdown');
+    const assignedContent = document.querySelector('.assigned-content');
+    const assignedText = assignedContent.querySelector('.assigned-text');
+
+
+    // Neues Input-Feld erstellen
+    const assignedInput = document.createElement("input");
+    assignedInput.type = "text";
+    // assignedInput.placeholder = "Type a contact...";
+    assignedInput.className = "assigned-input";
+    assignedInput.style.display = "none"; // Standardmäßig versteckt
+    assignedInput.style.width = "100%";
+    assignedInput.style.border = "none";
+    assignedInput.style.outline = "none";
+    assignedInput.style.fontSize = "19px";
+    assignedInput.style.fontFamily = "'Open Sans', sans-serif";
+    assignedInput.style.padding = "0";
+    assignedContent.insertBefore(assignedInput, assignedDropdown);
 
     let users = [];
 
@@ -127,12 +144,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             const data = await response.json();
 
             if (data) {
-                users = Object.values(data); // aus Objekten ein Array machen
+                users = Object.values(data);
                 populateAssignedDropdown();
-                console.log("Users loaded successfully:", users);
             } else {
                 users = [];
-                console.log("Keine Nutzer gefunden");
             }
         } catch (error) {
             console.error("Fehler beim Laden der Users:", error);
@@ -221,7 +236,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const selectedUsers = users.filter((user, index) => {
                 const div = assignedDropdown.children[index];
                 const img = div.querySelector('.checkbox-img');
-                return img.src.includes("checked.png") || img.src.includes("hover checked icon.png");
+                return img.src.includes("checked.png");
             }).slice(0, 3);
 
             selectedUsers.forEach(user => {
@@ -232,17 +247,56 @@ document.addEventListener("DOMContentLoaded", async () => {
                 selectedAvatarsContainer.appendChild(avatar);
             });
 
-            if (selectedAvatarsContainer.children.length > 0) {
-                selectedAvatarsContainer.style.display = 'flex';
-            } else {
-                selectedAvatarsContainer.style.display = 'none';
-            }
+            selectedAvatarsContainer.style.display = selectedUsers.length > 0 ? 'flex' : 'none';
         }
     }
 
-    await loadUsers();
-});
+    // ======= Autocomplete Input =======
+    assignedContent.addEventListener('click', (event) => {
+        event.stopPropagation();
+        assignedText.style.display = 'none';
+        assignedInput.style.display = 'inline';
+        assignedInput.focus();
+        assignedDropdown.style.display = 'block';
+    });
 
+    assignedInput.addEventListener('input', () => {
+        const filter = assignedInput.value.toLowerCase();
+        Array.from(assignedDropdown.children).forEach(div => {
+            const name = div.querySelector('span').textContent.toLowerCase();
+            div.style.display = name.includes(filter) ? 'flex' : 'none';
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!assignedContent.contains(event.target)) {
+            assignedDropdown.style.display = 'none';
+            assignedInput.style.display = 'none';
+            assignedText.style.display = 'block';
+            assignedInput.value = '';
+            populateAssignedDropdown(); // reset filter
+        }
+    });
+
+    await loadUsers();
+        // 2. Input/Text Umschalten nach Dropdown Klick
+    assignedContent.addEventListener('click', (e) => {
+        e.stopPropagation();
+        assignedText.style.display = 'none';
+        assignedInput.style.display = 'block';
+        assignedInput.focus();
+        assignedDropdown.style.display = 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!assignedContent.contains(e.target)) {
+            assignedDropdown.style.display = 'none';
+            assignedInput.style.display = 'none';
+            assignedText.style.display = 'block';
+            assignedInput.value = '';
+        }
+    });
+});
 
 // ===================== CATEGORY ===================== 
 const categoryContent = document.querySelector('.category-content');
