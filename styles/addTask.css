@@ -1,0 +1,720 @@
+body {
+    overflow: hidden;
+}
+
+.main-container-wrapper {
+    width: 488px;
+    overflow-y: auto;
+    height: calc(100vh - 80px);
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 64px 24px 0 24px;
+    box-sizing: border-box;
+    background-color: #fff;
+}
+
+
+/* addTask.css */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    z-index: 10;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.subtask-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    z-index: 10;
+}
+
+#subtask-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 16px;
+    border-radius: 10px;
+    height: 32px;
+    width: 440px;
+    transition: background 0.2s ease;
+}
+
+#subtask-list li:hover {
+    background: #E3EEFF;
+    opacity: 1; /* explizit, auch wenn default */
+}
+
+.subtask-icons {
+    display: none; /* Standard ausgeblendet */
+    gap: 8px;
+}
+
+.subtask-list li:hover .subtask-icons {
+    display: flex; /* Sichtbar beim Hover */
+}
+
+.subtask-edit-input {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    padding: 4px 8px;
+    border-radius: 6px;
+    flex: 1;
+}
+
+.subtask-text:focus {
+    outline: none;           /* entfernt den schwarzen Standardrahmen */
+    box-shadow: none;        /* entfernt evtl. zusätzliches Browser-Highlight */
+    border-color: transparent; /* falls du gar keinen sichtbaren Rahmen willst */
+}
+
+
+.title-container {
+    width: 440px;
+    min-height: 84px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.title-input {
+    width: 440px;
+    height: 64px;
+    padding: 13px 16px;
+    background: #FFFFFF;
+    border: none;
+    border-bottom: 1px solid #D1D1D1;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.title-input::placeholder {
+    width: 172px;
+    height: 38px;
+    color: #D1D1D1;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 32px;
+    line-height: 120%;
+    letter-spacing: 0;
+    opacity: 1;
+}
+
+.title-input:focus {
+    outline: none;
+
+    border-bottom: 1px solid #005DFF;
+}
+
+.title-input:invalid:not(:placeholder-shown) {
+    border-bottom: 1px solid #FF4D4D;
+}
+
+.title-input:invalid:not(:placeholder-shown)+.error-message {
+    display: block;
+}
+
+.error-message {
+    color: #FF4D4D;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    display: none;
+}
+
+
+.description-container {
+    width: 440px;
+    height: 154px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+}
+
+.description-header {
+    width: 440px;
+    height: 23px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 1;
+    padding: 0 4px;
+    box-sizing: border-box;
+}
+
+.desc-title {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0;
+    color: #42526E;
+}
+
+.desc-optional {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0;
+    color: #42526E
+}
+
+.description-input {
+    width: 440px;
+    height: 103px;
+    background-color: #FFFFFF;
+    border: 1px solid #D1D1D1;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    padding: 8px 12px;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #D1D1D1;
+    position: relative;
+}
+
+.description-input::placeholder {
+    width: 172px;
+    height: 38px;
+    color: #D1D1D1;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0;
+    opacity: 1;
+}
+
+.due-date-container {
+    width: 440px;
+    height: 99px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 1;
+    box-sizing: border-box;
+    margin-bottom: 24px;
+}
+
+.due-date-header {
+    width: 86px;
+    height: 23px;
+    opacity: 1;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0;
+    color: #42526E;
+    display: flex;
+    align-items: center;
+}
+
+.due-date-content {
+    width: 440px;
+    height: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 1;
+    padding: 12px 16px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #D1D1D1;
+    box-sizing: border-box;
+}
+
+.due-date-input {
+    height: 23px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0;
+    color: #D1D1D1;
+    border: none;
+    padding: 0 4px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+
+.due-date-icon-container {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    cursor: pointer;
+}
+
+.due-date-icon {
+    width: 18px;
+    height: 20px;
+    background-image: url("/assets/icons-addTask/event.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.priority-container {
+    width: 440px;
+    height: 82px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 1;
+    box-sizing: border-box;
+    margin-bottom: 24px;
+}
+
+.priority-header {
+    width: 72px;
+    height: 23px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0;
+    color: #42526E;
+    opacity: 1;
+}
+
+.priority-content {
+    width: 440px;
+    height: 51px;
+    display: flex;
+    gap: 16px;
+    padding: 0;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.priority-content button:nth-child(1):hover {
+    border-bottom: 2px solid #FF3D00;
+}
+
+.priority-content button:nth-child(2):hover {
+    border-bottom: 2px solid #FFA800;
+}
+
+.priority-content button:nth-child(3):hover {
+    border-bottom: 2px solid #7AE229;
+}
+
+/* Standardzustand */
+.priority-frame {
+    border-bottom: 2px solid transparent;
+    background-color: white;
+    color: black;
+    transition: all 0.2s ease;
+}
+
+/* Hover-Effekt: nur untere Linie */
+.priority-content button:nth-child(1):hover {
+    border-bottom: 2px solid #FF3D00;
+}
+
+.priority-content button:nth-child(2):hover {
+    border-bottom: 2px solid #FFA800;
+}
+
+.priority-content button:nth-child(3):hover {
+    border-bottom: 2px solid #7AE229;
+}
+
+/* Aktiver Zustand: komplette Farbe */
+.priority-frame.active:nth-child(1) {
+    background-color: #FF3D00;
+    color: white;
+    border-bottom: 2px solid #FF3D00;
+}
+
+.priority-frame.active:nth-child(1) img {
+    filter: brightness(0) invert(1);
+}
+
+.priority-frame.active:nth-child(2) {
+    background-color: #FFA800;
+    color: white;
+    border-bottom: 2px solid #FFA800;
+}
+
+.priority-frame.active:nth-child(2) img {
+    filter: brightness(0) invert(1);
+}
+
+.priority-frame.active:nth-child(3) {
+    background-color: #7AE229;
+    color: white;
+    border-bottom: 2px solid #7AE229;
+}
+
+.priority-frame.active:nth-child(3) img {
+    filter: brightness(0) invert(1);
+}
+
+.priority-frame {
+    background: white;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 136px;
+    height: 51px;
+    opacity: 1;
+    padding: 18px 10px;
+    gap: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 4px 0px #00000029;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 19px;
+    font-weight: 400;
+    border-bottom: 2px solid transparent;
+}
+
+.assigned-container,
+.task-container,
+
+.category-container {
+    width: 440px;
+    height: 79px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 1;
+    box-sizing: border-box;
+    margin-bottom: 24px;
+}
+
+.assigned-header {
+    width: 199px;
+    height: 23px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0;
+    color: #42526E;
+    opacity: 1;
+}
+
+.assigned-header span.optional {
+    font-weight: 400;
+}
+
+.assigned-content {
+
+    position: relative;
+    cursor: pointer;
+    width: 440px;
+    height: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #D1D1D1;
+    box-sizing: border-box;
+    opacity: 1;
+}
+
+.category-content {
+    position: relative;
+    cursor: pointer;
+
+    width: 440px;
+    height: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #D1D1D1;
+    box-sizing: border-box;
+    opacity: 1;
+}
+
+.task-content-addtask {
+    position: relative;
+    cursor: pointer;
+    width: 440px;
+    height: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #D1D1D1;
+    box-sizing: border-box;
+    opacity: 1;
+    overflow: visible;
+}
+
+.task-container {
+
+    width: 440px;
+    min-height: 79px;
+    display: flex;
+    /* flex-direction: column; */
+    gap: 8px;
+    margin-bottom: 24px;
+
+}
+
+.dropdown-menu {
+    display: none;
+    /* Versteckt das Dropdown standardmäßig */
+    position: absolute;
+    top: 100%;
+    /* Direkt unter assigned-content */
+    left: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    width: 100%;
+    z-index: 10;
+}
+
+.dropdown-item {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 120%;
+    color: #42526E;
+    opacity: 1;
+    height: 56px;
+    line-height: 56px;
+    padding: 0 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+.dropdown-menu {
+    display: none;
+    /* erst beim Klick sichtbar */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 440px;
+    max-height: 280px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    z-index: 100;
+}
+
+.assigned-content {
+    position: relative;
+    cursor: pointer;
+}
+
+.assigned-content.active .dropdown-menu {
+    display: flex;
+}
+
+.task-content-addtask:hover {
+    border-bottom: 1px solid #4589FF;
+}
+
+.category-content:hover {
+    border-bottom: 1px solid #4589FF;
+}
+
+.assigned-content:hover {
+    border-bottom: 1px solid #4589FF;
+}
+
+.assigned-content.active .dropdown-menu {
+    display: block;
+}
+
+
+.assigned-text {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 120%;
+    color: #42526E;
+    opacity: 1;
+}
+
+.assigned-arrow-container {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 1;
+}
+
+.assigned-arrow-icon {
+    width: 24px;
+    height: 24px;
+}
+
+
+#assigned-dropdown {
+    width: 440px;
+    /* 416px + 24px scrollbar */
+    max-height: 280px;
+    /* 5 * 56px */
+    overflow-y: auto;
+    /* scrollt, wenn mehr als 5 Kontakte */
+    display: none;
+    /* Standard unsichtbar */
+    position: absolute;
+    /* überlappend */
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    z-index: 100;
+}
+
+.dropdown-item {
+    width: 416px;
+    height: 56px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+
+.subtask-text {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 120%;
+    color: #D1D1D1;
+    opacity: 1;
+}
+
+
+.button-container {
+    position: absolute;
+    bottom: 55px;
+    left: 1063px;
+    height: 61px;
+    display: flex;
+    gap: 25px;
+    opacity: 1;
+    transform: rotate(0deg);
+}
+
+.guest-btn {
+    display: flex;
+    width: 136px;
+    height: 60px;
+    background-color: white;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 23px;
+    cursor: pointer;
+    padding: 16px 10px;
+    gap: 10px;
+    font-weight: 400;
+    justify-content: center;
+}
+
+.guest-btn:hover {
+    border: 2px solid #4589FF;
+    color: #4589FF;
+}
+
+.guest-btn:hover img {
+    filter: invert(34%) sepia(91%) saturate(5000%) hue-rotate(200deg);
+}
+
+.guest-btn:active {
+    border: 1px solid #005DFF;
+    color: #005DFF;
+}
+
+.guest-btn:active img {
+
+    filter: invert(34%) sepia(91%) saturate(5000%) hue-rotate(200deg);
+}
+
+.sign-up-btn {
+    display: flex;
+    width: 174px;
+    height: 60px;
+    background-color: #4589FF;
+    color: white;
+    border: none;
+    padding: 16px 10px;
+    border-radius: 10px;
+    font-size: 23px;
+    cursor: pointer;
+    gap: 4px;
+    font-weight: 400;
+}
+
+.sign-up-btn:hover {
+    background-color: #005DFF;
+    box-shadow: 0px 6px 12px 0px #00000040;
+}
+
+.sign-up-btn:active {
+    background-color: #FFFFFF;
+    color: #005DFF;
+}
+
+.sign-up-btn:active img {
+    filter: invert(34%) sepia(91%) saturate(5000%) hue-rotate(200deg);
+}
+
+.task-dropdown {
+    position: absolute;   /* wichtig, damit es über anderen Elementen liegt */
+    background: white;
+    border: 1px solid #ccc;
+    width: 200px;         /* passend zum Input/Div */
+    z-index: 100;         /* über Icons */
+}
+.task-container {
+    position: relative;   /* Bezugspunkt für absolutes Dropdown */
+}
+
+
+.end-spacer {
+    width: 440px;
+    height: 48px;
+    opacity: 0;
+}
