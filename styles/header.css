@@ -49,22 +49,21 @@ header {
   transform: scale(1.2);
 }
 
-.user-logo-svg, .guest-logo-svg {
+.user-logo-svg {
   cursor: pointer;
 }
 
-.user-logo-svg:hover .bg, .guest-logo-svg:hover .bg {
+.user-logo-svg:hover .bg {
   /* fill: rgba(181, 219, 255, 0.9);  #B5DBFF mit 20% Deckkraft */
   fill: #EDF2FA;
 }
 
-.user-logo-svg:focus, .guest-logo-svg:focus {
+.user-logo-svg:focus {
   outline: none;
 }
 
 /* Eigenen Focus-Style hinzufügen */
 .user-logo-svg:focus-visible,
-.guest-logo-svg:focus-visible,
 .header-right-text:focus-visible, 
 .help-icon:focus-visible {
   outline: 4px solid #005DFF;
@@ -119,7 +118,7 @@ header {
   .header-left {
     width: 32px;
   }
-  .user-logo-svg, .guest-logo-svg {
+  .user-logo-svg {
     width: 40px;
     height: 40px;
   }
