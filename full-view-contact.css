@@ -1,0 +1,143 @@
+.floating-contact {
+    max-width: 460px;
+    width: 100%;
+    height: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.floating-contact-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.avatar-big {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;  
+    font-size: 47px;
+    font-weight: 500;
+    color: white;
+    border: 3px solid white;
+    box-shadow: 0px 0px 4px 0px #00000029;
+}
+
+.floating-contact-name {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.floating-contact-name-big {
+    font-size: 47px;
+    font-weight: 500;
+}
+
+.floating-contact-name-bottom {
+    display: flex;
+    color: #2A3647;
+    font-size: 16px;
+    font-weight: 400; 
+}
+
+.edit-link,
+.delete-link {
+    gap: 8px;
+    display: flex;
+    align-items: center;
+    width: 85px;
+}
+
+.edit-link:hover,
+.delete-link:hover {
+    font-weight: 700;
+    color: #005DFF;
+}
+
+.icon-edit,
+.icon-delete {
+    margin-bottom: 3px;
+}
+
+.edit-link:hover .icon-edit,
+.delete-link:hover .icon-delete {
+  filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99%) contrast(106%);
+}
+
+.floating-contact-middle {
+    font-size: 23px;
+    font-weight: 700;
+}
+
+.floating-contact-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.floating-contact-bottom-email,
+.floating-contact-bottom-phone {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.floating-contact-bottom {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+
+
+.overlay-edit-contact {
+    max-width: 580px;
+    width: 100%;
+}
+
+.overlay-edit-contact-top {
+    background-color: #005DFF;
+    color: white;
+    border-radius: 0 30px 0 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 0;
+    box-shadow: 0px 0px 4px 0px #00000029;
+}
+
+.overlay-close-button {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 32px;
+    height: 32px;
+    color: white;
+    background-color: #005DFF;
+}
+
+.overlay-edit-contact-top-box-title {
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.overlay-edit-contact-bottom {
+    background-color: white;
+    border-radius: 0 0 30px 30px;
+    box-shadow: 0px 0px 4px 0px #00000029;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay-edit-contact-userbox {
+    padding: 72px 0 100px;
+}

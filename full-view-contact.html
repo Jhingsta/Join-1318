@@ -3,14 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="full-view-contact.css">
     <title>Document</title>
 </head>
 <body>
     
     <div class="floating-contact">
-        
+        <div class="floating-contact-top">
+            <div class="avatar-big" style="background-color: #FF7A00;">AM</div>
+            <div class="floating-contact-name">
+                <div class="floating-contact-name-big">Anton Mayer</div>
+                <div class="floating-contact-name-bottom">
+                    <div class="edit-link">
+                        <img src="./assets/icons/edit.svg" class="icon-edit" alt="">
+                        <span>Edit</span>
+                    </div>
+                    <div class="delete-link">
+                        <img src="./assets/icons/delete.svg" class="icon-delete" alt="">
+                        <span>Delete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="floating-contact-middle">Contact Information</div>
+        <div class="floating-contact-bottom">
+            <div class="floating-contact-bottom-email">
+                <div class="floating-contact-bottom-title">Email</div>
+                Email-Link Firebase
+            </div>
+            <div class="floating-contact-bottom-phone">
+                <div class="floating-contact-bottom-title">Phone</div>
+                Phone-Link Firebase
+            </div>
+        </div>
     </div>
 
+    <br>
+    <br>
+    <br>
+
+    <div class="overlay-edit-contact">
+        <div class="overlay-edit-contact-top">
+            <button class="overlay-close-button">x</button>
+            <div class="overlay-edit-contact-top-box">
+                <img src="" alt="">
+                <div class="overlay-edit-contact-top-box-title">Edit contact</div>
+            </div>
+        </div>
+        <div class="overlay-edit-contact-bottom">
+            <div class="overlay-edit-contact-userbox">
+                <div class="avatar-big" style="background-color: #FF7A00;">AM</div>
+                <div class="form"></div>
+                <div class="buttons-container"></div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
