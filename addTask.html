@@ -73,21 +73,29 @@
                     <div class="assigned-header">
                         Assigned to <span class="optional">(optional)</span>
                     </div>
-                    <div class="assigned-content">
-                        <div class="assigned-text">Select contacts to assign</div>
-                        <input type="text" class="assigned-input" placeholder="Type to search..." style="display:none;">
 
-                        <!-- Separater Pfeil-Container -->
-                        <div class="assigned-arrow-container-fixed">
+                    <div class="assigned-content">
+                        <!-- Text bleibt im eigenen Container -->
+                        <div class="assigned-text-container">
+                            <div class="assigned-text">Select contacts to assign</div>
+                        </div>
+
+                        <!-- Input für Suche -->
+                        <input type="text" class="assigned-input" placeholder="" style="display:none;">
+
+                        <!-- Pfeil jetzt in separatem Container -->
+                        <div class="assigned-arrow-container">
                             <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts"
                                 class="assigned-arrow-icon">
                         </div>
 
+                        <!-- Dropdown -->
                         <div class="dropdown-menu" id="assigned-dropdown"></div>
                     </div>
 
                     <div class="selected-avatars-container"></div>
                 </div>
+
 
                 <div class="category-container">
                     <div class="assigned-header">

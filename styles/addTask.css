@@ -17,8 +17,6 @@ body {
     background-color: #fff;
 }
 
-
-/* addTask.css */
 .dropdown-menu {
     display: none;
     position: absolute;
@@ -592,7 +590,7 @@ body {
 }
 
 .dropdown-item:hover {
-    background-color: #f0f0f0;
+    background-color: #D2E3FF;
 }
 
 .dropdown-menu {
@@ -698,7 +696,7 @@ body {
 }
 
 .dropdown-item {
-    width: 416px;
+
     height: 56px;
     padding: 0 16px;
     display: flex;
@@ -842,14 +840,23 @@ body {
     display: none;
     border: none;
     outline: none;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    vertical-align: middle;
+    height: 23px;
+    display: flex;
+    align-items: center;
 }
 
 .assigned-arrow-container-fixed {
     position: absolute;
-    right: 16px;  /* gleiche Position wie padding */
+    right: 16px;
     top: 50%;
     transform: translateY(-50%);
-    pointer-events: none; /* optional, damit Klicks auf Input gehen */
+    pointer-events: none; 
 }
 
 .assigned-arrow-icon {
@@ -858,4 +865,63 @@ body {
 
 .assigned-arrow-icon.open {
     transform: rotate(180deg);
+}
+
+.assigned-arrow-icon {
+    display: inline-block;       /* nötig, damit background sichtbar ist */
+    padding: 4px;                /* Abstand zum Rand */
+    border-radius: 15px;         /* Abrundung */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.assigned-arrow-icon:hover {
+    background-color: #D2E3FF;   /* Hover-Farbe */
+    transform: scale(1.05);      /* optional leichter Zoom */
+}
+
+
+.assigned-arrow-icon {
+    border-radius: 15px;              /* Abrundung */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+    padding: 4px;                     /* damit Hintergrund sichtbar wird */
+    display: inline-block;            /* nötig für padding & background */
+}
+
+.assigned-arrow-icon:hover {
+    background-color: #D2E3FF;        /* Hover-Farbe */
+    transform: scale(1.1);            /* optional leichter Zoom */
+}
+
+.assigned-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+
+.assigned-content {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.assigned-text-input-container {
+    flex: 1; /* nimmt den verbleibenden Platz ein */
+}
+
+.assigned-arrow-container-fixed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.assigned-arrow-container-fixed:hover {
+    background-color: #D2E3FF;
 }

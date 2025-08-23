@@ -1,5 +1,4 @@
 const categories = ["Technical Task", "User Story"];
-
 const titleInput = document.querySelector(".title-input");
 const titleError = document.querySelector(".error-message");
 
@@ -66,9 +65,9 @@ const assignedDropdown = document.getElementById('assigned-dropdown');
 
 arrowContainer.addEventListener('click', (event) => {
     event.stopPropagation();
-    assignedDropdown.style.display = assignedDropdown.style.display
-        === 'block' ? 'none' : 'block';
-})
+    assignedDropdown.classList.toggle('show');
+});
+
 
 document.addEventListener('click', (event) => {
     if (!assignedDropdown.contains(event.target) && event.target !==
@@ -115,65 +114,44 @@ function populateCategoryDropdown() {
 
 document.addEventListener("DOMContentLoaded", async () => {
     const BASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/";
-    const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
-    const assignedDropdown = document.getElementById('assigned-dropdown');
     const assignedContent = document.querySelector('.assigned-content');
-    const assignedText = assignedContent.querySelector('.assigned-text');
-
-
-    // Neues Input-Feld erstellen
-    const assignedInput = document.createElement("input");
-    assignedInput.type = "text";
-    // assignedInput.placeholder = "Type a contact...";
-    assignedInput.className = "assigned-input";
-    assignedInput.style.display = "none"; // Standardmäßig versteckt
-    assignedInput.style.width = "100%";
-    assignedInput.style.border = "none";
-    assignedInput.style.outline = "none";
-    assignedInput.style.fontSize = "19px";
-    assignedInput.style.fontFamily = "'Open Sans', sans-serif";
-    assignedInput.style.padding = "0";
-    assignedContent.insertBefore(assignedInput, assignedDropdown);
+    const assignedTextContainer = assignedContent.querySelector('.assigned-text-container');
+    const assignedText = assignedTextContainer.querySelector('.assigned-text');
+    const assignedInput = assignedContent.querySelector('.assigned-input');
+    const arrowContainer = assignedContent.querySelector('.assigned-arrow-container');
+    const arrowIcon = arrowContainer.querySelector('img');
+    const assignedDropdown = document.getElementById('assigned-dropdown');
+    const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
 
     let users = [];
 
-    // 1. Firebase Users laden
     async function loadUsers() {
         try {
-            const response = await fetch(`${BASE_URL}users.json`);
-            const data = await response.json();
-
-            if (data) {
-                users = Object.values(data);
-                populateAssignedDropdown();
-            } else {
-                users = [];
-            }
-        } catch (error) {
-            console.error("Fehler beim Laden der Users:", error);
-            users = [];
+            const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
+            const data = await res.json();
+            users = data ? Object.values(data) : [];
+            populateDropdown();
+        } catch (e) {
+            console.error("Fehler beim Laden der Users", e);
         }
     }
 
     function getInitials(name) {
         if (!name) return "";
-        const parts = name.trim().split(" ");
-        return parts.map(p => p[0].toUpperCase()).slice(0, 2).join("");
+        return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
     }
 
-    function getColorFromName(name) {
+    function getColor(name) {
         let hash = 0;
         for (let i = 0; i < name.length; i++) {
             hash = name.charCodeAt(i) + ((hash << 5) - hash);
         }
-        const hue = Math.abs(hash) % 360;
-        return `hsl(${hue}, 70%, 50%)`;
+        return `hsl(${Math.abs(hash) % 360},70%,50%)`;
     }
 
-    function populateAssignedDropdown() {
+    function populateDropdown() {
         assignedDropdown.innerHTML = "";
-
-        users.forEach(user => {
+        users.forEach((user, idx) => {
             const div = document.createElement('div');
             div.className = 'dropdown-item';
 
@@ -183,7 +161,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const avatar = document.createElement('div');
             avatar.className = 'dropdown-avatar';
             avatar.textContent = getInitials(user.name);
-            avatar.style.backgroundColor = getColorFromName(user.name);
+            avatar.style.backgroundColor = getColor(user.name);
 
             const span = document.createElement('span');
             span.textContent = user.name;
@@ -191,75 +169,99 @@ document.addEventListener("DOMContentLoaded", async () => {
             wrapper.appendChild(avatar);
             wrapper.appendChild(span);
 
-            const checkboxImg = document.createElement('img');
-            checkboxImg.src = "./assets/icons-addTask/Property 1=Default.png";
-            checkboxImg.className = "checkbox-img";
+            const checkbox = document.createElement('img');
+            checkbox.className = "checkbox-img";
             let checked = false;
+
+            // Standard-Icon
+            checkbox.src = "./assets/icons-addTask/Property 1=Default.png";
 
             function toggleCheck() {
                 checked = !checked;
-                checkboxImg.src = checked
+                checkbox.src = checked
                     ? "./assets/icons-addTask/Property 1=checked.png"
                     : "./assets/icons-addTask/Property 1=Default.png";
                 updateSelectedAvatars();
             }
 
-            checkboxImg.addEventListener("mouseenter", () => {
-                checkboxImg.src = checked
+            // Hover-Effekt
+            checkbox.addEventListener('mouseenter', () => {
+                checkbox.src = checked
                     ? "./assets/icons-addTask/Property 1=hover checked.png"
                     : "./assets/icons-addTask/Property 1=hover disable.png";
             });
 
-            checkboxImg.addEventListener("mouseleave", () => {
-                checkboxImg.src = checked
+            checkbox.addEventListener('mouseleave', () => {
+                checkbox.src = checked
                     ? "./assets/icons-addTask/Property 1=checked.png"
                     : "./assets/icons-addTask/Property 1=Default.png";
             });
 
-            checkboxImg.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleCheck();
-            });
-
-            div.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleCheck();
-            });
+            checkbox.addEventListener('click', e => { e.stopPropagation(); toggleCheck(); });
+            div.addEventListener('click', e => { e.stopPropagation(); toggleCheck(); });
 
             div.appendChild(wrapper);
-            div.appendChild(checkboxImg);
+            div.appendChild(checkbox);
             assignedDropdown.appendChild(div);
         });
 
         function updateSelectedAvatars() {
             selectedAvatarsContainer.innerHTML = "";
-            const selectedUsers = users.filter((user, index) => {
-                const div = assignedDropdown.children[index];
-                const img = div.querySelector('.checkbox-img');
+            const selected = users.filter((u, i) => {
+                const img = assignedDropdown.children[i].querySelector('.checkbox-img');
                 return img.src.includes("checked.png");
             }).slice(0, 3);
 
-            selectedUsers.forEach(user => {
-                const avatar = document.createElement('div');
-                avatar.className = 'selected-avatar';
-                avatar.textContent = getInitials(user.name);
-                avatar.style.backgroundColor = getColorFromName(user.name);
-                selectedAvatarsContainer.appendChild(avatar);
+            selected.forEach(u => {
+                const a = document.createElement('div');
+                a.className = 'selected-avatar';
+                a.textContent = getInitials(u.name);
+                a.style.backgroundColor = getColor(u.name);
+                selectedAvatarsContainer.appendChild(a);
             });
-
-            selectedAvatarsContainer.style.display = selectedUsers.length > 0 ? 'flex' : 'none';
+            selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
         }
     }
 
-    // ======= Autocomplete Input =======
-    assignedContent.addEventListener('click', (event) => {
-        event.stopPropagation();
-        assignedText.style.display = 'none';
-        assignedInput.style.display = 'inline';
-        assignedInput.focus();
-        assignedDropdown.style.display = 'block';
-    });
+    // ----------------- Dropdown Toggle -----------------
+function toggleDropdown(e) {
+    e.stopPropagation();
+    const isOpen = assignedDropdown.classList.contains('open');
 
+    if (!isOpen) {
+        // Öffnen
+        assignedDropdown.classList.add('open');
+        assignedDropdown.style.display = 'block';
+        assignedInput.style.display = 'inline';
+        assignedText.style.display = 'none';
+        arrowIcon.src = '/assets/icons-addTask/arrow_drop_down_up.png';
+        assignedInput.focus();
+    } else {
+        // Schließen
+        assignedDropdown.classList.remove('open');
+        assignedDropdown.style.display = 'none';
+        assignedInput.style.display = 'none';
+        assignedText.style.display = 'block';
+        arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
+
+        // Input zurücksetzen
+        assignedInput.value = '';
+
+        // Alle Dropdown-Items wieder anzeigen
+        Array.from(assignedDropdown.children).forEach(div => {
+            div.style.display = 'flex';
+        });
+    }
+}
+
+
+
+
+
+    assignedTextContainer.addEventListener('click', toggleDropdown);
+    arrowContainer.addEventListener('click', toggleDropdown);
+
+    // Input Filter
     assignedInput.addEventListener('input', () => {
         const filter = assignedInput.value.toLowerCase();
         Array.from(assignedDropdown.children).forEach(div => {
@@ -268,49 +270,64 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
 
-    document.addEventListener('click', (event) => {
-        if (!assignedContent.contains(event.target)) {
+    // Klick außerhalb schließt Dropdown
+    document.addEventListener('click', e => {
+        if (!assignedTextContainer.contains(e.target) && !arrowContainer.contains(e.target)) {
+            assignedDropdown.classList.remove('open');
             assignedDropdown.style.display = 'none';
             assignedInput.style.display = 'none';
             assignedText.style.display = 'block';
-            assignedInput.value = '';
-            populateAssignedDropdown(); // reset filter
+            arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
         }
     });
 
     await loadUsers();
-        // 2. Input/Text Umschalten nach Dropdown Klick
-    assignedContent.addEventListener('click', (e) => {
-        e.stopPropagation();
-        assignedText.style.display = 'none';
-        assignedInput.style.display = 'block';
-        assignedInput.focus();
-        assignedDropdown.style.display = 'block';
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!assignedContent.contains(e.target)) {
-            assignedDropdown.style.display = 'none';
-            assignedInput.style.display = 'none';
-            assignedText.style.display = 'block';
-            assignedInput.value = '';
-        }
-    });
 });
+
+
+
 
 // ===================== CATEGORY ===================== 
 const categoryContent = document.querySelector('.category-content');
 const categoryText = categoryContent.querySelector('.assigned-text');
+const categoryArrow = categoryContent.querySelector('.assigned-arrow-icon');
+
 const categoryDropdown = document.createElement('div');
-categoryDropdown.className = 'dropdown-menu'; categories.forEach(cat => {
-    const div = document.createElement('div'); div.className = 'dropdown-item'; div.textContent = cat; div.addEventListener('click', (e) => {
+categoryDropdown.className = 'dropdown-menu';
+
+categories.forEach(cat => {
+    const div = document.createElement('div');
+    div.className = 'dropdown-item';
+    div.textContent = cat;
+    div.addEventListener('click', (e) => {
         e.stopPropagation();
-        categoryText.textContent = cat; categoryDropdown.classList.remove('show');
+        categoryText.textContent = cat;
+        categoryDropdown.classList.remove('show');
+        categoryArrow.style.transform = 'rotate(0deg)'; // Pfeil zurücksetzen
     });
     categoryDropdown.appendChild(div);
-}); categoryContent.appendChild(categoryDropdown);
-categoryContent.addEventListener('click', (e) => { e.stopPropagation(); categoryDropdown.classList.toggle('show'); });
-document.addEventListener('click', (e) => { if (!categoryContent.contains(e.target)) { categoryDropdown.classList.remove('show'); } });
+});
+
+categoryContent.appendChild(categoryDropdown);
+
+// Dropdown & Pfeil Toggle
+// Dropdown & Pfeil Toggle
+categoryContent.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = categoryDropdown.classList.contains('show');
+    categoryDropdown.classList.toggle('show', !isOpen); // ✅ Toggle über Klasse
+    categoryArrow.src = !isOpen
+        ? '/assets/icons-addTask/arrow_drop_down_up.png'
+        : '/assets/icons-addTask/arrow_drop_down.png';
+});
+
+// Klick außerhalb schließt Dropdown
+document.addEventListener('click', (e) => {
+    if (!categoryContent.contains(e.target)) {
+        categoryDropdown.classList.remove('show'); // ✅ nur über Klasse
+        categoryArrow.src = '/assets/icons-addTask/arrow_drop_down.png';
+    }
+});
 
 
 // ===================== SUBTASK DROPDOWN ===================== 
@@ -329,11 +346,28 @@ taskInput.addEventListener("input", () => {
 });
 plusBtn.addEventListener("click", () => { taskInput.focus(); });
 checkBtn.addEventListener("click", () => {
-    const currentTask = taskInput.value.trim(); if (!currentTask) return; const li = document.createElement("li");
-    const span = document.createElement("span"); span.textContent = currentTask; li.appendChild(span);
-    const icons = document.createElement("div"); icons.classList.add("subtask-icons");
-    const editIcon = document.createElement("img"); editIcon.src = "./assets/icons-addTask/Property 1=edit.png"; editIcon.alt = "Edit"; editIcon.addEventListener("click", () => { startEditMode(li, span); });
-    const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); icons.appendChild(editIcon); icons.appendChild(deleteIcon); li.appendChild(icons); subtaskList.appendChild(li); resetInput();
+    const currentTask = taskInput.value.trim();
+    if (!currentTask)
+        return;
+    const li = document.createElement("li");
+    const span = document.createElement("span");
+    span.textContent = currentTask;
+    li.appendChild(span);
+    const icons = document.createElement("div");
+    icons.classList.add("subtask-icons");
+    const editIcon = document.createElement("img");
+    editIcon.src = "./assets/icons-addTask/Property 1=edit.png";
+    editIcon.alt = "Edit";
+    editIcon.addEventListener("click", () => { startEditMode(li, span); });
+    const deleteIcon = document.createElement("img");
+    deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png";
+    deleteIcon.alt = "Delete";
+    deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); });
+    icons.appendChild(editIcon);
+    icons.appendChild(deleteIcon);
+    li.appendChild(icons);
+    subtaskList.appendChild(li);
+    resetInput();
 });
 cancelBtn.addEventListener("click", resetInput);
 function resetInput() { taskInput.value = ""; checkBtn.style.display = "none"; cancelBtn.style.display = "none"; plusBtn.style.display = "inline"; }
