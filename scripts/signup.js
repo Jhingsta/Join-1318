@@ -182,7 +182,7 @@ async function handleSignup(event) {
   }
   
   // Check if user already exists
-  const userExists = await checkUserExists(formData.email);
+  const userExists = checkUserExists(formData.email);
   if (userExists) {
     showMessage('A user with this email already exists', 'error');
     return;
@@ -195,12 +195,18 @@ async function handleSignup(event) {
   submitButton.disabled = true;
   
   try {
+    // Generate additional user info automatically
+    const userInitials = getInitials(formData.name);
+    const userColor = getColorFromName(formData.name);
+    
     // Create user data object (without confirmPassword)
     const userData = {
       name: formData.name,
       email: formData.email,
       phone: "", // Empty phone field for future use
-      password: formData.password
+      password: formData.password,
+      initials: userInitials,
+      color: userColor
     };
     
     // Create user in Firebase
@@ -209,10 +215,12 @@ async function handleSignup(event) {
     if (result.success) {
       showMessage('Account created successfully! Redirecting to login...', 'success');
       
-      // Store user info in localStorage (optional)
+      // Store user info in localStorage (including new generated data)
       localStorage.setItem('newUser', JSON.stringify({
         name: formData.name,
-        email: formData.email
+        email: formData.email,
+        initials: userInitials,
+        color: userColor
       }));
       
       // Redirect to login page after 2 seconds
@@ -230,6 +238,31 @@ async function handleSignup(event) {
     submitButton.textContent = originalText;
     submitButton.disabled = false;
   }
+}
+
+/**
+ * Generates initials from a user's name
+ * @param {string} name - The user's full name
+ * @returns {string} - The user's initials (max 2 characters)
+ */
+function getInitials(name) {
+    if (!name) return "";
+    const parts = name.trim().split(" ");
+    return parts.map(p => p[0].toUpperCase()).slice(0, 2).join("");
+}
+
+/**
+ * Generates a color based on the user's name
+ * @param {string} name - The user's name
+ * @returns {string} - HSL color string
+ */
+function getColorFromName(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash) % 360;
+    return `hsl(${hue}, 70%, 50%)`;
 }
 
 /**
