@@ -79,37 +79,41 @@ window.addEventListener('load', () => {
    * @param {string} password - The user's password
    * @returns {boolean} - Returns true if login successful, false otherwise
    */
-  async function loginUser(email, password) {
-    try {
-      console.log("Attempting login with:", { email, password });
-      console.log("Available users:", users);
+async function loginUser(email, password) {
+  try {
+    console.log("Attempting login with:", { email, password });
+    console.log("Available users:", users);
+    
+    // Find user with matching email and password
+    for (const key in users) {
+      const user = users[key];
+      console.log("Checking user:", user);
       
-      // Find user with matching email and password
-      for (const key in users) {
-        const user = users[key];
-        console.log("Checking user:", user);
+      if (user.email === email && user.password === password) {
+        console.log("Login successful for user:", user);
         
-        if (user.email === email && user.password === password) {
-          console.log("Login successful for user:", user);
-          // Store user info in localStorage
-          localStorage.setItem(
-            "currentUser",
-            JSON.stringify({
-              name: user.name,
-              email: user.email,
-            })
-          );
-          return true;
-        }
+        // Store complete user info in localStorage
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify({
+            name: user.name,
+            email: user.email,
+            phone: user.phone || "",
+            initials: user.initials || "",
+            color: user.color || ""
+          })
+        );
+        return true;
       }
-      
-      console.log("No matching user found");
-      return false;
-    } catch (error) {
-      console.error("Login error:", error);
-      return false;
     }
+    
+    console.log("No matching user found");
+    return false;
+  } catch (error) {
+    console.error("Login error:", error);
+    return false;
   }
+}
 
   /**
    * Handles the login form submission

@@ -20,11 +20,17 @@ function updateUserLogo() {
 
   if (isGuest()) {
     textEl.textContent = "G";
-    textEl.setAttribute("font-size", "28"); // größer wie bei deinem Gast-Logo
+    textEl.setAttribute("font-size", "28");
   } else if (user?.initials) {
-    textEl.textContent = user.initials; // falls du Initialen speicherst
+    textEl.textContent = user.initials;
+
+    if (user.initials.length === 1) {
+      textEl.setAttribute("font-size", "28");
+    }
+
   } else {
-    textEl.textContent = "SM"; // Standardfallback
+    textEl.textContent = "G"; // Standardfallback
+    textEl.setAttribute("font-size", "28");
   }
 }
 
