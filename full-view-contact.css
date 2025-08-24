@@ -96,12 +96,12 @@
 
 
 
-.overlay-edit-contact {
+
+.overlay-contact {
     max-width: 580px;
-    width: 100%;
 }
 
-.overlay-edit-contact-top {
+.overlay-contact-top {
     background-color: #005DFF;
     color: white;
     border-radius: 0 30px 0 0;
@@ -112,16 +112,33 @@
     align-items: center;
     padding: 100px 0;
     box-shadow: 0px 0px 4px 0px #00000029;
+    width: 100%;
 }
 
 .overlay-close-button {
     position: absolute;
     top: 24px;
     right: 24px;
-    width: 32px;
-    height: 32px;
-    color: white;
-    background-color: #005DFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s ease;
+}
+
+.overlay-close-button:hover,
+.overlay-close-button:focus {
+  background: #4589FF;
+  outline: none;
+}
+
+.overlay-close-button:focus-visible {
+  outline: 4px solid #4589FF;
+  outline-offset: 2px;
 }
 
 .overlay-edit-contact-top-box-title {
@@ -129,15 +146,90 @@
     font-weight: 700;
 }
 
-.overlay-edit-contact-bottom {
+.overlay-edit-contact-top-box-subtitle {
+    font-size: 27px;
+    font-weight: 400;
+}
+
+.overlay-contact-bottom {
     background-color: white;
     border-radius: 0 0 30px 30px;
     box-shadow: 0px 0px 4px 0px #00000029;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    padding: 72px 0 100px;
 }
 
-.overlay-edit-contact-userbox {
-    padding: 72px 0 100px;
+.overlay-contact-userbox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    max-width: 422px;
+    width: 100%;
+}
+
+.overlay-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.form-group {
+  position: relative;
+  width: 100%;
+}
+
+input[type="text"],
+input[type="email"], 
+input[type="phone"] {
+  width: 100%;
+  padding: 12px 21px 12px 21px;
+  border: none;
+  border-bottom: 1px solid #D1D1D1;
+  font-size: 19px;
+  font-weight: 400;;
+  color: #D1D1D1;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="phone"]:focus {
+  outline: none;
+  border-bottom: 1px solid #005DFF;
+}
+
+input::placeholder {
+  color: #D1D1D1;
+  font-size: 19px;
+}
+
+.input-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  color: #A8A8A8;
+  cursor: pointer;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }

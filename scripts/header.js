@@ -42,13 +42,6 @@ function closeDropdown() {
   // document.body.style.overflow = '';
 }
 
-// Für die Escape-Taste
-function handleKeyDown(event) {
-  if (event.key === 'Escape' && isDropdownOpen) {
-    closeDropdown();
-  }
-}
-
 function updateUserLogo() {
   const user = getCurrentUser();
   const textEl = document.getElementById("user-initials");
