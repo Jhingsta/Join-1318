@@ -10,7 +10,7 @@
     <script src="https://www.w3schools.com/lib/w3.js"></script>
     <title>Contacts</title>
 </head>
-<body>
+<body onload="init()">
     
     <header>
         <div w3-include-html="header.html"></div>
@@ -34,11 +34,11 @@
                             </svg>
                         </button>
 
-                        <div id="contact-list"></div>
+                        <div id="contacts-list"></div>
 
                         <!-- Hardcoded -> Template für js -->
 
-                        <div class="letter-section">
+                        <!-- <div class="letter-section">
                             <div class="letter">A</div>
                             <div class="hl"></div>
                         </div>
@@ -95,7 +95,7 @@
                                 <div class="name">Emmanuel Mauer</div>
                                 <div class="email">emmanuelma@gmail.com</div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- Hardcoded End -->
 
@@ -115,6 +115,7 @@
 
         <script src="./scripts/auth.js"></script>
         <script src="./scripts/header.js"></script>
+        <script src="./scripts/contacts.js"></script>
         <script>
             w3.includeHTML(() => {            
                 updateVisibilityWithRetry();
