@@ -79,7 +79,7 @@ main {
   background-color: #4589FF;
   color: white;
   border: none;
-  z-index: 100;
+  z-index: 50;
   cursor: pointer;
 }
 

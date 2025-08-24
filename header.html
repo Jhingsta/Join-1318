@@ -10,7 +10,7 @@
     <div class="header-right">
 
       <span class="header-right-text"           
-          onclick="toggleDropdown()" 
+          onclick="openDropdown()" 
           role="button" 
           tabindex="0"
           aria-expanded="false"
@@ -23,7 +23,7 @@
         <img src="./assets/icons-header/help-icon.svg" alt="Help">
       </a>
       
-      <svg class="user-logo-svg" onclick="toggleDropdown()" role="button" tabindex="0" aria-label="Open menu" width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <svg class="user-logo-svg" onclick="openDropdown()" role="button" tabindex="0" aria-label="Open menu" width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
         <!-- innerer Hintergrund-Kreis -->
         <circle class="bg" cx="28" cy="28" r="23" fill="white" />
         <!-- Text (Initialen) -->
@@ -34,7 +34,7 @@
         <circle class="border" cx="28" cy="28" r="26.5" stroke="white" stroke-width="3" fill="none"/>
       </svg>
 
-      <div class="header-dropdown-menu" id="header-dropdown-menu" role="menu" aria-hidden="true">
+      <div class="header-dropdown-menu" id="header-dropdown-menu" role="menu" aria-hidden="true" onkeyup="handleKeyDown(event)">
           <a href="help.html" class="dropdown-item menu-item-help" role="menuitem">Help</a>
           <a href="legalnotice.html" class="dropdown-item" role="menuitem">Legal Notice</a>
           <a href="privacy-policy.html" class="dropdown-item" role="menuitem">Privacy Policy</a>
@@ -44,5 +44,7 @@
       </div>
 
     </div>
+
+    <div class="overlay" id="overlay" onclick="closeDropdown()"></div>
 
 </div>
