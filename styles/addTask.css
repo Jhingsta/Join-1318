@@ -17,8 +17,6 @@ body {
     background-color: #fff;
 }
 
-
-/* addTask.css */
 .dropdown-menu {
     display: none;
     position: absolute;
@@ -56,16 +54,19 @@ body {
 
 #subtask-list li:hover {
     background: #E3EEFF;
-    opacity: 1; /* explizit, auch wenn default */
+    opacity: 1;
+    /* explizit, auch wenn default */
 }
 
 .subtask-icons {
-    display: none; /* Standard ausgeblendet */
+    display: none;
+    /* Standard ausgeblendet */
     gap: 8px;
 }
 
 .subtask-list li:hover .subtask-icons {
-    display: flex; /* Sichtbar beim Hover */
+    display: flex;
+    /* Sichtbar beim Hover */
 }
 
 .subtask-edit-input {
@@ -78,9 +79,12 @@ body {
 }
 
 .subtask-text:focus {
-    outline: none;           /* entfernt den schwarzen Standardrahmen */
-    box-shadow: none;        /* entfernt evtl. zusätzliches Browser-Highlight */
-    border-color: transparent; /* falls du gar keinen sichtbaren Rahmen willst */
+    outline: none;
+    /* entfernt den schwarzen Standardrahmen */
+    box-shadow: none;
+    /* entfernt evtl. zusätzliches Browser-Highlight */
+    border-color: transparent;
+    /* falls du gar keinen sichtbaren Rahmen willst */
 }
 
 
@@ -101,7 +105,16 @@ body {
     border: none;
     border-bottom: 1px solid #D1D1D1;
     box-sizing: border-box;
-    font-size: 16px;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 32px;
+    line-height: 120%;
+    letter-spacing: 0;
+}
+
+.title-input:hover {
+    border-bottom: 1px solid #4589FF;
 }
 
 .title-input::placeholder {
@@ -192,10 +205,12 @@ body {
     padding: 8px 12px;
     box-sizing: border-box;
     font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    color: #D1D1D1;
+    font-size: 19px;
+    line-height: 120%;
+    color: #000000;
     position: relative;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .description-input::placeholder {
@@ -250,6 +265,19 @@ body {
     box-sizing: border-box;
 }
 
+.due-date-content:hover {
+    border-bottom: 1px solid #4589FF;
+}
+
+.due-date-input::-webkit-calendar-picker-indicator {
+    display: none;
+    /* Chrome, Safari, Edge */
+}
+
+.due-date-input::placeholder {
+    color: #999;
+}
+
 .due-date-input {
     height: 23px;
     font-family: 'Open Sans', sans-serif;
@@ -257,12 +285,20 @@ body {
     font-size: 19px;
     line-height: 120%;
     letter-spacing: 0;
-    color: #D1D1D1;
-    border: none;
+    color: #000000;
+    border-bottom: none;
     padding: 0 4px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
+    padding: 0.5em;
+    outline: none;
+    border-bottom: none !important;
+    box-shadow: none !important;
+}
+
+.due-date-input:focus {
+    outline: none;
 }
 
 .due-date-icon-container {
@@ -282,6 +318,7 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
 }
+
 
 .priority-container {
     width: 440px;
@@ -401,8 +438,15 @@ body {
     border-bottom: 2px solid transparent;
 }
 
-.assigned-container,
-.task-container,
+.assigned-container {
+    width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 1;
+    box-sizing: border-box;
+    margin-bottom: 24px;
+}
 
 .category-container {
     width: 440px;
@@ -414,6 +458,18 @@ body {
     box-sizing: border-box;
     margin-bottom: 24px;
 }
+
+.task-container {
+    width: 440px;
+    height: 79px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 1;
+    box-sizing: border-box;
+    margin-bottom: 24px;
+}
+
 
 .assigned-header {
     width: 199px;
@@ -445,6 +501,24 @@ body {
     border-bottom: 1px solid #D1D1D1;
     box-sizing: border-box;
     opacity: 1;
+}
+
+#selected-avatars {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.selected-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 .category-content {
@@ -485,7 +559,6 @@ body {
     /* flex-direction: column; */
     gap: 8px;
     margin-bottom: 24px;
-
 }
 
 .dropdown-menu {
@@ -501,18 +574,15 @@ body {
     z-index: 10;
 }
 
-.dropdown-item {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-size: 19px;
-    line-height: 120%;
-    color: #42526E;
-    opacity: 1;
-    height: 56px;
-    line-height: 56px;
-    padding: 0 16px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
+.dropdown-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 12px;
 }
 
 .dropdown-item:last-child {
@@ -520,7 +590,7 @@ body {
 }
 
 .dropdown-item:hover {
-    background-color: #f0f0f0;
+    background-color: #D2E3FF;
 }
 
 .dropdown-menu {
@@ -569,7 +639,7 @@ body {
     font-weight: 400;
     font-size: 19px;
     line-height: 120%;
-    color: #42526E;
+    color: #000000;
     opacity: 1;
 }
 
@@ -606,12 +676,32 @@ body {
     z-index: 100;
 }
 
+.assigned-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 42px;
+}
+
+.assigned-wrapper span {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    vertical-align: middle;
+    height: 23px;
+    display: flex;
+    align-items: center;
+}
+
 .dropdown-item {
-    width: 416px;
+
     height: 56px;
     padding: 0 16px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     cursor: pointer;
 }
 
@@ -621,8 +711,16 @@ body {
     font-weight: 400;
     font-size: 19px;
     line-height: 120%;
-    color: #D1D1D1;
+    color: #000000;
     opacity: 1;
+}
+
+.selected-avatars-container {
+    display: none;
+    /* Nur sichtbar, wenn Avatare vorhanden */
+    width: 142px;
+    height: 42px;
+    gap: 8px;
 }
 
 
@@ -702,14 +800,19 @@ body {
 }
 
 .task-dropdown {
-    position: absolute;   /* wichtig, damit es über anderen Elementen liegt */
+    position: absolute;
+    /* wichtig, damit es über anderen Elementen liegt */
     background: white;
     border: 1px solid #ccc;
-    width: 200px;         /* passend zum Input/Div */
-    z-index: 100;         /* über Icons */
+    width: 200px;
+    /* passend zum Input/Div */
+    z-index: 100;
+    /* über Icons */
 }
+
 .task-container {
-    position: relative;   /* Bezugspunkt für absolutes Dropdown */
+    position: relative;
+    /* Bezugspunkt für absolutes Dropdown */
 }
 
 
@@ -718,3 +821,263 @@ body {
     height: 48px;
     opacity: 0;
 }
+
+.assigned-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #D1D1D1;
+    padding: 12px 16px;
+}
+
+.assigned-text,
+.assigned-input {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.assigned-input {
+    display: none;
+    border: none;
+    outline: none;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    vertical-align: middle;
+    height: 23px;
+    display: flex;
+    align-items: center;
+}
+
+.assigned-arrow-container-fixed {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; 
+}
+
+.assigned-arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.assigned-arrow-icon.open {
+    transform: rotate(180deg);
+}
+
+.assigned-arrow-icon {
+    display: inline-block;       /* nötig, damit background sichtbar ist */
+    padding: 4px;                /* Abstand zum Rand */
+    border-radius: 15px;         /* Abrundung */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.assigned-arrow-icon:hover {
+    background-color: #D2E3FF;   /* Hover-Farbe */
+    transform: scale(1.05);      /* optional leichter Zoom */
+}
+
+
+.assigned-arrow-icon {
+    border-radius: 15px;              /* Abrundung */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+    padding: 4px;                     /* damit Hintergrund sichtbar wird */
+    display: inline-block;            /* nötig für padding & background */
+}
+
+.assigned-arrow-icon:hover {
+    background-color: #D2E3FF;        /* Hover-Farbe */
+    transform: scale(1.1);            /* optional leichter Zoom */
+}
+
+.assigned-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+
+.assigned-content {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.assigned-text-input-container {
+    flex: 1; /* nimmt den verbleibenden Platz ein */
+}
+
+.assigned-arrow-container-fixed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.assigned-arrow-container-fixed:hover {
+    background-color: #D2E3FF;
+}
+
+.hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none; /* <-- das ist der wichtigste Punkt */
+}
+
+.dropdown-item {
+    background-color: white; /* Standardfarbe */
+    transition: background-color 0.2s;
+}
+
+/* Selektierte Zeile nach Klick */
+.dropdown-item.active {
+  background: #005DFF;
+  color: #fff;
+}
+
+.dropdown-item:hover {
+    background-color: #D2E3FF; /* Hover-Farbe */
+}
+
+.dropdown-item.active {
+    background-color: #4589FF; /* Farbe bei ausgewähltem Element */
+}
+
+.dropdown-item.active:hover {
+    background-color: #005DFF; /* Hover-Farbe auch bei aktivem Element */
+}
+
+/* Selektierte Zeile wenn Maus weg ist → 4589FF */
+.dropdown-item.active.mouse-leave {
+  background: #4589FF;
+}
+
+/* Selektierte Zeile + Hover → wieder #005DFF */
+.dropdown-item.active:hover {
+  background: #005DFF;
+}
+
+  /* Checkbox Wrapper */
+.checkbox-wrapper {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+/* Selektierte Zeile, Checkbox standardmäßig unsichtbar */
+.dropdown-item.active .checkbox-wrapper img {
+  opacity: 0.6;
+  filter: brightness(0.2) invert(0.2); /* etwas dunkler als reines Weiß */
+}
+
+/* Selektiert + Checkbox geklickt → Haken weiß */
+.dropdown-item.active .checkbox-wrapper.checked img {
+  opacity: 1;
+  filter: brightness(0) invert(1); /* macht Icon/Haken weiß */
+}
+
+/* Hover über die selektierte Zeile → Checkbox weiß */
+.dropdown-item.active:hover .checkbox-wrapper img {
+  opacity: 1;
+  filter: brightness(0) invert(1); /* weiß */
+}
+
+/* Checkbox Hover im selektierten Zustand → Checkbox blau */
+.dropdown-item.active .checkbox-wrapper:hover img {
+  opacity: 1;
+  filter: none; /* Original Blau-Icon */
+}
+
+/* Checkbox-Bild standardmäßig */
+
+/* Checkbox-Bild standardmäßig */
+.checkbox-wrapper img {
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.2s, filter 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+/* Basis Overlay */
+.checkbox-wrapper .hover-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, background 0.2s;
+  z-index: 0;
+}
+
+/* ✅ Nur wenn man über die Checkbox hovert in UNSELEKTIERTEM Zustand */
+.dropdown-item:not(.active) .checkbox-wrapper:hover .hover-overlay {
+  opacity: 1;
+  background: #FFFFFF;
+}
+
+/* Selektierter Zustand: Checkbox standardmäßig unsichtbar */
+.dropdown-item.active .checkbox-wrapper img {
+  opacity: 0;
+  filter: none;
+}
+
+/* Hover über die selektierte Zeile → Checkbox weiß, kein Kreis */
+.dropdown-item.active:hover .checkbox-wrapper img {
+  opacity: 1;
+  filter: brightness(0) invert(1); /* weiß */
+}
+
+/* Hover auf die Checkbox selbst im selektierten Zustand */
+.dropdown-item.active .checkbox-wrapper:hover img {
+  opacity: 1;
+  filter: none; /* blau */
+}
+
+/* Aktiv + Hover auf Checkbox → Hintergrund weiß sichtbar */
+.dropdown-item.active .checkbox-wrapper:hover .hover-overlay {
+  opacity: 1;
+  background: #FFFFFF; /* weißer Hintergrund */
+}
+
+/* Wenn Checkbox geklickt (checked) → bleibt weiß ohne Kreis */
+.dropdown-item.active .checkbox-wrapper.checked img {
+  filter: brightness(0) invert(1); /* weiß */
+}
+
+/* Hover über die Checkbox in UNSELEKTIERTEM Zustand → weißer Kreis */
+.dropdown-item:not(.active) .checkbox-wrapper:hover .hover-overlay {
+  opacity: 1;
+  background: #FFFFFF;
+}
+
+/* Transparenter Kreis über der weißen Checkbox beim Hover */
+.dropdown-item.active .checkbox-wrapper.checked:hover .hover-overlay,
+.dropdown-item.active .checkbox-wrapper.checked:hover .checkbox-wrapper::after {
+  opacity: 0.9;        /* leicht transparent */
+  background: #FFFFFF; /* weiß */
+}
+
+/* Stelle sicher, dass der Kreis über der Checkbox liegt */
+.dropdown-item.active .checkbox-wrapper.checked .hover-overlay {
+opacity: 0;
+}
+
+
