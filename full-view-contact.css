@@ -196,7 +196,6 @@ input[type="phone"] {
   color: #D1D1D1;
   transition: all 0.3s ease;
   cursor: pointer;
-  box-sizing: border-box;
 }
 
 input[type="text"]:focus,
