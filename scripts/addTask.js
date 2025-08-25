@@ -150,11 +150,41 @@ document.addEventListener("DOMContentLoaded", async () => {
         return `hsl(${Math.abs(hash) % 360},70%,50%)`;
     }
 
+    // ---------- Update Selected Avatars ----------
+    function updateSelectedAvatars() {
+        selectedAvatarsContainer.innerHTML = "";
+        const selected = users.filter((u, i) => {
+            const img = assignedDropdown.children[i].querySelector('img');
+            return img.src.includes("checked");
+        }).slice(0, 3);
+
+        selected.forEach(u => {
+            const a = document.createElement('div');
+            a.className = 'selected-avatar assigned-text';
+            a.textContent = getInitials(u.name);
+            a.style.width = '28px';
+            a.style.height = '28px';
+            a.style.borderRadius = '50%';
+            a.style.display = 'flex';
+            a.style.alignItems = 'center';
+            a.style.justifyContent = 'center';
+            a.style.fontWeight = 'bold';
+            a.style.fontSize = '13px';
+            a.style.color = 'white';
+            a.style.backgroundColor = getColor(u.name);
+            a.style.marginRight = '4px';
+            a.style.flex = '0 0 auto';
+            selectedAvatarsContainer.appendChild(a);
+        });
+
+        selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
+    }
+
     // ---------- Populate Dropdown ----------
     function populateDropdown() {
         assignedDropdown.innerHTML = "";
 
-        users.forEach(user => {
+        users.forEach((user, i) => {
             const div = document.createElement('div');
             div.className = 'dropdown-item';
             div.dataset.clicked = "false";
@@ -178,7 +208,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             checkboxWrapper.className = 'checkbox-wrapper';
             const checkbox = document.createElement('img');
             checkbox.src = "./assets/icons-addTask/Property 1=Default.png";
-            let checked = false;
 
             // Hover-Kreis
             const hoverOverlay = document.createElement('div');
@@ -186,73 +215,33 @@ document.addEventListener("DOMContentLoaded", async () => {
             checkboxWrapper.appendChild(hoverOverlay);
             checkboxWrapper.appendChild(checkbox);
 
-            // Klick auf Checkbox
-            checkboxWrapper.addEventListener('click', e => {
-                e.stopPropagation();
-                checked = !checked;
-                checkboxWrapper.classList.toggle('checked', checked);
-                checkbox.src = checked
-                    ? "./assets/icons-addTask/Property 1=checked.svg"
-                    : "./assets/icons-addTask/Property 1=Default.png";
-            });
-
-            // Klick auf Zeile → toggle active
-            div.addEventListener('click', () => {
-                div.classList.toggle('active');
-                div.classList.remove('mouse-leave');
-                div.dataset.clicked = div.classList.contains('active') ? "true" : "false";
-            });
-
-            // Mouseleave → mittelblau nach Klick
-            div.addEventListener('mouseleave', () => {
-                if (div.classList.contains('active')) {
-                    div.classList.add('mouse-leave');
-                }
-            });
-
-            // Mouseenter → Hover dunkelblau nach Klick entfernen
-            div.addEventListener('mouseenter', () => {
-                if (div.classList.contains('mouse-leave')) {
-                    div.classList.remove('mouse-leave');
-                }
-            });
-
             div.appendChild(wrapper);
             div.appendChild(checkboxWrapper);
             assignedDropdown.appendChild(div);
+
+            // ---------- Klick auf Zeile → nur Highlight ----------
+            div.addEventListener('click', (e) => {
+                if (e.target === checkbox || e.target === hoverOverlay) return;
+                div.classList.toggle('active'); // nur Highlight beim Zeilen-Klick
+            });
+
+            // ---------- Klick auf Checkbox ----------
+            checkboxWrapper.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                const isChecked = checkbox.src.includes("checked");
+                checkbox.src = isChecked
+                    ? "./assets/icons-addTask/Property 1=Default.png"
+                    : "./assets/icons-addTask/Property 1=checked.svg";
+
+                // NICHTS an div.classList ändern
+                updateSelectedAvatars();
+
+                // Checkbox immer sichtbar lassen
+                checkboxWrapper.style.display = 'flex';
+            });
         });
     }
-
-
-
-
-    function updateSelectedAvatars() {
-        selectedAvatarsContainer.innerHTML = "";
-        const selected = users.filter((u, i) => {
-            const img = assignedDropdown.children[i].querySelector('img');
-            return img.src.includes("checked");
-        }).slice(0, 3);
-
-        selected.forEach(u => {
-            const a = document.createElement('div');
-            a.className = 'selected-avatar';
-            a.textContent = getInitials(u.name);
-            a.style.backgroundColor = getColor(u.name);
-            a.style.width = '28px';
-            a.style.height = '28px';
-            a.style.borderRadius = '50%';
-            a.style.display = 'flex';
-            a.style.alignItems = 'center';
-            a.style.justifyContent = 'center';
-            a.style.fontWeight = 'bold';
-            a.style.fontSize = '13px';
-            a.style.color = 'white';
-            selectedAvatarsContainer.appendChild(a);
-        });
-
-        selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
-    }
-
 
     // ---------- Dropdown toggle ----------
     function toggleDropdown(e) {
@@ -275,10 +264,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-
     assignedTextContainer.addEventListener('click', toggleDropdown);
     arrowContainer.addEventListener('click', toggleDropdown);
 
+    // ---------- Klick außerhalb schließt Dropdown ----------
+    // ---------- Klick außerhalb schließt Dropdown ----------
     document.addEventListener('click', e => {
         if (!assignedTextContainer.contains(e.target) && !arrowContainer.contains(e.target)) {
             assignedDropdown.classList.remove('open');
@@ -286,6 +276,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             assignedInput.style.display = 'none';
             assignedText.style.display = 'block';
             arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
+
+            // Checkboxen beibehalten, wenn gesetzt
+            Array.from(assignedDropdown.children).forEach(div => {
+                const checkboxWrapper = div.querySelector('.checkbox-wrapper');
+                const checkbox = checkboxWrapper.querySelector('img');
+
+                if (checkbox.src.includes('checked')) {
+                    checkboxWrapper.style.display = 'flex'; // bleibt sichtbar
+                } else {
+                    checkboxWrapper.style.display = 'none'; // ungesetzte Checkbox ausblenden
+                }
+            });
         }
     });
 
@@ -300,6 +302,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await loadUsers();
 });
+
 
 // ===================== CATEGORY ===================== 
 const categoryContent = document.querySelector('.category-content');
@@ -389,3 +392,86 @@ function startEditMode(li, span) {
     const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addTask/Subtask's icons (1).png";
     saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
 }
+
+
+// ----------------------------
+// Funktion: Task-Daten auslesen
+// ----------------------------
+function getTaskData() {
+    // 1. Überschrift
+    const titleInput = document.querySelector(".title-input");
+    const title = titleInput.value.trim();
+
+    // 2. Description
+    const descriptionInput = document.querySelector(".description-input");
+    const description = descriptionInput.value.trim();
+
+    // 3. Due Date
+    const dueDateInput = document.querySelector(".due-date-input");
+    let dueDate = dueDateInput.value; // yyyy-mm-dd
+    if (dueDate) {
+        const [year, month, day] = dueDate.split("-");
+        dueDate = `${day}.${month}.${year}`;
+    }
+
+    // 4. Priority
+    const priorityBtn = document.querySelector(".priority-frame.active");
+    const priority = priorityBtn ? priorityBtn.textContent.trim() : null;
+
+    // 5. Assigned to
+    const assignedAvatars = document.querySelectorAll(".selected-avatars-container .assigned-text");
+    const assignedTo = Array.from(assignedAvatars).map(el => el.textContent.trim());
+
+    // 6. Category
+    const categoryText = document.querySelector(".category-content .assigned-text");
+    const category = categoryText ? categoryText.textContent.trim() : null;
+
+    // 7. Subtasks
+    const subtaskItems = document.querySelectorAll("#subtask-list li");
+    const subtasks = Array.from(subtaskItems).map(el => el.textContent.trim());
+
+    return { title, description, dueDate, priority, assignedTo, category, subtasks };
+}
+
+// ----------------------------
+// EventListener: Create Task
+// ----------------------------
+const createTaskBtn = document.querySelector(".sign-up-btn");
+createTaskBtn.addEventListener("click", () => {
+    const taskData = getTaskData();
+
+    // Pflichtfelder prüfen
+    if (!taskData.title || !taskData.dueDate) {
+        alert("Bitte fülle alle Pflichtfelder aus!");
+        return;
+    }
+
+    // Test-Ausgabe in der Konsole
+    console.log("Task-Daten:", taskData);
+
+    // Hier später Firebase-Aufruf einfügen
+});
+
+// ----------------------------
+// EventListener: Clear / Reset
+// ----------------------------
+const resetBtn = document.querySelector(".guest-btn");
+resetBtn.addEventListener("click", () => {
+    // Felder zurücksetzen
+    document.querySelector(".title-input").value = "";
+    document.querySelector(".description-input").value = "";
+    document.querySelector(".due-date-input").value = "";
+
+    // Priority zurücksetzen auf Medium
+    document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
+    document.querySelector(".priority-frame:nth-child(2)").classList.add("active");
+
+    // Assigned & Subtasks löschen
+    document.querySelector(".selected-avatars-container").innerHTML = "";
+    document.querySelector("#subtask-list").innerHTML = "";
+
+    // Kategorie zurücksetzen
+    const categoryText = document.querySelector(".category-content .assigned-text");
+    if (categoryText) categoryText.textContent = "Select task category";
+});
+

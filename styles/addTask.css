@@ -926,10 +926,36 @@ body {
     background-color: #D2E3FF;
 }
 
+.hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none; /* <-- das ist der wichtigste Punkt */
+}
+
+.dropdown-item {
+    background-color: white; /* Standardfarbe */
+    transition: background-color 0.2s;
+}
+
 /* Selektierte Zeile nach Klick */
 .dropdown-item.active {
   background: #005DFF;
   color: #fff;
+}
+
+.dropdown-item:hover {
+    background-color: #D2E3FF; /* Hover-Farbe */
+}
+
+.dropdown-item.active {
+    background-color: #4589FF; /* Farbe bei ausgewähltem Element */
+}
+
+.dropdown-item.active:hover {
+    background-color: #005DFF; /* Hover-Farbe auch bei aktivem Element */
 }
 
 /* Selektierte Zeile wenn Maus weg ist → 4589FF */
