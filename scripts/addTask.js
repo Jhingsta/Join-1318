@@ -574,7 +574,6 @@ function showTaskAddedMessage() {
         transition: "transform 150ms ease-out, opacity 150ms ease-out",
         opacity: "0",
         pointerEvents: "none",
-        maxWidth: "200px"
     });
 
     document.body.appendChild(img);
