@@ -229,17 +229,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             checkboxWrapper.addEventListener('click', (e) => {
                 e.stopPropagation();
 
-                const isChecked = checkbox.src.includes("checked");
+                const isChecked = checkboxWrapper.classList.contains('checked');
+                checkboxWrapper.classList.toggle('checked', !isChecked); // Klasse setzen
+
                 checkbox.src = isChecked
                     ? "./assets/icons-addTask/Property 1=Default.png"
                     : "./assets/icons-addTask/Property 1=checked.svg";
 
-                // NICHTS an div.classList ändern
                 updateSelectedAvatars();
-
-                // Checkbox immer sichtbar lassen
-                checkboxWrapper.style.display = 'flex';
             });
+
         });
     }
 
@@ -254,6 +253,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             assignedText.style.display = 'none';
             arrowIcon.src = '/assets/icons-addTask/arrow_drop_down_up.png';
             assignedInput.focus();
+
+            // ✅ FIX: Checkboxen beim Öffnen zurücksetzen
+            Array.from(assignedDropdown.children).forEach(div => {
+                div.querySelector('.checkbox-wrapper').style.display = 'flex';
+            });
         } else {
             assignedDropdown.classList.remove('open');
             assignedDropdown.style.display = 'none';

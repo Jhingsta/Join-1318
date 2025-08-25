@@ -856,7 +856,7 @@ body {
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-    pointer-events: none; 
+    pointer-events: none;
 }
 
 .assigned-arrow-icon {
@@ -868,30 +868,40 @@ body {
 }
 
 .assigned-arrow-icon {
-    display: inline-block;       /* nötig, damit background sichtbar ist */
-    padding: 4px;                /* Abstand zum Rand */
-    border-radius: 15px;         /* Abrundung */
+    display: inline-block;
+    /* nötig, damit background sichtbar ist */
+    padding: 4px;
+    /* Abstand zum Rand */
+    border-radius: 15px;
+    /* Abrundung */
     transition: background-color 0.2s ease, transform 0.2s ease;
     cursor: pointer;
 }
 
 .assigned-arrow-icon:hover {
-    background-color: #D2E3FF;   /* Hover-Farbe */
-    transform: scale(1.05);      /* optional leichter Zoom */
+    background-color: #D2E3FF;
+    /* Hover-Farbe */
+    transform: scale(1.05);
+    /* optional leichter Zoom */
 }
 
 
 .assigned-arrow-icon {
-    border-radius: 15px;              /* Abrundung */
+    border-radius: 15px;
+    /* Abrundung */
     transition: background-color 0.2s ease, transform 0.2s ease;
     cursor: pointer;
-    padding: 4px;                     /* damit Hintergrund sichtbar wird */
-    display: inline-block;            /* nötig für padding & background */
+    padding: 4px;
+    /* damit Hintergrund sichtbar wird */
+    display: inline-block;
+    /* nötig für padding & background */
 }
 
 .assigned-arrow-icon:hover {
-    background-color: #D2E3FF;        /* Hover-Farbe */
-    transform: scale(1.1);            /* optional leichter Zoom */
+    background-color: #D2E3FF;
+    /* Hover-Farbe */
+    transform: scale(1.1);
+    /* optional leichter Zoom */
 }
 
 .assigned-display {
@@ -909,7 +919,8 @@ body {
 }
 
 .assigned-text-input-container {
-    flex: 1; /* nimmt den verbleibenden Platz ein */
+    flex: 1;
+    /* nimmt den verbleibenden Platz ein */
 }
 
 .assigned-arrow-container-fixed {
@@ -926,158 +937,147 @@ body {
     background-color: #D2E3FF;
 }
 
-.hover-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none; /* <-- das ist der wichtigste Punkt */
-}
-
+/* ======================
+   Dropdown Zeilen
+   ====================== */
 .dropdown-item {
-    background-color: white; /* Standardfarbe */
+    background-color: white;
+    /* Standardfarbe */
     transition: background-color 0.2s;
 }
 
-/* Selektierte Zeile nach Klick */
-.dropdown-item.active {
-  background: #005DFF;
-  color: #fff;
-}
-
+/* Unselektiert + Hover */
 .dropdown-item:hover {
-    background-color: #D2E3FF; /* Hover-Farbe */
+    background-color: #D2E3FF;
 }
 
+/* Selektiert (kein Hover) */
 .dropdown-item.active {
-    background-color: #4589FF; /* Farbe bei ausgewähltem Element */
+    background-color: #4589FF;
+    color:white;
 }
 
+/* Selektiert + Hover */
 .dropdown-item.active:hover {
-    background-color: #005DFF; /* Hover-Farbe auch bei aktivem Element */
+    background-color: #005DFF;
+    color:white;
 }
 
-/* Selektierte Zeile wenn Maus weg ist → 4589FF */
+/* Selektiert + Maus weg */
 .dropdown-item.active.mouse-leave {
-  background: #4589FF;
+    background-color: #4589FF;
 }
 
-/* Selektierte Zeile + Hover → wieder #005DFF */
-.dropdown-item.active:hover {
-  background: #005DFF;
-}
-
-  /* Checkbox Wrapper */
+/* ======================
+   Checkbox Wrapper
+   ====================== */
 .checkbox-wrapper {
-  position: relative;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-/* Selektierte Zeile, Checkbox standardmäßig unsichtbar */
-.dropdown-item.active .checkbox-wrapper img {
-  opacity: 0.6;
-  filter: brightness(0.2) invert(0.2); /* etwas dunkler als reines Weiß */
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
-/* Selektiert + Checkbox geklickt → Haken weiß */
-.dropdown-item.active .checkbox-wrapper.checked img {
-  opacity: 1;
-  filter: brightness(0) invert(1); /* macht Icon/Haken weiß */
-}
-
-/* Hover über die selektierte Zeile → Checkbox weiß */
-.dropdown-item.active:hover .checkbox-wrapper img {
-  opacity: 1;
-  filter: brightness(0) invert(1); /* weiß */
-}
-
-/* Checkbox Hover im selektierten Zustand → Checkbox blau */
-.dropdown-item.active .checkbox-wrapper:hover img {
-  opacity: 1;
-  filter: none; /* Original Blau-Icon */
-}
-
-/* Checkbox-Bild standardmäßig */
-
-/* Checkbox-Bild standardmäßig */
+/* ======================
+   Checkbox Image
+   ====================== */
 .checkbox-wrapper img {
-  width: 100%;
-  height: 100%;
-  transition: opacity 0.2s, filter 0.2s;
-  position: relative;
-  z-index: 1;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.2s, filter 0.2s;
+    z-index: 1;
 }
 
-/* Basis Overlay */
+/* ======================
+   Hover Overlay (weißer Kreis)
+   ====================== */
 .checkbox-wrapper .hover-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 28px;
-  height: 28px;
-  background: transparent;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s, background 0.2s;
-  z-index: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.2s, background 0.2s;
 }
 
-/* ✅ Nur wenn man über die Checkbox hovert in UNSELEKTIERTEM Zustand */
+/* ======================
+   Unselektierte Zeilen
+   ====================== */
+
+/* Hover über Checkbox → Overlay sichtbar */
 .dropdown-item:not(.active) .checkbox-wrapper:hover .hover-overlay {
-  opacity: 1;
-  background: #FFFFFF;
+    opacity: 1;
+    background: #FFFFFF; 
 }
 
-/* Selektierter Zustand: Checkbox standardmäßig unsichtbar */
-.dropdown-item.active .checkbox-wrapper img {
-  opacity: 0;
-  filter: none;
+/* Checkbox in unselektierter Zeile → immer sichtbar */
+.dropdown-item:not(.active) .checkbox-wrapper img {
+    opacity: 1;
+    filter: none; /* normale Farbe */
 }
 
-/* Hover über die selektierte Zeile → Checkbox weiß, kein Kreis */
-.dropdown-item.active:hover .checkbox-wrapper img {
-  opacity: 1;
-  filter: brightness(0) invert(1); /* weiß */
+/* ======================
+   Selektierte Zeile
+   ====================== */
+
+/* Selektiert + nicht hover Zeile + nicht checked → unsichtbar */
+.dropdown-item.active:not(:hover) .checkbox-wrapper:not(.checked) img {
+    opacity: 0;
 }
 
-/* Hover auf die Checkbox selbst im selektierten Zustand */
-.dropdown-item.active .checkbox-wrapper:hover img {
-  opacity: 1;
-  filter: none; /* blau */
+/* Selektiert + nicht hover Zeile + checked → weiß */
+.dropdown-item.active:not(:hover) .checkbox-wrapper.checked img {
+    opacity: 1;
+    filter: brightness(0) invert(1);
 }
 
-/* Aktiv + Hover auf Checkbox → Hintergrund weiß sichtbar */
-.dropdown-item.active .checkbox-wrapper:hover .hover-overlay {
-  opacity: 1;
-  background: #FFFFFF; /* weißer Hintergrund */
+/* Selektiert + hover Zeile + kein Hover auf Checkbox → weiß */
+.dropdown-item.active:hover .checkbox-wrapper:not(:hover) img {
+    opacity: 1;
+    filter: brightness(0) invert(1); /* komplett weiß */
+    z-index: 1;
 }
 
-/* Wenn Checkbox geklickt (checked) → bleibt weiß ohne Kreis */
-.dropdown-item.active .checkbox-wrapper.checked img {
-  filter: brightness(0) invert(1); /* weiß */
+/* Selektiert + hover Zeile + Hover auf Checkbox → blau + weißer Kreis */
+.dropdown-item.active:hover .checkbox-wrapper:not(.checked):hover img {
+    opacity: 1;
+    filter: none; /* blau */
+    z-index: 1;
 }
 
-/* Hover über die Checkbox in UNSELEKTIERTEM Zustand → weißer Kreis */
-.dropdown-item:not(.active) .checkbox-wrapper:hover .hover-overlay {
-  opacity: 1;
-  background: #FFFFFF;
+.dropdown-item.active:hover .checkbox-wrapper:not(.checked):hover .hover-overlay {
+    opacity: 1;
+    background: #FFFFFF; /* weißer Kreis */
+    z-index: 0;
 }
 
-/* Transparenter Kreis über der weißen Checkbox beim Hover */
-.dropdown-item.active .checkbox-wrapper.checked:hover .hover-overlay,
-.dropdown-item.active .checkbox-wrapper.checked:hover .checkbox-wrapper::after {
-  opacity: 0.9;        /* leicht transparent */
-  background: #FFFFFF; /* weiß */
+/* Selektiert + Checkbox gesetzt + Hover → leicht transparenter Overlay über Haken + Checkbox */
+.dropdown-item.active .checkbox-wrapper.checked:hover .hover-overlay {
+    opacity: 0.9; /* leicht transparent */
+    background: #FFFFFF;
+    z-index: 1;
 }
 
-/* Stelle sicher, dass der Kreis über der Checkbox liegt */
-.dropdown-item.active .checkbox-wrapper.checked .hover-overlay {
-opacity: 0;
+/* Checkbox und Haken bleiben sichtbar unter Overlay */
+.dropdown-item.active .checkbox-wrapper.checked:hover img {
+    opacity: 1;
+    filter: brightness(0) invert(1); /* weiß */
+    z-index: 0;
 }
 
-
+/* ======================
+   Transition für alles
+   ====================== */
+.checkbox-wrapper img,
+.checkbox-wrapper .hover-overlay {
+    transition: all 0.2s ease;
+}
