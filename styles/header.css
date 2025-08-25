@@ -111,6 +111,25 @@ header {
   display: none;
 }
 
+.overlay {
+  height: 100vh;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 80;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
 @media (max-width: 768px) {
   .header-content {
     height: 80px;
@@ -130,5 +149,22 @@ header {
   }
   .menu-item-help {
     display: block;
+  }
+  .header-dropdown-menu {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: auto;
+    height: auto;
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 1;
+    visibility: visible;
+  }
+  .header-dropdown-menu.show {
+    transform: translateX(0);
+  }
+  .dropdown-item {
+    color: #005DFF;
   }
 }
