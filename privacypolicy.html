@@ -4,38 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy</title>
-    <link rel="stylesheet" href="./styles/privacyPolicy.css">
-    <link rel="stylesheet" href="./styles/sidebar.css">
+    <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/header.css">
-    <link rel="stylesheet" href="./styles/standard.css">
-    <link rel="stylesheet" href="./styles/privacypolicy-login.css">
-  
+    <link rel="stylesheet" href="./styles/sidebar.css">
+    <link rel="stylesheet" href="./styles/privacyPolicy.css">
+    <link rel="stylesheet" href="./styles/privacyPolicy2.css">
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
 </head>
 <body>
-  <aside class="sidebar">
-    <nav class="sidebar-nav">
-      <div class="sidebar-logo-header">
-        <img src="./assets/sidebarLogo.png" alt="Join Logo" class="sidebar-join-logo">
-      </div>
-      <a href="index.html" class="nav-item">
-        <div class="nav-item-content">
-          <img src="./assets/loginIcons.png" alt="Log In">
-          <span>Log In</span>
-        </div>
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <a href="privacy-login.html" class="nav-item-footer active">Privacy Policy</a>
-      <a href="" class="nav-item-footer">Legal notice</a>
-    </div>
-  </aside>
-        
-  <main>
-    <header class="page-header">
-      <img src="assets/sidebarLogo.png" alt="Join Logo" class="header-left-logo">
-      <span class="logo-title">Kanban Project Management Tool</span>
+   <header>
+        <div w3-include-html="header.html"></div>
     </header>
-            
+
+    <div class="layout">
+
+        <aside>
+            <div w3-include-html="sidebar.html"></div>
+        </aside> 
+  <main>    
     <div class="content-container">
       <h2 class="policy-title">Privacy Policy</h2>
                 
@@ -84,5 +70,14 @@
       <p>Quelle: <a href="https://www.e-recht24.de">https://www.e-recht24.de</a></p>
     </div>
   </main>
+  </div>
+  <script src="./scripts/auth.js"></script>
+  <script src="./scripts/header.js"></script>
+        <script>
+            w3.includeHTML(() => {            
+                updateVisibilityWithRetry();
+                updateUserLogo();
+                });
+        </script>
 </body>
 </html>

@@ -1,11 +1,3 @@
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #F6F7F8;
-    font-family: 'Open Sans', sans-serif;
-    min-height: 100vh;
-    display: flex;
-}
 
 .content-container {
     flex: 1;

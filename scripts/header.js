@@ -1,16 +1,45 @@
-function toggleDropdown() {
-    const dropdownMenu = document.getElementById('header-dropdown-menu');
-    const isOpen = dropdownMenu.classList.contains('show');
-    
-    if (isOpen) {
-        dropdownMenu.classList.remove('show');
-        // Update ARIA attributes
-        document.querySelector('[aria-expanded]').setAttribute('aria-expanded', 'false');
-    } else {
-        dropdownMenu.classList.add('show');
-        // Update ARIA attributes
-        document.querySelector('[aria-expanded]').setAttribute('aria-expanded', 'true');
-    }
+let dropdownElements = null;
+let isDropdownOpen = false;
+
+function getDropdownElements() {
+  if (!dropdownElements) {
+    dropdownElements = {
+      menu: document.getElementById('header-dropdown-menu'),
+      overlay: document.getElementById('overlay'),
+      trigger: document.querySelector('[aria-expanded]')
+    };
+  }
+  return dropdownElements;
+}
+
+function openDropdown() {
+  const { menu, overlay, trigger } = getDropdownElements();
+  
+  menu.classList.add('show');
+  overlay.classList.add('show');
+  trigger.setAttribute('aria-expanded', 'true');
+  menu.setAttribute('aria-hidden', 'false');
+  
+  isDropdownOpen = true;
+
+  // Verhindert Scrollbar-Probleme
+  // if (window.innerWidth <= 768) {
+  //   document.body.style.overflow = 'hidden';
+  // }
+}
+
+function closeDropdown() {
+  const { menu, overlay, trigger } = getDropdownElements();
+  
+  menu.classList.remove('show');
+  overlay.classList.remove('show');
+  trigger.setAttribute('aria-expanded', 'false');
+  menu.setAttribute('aria-hidden', 'true');
+  
+  isDropdownOpen = false;
+
+  // Scrolling wieder aktivieren
+  // document.body.style.overflow = '';
 }
 
 function updateUserLogo() {
@@ -20,11 +49,17 @@ function updateUserLogo() {
 
   if (isGuest()) {
     textEl.textContent = "G";
-    textEl.setAttribute("font-size", "28"); // größer wie bei deinem Gast-Logo
+    textEl.setAttribute("font-size", "28");
   } else if (user?.initials) {
-    textEl.textContent = user.initials; // falls du Initialen speicherst
+    textEl.textContent = user.initials;
+
+    if (user.initials.length === 1) {
+      textEl.setAttribute("font-size", "28");
+    }
+
   } else {
-    textEl.textContent = "SM"; // Standardfallback
+    textEl.textContent = "G"; // Standardfallback
+    textEl.setAttribute("font-size", "28");
   }
 }
 

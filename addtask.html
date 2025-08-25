@@ -4,24 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/header.css">
     <link rel="stylesheet" href="./styles/sidebar.css">
-    <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/board.css">
-    <link rel="stylesheet" href="./styles/addTask.css">
+    <link rel="stylesheet" href="./styles/addtask.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
 
-    <title>Board</title>
+    <title>add task</title>
 </head>
 
 <body>
     <header>
         <div w3-include-html="./header.html"></div>
-
-        <script>
-            w3.includeHTML();
-        </script>
-
     </header>
 
     <div class="layout">
@@ -29,27 +24,19 @@
         <aside>
             <div w3-include-html="./sidebar.html"></div>
             <script>
-
                 w3.includeHTML(() => {
                     const plusBtn = document.querySelector("#plus-btn");
                     plusBtn.addEventListener("click", () => {
                     });
 
                 });
-=======
-                w3.includeHTML();
-
             </script>
         </aside>
         <div class="main-container-wrapper">
             <div class="main-container">
                 <div class="title-container">
-
                     <input type="text" class="title-input" placeholder="Enter a title" required>
                     <span class="error-message">This field is required</span>
-
-                   
-
                 </div>
 
                 <div class="description-container">
@@ -59,23 +46,16 @@
                     </div>
                     <textarea class="description-input" placeholder="Enter a description"></textarea>
                 </div>
-
                 <div class="due-date-container">
                     <div class="due-date-header">Due date</div>
                     <div class="due-date-content">
-
-                        <input type="text" class="due-date-input" placeholder="dd/mm/yyyy" required>
-
-                        <div class="due-date-input">dd/mm/yyyy</div>
-
+                        <input type="date" class="due-date-input" required>
                         <div class="due-date-icon-container">
                             <div class="due-date-icon"></div>
                         </div>
                     </div>
-
                     <span class="error-message">This field is required</span>
                 </div>
-
 
                 <div class="priority-container">
                     <div class="priority-header">Priority</div>
@@ -89,23 +69,34 @@
                     </div>
                 </div>
 
-
                 <div class="assigned-container">
                     <div class="assigned-header">
                         Assigned to <span class="optional">(optional)</span>
                     </div>
-                    <div class="assigned-content">
-                        <div class="assigned-text">Select contacts to assign</div>
-                        <div class="assigned-arrow-container">
 
+                    <div class="assigned-content">
+                        <!-- Text bleibt im eigenen Container -->
+                        <div class="assigned-text-container">
+                            <div class="assigned-text">Select contacts to assign</div>
+                        </div>
+
+                        <!-- Input für Suche -->
+                        <input type="text" class="assigned-input" placeholder="" style="display:none;">
+
+                        <!-- Pfeil jetzt in separatem Container -->
+                        <div class="assigned-arrow-container">
                             <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts"
                                 class="assigned-arrow-icon">
                         </div>
+
+                        <!-- Dropdown -->
                         <div class="dropdown-menu" id="assigned-dropdown"></div>
-
-
                     </div>
+
+                    <div class="selected-avatars-container"></div>
                 </div>
+
+
                 <div class="category-container">
                     <div class="assigned-header">
                         Category
@@ -115,12 +106,10 @@
                         <div class="assigned-arrow-container">
                             <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts"
                                 class="assigned-arrow-icon">
-
                         </div>
                     </div>
 
                 </div>
-
                 <div class="task-container">
                     <div class="assigned-header">
                         Subtasks <span class="optional">(optional)</span>
@@ -156,12 +145,11 @@
             </div>
         </div>
         <div class="button-container">
-
             <button class="guest-btn">Clear <img src="./assets/icons-addTask/iconoir_cancel (1).png" alt=""></button>
             <button class="sign-up-btn">Create Task <img src="./assets/icons-addTask/check (1).png" alt=""></button>
         </div>
 
-        <script src="./scripts/addTask.js"></script>
+        <script src="./scripts/addtask.js"></script>
 </body>
 
 
