@@ -22,7 +22,7 @@
             <div w3-include-html="sidebar.html"></div>
         </aside>
 
-        <main>
+      <main>
         <div class="main-content">
           <div class="main-content-wrapper">
             <div class="top-row">
@@ -101,18 +101,19 @@
             </div>
           </div>
         </div>
-      </section>
-        </main>
-        </div class="layout">
+      
+      </main>
+    </div>
       <script src="./scripts/auth.js"></script>
-        <script src="./scripts/header.js"></script>
-        <script>
-            w3.includeHTML(() => {            
-                updateVisibilityWithRetry();
-                updateUserLogo();
-                });
-        </script>
-        <script src="./scripts/taskManager.js"></script>
+      <script src="./scripts/header.js"></script>
+      <script>
+          w3.includeHTML(() => {            
+              updateVisibilityWithRetry();
+              updateUserLogo();
+              setActiveNavigation();
+              });
+      </script>
+      <script src="./scripts/taskManager.js"></script>
     <script src="./scripts/summary.js"></script>
     </body>
   </html>

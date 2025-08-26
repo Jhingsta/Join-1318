@@ -1,6 +1,19 @@
 body {
     font-family: "Open Sans", sans-serif;
   }
+
+  .layout {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 232px 1fr;
+    position: relative;
+    width: 100%;
+}
+
+main {
+    min-height: calc(100vh - 80px);
+}
   
   .main-container {
     display: flex;

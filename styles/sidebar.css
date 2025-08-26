@@ -113,6 +113,7 @@
     flex-direction: column;
     gap: 15px;
     padding: 42px 23px 0;
+    flex: initial;
   }
 
   .nav-item {
