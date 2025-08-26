@@ -237,6 +237,7 @@ input[type="tel"] {
   color: #D1D1D1;
   transition: all 0.3s ease;
   cursor: pointer;
+  color: black;
 }
 
 input[type="text"]:focus,
