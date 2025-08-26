@@ -57,8 +57,9 @@ function validateCredentials(email, password) {
  * based on whether input fields have content
  */
 function updateLoginButtonState() {
-  const email = document.querySelector('input[type="email"]').value;
-  const password = document.querySelector('input[type="password"]').value;
+  const email = document.querySelector('input[type="email"]').value.trim();
+  const passwordInput = document.querySelector('.input-container-password input'); // immer dasselbe Feld
+  const password = passwordInput.value.trim();
   const loginButton = document.querySelector('.login-btn');
 
   if (email && password) {
@@ -67,10 +68,12 @@ function updateLoginButtonState() {
     loginButton.style.cursor = "pointer";
   } else {
     loginButton.disabled = true;
-    // loginButton.style.opacity = "0.5";
-    // loginButton.style.cursor = "not-allowed";
+    loginButton.style.opacity = "0.5";
+    loginButton.style.cursor = "not-allowed";
   }
 }
+
+
 
 /**
  * Authenticates a user with provided email and password
@@ -127,22 +130,40 @@ async function handleLogin(event) {
   const passwordContainer = document.querySelector('.input-container-password');
   const errorMessage = document.querySelector('.error-message');
 
-  const email = document.querySelector('input[type="email"]').value;
-  const password = document.querySelector('input[type="password"]').value;
+  const email = document.querySelector('input[type="email"]').value.trim();
+  const passwordInput = document.querySelector('.input-container-password input'); // <-- hier
+  const password = passwordInput.value.trim();
 
-  const success = await loginUser(email, password);
+  // Reset vorheriger Fehler
+  emailContainer.classList.remove("input-error");
+  passwordContainer.classList.remove("input-error");
+  errorMessage.style.display = "none";
 
-  if (success) {
-    errorMessage.style.display = "none";
-    emailContainer.classList.remove("input-error");
-    passwordContainer.classList.remove("input-error");
-    window.location.href = "./summary.html";
-  } else {
+  if (!email || !password) {
+    // Leere Felder
+    errorMessage.textContent = "Check your email and password!";
     errorMessage.style.display = "flex";
     emailContainer.classList.add("input-error");
     passwordContainer.classList.add("input-error");
+    return;
   }
+
+  const success = await loginUser(email, password);
+
+  if (!success) {
+    // Falscher Login
+    errorMessage.textContent = "Check your email and password!";
+    errorMessage.style.display = "flex";
+    emailContainer.classList.add("input-error");
+    passwordContainer.classList.add("input-error");
+    return;
+  }
+
+  // Erfolgreicher Login
+  window.location.href = "./summary.html";
 }
+
+
 
 /**
  * Handles guest login functionality
@@ -170,56 +191,66 @@ document.addEventListener("DOMContentLoaded", async () => {
   const guestLoginButton = document.querySelector('.guest-btn');
   const emailInput = document.querySelector('input[type="email"]');
   const passwordInput = document.querySelector('input[type="password"]');
+  const togglePasswordIcon = document.querySelector('.input-container-password .toggle-password');
 
-  // Load users data from Firebase
+
+  // Load users data
   await loadUsers();
+  console.log("DEBUG users:", users);
 
-  // Add input event listeners for real-time validation
+
+  // Button aktivieren/deaktivieren
   emailInput.addEventListener("input", updateLoginButtonState);
   passwordInput.addEventListener("input", updateLoginButtonState);
 
-  // Add form submission handler
+  // Formular-Submit
   loginForm.addEventListener("submit", handleLogin);
 
-  // Add guest login handler
+  // Gast-Login
   guestLoginButton.addEventListener("click", handleGuestLogin);
 
-  // Initial button state
-  updateLoginButtonState();
-});
-
-// Toggle password visibility
-document.addEventListener("DOMContentLoaded", () => {
-  const passwordInput = document.querySelector('.input-container-password input');
-  const togglePasswordIcon = document.querySelector('.input-container-password .toggle-password');
+  // Passwort-Icon toggle
   let passwordVisible = false;
 
-  // Update icon based on input value
   function updateIcon() {
+    if (!passwordInput || !togglePasswordIcon) return; // <-- Abbruch, falls null
+
     if (!passwordInput.value) {
-      togglePasswordIcon.src = "./assets/icons-signup/lock.svg"; // kein Passwort
+      togglePasswordIcon.src = "./assets/icons-signup/lock.svg";
     } else {
       togglePasswordIcon.src = passwordVisible
-        ? "./assets/icons-signup/visibility.svg" // sichtbar
-        : "./assets/icons-signup/visibility_off.svg"; // verborgen
+        ? "./assets/icons-signup/visibility_off.svg"
+        : "./assets/icons-signup/visibility.svg";
     }
   }
 
-  // Klick auf Icon toggelt Passwort-Sichtbarkeit
-  togglePasswordIcon.addEventListener("click", () => {
-    if (!passwordInput.value) return; // wenn leer, nichts tun
+  togglePasswordIcon?.addEventListener("click", () => {
+    if (!passwordInput || !passwordInput.value) return;
+
     passwordVisible = !passwordVisible;
     passwordInput.type = passwordVisible ? "text" : "password";
     updateIcon();
   });
 
-  // Live-Update des Icons beim Tippen
-  passwordInput.addEventListener("input", () => {
-    updateIcon();
+  passwordInput?.addEventListener("input", updateIcon);
+
+
+
+  // Enter-Taste für Email + Passwort
+  [emailInput, passwordInput].forEach(input => {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleLogin(e);
+      }
+    });
   });
+
   // Initial
   updateIcon();
+  updateLoginButtonState();
 });
+
 
 
 
