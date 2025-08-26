@@ -4,25 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Summary</title>
-    <link rel="stylesheet" href="./styles/summary.css">
-    <link rel="stylesheet" href="./styles/summaryAnimation.css">
+    <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/header.css">
     <link rel="stylesheet" href="./styles/sidebar.css">
+    <link rel="stylesheet" href="./styles/summary.css">
+    <link rel="stylesheet" href="./styles/summaryAnimation.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
-    <script src="./scripts/summary.js"></script>
 </head>
 <body>
     <header>
         <div w3-include-html="header.html"></div>
-        <script>
-          w3.includeHTML();
-        </script>
-      </header>
-      <section class="main-container">
-        <div w3-include-html="sidebar.html"></div>
-        <script>
-          w3.includeHTML();
-        </script>
+    </header>
+
+    <div class="layout">
+
+        <aside>
+            <div w3-include-html="sidebar.html"></div>
+        </aside>
+
+      <main>
         <div class="main-content">
           <div class="main-content-wrapper">
             <div class="top-row">
@@ -101,6 +101,19 @@
             </div>
           </div>
         </div>
-      </section>
+      
+      </main>
+    </div>
+      <script src="./scripts/auth.js"></script>
+      <script src="./scripts/header.js"></script>
+      <script>
+          w3.includeHTML(() => {            
+              updateVisibilityWithRetry();
+              updateUserLogo();
+              setActiveNavigation();
+              });
+      </script>
+      <script src="./scripts/taskManager.js"></script>
+    <script src="./scripts/summary.js"></script>
     </body>
   </html>

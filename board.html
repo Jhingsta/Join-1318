@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/header.css">
     <link rel="stylesheet" href="./styles/sidebar.css">
-    <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/board.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
     <title>Board</title>
@@ -14,19 +14,13 @@
 
 <body>
     <header>
-        <div w3-include-html="./header.html"></div>
-        <script>
-            w3.includeHTML();
-        </script>
+        <div w3-include-html="header.html"></div>
     </header>
 
     <div class="layout">
 
         <aside>
-            <div w3-include-html="./sidebar.html"></div>
-            <script>
-                w3.includeHTML();
-            </script>
+            <div w3-include-html="sidebar.html"></div>
         </aside>
 
         <main>
@@ -47,7 +41,7 @@
                         </svg>
                     </div>
 
-                    <button class="add-task-btn">
+                    <button class="add-task-btn" id="add-task-btn">
                         Add Task
                         <img src="./assets/icons-board/plus.png">
                     </button>
@@ -98,51 +92,97 @@
                 </div>
             </section>
 
-            <section class="bottom">
-                <div class="task-column">
-                    <div class="task-card">
-                        <div class="task-type">
-                            <img src="./assets/icons-board/user-story-tag.svg" alt="User Story">
-                        </div>
-                        <div class="task-content">
-                            <div class="title">
-                                Kochwelt Page & Recipe Recommender
-                            </div>
-                            <div class="task-info">
-                                Lorem ipsum dolor sit amet.
-                            </div>
-                        </div>
-                        <div class="subtasks">
-                            <img src="./assets/Progress bar.png" alt="">
-                            <span class="subtasks-text">1/2 Subtasks</span>
-                        </div>
-                        <div class="assigned-to">
-                            <div class="priority">
-                                <img src="./assets/Frame 217.png" alt="">
-                                <img src="./assets/icons-board/priority-medium.svg" alt="Priority">
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="task-column">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias, labore?
-                    </div>
-                    <div class="task-column">
-                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ratione, explicabo?
-                    </div>
-                    <div class="task-column">
-                        <div class="task-placeholder">
-                            No tasks in progress
-                        </div>
-                    </div>
-
-
-
+            <section class="bottom" id="board-columns">
+                <div class="task-column" data-status="todo">
+                    <div class="tasks" id="column-todo"></div>
+                </div>
+                <div class="task-column" data-status="inProgress">
+                    <div class="tasks" id="column-inProgress"></div>
+                </div>
+                <div class="task-column" data-status="awaitingFeedback">
+                    <div class="tasks" id="column-awaitingFeedback"></div>
+                </div>
+                <div class="task-column" data-status="done">
+                    <div class="tasks" id="column-done"></div>
+                </div>
             </section>
 
         </main>
     </div>
+
+    <!-- Add Task Modal -->
+    <div id="add-task-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Create Task</h2>
+                <button type="button" id="modal-close" class="modal-close" aria-label="Close">×</button>
+            </div>
+            <form id="add-task-form" class="modal-body">
+                <label class="modal-field">
+                    <span>Title</span>
+                    <input id="task-title" type="text" placeholder="Enter title" required>
+                </label>
+                <label class="modal-field">
+                    <span>Description</span>
+                    <textarea id="task-description" placeholder="Enter description" rows="4"></textarea>
+                </label>
+                <div class="modal-grid">
+                    <label class="modal-field">
+                        <span>Due date</span>
+                        <input id="task-dueDate" type="date">
+                    </label>
+                    <label class="modal-field">
+                        <span>Priority</span>
+                        <select id="task-priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="modal-grid">
+                    <label class="modal-field">
+                        <span>Status</span>
+                        <select id="task-status">
+                            <option value="todo" selected>To do</option>
+                            <option value="inProgress">In progress</option>
+                            <option value="awaitingFeedback">Awaiting feedback</option>
+                            <option value="done">Done</option>
+                        </select>
+                    </label>
+                    <div class="modal-grid mini">
+                        <label class="modal-field">
+                            <span>Subtasks done</span>
+                            <input id="subtasks-done" type="number" min="0" value="0">
+                        </label>
+                        <label class="modal-field">
+                            <span>Subtasks total</span>
+                            <input id="subtasks-total" type="number" min="0" value="0">
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="cancel-btn" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="add-task-btn">
+                        Save Task
+                        <img src="./assets/icons-board/plus.png" alt="">
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="./scripts/auth.js"></script>
+    <script src="./scripts/header.js"></script>
+    <script>
+        w3.includeHTML(() => {            
+            updateVisibilityWithRetry();
+            updateUserLogo();
+            setActiveNavigation();
+            });
+    </script>
+    <script src="./scripts/taskmanager.js"></script>
+    <script src="./scripts/board.js"></script>
 
 </body>
 

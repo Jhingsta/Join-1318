@@ -97,6 +97,9 @@ async function loginUser(email, password) {
           JSON.stringify({
             name: user.name,
             email: user.email,
+            phone: user.phone || "",
+            initials: user.initials || "",
+            color: user.color || ""
           })
         );
         return true;
@@ -212,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Live-Update des Icons beim Tippen
   passwordInput.addEventListener("input", () => {
-      updateIcon();
+    updateIcon();
   });
   // Initial
   updateIcon();

@@ -10,22 +10,16 @@
     <script src="https://www.w3schools.com/lib/w3.js"></script>
     <title>Contacts</title>
 </head>
-<body>
+<body onload="init()">
     
     <header>
         <div w3-include-html="header.html"></div>
-        <script>
-            w3.includeHTML();
-        </script>
     </header>
 
     <div class="layout">
 
         <aside>
             <div w3-include-html="sidebar.html"></div>
-            <script>
-                w3.includeHTML();
-            </script>
         </aside>
 
         <main>
@@ -40,70 +34,7 @@
                             </svg>
                         </button>
 
-                        <div id="contact-list"></div>
-
-                        <!-- Hardcoded -> Template für js -->
-
-                        <div class="letter-section">
-                            <div class="letter">A</div>
-                            <div class="hl"></div>
-                        </div>
-                        <div class="contact">
-                            <div class="avatar" style="background-color:#FF7F00;">AM</div>
-                            <div class="contact-info">
-                                <div class="name">Anton Mayer</div>
-                                <div class="email">antom@gmail.com</div>
-                            </div>
-                        </div>
-                        <div class="contact">
-                            <div class="avatar" style="background-color:#9B59B6;">AS</div>
-                            <div class="contact-info">
-                                <div class="name">Anja Schulz</div>
-                                <div class="email">schulz@hotmail.com</div>
-                            </div>
-                        </div>
-                        <div class="letter-section">        
-                            <div class="letter">B</div>
-                            <div class="hl"></div>
-                        </div>
-                        <div class="contact">
-                            <div class="avatar" style="background-color:#8E44AD;">BZ</div>
-                            <div class="contact-info">
-                                <div class="name">Benedikt Ziegler</div>
-                                <div class="email">benedikt@gmail.com</div>
-                            </div>
-                        </div>
-                        <div class="letter-section">                
-                            <div class="letter">D</div>
-                            <div class="hl"></div>
-                        </div>
-                        <div class="contact">
-                            <div class="avatar" style="background-color:#FF69B4;">DE</div>
-                            <div class="contact-info">
-                                <div class="name">David Eisenberg</div>
-                                <div class="email">davidberg@gmail.com</div>
-                            </div>
-                        </div>
-                        <div class="letter-section">
-                            <div class="letter">E</div>
-                            <div class="hl"></div>
-                        </div>
-                        <div class="contact">
-                            <div class="avatar" style="background-color:#F1C40F;">EF</div>
-                            <div class="contact-info">
-                                <div class="name">Eva Fischer</div>
-                                <div class="email">eva@gmail.com</div>
-                            </div>
-                        </div>
-                        <div class="contact">
-                            <div class="avatar" style="background-color:#1ABC9C;">EM</div>
-                            <div class="contact-info">
-                                <div class="name">Emmanuel Mauer</div>
-                                <div class="email">emmanuelma@gmail.com</div>
-                            </div>
-                        </div>
-
-                        <!-- Hardcoded End -->
+                        <div id="contacts-list"></div>
 
                         <button class="add-contact-btn-mobile">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
@@ -119,5 +50,17 @@
 
         </main>
 
+    </div>
+
+    <script src="./scripts/auth.js"></script>
+    <script src="./scripts/header.js"></script>
+    <script src="./scripts/contacts.js"></script>
+    <script>
+        w3.includeHTML(() => {            
+            updateVisibilityWithRetry();
+            updateUserLogo();
+            setActiveNavigation();
+            });
+    </script>
 </body>
 </html>

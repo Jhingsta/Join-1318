@@ -1,24 +1,50 @@
-<div class="page-header">
+<div class="header-content">
+
     <div class="header-left">
       <img
-        src="./assets/Join-Logo.png"
+        src="./assets/icons-header/logo-all-white.svg"
         alt="Join Logo"
-        class="header-left-logo"
-      />
+        class="header-logo">
     </div>
+
     <div class="header-right">
-      <span class="header-right-text">Kanban Project Management Tool</span>
-      <a href="help.html">
-        <img
-          src="./assets/help.png"
-          alt="Help"
-          class="header-right-help-logo"
-        />
+
+      <span class="header-right-text"           
+          onclick="openDropdown()" 
+          role="button" 
+          tabindex="0"
+          aria-expanded="false"
+          aria-haspopup="menu"
+          aria-controls="dropdownMenu">
+        Kanban Project Management Tool
+      </span>
+
+      <a href="help.html" class="help-icon">
+        <img src="./assets/icons-header/help-icon.svg" alt="Help">
       </a>
-      <img
-        src="./assets/user.png"
-        alt="User"
-        class="header-right-user-logo"
-      />
+      
+      <svg class="user-logo-svg" onclick="openDropdown()" role="button" tabindex="0" aria-label="Open menu" width="56" height="56" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+        <!-- innerer Hintergrund-Kreis -->
+        <circle class="bg" cx="28" cy="28" r="23" fill="white" />
+        <!-- Text (Initialen) -->
+        <text id="user-initials" x="50%" y="50%" text-anchor="middle" dominant-baseline="central"
+              font-family="Arial, sans-serif" font-weight="400" font-size="19" fill="#005DFF">
+        </text>
+        <!-- äußerer Rahmen -->
+        <circle class="border" cx="28" cy="28" r="26.5" stroke="white" stroke-width="3" fill="none"/>
+      </svg>
+
+      <div class="header-dropdown-menu" id="header-dropdown-menu" role="menu" aria-hidden="true">
+          <a href="help.html" class="dropdown-item menu-item-help" role="menuitem">Help</a>
+          <a href="legalnotice.html" class="dropdown-item" role="menuitem">Legal Notice</a>
+          <a href="privacypolicy.html" class="dropdown-item" role="menuitem">Privacy Policy</a>
+          <button onclick="logout()" class="dropdown-item" role="menuitem">
+            Log out
+          </button>
+      </div>
+
     </div>
+
+    <div class="overlay" id="overlay" onclick="closeDropdown()"></div>
+
 </div>

@@ -222,12 +222,6 @@ input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .check {
   opacity: 1;
 }
 
-/* Fokus für Tastaturnutzer */
-/* input[type="checkbox"]:focus + .checkbox-label .custom-checkbox {
-  box-shadow: 0 0 0 4px rgba(69,137,255,0.12);
-  border-radius: 4px;
-} */
-
 /* Linkstyles */
 .checkbox-label a {
   color: #005DFF;
@@ -280,7 +274,7 @@ nav {
 ul {
   display: flex;
   flex-direction: row;
-  gap: 8px;
+  gap: 16px;
   list-style: none;
 }
 
@@ -290,4 +284,8 @@ nav a {
   padding: 8px;
   font-size: 16px;
   font-weight: 400;
+}
+
+nav a:hover {
+  color: #005DFF;
 }
