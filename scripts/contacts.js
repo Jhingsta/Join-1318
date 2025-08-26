@@ -3,7 +3,7 @@ const BASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.a
 let users = [];
 
 function init() {
-    loadUsers();
+  loadUsers();
 }
 
 async function loadUsers() {
@@ -57,7 +57,7 @@ function renderContacts(contacts) {
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
       html += `
-        <div class="contact">
+        <div class="contact" onclick="showContactDetails('${user.name}', '${user.email}', '${user.phone || ''}', '${user.color}', '${user.initials}')">
           <div class="avatar" style="background-color:${user.color};">${user.initials}</div>
           <div class="contact-info">
             <div class="name">${user.name}</div>
@@ -69,4 +69,73 @@ function renderContacts(contacts) {
   }
 
   return html;
+}
+
+function showContactDetails(name, email, phone, color, initials) {
+  // Floating Contact Template erstellen
+  const floatingContactHtml = `
+    <div class="floating-contact-first">Contact Information</div>
+
+    <div class="floating-contact-second">
+        <div class="avatar-big" style="background-color: ${color};">${initials}</div>
+        <div class="floating-contact-name">
+            <div class="floating-contact-name-big">${name}</div>
+            <div class="floating-contact-name-bottom">
+                <div class="edit-link">
+                    <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt="">
+                    <span>Edit</span>
+                </div>
+                <div class="delete-link">
+                    <img src="./assets/icons-contacts/delete.svg" class="icon-delete" alt="">
+                    <span>Delete</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="floating-contact-third">
+        <div class="floating-contact-bottom-email">
+            <div class="floating-contact-bottom-title">Email</div>
+            <a href="mailto:${email}">${email}</a>
+        </div>
+        <div class="floating-contact-bottom-phone">
+            <div class="floating-contact-bottom-title">Phone</div>
+            ${phone ? `<a href="tel:${phone}">${phone}</a>` : 'No phone number'}
+        </div>
+    </div>
+  `;
+
+  // Floating Contact in right-panel einfügen
+  const rightPanel = document.querySelector('.right-panel');
+  
+  // Erst das floating-contact div erstellen falls es nicht existiert
+  let floatingContact = document.getElementById('floating-contact');
+  if (!floatingContact) {
+    floatingContact = document.createElement('div');
+    floatingContact.className = 'floating-contact';
+    floatingContact.id = 'floating-contact';
+    rightPanel.appendChild(floatingContact);
+  }
+
+  // Inhalt setzen
+  floatingContact.innerHTML = floatingContactHtml;
+  
+  // Slide-in Animation starten
+  slideInContact();
+}
+
+function slideInContact() {
+  const floatingContact = document.getElementById('floating-contact');
+  
+  // Initial Position (außerhalb des Bildschirms rechts)
+  floatingContact.style.transform = 'translateX(100%)';
+  floatingContact.style.opacity = '0';
+  floatingContact.style.display = 'block';
+  
+  // Animation mit einem kleinen Delay für besseren Effekt
+  setTimeout(() => {
+    floatingContact.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+    floatingContact.style.transform = 'translateX(0)';
+    floatingContact.style.opacity = '1';
+  }, 10);
 }
