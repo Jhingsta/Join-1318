@@ -113,6 +113,7 @@
     flex-direction: column;
     gap: 15px;
     padding: 42px 23px 0;
+    flex: initial;
   }
 
   .nav-item {
@@ -125,6 +126,19 @@
 
   .nav-item:hover {
     background-color: #E3EEFF;
+  }
+
+  .nav-item:hover img,
+  .nav-item:hover span,
+  .nav-item:active img,
+  .nav-item:active span {
+  filter: none;
+}
+
+  .nav-item.active {
+    background-color: #D2E3FF;
+    pointer-events: none;
+    cursor: default;
   }
 
   .nav-item-content {
@@ -155,8 +169,14 @@
   }
 
   .footer-item:hover {
+    color: #005DFF;
+  }
+
+  .footer-item.footer-active {
     background-color: #4589FF;
-    color: #fff;
-    font-weight: 700;
+    color: white;
+    font-weight: 700px;
+    pointer-events: none;
+    cursor: default;
   }
 }
