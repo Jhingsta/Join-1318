@@ -229,17 +229,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             checkboxWrapper.addEventListener('click', (e) => {
                 e.stopPropagation();
 
-                const isChecked = checkbox.src.includes("checked");
+                const isChecked = checkboxWrapper.classList.contains('checked');
+                checkboxWrapper.classList.toggle('checked', !isChecked); // Klasse setzen
+
                 checkbox.src = isChecked
                     ? "./assets/icons-addTask/Property 1=Default.png"
                     : "./assets/icons-addTask/Property 1=checked.svg";
 
-                // NICHTS an div.classList ändern
                 updateSelectedAvatars();
-
-                // Checkbox immer sichtbar lassen
-                checkboxWrapper.style.display = 'flex';
             });
+
         });
     }
 
@@ -254,6 +253,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             assignedText.style.display = 'none';
             arrowIcon.src = '/assets/icons-addTask/arrow_drop_down_up.png';
             assignedInput.focus();
+
+            // ✅ FIX: Checkboxen beim Öffnen zurücksetzen
+            Array.from(assignedDropdown.children).forEach(div => {
+                div.querySelector('.checkbox-wrapper').style.display = 'flex';
+            });
         } else {
             assignedDropdown.classList.remove('open');
             assignedDropdown.style.display = 'none';
@@ -436,21 +440,21 @@ function getTaskData() {
 // ----------------------------
 // EventListener: Create Task
 // ----------------------------
-const createTaskBtn = document.querySelector(".sign-up-btn");
-createTaskBtn.addEventListener("click", () => {
-    const taskData = getTaskData();
+// const createTaskBtn = document.querySelector(".sign-up-btn");
+// createTaskBtn.addEventListener("click", () => {
+//     const taskData = getTaskData();
 
-    // Pflichtfelder prüfen
-    if (!taskData.title || !taskData.dueDate) {
-        alert("Bitte fülle alle Pflichtfelder aus!");
-        return;
-    }
+//     // Pflichtfelder prüfen
+//     if (!taskData.title || !taskData.dueDate) {
+//         alert("Bitte fülle alle Pflichtfelder aus!");
+//         return;
+//     }
 
-    // Test-Ausgabe in der Konsole
-    console.log("Task-Daten:", taskData);
+//     // Test-Ausgabe in der Konsole
+//     console.log("Task-Daten:", taskData);
 
-    // Hier später Firebase-Aufruf einfügen
-});
+//     // Hier später Firebase-Aufruf einfügen
+// });
 
 // ----------------------------
 // EventListener: Clear / Reset
@@ -475,3 +479,115 @@ resetBtn.addEventListener("click", () => {
     if (categoryText) categoryText.textContent = "Select task category";
 });
 
+//Task an Firebase senden
+
+async function saveTaskToFirebase(taskData) {
+    try {
+        const response = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                title: taskData.title,
+                description: taskData.description,
+                dueDate: taskData.dueDate,
+                priority: taskData.priority,
+                status: "inProgress",
+                createdAt: new Date().toISOString(),
+                subtasks: {
+                    total: taskData.subtasks.length,
+                    completed: 0,
+                    items: taskData.subtasks
+                },
+                users: taskData.assignedTo,
+                category: taskData.category
+            })
+        });
+
+        if (!response.ok) throw new Error("Fehler beim Speichern des Tasks");
+
+        const data = await response.json();
+        console.log("Task erfolgreich gespeichert:", data);
+        return data;
+
+    } catch (error) {
+        console.error("Firebase Save Error:", error);
+        alert("Fehler beim Speichern des Tasks!");
+    }
+}
+
+
+//Create Task Button mit Firebase verbinden
+
+const createTaskBtn = document.querySelector(".sign-up-btn");
+
+createTaskBtn.addEventListener("click", async (event) => {
+    event.preventDefault(); // verhindert das Standard-Submit
+
+    // 1. Task-Daten auslesen
+    const taskData = getTaskData();
+
+    // 2. Pflichtfelder prüfen
+    if (!taskData.title || !taskData.dueDate) {
+        alert("Bitte fülle alle Pflichtfelder aus!");
+        return;
+    }
+
+    console.log("Task-Daten vor dem Speichern:", taskData);
+
+    // 3. Task an Firebase senden
+    const result = await saveTaskToFirebase(taskData);
+
+    if (result) {
+        showTaskAddedMessage();
+
+        // 4. Formular zurücksetzen
+        document.querySelector(".title-input").value = "";
+        document.querySelector(".description-input").value = "";
+        document.querySelector(".due-date-input").value = "";
+        document.querySelector(".selected-avatars-container").innerHTML = "";
+        document.querySelector("#subtask-list").innerHTML = "";
+
+        // Priority zurücksetzen auf Medium
+        document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
+        document.querySelector(".priority-frame:nth-child(2)").classList.add("active");
+
+        // Kategorie zurücksetzen
+        const categoryText = document.querySelector(".category-content .assigned-text");
+        if (categoryText) categoryText.textContent = "Select task category";
+    }
+});
+
+//Meldung anzeigen, wenn Task erfolgreich erstellt wurde
+function showTaskAddedMessage() {
+    const img = document.createElement("img");
+    img.src = "./assets/icons-addTask/Added to board 1.png";
+    img.alt = "Task added to Board";
+
+    // Styles für zentrierte Position & Shadow
+    Object.assign(img.style, {
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: "9999",
+        boxShadow: "0px 0px 4px 0px #00000029",
+        transition: "transform 150ms ease-out, opacity 150ms ease-out",
+        opacity: "0",
+        pointerEvents: "none",
+    });
+
+    document.body.appendChild(img);
+
+    // Einblenden
+    requestAnimationFrame(() => {
+        img.style.opacity = "1";
+        img.style.transform = "translate(-50%, -50%)";
+    });
+
+    // Nach 800ms Slide-out links in 150ms
+    setTimeout(() => {
+        img.style.transform = "translate(-150%, -50%)";
+        img.style.opacity = "0";
+        img.addEventListener("transitionend", () => img.remove());
+    }, 800);
+}
