@@ -56,8 +56,10 @@ function renderContacts(contacts) {
     const users = grouped[letter];
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
+      // Eindeutige ID für jeden Kontakt basierend auf Email (da diese einzigartig sein sollte)
+      const contactId = user.email.replace(/[^a-zA-Z0-9]/g, '');
       html += `
-        <div class="contact" onclick="showContactDetails('${user.name}', '${user.email}', '${user.phone || ''}', '${user.color}', '${user.initials}')">
+        <div class="contact" id="contact-${contactId}" onclick="showContactDetails('${user.name}', '${user.email}', '${user.phone || ''}', '${user.color}', '${user.initials}', '${contactId}')">
           <div class="avatar" style="background-color:${user.color};">${user.initials}</div>
           <div class="contact-info">
             <div class="name">${user.name}</div>
@@ -71,7 +73,17 @@ function renderContacts(contacts) {
   return html;
 }
 
-function showContactDetails(name, email, phone, color, initials) {
+function showContactDetails(name, email, phone, color, initials, contactId) {
+
+  // Alle anderen Kontakte deaktivieren
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
+  
+  // Aktuellen Kontakt aktivieren
+  const currentContact = document.getElementById(`contact-${contactId}`);
+  if (currentContact) {
+    currentContact.classList.add('active');
+  }
   // Floating Contact Template erstellen
   const floatingContactHtml = `
     <div class="floating-contact-first">Contact Information</div>
@@ -96,17 +108,17 @@ function showContactDetails(name, email, phone, color, initials) {
     <div class="floating-contact-third">
         <div class="floating-contact-bottom-email">
             <div class="floating-contact-bottom-title">Email</div>
-            <a href="mailto:${email}">${email}</a>
+            <span class="floating-contact-email">${email}</span>
         </div>
         <div class="floating-contact-bottom-phone">
             <div class="floating-contact-bottom-title">Phone</div>
-            ${phone ? `<a href="tel:${phone}">${phone}</a>` : 'No phone number'}
+            <span>${phone || 'No phone number'}</span>
         </div>
     </div>
   `;
 
   // Floating Contact in right-panel einfügen
-  const rightPanel = document.querySelector('.right-panel');
+  const rightPanel = document.getElementById('right-panel');
   
   // Erst das floating-contact div erstellen falls es nicht existiert
   let floatingContact = document.getElementById('floating-contact');
@@ -127,12 +139,15 @@ function showContactDetails(name, email, phone, color, initials) {
 function slideInContact() {
   const floatingContact = document.getElementById('floating-contact');
   
-  // Initial Position (außerhalb des Bildschirms rechts)
+  // Element erst komplett ausblenden und Transition temporär deaktivieren
+  floatingContact.style.transition = 'none';
   floatingContact.style.transform = 'translateX(100%)';
   floatingContact.style.opacity = '0';
-  floatingContact.style.display = 'block';
   
-  // Animation mit einem kleinen Delay für besseren Effekt
+  // Sicherstellen dass das Element sichtbar ist
+  floatingContact.classList.add('show');
+  
+  // Kurz warten, dann Animation starten
   setTimeout(() => {
     floatingContact.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
     floatingContact.style.transform = 'translateX(0)';
