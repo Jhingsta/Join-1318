@@ -227,7 +227,6 @@ main {
   .contacts {
     padding: 24px 12px;
   }
-  
 }
 
 @media (max-width:480px) {
@@ -242,5 +241,3 @@ main {
     padding: 15px 10px;
   }
 }
-
-

@@ -182,7 +182,7 @@ async function handleSignup(event) {
   }
   
   // Check if user already exists
-  const userExists = await checkUserExists(formData.email);
+  const userExists = checkUserExists(formData.email);
   if (userExists) {
     showMessage('A user with this email already exists', 'error');
     return;
