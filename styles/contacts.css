@@ -151,19 +151,29 @@ main {
   background-color: #D2E3FF;
 }
 
-.contact:active {
+.contact:active,
+.contact.active {
   background-color: #4589FF;
   color: white;
 }
 
-.contact:active .email {
+.contact:active .email,
+.contact.active .email {
   color: white;
+}
+
+.contact.active {
+  pointer-events: none;
+  cursor: default;
 }
 
 /* Rechter Bereich */
 .right-panel {
-  background-color: #c7cbcb;
+  background-color: white;
   flex: 1;
+  position: relative;
+  overflow: hidden;
+  margin-left: 10px;
 }
 
 /* Scrollbar-Styling für bessere Optik */
@@ -217,6 +227,7 @@ main {
   .contacts {
     padding: 24px 12px;
   }
+  
 }
 
 @media (max-width:480px) {
@@ -231,3 +242,5 @@ main {
     padding: 15px 10px;
   }
 }
+
+
