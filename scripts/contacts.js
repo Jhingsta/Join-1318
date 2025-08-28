@@ -97,7 +97,7 @@ function showContactDetails(name, email, phone, color, initials, contactId) {
                     <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt="">
                     <span>Edit</span>
                 </div>
-                <div class="delete-link">
+                <div class="delete-link" onclick="deleteContact('${email}')">
                     <img src="./assets/icons-contacts/delete.svg" class="icon-delete" alt="">
                     <span>Delete</span>
                 </div>
@@ -153,4 +153,56 @@ function slideInContact() {
     floatingContact.style.transform = 'translateX(0)';
     floatingContact.style.opacity = '1';
   }, 10);
+}
+
+// User löschen
+async function deleteContact(email) {
+  try {
+    // Alle User laden um den richtigen Schlüssel zu finden
+    const response = await fetch(`${BASE_URL}users.json`);
+    const data = await response.json();
+    
+    let userKey = null;
+    if (data) {
+      // Finde den Firebase-Key des Users mit der entsprechenden Email
+      for (const [key, user] of Object.entries(data)) {
+        if (user.email === email) {
+          userKey = key;
+          break;
+        }
+      }
+    }
+    
+    if (userKey) {
+      // User mit dem gefundenen Key löschen
+      const deleteResponse = await fetch(`${BASE_URL}users/${userKey}.json`, {
+        method: 'DELETE'
+      });
+      
+      if (deleteResponse.ok) {
+        console.log("User deleted successfully");
+        // Panel schließen und Liste neu laden
+        closeFloatingContact();
+        loadUsers();
+      } else {
+        console.error("Failed to delete user:", deleteResponse.status);
+      }
+    } else {
+      console.error("User not found");
+    }
+  } catch (error) {
+    console.error("Error deleting user:", error);
+  }
+}
+
+// Funktion zum Schließen des Panels:
+function closeFloatingContact() {
+  const floatingContact = document.getElementById('floating-contact');
+  if (floatingContact) {
+    floatingContact.classList.remove('show');
+  }
+  
+  // Alle aktiven Kontakte deselektieren
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
 }
