@@ -59,7 +59,7 @@ function renderContacts(contacts) {
       // Eindeutige ID für jeden Kontakt basierend auf Email (da diese einzigartig sein sollte)
       const contactId = user.email.replace(/[^a-zA-Z0-9]/g, '');
       html += `
-        <div class="contact" id="contact-${contactId}" onclick="showContactDetails('${user.name}', '${user.email}', '${user.phone || ''}', '${user.color}', '${user.initials}', '${contactId}')">
+        <div class="contact" id="contact-${contactId}" onclick="showFloatingContact('${user.name}', '${user.email}', '${user.phone || ''}', '${user.color}', '${user.initials}', '${contactId}')">
           <div class="avatar" style="background-color:${user.color};">${user.initials}</div>
           <div class="contact-info">
             <div class="name">${user.name}</div>
@@ -73,7 +73,9 @@ function renderContacts(contacts) {
   return html;
 }
 
-function showContactDetails(name, email, phone, color, initials, contactId) {
+// Floating Contact
+
+function showFloatingContact(name, email, phone, color, initials, contactId) {
 
   // Alle anderen Kontakte deaktivieren
   const allContacts = document.querySelectorAll('.contact');
@@ -93,7 +95,7 @@ function showContactDetails(name, email, phone, color, initials, contactId) {
         <div class="floating-contact-name">
             <div class="floating-contact-name-big">${name}</div>
             <div class="floating-contact-name-bottom">
-                <div class="edit-link">
+                <div class="edit-link" onclick="showEditContactOverlay({name:'${name}', email:'${email}', phone:'${phone || ''}', color:'${color}', initials:'${initials}'})">
                     <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt="">
                     <span>Edit</span>
                 </div>
@@ -133,10 +135,10 @@ function showContactDetails(name, email, phone, color, initials, contactId) {
   floatingContact.innerHTML = floatingContactHtml;
   
   // Slide-in Animation starten
-  slideInContact();
+  slideInFloatingContact();
 }
 
-function slideInContact() {
+function slideInFloatingContact() {
   const floatingContact = document.getElementById('floating-contact');
   
   // Element erst komplett ausblenden und Transition temporär deaktivieren
@@ -205,4 +207,189 @@ function closeFloatingContact() {
   // Alle aktiven Kontakte deselektieren
   const allContacts = document.querySelectorAll('.contact');
   allContacts.forEach(contact => contact.classList.remove('active'));
+}
+
+// Add Contact Overlay HTML rendern
+function renderAddContactOverlay() {
+  return `
+      <div class="overlay-add-contact" id="overlay-add-contact">
+        <div class="overlay-add-contact-top">
+          <button class="overlay-close-button" onclick="closeContactOverlay()" aria-label="Close window">
+            <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16.0001 17.8642L9.46673 24.389C9.22229 24.6331 8.91118 24.7552 8.5334 24.7552C8.15562 24.7552 7.84451 24.6331 7.60007 24.389C7.35562 24.1449 7.2334 23.8342 7.2334 23.4569C7.2334 23.0796 7.35562 22.7689 7.60007 22.5248L14.1334 16L7.60007 9.47527C7.35562 9.23115 7.2334 8.92045 7.2334 8.54316C7.2334 8.16588 7.35562 7.85518 7.60007 7.61106C7.84451 7.36693 8.15562 7.24487 8.5334 7.24487C8.91118 7.24487 9.22229 7.36693 9.46673 7.61106L16.0001 14.1358L22.5334 7.61106C22.7778 7.36693 23.089 7.24487 23.4667 7.24487C23.8445 7.24487 24.1556 7.36693 24.4001 7.61106C24.6445 7.85518 24.7667 8.16588 24.7667 8.54316C24.7667 8.92045 24.6445 9.23115 24.4001 9.47527L17.8667 16L24.4001 22.5248C24.6445 22.7689 24.7667 23.0796 24.7667 23.4569C24.7667 23.8342 24.6445 24.1449 24.4001 24.389C24.1556 24.6331 23.8445 24.7552 23.4667 24.7552C23.089 24.7552 22.7778 24.6331 22.5334 24.389L16.0001 17.8642Z" fill="white"/>
+            </svg>
+          </button>
+          <div class="overlay-contact-top-box">
+            <img src="./assets/icons-header/logo-all-white.svg" alt="" class="icon-logo">
+            <div class="overlay-contact-top-box-title">Add contact</div>
+            <div class="overlay-add-contact-top-box-subtitle">Tasks are better with a team!</div>
+          </div>
+        </div>
+        <div class="overlay-contact-bottom">
+          <div class="overlay-contact-userbox">
+            <div class="avatar-big-placeholder">
+              <img src="./assets/icons-contacts/person-white.svg" alt="" class="icon-avatar-placeholder">
+            </div>
+            <div class="overlay-contact-form" aria-label="Add contact form">
+              <div class="form-group">
+                <label for="overlay-add-name" class="visually-hidden">Name</label>
+                <input id="overlay-add-name" name="name" type="text" placeholder="Name">
+                <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
+              </div>
+              <div class="form-group">
+                <label for="overlay-add-email" class="visually-hidden">Email</label>
+                <input id="overlay-add-email" name="email" type="email" placeholder="Email">
+                <img src="./assets/icons-signup/mail.svg" alt="" class="input-icon">
+              </div>
+              <div class="form-group">
+                <label for="overlay-add-phone" class="visually-hidden">Phone</label>
+                <input id="overlay-add-phone" name="phone" type="tel" placeholder="Phone">
+                <img src="./assets/icons-contacts/call.svg" alt="" class="input-icon">
+              </div>
+            </div>
+            <div class="buttons-container">
+              <button class="cancel-btn" onclick="closeContactOverlay()">
+                Cancel<img src="./assets/icons-contacts/cancel.png" alt="">
+              </button>
+              <button class="create-btn" onclick="createContact()">
+                Create contact<img src="./assets/icons-contacts/check.png" alt="">
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+  `;
+}
+
+// Edit Contact Overlay HTML rendern
+function renderEditContactOverlay(contactData) {
+  return `
+    <div class="overlay-edit-contact" id="overlay-edit-contact">
+        <div class="overlay-edit-contact-top">
+            <button class="overlay-close-button" onclick="closeContactOverlay()" aria-label="Close window">
+                <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16.0001 17.8642L9.46673 24.389C9.22229 24.6331 8.91118 24.7552 8.5334 24.7552C8.15562 24.7552 7.84451 24.6331 7.60007 24.389C7.35562 24.1449 7.2334 23.8342 7.2334 23.4569C7.2334 23.0796 7.35562 22.7689 7.60007 22.5248L14.1334 16L7.60007 9.47527C7.35562 9.23115 7.2334 8.92045 7.2334 8.54316C7.2334 8.16588 7.35562 7.85518 7.60007 7.61106C7.84451 7.36693 8.15562 7.24487 8.5334 7.24487C8.91118 7.24487 9.22229 7.36693 9.46673 7.61106L16.0001 14.1358L22.5334 7.61106C22.7778 7.36693 23.089 7.24487 23.4667 7.24487C23.8445 7.24487 24.1556 7.36693 24.4001 7.61106C24.6445 7.85518 24.7667 8.16588 24.7667 8.54316C24.7667 8.92045 24.6445 9.23115 24.4001 9.47527L17.8667 16L24.4001 22.5248C24.6445 22.7689 24.7667 23.0796 24.7667 23.4569C24.7667 23.8342 24.6445 24.1449 24.4001 24.389C24.1556 24.6331 23.8445 24.7552 23.4667 24.7552C23.089 24.7552 22.7778 24.6331 22.5334 24.389L16.0001 17.8642Z" fill="white"/>
+                </svg>
+            </button>
+
+            <div class="overlay-contact-top-box">
+                <img src="./assets/icons-header/logo-all-white.svg" alt="" class="icon-logo">
+                <div class="overlay-contact-top-box-title">Edit contact</div>
+            </div>
+        </div>
+
+        <div class="overlay-contact-bottom">
+            <div class="overlay-contact-userbox">
+                <div class="avatar-big" style="background-color: ${contactData.color};">${contactData.initials}</div>
+
+                <div class="overlay-contact-form" aria-label="Edit contact form">
+                    <div class="form-group">
+                        <label for="overlay-edit-name" class="visually-hidden">Name</label>
+                        <input id="overlay-edit-name" name="name" type="text" placeholder="Name" value="${contactData.name}">
+                        <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">                        <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="overlay-edit-email" class="visually-hidden">Email</label>
+                        <input id="overlay-edit-email" name="email" type="email" placeholder="Email" value="${contactData.email}">                        <img src="./assets/icons-signup/mail.svg" alt="" class="input-icon">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="overlay-edit-phone" class="visually-hidden">Phone</label>
+                        <input id="overlay-edit-phone" name="phone" type="tel" placeholder="Phone" value="${contactData.phone || ''}">                        <img src="./assets/icons-contacts/call.svg" alt="" class="input-icon">
+                    </div>
+                </div>
+
+                <div class="buttons-container">
+                    <button class="delete-btn" onclick="deleteContact('${contactData.email}')">Delete</button>
+                    <button class="save-btn"><span class="save-btn-text">Save</span><img src="./assets/icons-contacts/check.png" alt=""></button>
+                </div>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+function showAddContactOverlay() {
+  // Overlay-HTML rendern
+  document.getElementById('overlay-add-contact-container').innerHTML = renderAddContactOverlay();
+  
+  // Backdrop anzeigen
+  document.getElementById('overlay-contacts').classList.add('show');
+  
+  // Overlay einsliden (kleiner Delay für smooth Animation)
+  setTimeout(() => {
+      document.getElementById('overlay-add-contact').classList.add('show');
+  }, 10);
+}
+
+function showEditContactOverlay(contactData) {
+  // Overlay-HTML rendern
+  document.getElementById('overlay-edit-contact-container').innerHTML = renderEditContactOverlay(contactData);
+  
+  // Backdrop anzeigen
+  document.getElementById('overlay-contacts').classList.add('show');
+  
+  // Overlay einsliden (kleiner Delay für smooth Animation)
+  setTimeout(() => {
+      document.getElementById('overlay-edit-contact').classList.add('show');
+  }, 10);
+}
+
+function closeContactOverlay() {
+  // Prüfen welches Overlay aktiv ist und entsprechend schließen
+  const addOverlay = document.getElementById('overlay-add-contact');
+  const editOverlay = document.getElementById('overlay-edit-contact');
+  
+  if (addOverlay && addOverlay.classList.contains('show')) {
+    addOverlay.classList.remove('show');
+    setTimeout(() => {
+      document.getElementById('overlay-contacts').classList.remove('show');
+      document.getElementById('overlay-add-contact-container').innerHTML = '';
+    }, 300);
+  }
+  
+  if (editOverlay && editOverlay.classList.contains('show')) {
+    editOverlay.classList.remove('show');
+    setTimeout(() => {
+      document.getElementById('overlay-contacts').classList.remove('show');
+      document.getElementById('overlay-edit-contact-container').innerHTML = '';
+    }, 300);
+  }
+}
+
+
+/**
+ * Generates initials from a user's name
+ * @param {string} name - The user's full name
+ * @returns {string} - The user's initials (max 2 characters)
+ */
+function getInitials(name) {
+    if (!name) return "";
+    const parts = name.trim().split(" ");
+    return parts.map(p => p[0].toUpperCase()).slice(0, 2).join("");
+}
+
+/**
+ * Generates a color based on the user's name
+ * @param {string} name - The user's name
+ * @returns {string} - HSL color string
+ */
+function getColorFromName(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash) % 360;
+    return `hsl(${hue}, 70%, 50%)`;
+}
+
+/**
+ * Validates email format
+ * @param {string} email - Email to validate
+ * @returns {boolean} - Returns true if email is valid
+ */
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }
