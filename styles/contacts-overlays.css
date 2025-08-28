@@ -91,6 +91,7 @@
 .delete-link:hover {
   font-weight: 700;
   color: #005DFF;
+  cursor: pointer;
 }
 
 .icon-edit,
@@ -126,7 +127,7 @@ filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99
 }
 
 .floating-contact-email {
-    color: #005DFF;
+  color: #005DFF;
 }
 
 @media (min-width: 769px) {
