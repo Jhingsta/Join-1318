@@ -96,7 +96,7 @@ function renderBoard() {
   const columns = {
     todo: document.getElementById('column-todo'),
     inProgress: document.getElementById('column-inProgress'),
-    awaitingFeedback: document.getElementById('column-awaitingFeedback'),
+    awaitFeedback: document.getElementById('column-awaitFeedback'),
     done: document.getElementById('column-done'),
   };
 
@@ -194,7 +194,7 @@ function readableStatus(status) {
       return 'to do';
     case 'inProgress':
       return 'progress';
-    case 'awaitingFeedback':
+    case 'awaitFeedback':
       return 'awaiting feedback';
     case 'done':
       return 'done';
