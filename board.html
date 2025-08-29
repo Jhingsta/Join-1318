@@ -172,6 +172,87 @@
         </div>
     </div>
 
+    <!-- Task Details Modal -->
+    <div id="task-details-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Task Details</h2>
+                <div class="task-actions">
+                    <button class="edit-task-btn" id="edit-task-btn" title="Edit Task">
+                        <img src="./assets/icons-addTask/Property 1=edit.png" alt="Edit">
+                    </button>
+                    <button class="delete-task-btn" id="delete-task-btn" title="Delete Task">
+                        <img src="./assets/icons-addTask/Property 1=delete.png" alt="Delete">
+                    </button>
+                </div>
+                <button type="button" id="close-task-details-btn" class="modal-close" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="task-details-section">
+                    <label class="modal-field">
+                        <span>Title</span>
+                        <div class="task-value" id="task-title-display"></div>
+                    </label>
+                </div>
+
+                <div class="task-details-section">
+                    <label class="modal-field">
+                        <span>Description</span>
+                        <div class="task-value" id="task-description-display"></div>
+                    </label>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="task-details-section">
+                        <label class="modal-field">
+                            <span>Due Date</span>
+                            <div class="task-value" id="task-due-date-display"></div>
+                        </label>
+                    </div>
+                    <div class="task-details-section">
+                        <label class="modal-field">
+                            <span>Priority</span>
+                            <div class="task-value" id="task-priority-display"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-grid">
+                    <div class="task-details-section">
+                        <label class="modal-field">
+                            <span>Status</span>
+                            <div class="task-value" id="task-status-display"></div>
+                        </label>
+                    </div>
+                    <div class="task-details-section">
+                        <label class="modal-field">
+                            <span>Category</span>
+                            <div class="task-value" id="task-category-display"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="task-details-section">
+                    <label class="modal-field">
+                        <span>Assigned To</span>
+                        <div class="task-value" id="task-assigned-display"></div>
+                    </label>
+                </div>
+
+                <div class="task-details-section">
+                    <label class="modal-field">
+                        <span>Subtasks</span>
+                        <div class="task-value" id="task-subtasks-display"></div>
+                    </label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="close-details-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="./scripts/auth.js"></script>
         <script src="./scripts/header.js"></script>
         <script>
