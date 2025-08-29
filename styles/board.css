@@ -327,6 +327,17 @@ input[type="text"]::-webkit-search-cancel-button {
     justify-content: space-between;
 }
 
+/* Drag & Drop helpers */
+.task-card.dragging {
+    opacity: 0.6;
+    cursor: grabbing;
+}
+
+.tasks.drag-over {
+    background: #f0f6ff;
+    outline: 2px dashed #4589ff;
+    outline-offset: 4px;
+    border-radius: 12px;
 /* Hintergrund-Overlay */
 .modal-overlay {
     position: fixed;
