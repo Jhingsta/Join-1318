@@ -95,6 +95,7 @@ header {
   padding: 8px 16px;
   text-decoration: none;
   color: #42526E;
+  border-radius: 12px;
   font-size: 19px;
   font-weight: 400;
   border: none;
@@ -104,7 +105,7 @@ header {
 }
 
 .dropdown-item:hover {
-  color: #005DFF;
+  background-color: #E3EEFF;
 }
 
 .menu-item-help {
@@ -166,5 +167,8 @@ header {
   }
   .dropdown-item {
     color: #005DFF;
+  }
+  .dropdown-item:hover {
+    background-color: transparent;
   }
 }

@@ -274,7 +274,7 @@ nav {
 ul {
   display: flex;
   flex-direction: row;
-  gap: 8px;
+  gap: 16px;
   list-style: none;
 }
 
@@ -284,4 +284,8 @@ nav a {
   padding: 8px;
   font-size: 16px;
   font-weight: 400;
+}
+
+nav a:hover {
+  color: #005DFF;
 }

@@ -856,7 +856,7 @@ body {
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-    pointer-events: none; 
+    pointer-events: none;
 }
 
 .assigned-arrow-icon {
@@ -868,30 +868,40 @@ body {
 }
 
 .assigned-arrow-icon {
-    display: inline-block;       /* nötig, damit background sichtbar ist */
-    padding: 4px;                /* Abstand zum Rand */
-    border-radius: 15px;         /* Abrundung */
+    display: inline-block;
+    /* nötig, damit background sichtbar ist */
+    padding: 4px;
+    /* Abstand zum Rand */
+    border-radius: 15px;
+    /* Abrundung */
     transition: background-color 0.2s ease, transform 0.2s ease;
     cursor: pointer;
 }
 
 .assigned-arrow-icon:hover {
-    background-color: #D2E3FF;   /* Hover-Farbe */
-    transform: scale(1.05);      /* optional leichter Zoom */
+    background-color: #D2E3FF;
+    /* Hover-Farbe */
+    transform: scale(1.05);
+    /* optional leichter Zoom */
 }
 
 
 .assigned-arrow-icon {
-    border-radius: 15px;              /* Abrundung */
+    border-radius: 15px;
+    /* Abrundung */
     transition: background-color 0.2s ease, transform 0.2s ease;
     cursor: pointer;
-    padding: 4px;                     /* damit Hintergrund sichtbar wird */
-    display: inline-block;            /* nötig für padding & background */
+    padding: 4px;
+    /* damit Hintergrund sichtbar wird */
+    display: inline-block;
+    /* nötig für padding & background */
 }
 
 .assigned-arrow-icon:hover {
-    background-color: #D2E3FF;        /* Hover-Farbe */
-    transform: scale(1.1);            /* optional leichter Zoom */
+    background-color: #D2E3FF;
+    /* Hover-Farbe */
+    transform: scale(1.1);
+    /* optional leichter Zoom */
 }
 
 .assigned-display {
@@ -909,7 +919,8 @@ body {
 }
 
 .assigned-text-input-container {
-    flex: 1; /* nimmt den verbleibenden Platz ein */
+    flex: 1;
+    /* nimmt den verbleibenden Platz ein */
 }
 
 .assigned-arrow-container-fixed {
@@ -926,384 +937,140 @@ body {
     background-color: #D2E3FF;
 }
 
-.hover-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none; /* <-- das ist der wichtigste Punkt */
-}
-
+/* ======================
+   Dropdown Zeilen
+   ====================== */
 .dropdown-item {
-    background-color: white; /* Standardfarbe */
+    background-color: white;
+    /* Standardfarbe */
     transition: background-color 0.2s;
 }
 
-/* Selektierte Zeile nach Klick */
-.dropdown-item.active {
-  background: #005DFF;
-  color: #fff;
-}
-
+/* Unselektiert + Hover */
 .dropdown-item:hover {
-    background-color: #D2E3FF; /* Hover-Farbe */
+    background-color: #D2E3FF;
 }
 
+/* Selektiert (kein Hover) */
 .dropdown-item.active {
-    background-color: #4589FF; /* Farbe bei ausgewähltem Element */
+    background-color: #4589FF;
+    color:white;
 }
 
+/* Selektiert + Hover */
 .dropdown-item.active:hover {
-    background-color: #005DFF; /* Hover-Farbe auch bei aktivem Element */
+    background-color: #005DFF;
+    color:white;
 }
 
-/* Selektierte Zeile wenn Maus weg ist → 4589FF */
+/* Selektiert + Maus weg */
 .dropdown-item.active.mouse-leave {
-  background: #4589FF;
+    background-color: #4589FF;
 }
-
-/* Selektierte Zeile + Hover → wieder #005DFF */
-.dropdown-item.active:hover {
-  background: #005DFF;
-}
-
-  /* Checkbox Wrapper */
-.checkbox-wrapper {
-  position: relative;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-/* Selektierte Zeile, Checkbox standardmäßig unsichtbar */
-.dropdown-item.active .checkbox-wrapper img {
-  opacity: 0.6;
-  filter: brightness(0.2) invert(0.2); /* etwas dunkler als reines Weiß */
-}
-
-/* Selektiert + Checkbox geklickt → Haken weiß */
-.dropdown-item.active .checkbox-wrapper.checked img {
-  opacity: 1;
-  filter: brightness(0) invert(1); /* macht Icon/Haken weiß */
-}
-
-/* Hover über die selektierte Zeile → Checkbox weiß */
-.dropdown-item.active:hover .checkbox-wrapper img {
-  opacity: 1;
-  filter: brightness(0) invert(1); /* weiß */
-}
-
-/* Checkbox Hover im selektierten Zustand → Checkbox blau */
-.dropdown-item.active .checkbox-wrapper:hover img {
-  opacity: 1;
-  filter: none; /* Original Blau-Icon */
-}
-
-/* Checkbox-Bild standardmäßig */
-
-/* Checkbox-Bild standardmäßig */
-.checkbox-wrapper img {
-  width: 100%;
-  height: 100%;
-  transition: opacity 0.2s, filter 0.2s;
-  position: relative;
-  z-index: 1;
-}
-
-/* Basis Overlay */
-.checkbox-wrapper .hover-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 28px;
-  height: 28px;
-  background: transparent;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s, background 0.2s;
-  z-index: 0;
-}
-
-/* ✅ Nur wenn man über die Checkbox hovert in UNSELEKTIERTEM Zustand */
-.dropdown-item:not(.active) .checkbox-wrapper:hover .hover-overlay {
-  opacity: 1;
-  background: #FFFFFF;
-}
-
-/* Selektierter Zustand: Checkbox standardmäßig unsichtbar */
-.dropdown-item.active .checkbox-wrapper img {
-  opacity: 0;
-  filter: none;
-}
-
-/* Hover über die selektierte Zeile → Checkbox weiß, kein Kreis */
-.dropdown-item.active:hover .checkbox-wrapper img {
-  opacity: 1;
-  filter: brightness(0) invert(1); /* weiß */
-}
-
-/* Hover auf die Checkbox selbst im selektierten Zustand */
-.dropdown-item.active .checkbox-wrapper:hover img {
-  opacity: 1;
-  filter: none; /* blau */
-}
-
-/* Aktiv + Hover auf Checkbox → Hintergrund weiß sichtbar */
-.dropdown-item.active .checkbox-wrapper:hover .hover-overlay {
-  opacity: 1;
-  background: #FFFFFF; /* weißer Hintergrund */
-}
-
-/* Wenn Checkbox geklickt (checked) → bleibt weiß ohne Kreis */
-.dropdown-item.active .checkbox-wrapper.checked img {
-  filter: brightness(0) invert(1); /* weiß */
-}
-
-/* Hover über die Checkbox in UNSELEKTIERTEM Zustand → weißer Kreis */
-.dropdown-item:not(.active) .checkbox-wrapper:hover .hover-overlay {
-  opacity: 1;
-  background: #FFFFFF;
-}
-
-/* Transparenter Kreis über der weißen Checkbox beim Hover */
-.dropdown-item.active .checkbox-wrapper.checked:hover .hover-overlay,
-.dropdown-item.active .checkbox-wrapper.checked:hover .checkbox-wrapper::after {
-  opacity: 0.9;        /* leicht transparent */
-  background: #FFFFFF; /* weiß */
-}
-
-/* Stelle sicher, dass der Kreis über der Checkbox liegt */
-.dropdown-item.active .checkbox-wrapper.checked .hover-overlay {
-opacity: 0;
-}
-
-
 
 /* ======================
-   Task Details Modal Styles
+   Checkbox Wrapper
    ====================== */
-
-/* Task Actions Header */
-.task-actions {
-    display: flex;
-    gap: 8px;
-    margin-right: 16px;
-}
-
-.edit-task-btn,
-.delete-task-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 6px;
-    transition: background-color 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.edit-task-btn:hover,
-.delete-task-btn:hover {
-    background-color: #f0f0f0;
-}
-
-.edit-task-btn img,
-.delete-task-btn img {
-    width: 18px;
-    height: 18px;
-}
-
-/* Task Details Sections */
-.task-details-section {
-    margin-bottom: 20px;
-}
-
-.task-value {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
-    color: #42526E;
-    min-height: 24px;
-    padding: 8px 12px;
-    background-color: #f8f9fa;
-    border-radius: 6px;
-    border: 1px solid #e9ecef;
-    line-height: 1.4;
-}
-
-/* Priority Badge */
-.task-value.priority-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 14px;
-    color: white;
-    border: none;
-    background-color: #6c757d;
-}
-
-.task-value.priority-urgent {
-    background-color: #dc3545;
-}
-
-.task-value.priority-medium {
-    background-color: #fd7e14;
-}
-
-.task-value.priority-low {
-    background-color: #28a745;
-}
-
-/* Assigned Contacts */
-.task-value.assigned-contacts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    background: none;
-    border: none;
-    padding: 0;
-}
-
-.assigned-contact {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    background-color: #e3f2fd;
-    border-radius: 20px;
-    font-size: 14px;
-    color: #1976d2;
-    border: 1px solid #bbdefb;
-}
-
-.contact-avatar {
+.checkbox-wrapper {
+    position: relative;
     width: 24px;
     height: 24px;
-    border-radius: 50%;
-    background-color: #1976d2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 12px;
-    flex-shrink: 0;
-}
-
-/* Subtasks */
-.task-value.subtasks-list {
-    background: none;
-    border: none;
-    padding: 0;
-}
-
-.subtask-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 0;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.subtask-item:last-child {
-    border-bottom: none;
-}
-
-.subtask-checkbox {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #6c757d;
-    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
 }
 
-.subtask-checkbox.checked {
-    background-color: #28a745;
-    border-color: #28a745;
+/* ======================
+   Checkbox Image
+   ====================== */
+.checkbox-wrapper img {
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.2s, filter 0.2s;
+    z-index: 1;
 }
 
-.subtask-checkbox.checked::after {
-    content: '✓';
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
+/* ======================
+   Hover Overlay (weißer Kreis)
+   ====================== */
+.checkbox-wrapper .hover-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.2s, background 0.2s;
 }
 
-.subtask-text {
-    font-size: 14px;
-    color: #495057;
-    flex: 1;
+/* ======================
+   Unselektierte Zeilen
+   ====================== */
+
+/* Hover über Checkbox → Overlay sichtbar */
+.dropdown-item:not(.active) .checkbox-wrapper:hover .hover-overlay {
+    opacity: 1;
+    background: #FFFFFF; 
 }
 
-/* Empty State */
-.task-value.empty {
-    color: #6c757d;
-    font-style: italic;
-    text-align: center;
-    background-color: #f8f9fa;
+/* Checkbox in unselektierter Zeile → immer sichtbar */
+.dropdown-item:not(.active) .checkbox-wrapper img {
+    opacity: 1;
+    filter: none; /* normale Farbe */
 }
 
-/* Status Display */
-.task-value.status-badge {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 14px;
-    color: white;
-    border: none;
-    text-transform: capitalize;
+/* ======================
+   Selektierte Zeile
+   ====================== */
+
+/* Selektiert + nicht hover Zeile + nicht checked → unsichtbar */
+.dropdown-item.active:not(:hover) .checkbox-wrapper:not(.checked) img {
+    opacity: 0;
 }
 
-.task-value.status-todo {
-    background-color: #6c757d;
+/* Selektiert + nicht hover Zeile + checked → weiß */
+.dropdown-item.active:not(:hover) .checkbox-wrapper.checked img {
+    opacity: 1;
+    filter: brightness(0) invert(1);
 }
 
-.task-value.status-inProgress {
-    background-color: #17a2b8;
+/* Selektiert + hover Zeile + kein Hover auf Checkbox → weiß */
+.dropdown-item.active:hover .checkbox-wrapper:not(:hover) img {
+    opacity: 1;
+    filter: brightness(0) invert(1); /* komplett weiß */
+    z-index: 1;
 }
 
-.task-value.status-awaitingFeedback {
-    background-color: #ffc107;
-    color: #212529;
+/* Selektiert + hover Zeile + Hover auf Checkbox → blau + weißer Kreis */
+.dropdown-item.active:hover .checkbox-wrapper:not(.checked):hover img {
+    opacity: 1;
+    filter: none; /* blau */
+    z-index: 1;
 }
 
-.task-value.status-done {
-    background-color: #28a745;
+.dropdown-item.active:hover .checkbox-wrapper:not(.checked):hover .hover-overlay {
+    opacity: 1;
+    background: #FFFFFF; /* weißer Kreis */
+    z-index: 0;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .task-actions {
-        margin-right: 8px;
-    }
-    
-    .edit-task-btn,
-    .delete-task-btn {
-        padding: 4px;
-    }
-    
-    .edit-task-btn img,
-    .delete-task-btn img {
-        width: 16px;
-        height: 16px;
-    }
-    
-    .task-value {
-        font-size: 14px;
-        padding: 6px 10px;
-    }
+/* Selektiert + Checkbox gesetzt + Hover → leicht transparenter Overlay über Haken + Checkbox */
+.dropdown-item.active .checkbox-wrapper.checked:hover .hover-overlay {
+    opacity: 0.9; /* leicht transparent */
+    background: #FFFFFF;
+    z-index: 1;
 }
 
+/* Checkbox und Haken bleiben sichtbar unter Overlay */
+.dropdown-item.active .checkbox-wrapper.checked:hover img {
+    opacity: 1;
+    filter: brightness(0) invert(1); /* weiß */
+    z-index: 0;
+}
 

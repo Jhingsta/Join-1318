@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/header.css">
     <link rel="stylesheet" href="./styles/sidebar.css">
+
     <link rel="stylesheet" href="./styles/board.css">
+
     <link rel="stylesheet" href="./styles/addtask.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
     <title>Board</title>
@@ -100,8 +102,8 @@
                 <div class="task-column" data-status="inProgress">
                     <div class="tasks" id="column-inProgress"></div>
                 </div>
-                <div class="task-column" data-status="awaitingFeedback">
-                    <div class="tasks" id="column-awaitingFeedback"></div>
+                <div class="task-column" data-status="awaitFeedback">
+                    <div class="tasks" id="column-awaitFeedback"></div>
                 </div>
                 <div class="task-column" data-status="done">
                     <div class="tasks" id="column-done"></div>
@@ -114,62 +116,127 @@
     <!-- Add Task Modal -->
     <div id="add-task-modal" class="modal-overlay hidden">
         <div class="modal">
-            <div class="modal-header">
-                <h2>Create Task</h2>
-                <button type="button" id="modal-close" class="modal-close" aria-label="Close">×</button>
+            <div id="header-container">
+                <div id="header-content">Add Task</div>
             </div>
-            <form id="add-task-form" class="modal-body">
-                <label class="modal-field">
-                    <span>Title</span>
-                    <input id="task-title" type="text" placeholder="Enter title" required>
-                </label>
-                <label class="modal-field">
-                    <span>Description</span>
-                    <textarea id="task-description" placeholder="Enter description" rows="4"></textarea>
-                </label>
-                <div class="modal-grid">
-                    <label class="modal-field">
-                        <span>Due date</span>
-                        <input id="task-dueDate" type="date">
-                    </label>
-                    <label class="modal-field">
-                        <span>Priority</span>
-                        <select id="task-priority">
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="urgent">Urgent</option>
-                        </select>
-                    </label>
+            <div class="main-container-modal">
+                <div class="title-container">
+                    <input type="text" class="title-input" placeholder="Enter a title" required>
+                    <span class="error-message">This field is required</span>
                 </div>
-                <div class="modal-grid">
-                    <label class="modal-field">
-                        <span>Status</span>
-                        <select id="task-status">
-                            <option value="todo" selected>To do</option>
-                            <option value="inProgress">In progress</option>
-                            <option value="awaitingFeedback">Awaiting feedback</option>
-                            <option value="done">Done</option>
-                        </select>
-                    </label>
-                    <div class="modal-grid mini">
-                        <label class="modal-field">
-                            <span>Subtasks done</span>
-                            <input id="subtasks-done" type="number" min="0" value="0">
-                        </label>
-                        <label class="modal-field">
-                            <span>Subtasks total</span>
-                            <input id="subtasks-total" type="number" min="0" value="0">
-                        </label>
+
+                <div class="description-container">
+                    <div class="description-header">
+                        <span class="desc-title">Description</span>
+                        <span class="desc-optional">(optional)</span>
+                    </div>
+                    <textarea class="description-input" placeholder="Enter a description"></textarea>
+                </div>
+                <div class="due-date-container">
+                    <div class="due-date-header">Due date</div>
+                    <div class="due-date-content">
+                        <input type="date" class="due-date-input" required>
+                        <div class="due-date-icon-container">
+                            <div class="due-date-icon"></div>
+                        </div>
+                    </div>
+                    <span class="error-message">This field is required</span>
+                </div>
+
+                <div class="priority-container">
+                    <div class="priority-header">Priority</div>
+                    <div class="priority-content">
+                        <button type="button" class="priority-frame">Urgent <img
+                                src="./assets/icons-addTask/Prio alta.svg" alt=""></button>
+                        <button type="button" class="priority-frame active">Medium <img
+                                src="./assets/icons-addTask/Capa 2.svg" alt=""></button>
+                        <button type="button" class="priority-frame">Low <img src="./assets/icons-addTask/Prio baja.svg"
+                                alt=""></button>
                     </div>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" id="cancel-btn" class="btn-secondary">Cancel</button>
-                    <button type="submit" class="add-task-btn">
-                        Save Task
-                        <img src="./assets/icons-board/plus.png" alt="">
-                    </button>
+
+                <div class="assigned-container">
+                    <div class="assigned-header">
+                        Assigned to <span class="optional">(optional)</span>
+                    </div>
+
+                    <div class="assigned-content">
+                        <!-- Text bleibt im eigenen Container -->
+                        <div class="assigned-text-container">
+                            <div class="assigned-text">Select contacts to assign</div>
+                        </div>
+
+                        <!-- Input für Suche -->
+                        <input type="text" class="assigned-input" placeholder="" style="display:none;">
+
+                        <!-- Pfeil jetzt in separatem Container -->
+                        <div class="assigned-arrow-container">
+                            <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts"
+                                class="assigned-arrow-icon">
+                        </div>
+
+                        <!-- Dropdown -->
+                        <div class="dropdown-menu" id="assigned-dropdown"></div>
+                    </div>
+
+                    <div class="selected-avatars-container"></div>
                 </div>
-            </form>
+
+
+                <div class="category-container">
+                    <div class="assigned-header">
+                        Category
+                    </div>
+                    <div class="category-content">
+                        <div class="assigned-text">Select task category</div>
+                        <div class="assigned-arrow-container">
+                            <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts"
+                                class="assigned-arrow-icon">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="task-container">
+                    <div class="assigned-header">
+                        Subtasks <span class="optional">(optional)</span>
+                    </div>
+
+                    <div class="task-content-addtask">
+                        <input type="text" id="subtask-text" class="subtask-text" placeholder="Add new subtask">
+
+                        <div class="assigned-arrow-container">
+
+                            <img id="plus-btn" src="/assets/icons-addTask/Subtask's icons.png" alt="Add subtask"
+                                class="assigned-arrow-icon">
+
+                            <img id="cancel-btn" src="/assets/icons-addTask/Subtask cancel.png" alt="Cancel subtask"
+                                class="assigned-arrow-icon" style="display:none;">
+
+                            <img id="check-btn" src="/assets/icons-addTask/Subtask's icons (1).png"
+                                alt="Confirm subtask" class="assigned-arrow-icon" style="display:none;">
+
+                        </div>
+                    </div>
+
+
+                    <div id="task-dropdown" class="task-dropdown" style="display:none;">
+
+                    </div>
+
+                    <ul id="subtask-list" class="subtask-list"></ul>
+                </div>
+
+
+
+                <div class="end-spacer"></div>
+            </div>
+            <!-- Button-Bereich am Ende -->
+            <div class="modal-footer">
+                <button class="add-task-btn" id="create-task-btn">
+                    Create Task
+                    <img src="./assets/icons-board/plus.png" alt="">
+                </button>
+            </div>
         </div>
     </div>
 
@@ -255,16 +322,17 @@
     </div>
 
     <script src="./scripts/auth.js"></script>
-        <script src="./scripts/header.js"></script>
-        <script>
-            w3.includeHTML(() => {            
-                updateVisibilityWithRetry();
-                updateUserLogo();
-                });
-        </script>
+    <script src="./scripts/header.js"></script>
+    <script>
+        w3.includeHTML(() => {
+            updateVisibilityWithRetry();
+            updateUserLogo();
+            setActiveNavigation();
+        });
+    </script>
     <script src="./scripts/taskmanager.js"></script>
     <script src="./scripts/board.js"></script>
-
+    <script src="./scripts/addtask.js"></script>
 </body>
 
 </html>
