@@ -48,12 +48,5 @@ window.authSystem = {
     logUserStatus: function() { 
         console.log("logUserStatus wurde entfernt - keine User/Guest-Logik mehr nötig"); 
     },
-    isGuest: function() { 
-        console.log("isGuest wurde entfernt - keine User/Guest-Logik mehr nötig"); 
-        return false; 
-    },
-    getCurrentUser: function() { 
-        console.log("getCurrentUser wurde entfernt - keine User/Guest-Logik mehr nötig"); 
-        return null; 
-    }
+
 };
