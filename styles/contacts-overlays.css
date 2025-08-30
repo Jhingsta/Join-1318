@@ -152,7 +152,7 @@ filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99
   visibility: visible;
 }
 
-/* Add Contact Container */
+/* Contact Container */
 
 .overlay-add-contact {
   position: fixed;
