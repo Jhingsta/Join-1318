@@ -1,5 +1,12 @@
-// Vereinfachte Navigation ohne User/Guest-Unterscheidung
-// Nur noch Active-Navigation-Funktionalität bleibt erhalten
+function getCurrentUser() {
+  const userJson = localStorage.getItem("currentUser");
+  return userJson ? JSON.parse(userJson) : null;
+}
+
+function isGuest() {
+  const user = getCurrentUser();
+  return user?.name === "Guest";
+}
 
 // Navigation Active Status - Für w3.includeHTML() angepasst
 function setActiveNavigation() {
