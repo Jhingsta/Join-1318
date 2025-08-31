@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/header.css">
     <link rel="stylesheet" href="./styles/sidebar.css">
-    <link rel="stylesheet" href="./styles/privacyPolicy.css">
+    <link rel="stylesheet" href="./styles/privacypolicy.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
     <title>Privacy Policy</title>
 </head>
@@ -164,13 +164,14 @@
         </main>
     </div>
 
-   <script src="./scripts/auth.js"></script>
-        <script src="./scripts/header.js"></script>
-        <script>
-            w3.includeHTML(() => {            
-                updateVisibilityWithRetry();
-                updateUserLogo();
-                });
-        </script>
+    <script src="./scripts/auth.js"></script>
+    <script src="./scripts/header.js"></script>
+    <script src="./scripts/visitor.js"></script>
+    <script>
+        w3.includeHTML(() => {            
+            updateUserLogo();
+            setActiveNavigation();
+            });
+    </script>
 </body>
 </html>

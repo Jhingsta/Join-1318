@@ -19,7 +19,7 @@
     <div class="layout">
 
         <aside role="complementary" aria-label="Sidebar navigation">
-            <div w3-include-html="./sidebar.html"></div>
+            <div id="sidebar-container"></div>
         </aside>
 
         <main>
@@ -123,6 +123,7 @@
 
     <script src="./scripts/auth.js"></script>
     <script src="./scripts/header.js"></script>
+    <script src="./scripts/visitor.js"></script>
     <script>
         w3.includeHTML(() => {            
             updateUserLogo();

@@ -38,15 +38,3 @@ function setActiveNavigation() {
       }
   });
 }
-
-// Falls andere Teile der App diese Funktionen erwarten, 
-// stelle leere Dummy-Funktionen zur Verfügung um Fehler zu vermeiden
-window.authSystem = {
-    updateVisibility: function() { 
-        console.log("updateVisibility wurde entfernt - keine User/Guest-Logik mehr nötig"); 
-    },
-    logUserStatus: function() { 
-        console.log("logUserStatus wurde entfernt - keine User/Guest-Logik mehr nötig"); 
-    },
-
-};
