@@ -437,28 +437,6 @@ function getTaskData() {
     return { title, description, dueDate, priority, assignedTo, category, subtasks };
 }
 
-// ----------------------------
-// EventListener: Create Task
-// ----------------------------
-// const createTaskBtn = document.querySelector(".sign-up-btn");
-// createTaskBtn.addEventListener("click", () => {
-//     const taskData = getTaskData();
-
-//     // Pflichtfelder prüfen
-//     if (!taskData.title || !taskData.dueDate) {
-//         alert("Bitte fülle alle Pflichtfelder aus!");
-//         return;
-//     }
-
-//     // Test-Ausgabe in der Konsole
-//     console.log("Task-Daten:", taskData);
-
-//     // Hier später Firebase-Aufruf einfügen
-// });
-
-// ----------------------------
-// EventListener: Clear / Reset
-// ----------------------------
 const resetBtn = document.querySelector(".guest-btn");
 resetBtn.addEventListener("click", () => {
     // Felder zurücksetzen
