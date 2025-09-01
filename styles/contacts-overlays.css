@@ -155,7 +155,7 @@ filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99
 /* Contact Container */
 
 .overlay-add-contact {
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   max-width: 580px;
