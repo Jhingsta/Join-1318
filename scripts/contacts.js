@@ -185,6 +185,7 @@ async function deleteContact(email) {
         console.log("User deleted successfully");
         // Panel schließen und Liste neu laden
         closeFloatingContact();
+        closeContactOverlay();
         loadUsers();
       } else {
         console.error("Failed to delete user:", deleteResponse.status);
@@ -252,7 +253,8 @@ function renderAddContactOverlay() {
                 Cancel<img src="./assets/icons-contacts/cancel.png" alt="">
               </button>
               <button class="create-btn" onclick="createContact()">
-                Create contact<img src="./assets/icons-contacts/check.png" alt="">
+                Create contact
+                <img src="./assets/icons-contacts/check.png" alt="">
               </button>
             </div>
           </div>
@@ -262,7 +264,7 @@ function renderAddContactOverlay() {
 }
 
 // Edit Contact Overlay HTML rendern
-function renderEditContactOverlay(contactData) {
+function renderEditContactOverlay(user) {
   return `
     <div class="overlay-edit-contact" id="overlay-edit-contact">
         <div class="overlay-edit-contact-top">
@@ -280,29 +282,33 @@ function renderEditContactOverlay(contactData) {
 
         <div class="overlay-contact-bottom">
             <div class="overlay-contact-userbox">
-                <div class="avatar-big" style="background-color: ${contactData.color};">${contactData.initials}</div>
+                <div class="avatar-big" style="background-color: ${user.color};">${user.initials}</div>
 
                 <div class="overlay-contact-form" aria-label="Edit contact form">
                     <div class="form-group">
                         <label for="overlay-edit-name" class="visually-hidden">Name</label>
-                        <input id="overlay-edit-name" name="name" type="text" placeholder="Name" value="${contactData.name}">
-                        <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">                        <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
+                        <input id="overlay-edit-name" name="name" type="text" placeholder="Name" value="${user.name}">
+                        <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
+                        <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
                     </div>
 
                     <div class="form-group">
                         <label for="overlay-edit-email" class="visually-hidden">Email</label>
-                        <input id="overlay-edit-email" name="email" type="email" placeholder="Email" value="${contactData.email}">                        <img src="./assets/icons-signup/mail.svg" alt="" class="input-icon">
+                        <input id="overlay-edit-email" name="email" type="email" placeholder="Email" value="${user.email}">                        
+                        <img src="./assets/icons-signup/mail.svg" alt="" class="input-icon">
                     </div>
 
                     <div class="form-group">
                         <label for="overlay-edit-phone" class="visually-hidden">Phone</label>
-                        <input id="overlay-edit-phone" name="phone" type="tel" placeholder="Phone" value="${contactData.phone || ''}">                        <img src="./assets/icons-contacts/call.svg" alt="" class="input-icon">
+                        <input id="overlay-edit-phone" name="phone" type="tel" placeholder="Phone" value="${user.phone || ''}">                        
+                        <img src="./assets/icons-contacts/call.svg" alt="" class="input-icon">
                     </div>
                 </div>
 
                 <div class="buttons-container">
-                    <button class="delete-btn" onclick="deleteContact('${contactData.email}')">Delete</button>
-                    <button class="save-btn"><span class="save-btn-text">Save</span><img src="./assets/icons-contacts/check.png" alt=""></button>
+                    <button class="delete-btn" onclick="deleteContact('${user.email}')">Delete</button>
+                    <button class="save-btn" onclick="updateContact('${user.email}')"><span class="save-btn-text">Save</span>
+                    <img src="./assets/icons-contacts/check.png" alt=""></button>
                 </div>
             </div>
         </div>
@@ -323,9 +329,9 @@ function showAddContactOverlay() {
   }, 10);
 }
 
-function showEditContactOverlay(contactData) {
+function showEditContactOverlay(userData) {
   // Overlay-HTML rendern
-  document.getElementById('overlay-edit-contact-container').innerHTML = renderEditContactOverlay(contactData);
+  document.getElementById('overlay-edit-contact-container').innerHTML = renderEditContactOverlay(userData);
   
   // Backdrop anzeigen
   document.getElementById('overlay-contacts').classList.add('show');
@@ -358,6 +364,83 @@ function closeContactOverlay() {
   }
 }
 
+async function createContact() {
+  // Get form data
+  const formData = {
+    name: document.getElementById('overlay-add-name').value.trim(),
+    email: document.getElementById('overlay-add-email').value.trim(),
+    phone: document.getElementById('overlay-add-phone').value.trim()
+  };
+  
+  // Minimale Validierung ohne showMessage
+  if (!formData.name.trim() || !formData.email.trim()) {
+    return; // Einfach abbrechen bei fehlenden Pflichtfeldern
+  }
+  
+  // Email-Format prüfen
+  if (!isValidEmail(formData.email)) {
+    return; // Einfach abbrechen bei ungültiger Email
+  }
+  
+  // Check if contact already exists
+  const contactExists = await checkUserExists(formData.email);
+  if (contactExists) {
+    return; // Einfach abbrechen wenn Kontakt bereits existiert
+  }
+  
+  try {
+    // Generate additional contact info automatically
+    const userInitials = getInitials(formData.name);
+    const userColor = getColorFromName(formData.name);
+    
+    // Create contact data object
+    const userData = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      initials: userInitials,
+      color: userColor
+    };
+    
+    // Create contact in Firebase
+    const result = await createUser(userData);
+    
+    if (result.success) {
+      // Kontakte neu laden und Overlay schließen
+      await loadUsers();
+      closeContactOverlay();
+    }
+  } catch (error) {
+    console.error('Create contact error:', error);
+  }
+}
+
+async function createUser(userData) {
+  try {
+    console.log("Creating new user:", userData);
+    
+    const response = await fetch(`${BASE_URL}users.json`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData)
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      console.log("User created successfully:", result);
+      return { success: true, userId: result.name };
+    } else {
+      const errorText = await response.text();
+      console.error("Failed to create user:", response.status, errorText);
+      return { success: false, error: `HTTP ${response.status}: ${errorText}` };
+    }
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return { success: false, error: error.message };
+  }
+}
 
 /**
  * Generates initials from a user's name
@@ -392,4 +475,125 @@ function getColorFromName(name) {
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
+}
+
+function validateContactForm(formData) {
+  const errors = [];
+  
+  // Check if all fields are filled
+  if (!formData.name.trim()) {
+    errors.push("Name is required");
+  }
+  
+  if (!formData.email.trim()) {
+    errors.push("Email is required");
+  } else if (!isValidEmail(formData.email)) {
+    errors.push("Please enter a valid email address");
+  }
+  
+  return {
+    success: errors.length === 0,
+    errors: errors
+  };
+}
+
+async function checkUserExists(email) {
+  try {
+    const response = await fetch(`${BASE_URL}users.json`);
+    const users = await response.json();
+    
+    if (users) {
+      for (const key in users) {
+        if (users[key].email === email) {
+          return true;
+        }
+      }
+    }
+    return false;
+  } catch (error) {
+    console.error("Error checking user existence:", error);
+    return false;
+  }
+}
+
+async function updateContact(originalEmail) {
+  // Get form data
+  const formData = {
+    name: document.getElementById('overlay-edit-name').value.trim(),
+    email: document.getElementById('overlay-edit-email').value.trim(),
+    phone: document.getElementById('overlay-edit-phone').value.trim()
+  };
+  
+  // Minimale Validierung ohne showMessage
+  if (!formData.name.trim() || !formData.email.trim()) {
+    return; // Einfach abbrechen bei fehlenden Pflichtfeldern
+  }
+  
+  // Email-Format prüfen
+  if (!isValidEmail(formData.email)) {
+    return; // Einfach abbrechen bei ungültiger Email
+  }
+  
+  // Wenn Email geändert wurde, prüfen ob neue Email bereits existiert
+  if (formData.email !== originalEmail) {
+    const emailExists = await checkUserExists(formData.email);
+    if (emailExists) {
+      return; // Einfach abbrechen wenn neue Email bereits existiert
+    }
+  }
+  
+  try {
+    // Alle User laden um den richtigen Firebase-Key zu finden
+    const response = await fetch(`${BASE_URL}users.json`);
+    const data = await response.json();
+    
+    let userKey = null;
+    if (data) {
+      // Finde den Firebase-Key des Users mit der ursprünglichen Email
+      for (const [key, user] of Object.entries(data)) {
+        if (user.email === originalEmail) {
+          userKey = key;
+          break;
+        }
+      }
+    }
+    
+    if (userKey) {
+      // Neue Initialen und Farbe generieren falls Name geändert wurde
+      const userInitials = getInitials(formData.name);
+      const userColor = getColorFromName(formData.name);
+      
+      // Update-Daten zusammenstellen (nur geänderte Felder)
+      const updateData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        initials: userInitials,
+        color: userColor
+      };
+      
+      // User mit PATCH aktualisieren
+      const updateResponse = await fetch(`${BASE_URL}users/${userKey}.json`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData)
+      });
+      
+      if (updateResponse.ok) {
+        console.log("Contact updated successfully");
+        // Kontakte neu laden und Overlays schließen
+        await loadUsers();
+        closeFloatingContact();
+        closeContactOverlay();
+      } else {
+        console.error("Failed to update contact:", updateResponse.status);
+      }
+    } else {
+      console.error("Contact not found");
+    }
+  } catch (error) {
+    console.error('Update contact error:', error);
+  }
 }

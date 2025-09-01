@@ -305,10 +305,10 @@ input[type="tel"] {
   border-bottom: 1px solid #D1D1D1;
   font-size: 19px;
   font-weight: 400;;
-  color: #D1D1D1;
   transition: all 0.3s ease;
   cursor: pointer;
   color: black;
+  background-color: white;
 }
 
 input[type="text"]:focus,
@@ -316,6 +316,7 @@ input[type="email"]:focus,
 input[type="tel"]:focus {
   outline: none;
   border-bottom: 1px solid #005DFF;
+  background-color: white;
 }
 
 input::placeholder {
