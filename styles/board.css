@@ -424,6 +424,19 @@ input {
     justify-content: space-between;
 }
 
+/* Drag & Drop helpers */
+.task-card.dragging {
+    opacity: 0.6;
+    cursor: grabbing;
+}
+
+.tasks.drag-over {
+    background: #f0f6ff;
+    outline: 2px dashed #4589ff;
+    outline-offset: 4px;
+    border-radius: 12px;
+}
+
 /* Hintergrund-Overlay */
 .modal-overlay {
     position: fixed;
@@ -533,4 +546,3 @@ input {
 .svg-button svg.disabled path {
     stroke: #A8A8A8; /* Grau für das Icon (Innenbereich) */
 } 
-

@@ -1074,10 +1074,3 @@ body {
     z-index: 0;
 }
 
-/* ======================
-   Transition für alles
-   ====================== */
-.checkbox-wrapper img,
-.checkbox-wrapper .hover-overlay {
-    transition: all 0.2s ease;
-}
