@@ -80,7 +80,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       await window.taskManager.createTask(payload);
       await window.taskManager.loadTasks();
       renderBoard();
-      setupDragAndDrop();
       closeModal();
     } catch (err) {
       console.error(err);
@@ -196,8 +195,8 @@ function createTaskCard(task) {
   });
 
   card.addEventListener('dragend', () => {
-    // delay removal to avoid accidental click
-    setTimeout(() => card.classList.remove('dragging'), 0);
+    // Remove dragging class immediately to prevent visual glitch
+    card.classList.remove('dragging');
   });
 
   return card;
@@ -454,7 +453,13 @@ function toggleSubtask(subtaskId, checkbox) {
 // Drag & Drop for columns
 // ======================
 
+// Global flag to prevent duplicate event listeners
+let dragAndDropInitialized = false;
+
 function setupDragAndDrop() {
+  // Only set up once to prevent duplicate listeners
+  if (dragAndDropInitialized) return;
+  
   const taskColumns = document.querySelectorAll('.task-column .tasks');
   taskColumns.forEach((tasksEl) => {
     const columnEl = tasksEl.closest('.task-column');
@@ -462,17 +467,13 @@ function setupDragAndDrop() {
     const status = columnEl.getAttribute('data-status');
     if (!status) return;
 
-    // Ensure listeners are not duplicated
-    tasksEl.removeEventListener('dragover', handleDragOver);
-    tasksEl.removeEventListener('dragenter', handleDragEnter);
-    tasksEl.removeEventListener('dragleave', handleDragLeave);
-    tasksEl.removeEventListener('drop', handleDrop);
-
     tasksEl.addEventListener('dragover', handleDragOver);
     tasksEl.addEventListener('dragenter', handleDragEnter);
     tasksEl.addEventListener('dragleave', handleDragLeave);
     tasksEl.addEventListener('drop', (e) => handleDrop(e, status));
   });
+  
+  dragAndDropInitialized = true;
 }
 
 function handleDragOver(e) {
@@ -497,15 +498,39 @@ async function handleDrop(e, newStatus) {
   try {
     const taskId = e.dataTransfer?.getData('text/plain');
     if (!taskId) return;
+    
+    // Find the dragged card element
+    const draggedCard = document.querySelector(`[data-task-id="${taskId}"]`);
+    if (!draggedCard) return;
+    
     if (window.taskManager) {
+      // Update task status in backend
       await window.taskManager.updateTask(taskId, { status: newStatus });
-      await window.taskManager.loadTasks();
-      renderBoard();
-      setupDragAndDrop();
+      
+      // Move the card visually without full re-render
+      const newColumn = document.querySelector(`[data-status="${newStatus}"] .tasks`);
+      if (newColumn && draggedCard.parentNode !== newColumn) {
+        // Remove from old column
+        draggedCard.parentNode.removeChild(draggedCard);
+        
+        // Add to new column
+        newColumn.appendChild(draggedCard);
+        
+        // Update task data locally
+        const tasks = window.taskManager.getTasks();
+        const task = tasks.find(t => t.id == taskId);
+        if (task) {
+          task.status = newStatus;
+        }
+      }
     }
   } catch (error) {
     console.error('Error moving task:', error);
     alert('Failed to move task');
+    // Fallback to full re-render on error
+    await window.taskManager.loadTasks();
+    renderBoard();
+    setupDragAndDrop();
   }
 }
 
