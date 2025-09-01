@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/header.css">
     <link rel="stylesheet" href="./styles/sidebar.css">
-    <link rel="stylesheet" href="./styles/boardtest.css">
+    <link rel="stylesheet" href="./styles/board.css">
     <link rel="stylesheet" href="./styles/addtask.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
     <title>Board</title>
@@ -53,37 +53,46 @@
                         <div class="task-title">
                             <div class="title-text">To do</div>
                             <div class="title-img">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF" stroke-width="2" />
-                                    <path d="M12 8V16" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
-                                    <path d="M16 12.0752L8 12.0752" stroke="#4589FF" stroke-width="2"
-                                        stroke-linecap="round" />
-                                </svg>
+                                <div class="svg-button">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF"
+                                            stroke-width="2" />
+                                        <path d="M12 8V16" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
+                                        <path d="M16 12.0752L8 12.0752" stroke="#4589FF" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                         <div class="task-title">
                             <div class="title-text">In progress</div>
                             <div class="title-img">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF" stroke-width="2" />
-                                    <path d="M12 8V16" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
-                                    <path d="M16 12.0752L8 12.0752" stroke="#4589FF" stroke-width="2"
-                                        stroke-linecap="round" />
-                                </svg>
+                                <div class="svg-button">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF"
+                                            stroke-width="2" />
+                                        <path d="M12 8V16" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
+                                        <path d="M16 12.0752L8 12.0752" stroke="#4589FF" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                         <div class="task-title">
                             <div class="title-text">Await feedback</div>
                             <div class="title-img">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF" stroke-width="2" />
-                                    <path d="M12 8V16" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
-                                    <path d="M16 12.0752L8 12.0752" stroke="#4589FF" stroke-width="2"
-                                        stroke-linecap="round" />
-                                </svg>
+                                <div class="svg-button">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF"
+                                            stroke-width="2" />
+                                        <path d="M12 8V16" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
+                                        <path d="M16 12.0752L8 12.0752" stroke="#4589FF" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                         <div class="task-title">
@@ -116,6 +125,12 @@
         <div class="modal">
             <div id="header-container">
                 <div id="header-content">Add Task</div>
+                <button id="close" class="close">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M6 6 L18 18" stroke="#000" stroke-width="2" stroke-linecap="round" />
+                        <path d="M6 18 L18 6" stroke="#000" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
             </div>
             <div class="main-container-modal">
                 <div class="title-container">
@@ -230,12 +245,10 @@
             </div>
             <!-- Button-Bereich am Ende -->
             <div class="modal-footer">
-                <button class="add-task-btn" id="create-task-btn">
-                    Create Task
-                    <img src="./assets/icons-board/plus.png" alt="">
-                </button>
+                <button class="sign-up-btn">Create Task<img src="./assets/icons-addTask/check (1).png" alt=""></button>
             </div>
         </div>
+    </div>
     </div>
 
     <script src="./scripts/auth.js"></script>
@@ -245,11 +258,12 @@
             updateVisibilityWithRetry();
             updateUserLogo();
             setActiveNavigation();
+            if (window.afterInclude) window.afterInclude(); // <--- NEU
         });
-    </script>
+    </script>s
     <script src="./scripts/taskmanager.js"></script>
     <script src="./scripts/board.js"></script>
-    <script src="./scripts/addtask.js"></script>
+
 </body>
 
 </html>
