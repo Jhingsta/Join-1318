@@ -304,3 +304,128 @@ input[type="text"]::-webkit-search-cancel-button {
     outline-offset: 4px;
     border-radius: 12px;
 }
+
+/* Modal Overlay und Box */
+.modal-overlay {
+    z-index: 1000;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    box-shadow: 0px 0px 4px 0px #00000029;
+  }
+
+  .modal-close {
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    
+  }
+
+  .modal-kw {
+    background: #fff;
+    width: 528px;
+    height: 932px;
+    border-radius: 30px;
+    padding: 48px 40px;
+    box-shadow: 0px 0px 4px 0px #00000029;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .modal-title {
+    font-family: Open Sans;
+    font-weight: 700;
+    font-size: 61px;
+    line-height: 120%;
+    letter-spacing: 0%;
+  }
+
+  .modal-desc {
+    font-family: Open Sans;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0%;
+  }
+
+  .modal-detail-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 25px;
+  }
+
+  .modal-detail-text {
+    font-family: Inter;
+    font-weight: 400;
+    font-size: 21px;
+    line-height: 120%;
+    letter-spacing: 0%;
+    color: #42526E;
+    
+  }
+
+  .modal-detail-date {
+    font-family: Open Sans;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0%;
+    
+  }
+
+  .modal-detail-priority {
+    font-family: Open Sans;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0%;
+  }
+
+  .modal-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-section-title {
+    font-family: Open Sans;
+    font-style: Bold;
+    font-weight: 700;
+    font-size: 21px;
+    line-height: 120%;
+    letter-spacing: 0%;
+    color: #42526E;
+  }
+
+  .assignees {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .avatar-group {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .subtasks {
+    display: flex;
+    padding: 6px 16px;
+    gap: 16px;
+  }
+
+  .modal-actions {
+    gap: 8px;
+    
+  }
+   
+    
+
+  
+  
