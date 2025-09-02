@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/header.css">
     <link rel="stylesheet" href="./styles/sidebar.css">
-    <link rel="stylesheet" href="./styles/privacyPolicy.css">
+    <link rel="stylesheet" href="./styles/privacypolicy.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
     <title>Privacy Policy</title>
 </head>
@@ -19,7 +19,7 @@
     <div class="layout">
 
         <aside>
-            <div w3-include-html="sidebar.html"></div>
+            <div id="sidebar-container"></div>
         </aside>
 
         <main>
@@ -53,6 +53,7 @@
                         <p>
                             We host the content of our website with the following provider:
                         </p>
+                        <br />
                         <h3>External Hosting</h3>
                         <p>
                             This website is externally hosted. The personal data collected on this website 
@@ -60,6 +61,7 @@
                             IP addresses, contact requests, meta and communication data, contract data, 
                             contact details, names, website access data, and other data collected via a website.
                         </p>
+                        <br />
                         <address aria-label="Hosting Provider Contact Information">
                             Example Hosting Ltd.<br>
                             Musterweg 100<br>
@@ -76,7 +78,7 @@
                             We treat your personal data confidentially and in accordance with data protection regulations 
                             and this privacy policy.
                         </p>
-
+                        <br />
                         <h3>Information about the responsible party</h3>
                         <address aria-label="Responsible Party Contact Information">
                             Example Company<br>
@@ -85,7 +87,7 @@
                             Phone: +49 (0) 123 44 55 66<br>
                             Email: info@examplecompany.com
                         </address>
-
+                        <br />
                         <h3>Storage duration</h3>
                         <p>
                             Unless a specific storage period is stated in this privacy policy, 
@@ -96,7 +98,7 @@
                             reasons for storing your personal data (e.g. tax or commercial law retention periods). 
                             In the latter case, deletion will take place after these reasons expire.
                         </p>
-
+                        <br />
                         <h3>Legal bases of processing</h3>
                         <p>
                             If you have given consent to data processing, we process your personal data 
@@ -118,7 +120,7 @@
                             The legality of the data processing carried out until the revocation 
                             remains unaffected by the revocation.
                         </p>
-
+                        <br />
                         <h3>Right to object (Art. 21 GDPR)</h3>
                         <p>
                             If data processing is carried out on the basis of Art. 6(1)(e) or (f) GDPR, 
@@ -128,28 +130,28 @@
                             we can demonstrate compelling legitimate grounds for the processing 
                             or the processing serves the establishment, exercise or defense of legal claims.
                         </p>
-
+                        <br />
                         <h3>Right to lodge a complaint</h3>
                         <p>
                             In case of violations of the GDPR, data subjects have the right to lodge a complaint 
                             with a supervisory authority, in particular in the EU member state of their habitual residence, 
                             their workplace, or the place of the alleged violation.
                         </p>
-
+                        <br />
                         <h3>Right to data portability</h3>
                         <p>
                             You have the right to receive data that we process based on your consent or performance of a contract, 
                             in a commonly used, machine-readable format. If you request a direct transfer to another controller, 
                             this will only take place if it is technically feasible.
                         </p>
-
+                        <br />
                         <h3>Right of access, rectification, and erasure</h3>
                         <p>
                             Within the framework of applicable legal provisions, you have the right at any time 
                             to free information about your stored personal data, its origin and recipients, 
                             and the purpose of the data processing, and if applicable, a right to rectification or erasure.
                         </p>
-
+                        <br />
                         <h3>Right to restriction of processing</h3>
                         <p>
                             You have the right to request the restriction of processing of your personal data. 
@@ -164,12 +166,15 @@
         </main>
     </div>
 
-   <script src="./scripts/auth.js"></script>
-        <script src="./scripts/header.js"></script>
-        <script>
-            w3.includeHTML(() => {            
-                updateUserLogo();
-                });
-        </script>
+    <script src="./scripts/auth.js"></script>
+    <script src="./scripts/header.js"></script>
+    <script src="./scripts/visitor.js"></script>
+    <script>
+        w3.includeHTML(() => {            
+            updateUserLogo();
+            setActiveNavigation();
+            });
+    </script>
+
 </body>
 </html>

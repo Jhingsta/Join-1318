@@ -8,45 +8,44 @@ function isGuest() {
   return user?.name === "Guest";
 }
 
-// Navigation Active Status - Für w3.includeHTML() angepasst
+// Navigation Active Status - Verbessert für beide Sidebar-Versionen
 function setActiveNavigation() {
-  // Aktuelle Seite ermitteln (mit ./ Präfix berücksichtigen)
-  const currentPage = window.location.pathname.split('/').pop();
-  const currentPageWithPrefix = './' + currentPage;
-  
-  // Nav-Items verarbeiten
-  const navItems = document.querySelectorAll('.nav-item');
-  navItems.forEach(link => {
-      link.classList.remove('active');
-      
-      const href = link.getAttribute('href');
-      // Prüfe sowohl mit als auch ohne ./ Präfix
-      if (href === currentPage || href === currentPageWithPrefix) {
-          link.classList.add('active');
-      }
-  });
-  
-  // Footer-Items verarbeiten
-  const footerItems = document.querySelectorAll('.footer-item');
-  footerItems.forEach(link => {
-      link.classList.remove('footer-active');
-      
-      const href = link.getAttribute('href');
-      // Prüfe sowohl mit als auch ohne ./ Präfix
-      if (href === currentPage || href === currentPageWithPrefix) {
-          link.classList.add('footer-active');
-      }
-  });
+    // Aktuelle Seite ermitteln (nur der Dateiname ohne Parameter)
+    const currentPage = window.location.pathname.split('/').pop();
+    
+    // Nav-Items verarbeiten
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(link => {
+        link.classList.remove('active');
+        
+        const href = link.getAttribute('href');
+        if (href) {
+            // Parameter aus href entfernen und normalisieren
+            const hrefPage = href.split('?')[0].replace('./', '');
+            const normalizedCurrentPage = currentPage.replace('./', '');
+            
+            // Vergleichen
+            if (hrefPage === normalizedCurrentPage) {
+                link.classList.add('active');
+            }
+        }
+    });
+    
+    // Footer-Items verarbeiten
+    const footerItems = document.querySelectorAll('.footer-item');
+    footerItems.forEach(link => {
+        link.classList.remove('footer-active');
+        
+        const href = link.getAttribute('href');
+        if (href) {
+            // Parameter aus href entfernen und normalisieren
+            const hrefPage = href.split('?')[0].replace('./', '');
+            const normalizedCurrentPage = currentPage.replace('./', '');
+            
+            // Vergleichen
+            if (hrefPage === normalizedCurrentPage) {
+                link.classList.add('footer-active');
+            }
+        }
+    });
 }
-
-// Falls andere Teile der App diese Funktionen erwarten, 
-// stelle leere Dummy-Funktionen zur Verfügung um Fehler zu vermeiden
-window.authSystem = {
-    updateVisibility: function() { 
-        console.log("updateVisibility wurde entfernt - keine User/Guest-Logik mehr nötig"); 
-    },
-    logUserStatus: function() { 
-        console.log("logUserStatus wurde entfernt - keine User/Guest-Logik mehr nötig"); 
-    },
-
-};
