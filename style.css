@@ -102,8 +102,8 @@ form {
 
 input {
   border: none;
-  border-bottom: 1px solid #ccc;
-  padding: 12px 0;
+  /* border-bottom: 1px solid #ccc; */
+  /* padding: 12px 0; */
   font-size: 16px;
   outline: none;
   background: transparent;
@@ -112,12 +112,37 @@ input {
   color: black;
 }
 
-input::placeholder {
-  color: #aaa;
+.input-container-mail,
+.input-container-password {
+  border-bottom: 1px solid #D1D1D1;
+  display: flex;
+  padding: 12px 21px;
 }
 
-input:focus {
-  border-bottom: 1px solid #2A68FF;
+.input-container-password {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-container-password input {
+  width: 100%;
+  padding-right: 40px; /* Platz für Icon rechts */
+}
+
+.input-container-password:focus-within,
+.input-container-mail:focus-within {
+  border-bottom: 1px solid #4589FF; /* Blau bei Fokus */
+}
+
+
+/* Fehlerzustand */
+.input-error {
+  border-bottom-color: #FF8190 !important; /* Rot wie Fehlermeldung */
+}
+
+input::placeholder {
+  color: #aaa;
 }
 
 .input-container {
@@ -178,11 +203,11 @@ input:focus {
   transform: scale(0.97);
 }
 
-.login-btn:disabled {
+/* .login-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background-color: #ccc;
-}
+  background-color: #ccc; */
+/* } */
 
 .guest-btn {
   width: 197px;

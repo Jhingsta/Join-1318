@@ -118,3 +118,36 @@ if (!window.authSystemLoaded) {
 
 // Auto-Status-Log beim Laden
 logUserStatus();
+
+
+// Navigation Active Status - Für w3.includeHTML() angepasst
+
+function setActiveNavigation() {
+  // Aktuelle Seite ermitteln (mit ./ Präfix berücksichtigen)
+  const currentPage = window.location.pathname.split('/').pop();
+  const currentPageWithPrefix = './' + currentPage;
+  
+  // Nav-Items verarbeiten
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(link => {
+      link.classList.remove('active');
+      
+      const href = link.getAttribute('href');
+      // Prüfe sowohl mit als auch ohne ./ Präfix
+      if (href === currentPage || href === currentPageWithPrefix) {
+          link.classList.add('active');
+      }
+  });
+  
+  // Footer-Items verarbeiten
+  const footerItems = document.querySelectorAll('.footer-item');
+  footerItems.forEach(link => {
+      link.classList.remove('footer-active');
+      
+      const href = link.getAttribute('href');
+      // Prüfe sowohl mit als auch ohne ./ Präfix
+      if (href === currentPage || href === currentPageWithPrefix) {
+          link.classList.add('footer-active');
+      }
+  });
+}
