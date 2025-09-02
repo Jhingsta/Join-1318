@@ -398,6 +398,7 @@ async function createContact() {
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
+      password: "", // Placeholder, not used for contacts
       initials: userInitials,
       color: userColor
     };
@@ -561,7 +562,6 @@ async function updateContact(originalEmail) {
     if (userKey) {
       // Neue Initialen und Farbe generieren falls Name geändert wurde
       const userInitials = getInitials(formData.name);
-      const userColor = getColorFromName(formData.name);
       
       // Update-Daten zusammenstellen (nur geänderte Felder)
       const updateData = {
@@ -569,10 +569,9 @@ async function updateContact(originalEmail) {
         email: formData.email,
         phone: formData.phone,
         initials: userInitials,
-        color: userColor
       };
       
-      // User mit PATCH aktualisieren
+      // User mit PUT aktualisieren
       const updateResponse = await fetch(`${BASE_URL}users/${userKey}.json`, {
         method: 'PUT',
         headers: {
