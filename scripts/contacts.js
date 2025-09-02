@@ -307,7 +307,7 @@ function renderEditContactOverlay(user) {
 
                 <div class="buttons-container">
                     <button class="delete-btn" onclick="deleteContact('${user.email}')">Delete</button>
-                    <button class="save-btn" onclick="updateContact('${user.email}')"><span class="save-btn-text">Save</span>
+                    <button class="save-btn" onclick="updateContact('${user.email}', '${user.color}')"><span class="save-btn-text">Save</span>
                     <img src="./assets/icons-contacts/check.png" alt=""></button>
                 </div>
             </div>
@@ -517,7 +517,7 @@ async function checkUserExists(email) {
   }
 }
 
-async function updateContact(originalEmail) {
+async function updateContact(originalEmail, originalColor) {
   // Get form data
   const formData = {
     name: document.getElementById('overlay-edit-name').value.trim(),
@@ -569,6 +569,7 @@ async function updateContact(originalEmail) {
         email: formData.email,
         phone: formData.phone,
         initials: userInitials,
+        color: originalColor // die Farbe bleibt gleich
       };
       
       // User mit PUT aktualisieren
