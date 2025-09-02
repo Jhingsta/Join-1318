@@ -372,7 +372,7 @@ async function createContact() {
     phone: document.getElementById('overlay-add-phone').value.trim()
   };
   
-  // Minimale Validierung ohne showMessage
+  // Minimale Validierung  
   if (!formData.name.trim() || !formData.email.trim()) {
     return; // Einfach abbrechen bei fehlenden Pflichtfeldern
   }
@@ -410,6 +410,9 @@ async function createContact() {
       // Kontakte neu laden und Overlay schließen
       await loadUsers();
       closeContactOverlay();
+
+      // Erfolgsmeldung anzeigen
+      showCreateSuccessMessage();
     }
   } catch (error) {
     console.error('Create contact error:', error);
@@ -596,4 +599,55 @@ async function updateContact(originalEmail, originalColor) {
   } catch (error) {
     console.error('Update contact error:', error);
   }
+}
+
+// Erfolgsmeldung-Funktion
+function showCreateSuccessMessage() {
+  const messageHtml = `
+    <div style="
+      color: #FFFFFF; 
+      font-size: 23px; 
+      font-weight: 400; 
+      text-align: center; 
+      padding: 16px 24px; 
+      background-color: #4589FF; 
+      border-radius: 20px; 
+      box-shadow: 0px 0px 4px 0px #0000001A;
+    ">
+      Contact successfully created
+    </div>
+  `;
+  
+  // Container in Body einfügen - STARTET von unten (top: 100%)
+  document.body.innerHTML += `
+    <div id="success-message-container" style="
+      position: fixed;
+      top: 110%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      transition: top 400ms ease-out;
+    ">
+      ${messageHtml}
+    </div>
+  `;
+  
+  const container = document.getElementById('success-message-container');
+  
+  // Nach 200ms delay: Von unten in die Mitte sliden
+  setTimeout(() => {
+    container.style.top = "50%";
+  }, 200);
+  
+  // Wieder nach unten sliden und entfernen
+  setTimeout(() => {
+    container.style.top = "110%";
+    
+    // Entfernen nach Slide-Animation (400ms + etwas Buffer)
+    setTimeout(() => {
+      if (document.getElementById('success-message-container')) {
+        document.getElementById('success-message-container').remove();
+      }
+    }, 500);
+  }, 1500); // 1500ms Anzeigedauer
 }
