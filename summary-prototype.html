@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .dashboard {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-areas: 
+                "urgent urgent urgent board"
+                "todo progress feedback done";
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4285f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1;
+        }
+
+        .card-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        /* Urgent card special styling */
+        .urgent-card {
+            grid-area: urgent;
+            background: #4285f4;
+            color: white;
+            justify-content: space-between;
+        }
+
+        .urgent-card .card-number,
+        .urgent-card .card-label {
+            color: white;
+        }
+
+        .urgent-card .card-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .urgent-deadline {
+            text-align: right;
+            color: white;
+        }
+
+        .urgent-deadline h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .urgent-deadline p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* Grid areas */
+        .todo-card { grid-area: todo; }
+        .progress-card { grid-area: progress; }
+        .feedback-card { grid-area: feedback; }
+        .done-card { grid-area: done; }
+        .board-card { grid-area: board; }
+
+        /* Mobile Layout */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-areas: 
+                    "urgent urgent"
+                    "todo todo"
+                    "board progress"
+                    "feedback done";
+            }
+
+            .card {
+                padding: 16px;
+                gap: 10px;
+            }
+
+            .card-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+
+            .card-number {
+                font-size: 20px;
+            }
+
+            .card-label {
+                font-size: 13px;
+            }
+
+            .urgent-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 8px;
+            }
+
+            .urgent-deadline {
+                text-align: center;
+            }
+
+            .urgent-deadline h3 {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-grid">
+            <!-- Urgent Tasks Card -->
+            <div class="card urgent-card">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="card-icon">⏰</div>
+                    <div class="card-content">
+                        <div class="card-number">1</div>
+                        <div class="card-label">Tasks Urgent</div>
+                    </div>
+                </div>
+                <div class="urgent-deadline">
+                    <h3>October 16, 2022</h3>
+                    <p>Upcoming Deadline</p>
+                </div>
+            </div>
+
+            <!-- To-do Tasks Card -->
+            <div class="card todo-card">
+                <div class="card-icon">📝</div>
+                <div class="card-content">
+                    <div class="card-number">1</div>
+                    <div class="card-label">Tasks To-do</div>
+                </div>
+            </div>
+
+            <!-- Tasks in Progress Card -->
+            <div class="card progress-card">
+                <div class="card-icon">📊</div>
+                <div class="card-content">
+                    <div class="card-number">2</div>
+                    <div class="card-label">Task in Progress</div>
+                </div>
+            </div>
+
+            <!-- Awaiting Feedback Card -->
+            <div class="card feedback-card">
+                <div class="card-icon">💬</div>
+                <div class="card-content">
+                    <div class="card-number">2</div>
+                    <div class="card-label">Awaiting Feedback</div>
+                </div>
+            </div>
+
+            <!-- Tasks Done Card -->
+            <div class="card done-card">
+                <div class="card-icon">✅</div>
+                <div class="card-content">
+                    <div class="card-number">1</div>
+                    <div class="card-label">Tasks Done</div>
+                </div>
+            </div>
+
+            <!-- Task in Board Card -->
+            <div class="card board-card">
+                <div class="card-icon">📋</div>
+                <div class="card-content">
+                    <div class="card-number">5</div>
+                    <div class="card-label">Task in Board</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
