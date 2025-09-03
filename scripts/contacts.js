@@ -609,7 +609,7 @@ function showCreateSuccessMessage() {
       font-size: 23px; 
       font-weight: 400; 
       text-align: center; 
-      padding: 16px 24px; 
+      padding: 23px 17px; 
       background-color: #4589FF; 
       border-radius: 20px; 
       box-shadow: 0px 0px 4px 0px #0000001A;
@@ -618,7 +618,7 @@ function showCreateSuccessMessage() {
     </div>
   `;
   
-  // Container in Body einfügen - STARTET von unten (top: 100%)
+  // Container in Body einfügen
   document.body.innerHTML += `
     <div id="success-message-container" style="
       position: fixed;

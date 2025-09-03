@@ -238,6 +238,9 @@ main {
   .contacts {
     padding: 24px 12px;
   }
+  .add-contact-btn-background {
+    display: none;
+  }
 }
 
 @media (max-width:480px) {
