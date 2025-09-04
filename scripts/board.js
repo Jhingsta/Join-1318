@@ -1,3 +1,12 @@
+if (!window.taskManager.saveTasks) {
+    window.taskManager.saveTasks = function (tasks) {
+        // Beispiel: Speichern im LocalStorage
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        // Wenn du Firebase nutzt, musst du hier ein Update an die Datenbank machen!
+    };
+}
+
+
 document.addEventListener('DOMContentLoaded', async () => {
     const addTaskButton = document.getElementById('add-task-btn');
     const modal = document.getElementById('add-task-modal');
@@ -14,87 +23,150 @@ document.addEventListener('DOMContentLoaded', async () => {
         addTaskButton?.classList.add('active-style'); // Button aktiv stylen
     }
 
-  function closeModal() {
+    function closeModal() {
+        modal?.classList.add('hidden');
+        form?.reset();
+
+        // Standardwerte zurücksetzen
+        const priority = document.getElementById('task-priority');
+        const status = document.getElementById('task-status');
+        const done = document.getElementById('subtasks-done');
+        const total = document.getElementById('subtasks-total');
+        if (priority) priority.value = 'medium';
+        if (status) status.value = 'todo';
+        if (done) done.value = '0';
+        if (total) total.value = '0';
+
+        // Save Button zurücksetzen
+        signUpBtn?.classList.remove('active');
+
+        //Button-Styles zurücksetzen
+        addTaskButton?.classList.remove('active-style');
+    }
+
+    // Save Button beim Klick aktiv machen
+    signUpBtn?.addEventListener('click', () => {
+        signUpBtn.classList.add('active');
+    });
+
+    addTaskButton?.addEventListener('click', openModal);
+    modalClose?.addEventListener('click', closeModal);
+    cancelButton?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    if (!window.taskManager) {
+        console.error('Task manager not loaded');
+        return;
+    }
+
+    await window.taskManager.loadTasks();
+    renderBoard();
+
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('task-title').value.trim();
+        const description = document.getElementById('task-description').value.trim();
+        const dueDate = document.getElementById('task-dueDate').value;
+        const priority = document.getElementById('task-priority').value;
+        const status = document.getElementById('task-status').value;
+        const subtasksDone = parseInt(document.getElementById('subtasks-done').value || '0', 10);
+        const subtasksTotal = parseInt(document.getElementById('subtasks-total').value || '0', 10);
+
+        if (!title) {
+            alert('Please enter a title');
+            return;
+        }
+
+        const payload = {
+            title,
+            description,
+            dueDate,
+            priority,
+            status,
+            subtasks: { completed: subtasksDone, total: subtasksTotal },
+        };
+
+        try {
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Saving...';
+            submitButton.disabled = true;
+
+            await window.taskManager.createTask(payload);
+            await window.taskManager.loadTasks();
+            renderBoard();
+            closeModal(); // Hier wird auch der Save Button wieder zurückgesetzt
+        } catch (err) {
+            console.error(err);
+            alert('Failed to save task');
+        } finally {
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.disabled = false; // Text nicht zurücksetzen, closeModal kümmert sich drum
+        }
+    });
+});
+
+function closeModal() {
+    const modal = document.getElementById('add-task-modal');
+    const form = document.getElementById('add-task-form');
+
     modal?.classList.add('hidden');
     form?.reset();
+
     const priority = document.getElementById('task-priority');
     const status = document.getElementById('task-status');
     const done = document.getElementById('subtasks-done');
     const total = document.getElementById('subtasks-total');
+
     if (priority) priority.value = 'medium';
     if (status) status.value = 'todo';
     if (done) done.value = '0';
     if (total) total.value = '0';
-  }
+}
 
-  addTaskButton?.addEventListener('click', openModal);
-  modalClose?.addEventListener('click', closeModal);
-  cancelButton?.addEventListener('click', closeModal);
-  modal?.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-  });
+document.addEventListener('DOMContentLoaded', () => {
+    const svgButtons = document.querySelectorAll('.svg-button'); // alle Buttons
+    const modal = document.getElementById('add-task-modal');
+    const modalClose = document.getElementById('close');
 
-  if (!window.taskManager) {
-    console.error('Task manager not loaded');
-    return;
-  }
-
-  await window.taskManager.loadTasks();
-  renderBoard();
-  setupDragAndDrop();
-
-  // Open modal automatically if requested via query param
-  try {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('openAddTask') === '1') {
-      const addTaskButton = document.getElementById('add-task-btn');
-      addTaskButton?.click();
-    }
-  } catch (e) {}
-
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const title = document.getElementById('task-title').value.trim();
-    const description = document.getElementById('task-description').value.trim();
-    const dueDate = document.getElementById('task-dueDate').value;
-    const priority = document.getElementById('task-priority').value;
-    const status = document.getElementById('task-status').value;
-    const subtasksDone = parseInt(document.getElementById('subtasks-done').value || '0', 10);
-    const subtasksTotal = parseInt(document.getElementById('subtasks-total').value || '0', 10);
-
-    if (!title) {
-      alert('Please enter a title');
-      return;
+    function openModal(button) {
+        modal?.classList.remove('hidden');
+        const svg = button.querySelector('svg'); // SVG vom geklickten Button
+        if (svg) {
+            svg.classList.add('disabled');
+            console.log("Modal geöffnet - SVG deaktiviert");
+        }
     }
 
-    const payload = {
-      title,
-      description,
-      dueDate,
-      priority,
-      status,
-      subtasks: { completed: subtasksDone, total: subtasksTotal },
-    };
+    function closeModal() {
+        modal?.classList.add('hidden');
+        console.log("Modal geschlossen");
 
-    try {
-      const submitButton = form.querySelector('button[type="submit"]');
-      const originalText = submitButton.textContent;
-      submitButton.textContent = 'Saving...';
-      submitButton.disabled = true;
-
-      await window.taskManager.createTask(payload);
-      await window.taskManager.loadTasks();
-      renderBoard();
-      closeModal();
-    } catch (err) {
-      console.error(err);
-      alert('Failed to save task');
-    } finally {
-      const submitButton = form.querySelector('button[type="submit"]');
-      submitButton.textContent = 'Save Task';
-      submitButton.disabled = false;
+        // alle SVGs wieder freischalten
+        svgButtons.forEach(btn => {
+            const svg = btn.querySelector('svg');
+            if (svg) svg.classList.remove('disabled');
+        });
     }
-  });
+
+    // jedem Button einen eigenen Klick-Handler geben
+    svgButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            console.log('SVG Button geklickt!');
+            openModal(button);
+        });
+    });
+
+    // Schließen über "X" oder Klick außerhalb
+    if (modalClose) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal || e.target === modalClose) {
+                closeModal();
+            }
+        });
+    }
 });
 
 
@@ -129,17 +201,37 @@ function renderBoard() {
     });
 }
 
+
+// ---------- Helpers ----------
+function getInitials(name) {
+    if (!name) return "";
+    return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
+}
+
+function getColor(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return `hsl(${Math.abs(hash) % 360},70%,50%)`;
+}
+
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
-    card.setAttribute('data-task-id', task.id || 'unknown');
-    card.setAttribute('draggable', 'true');
 
     const type = document.createElement('div');
     type.className = 'task-type';
+
     const typeImg = document.createElement('img');
-    typeImg.src = './assets/icons-board/user-story-tag.svg';
-    typeImg.alt = 'User Story';
+    if (task.category === "User Story") {
+        typeImg.src = './assets/icons-board/user-story-tag.svg';
+        typeImg.alt = 'User Story';
+    } else if (task.category === "Technical Task") {
+        typeImg.src = './assets/icons-board/technical-task-tag.svg';
+        typeImg.alt = 'Technical Task';
+    }
+
     type.appendChild(typeImg);
 
     const content = document.createElement('div');
@@ -155,55 +247,97 @@ function createTaskCard(task) {
 
     const subtasks = document.createElement('div');
     subtasks.className = 'subtasks';
-    const progressImg = document.createElement('img');
-    progressImg.src = './assets/Progress bar.png';
-    const progressText = document.createElement('span');
-    progressText.className = 'subtasks-text';
+    subtasks.style.display = 'flex';
+    subtasks.style.alignItems = 'center';
+    subtasks.style.gap = '8px'; // Abstand zwischen Leiste und Text
+
+    // Container für die Fortschrittsleiste
+    if (task.subtasks && (task.subtasks.total || task.subtasks.completed)) {
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'progress-container';
+    progressContainer.style.width = '128px';
+    progressContainer.style.height = '8px';
+    progressContainer.style.backgroundColor = '#E0E0E0';
+    progressContainer.style.borderRadius = '4px';
+    progressContainer.style.overflow = 'hidden';
+
+    // Fortschrittsfüllung
     const completed = task.subtasks?.completed || 0;
     const total = task.subtasks?.total || 0;
+    const progressFill = document.createElement('div');
+    const percentage = total > 0 ? (completed / total) * 100 : 0;
+    progressFill.style.width = `${percentage}%`;
+    progressFill.style.height = '100%';
+    progressFill.style.backgroundColor = '#635FC7'; // z.B. lila
+    progressFill.style.transition = 'width 0.3s ease';
+
+    progressContainer.appendChild(progressFill);
+
+    // Textanzeige
+    const progressText = document.createElement('span');
+    progressText.className = 'subtasks-text';
     progressText.textContent = `${completed}/${total} Subtasks`;
-    subtasks.appendChild(progressImg);
+    progressText.style.fontSize = '13px';
+    progressText.style.color = '#000000'; // Farbe nach Bedarf
+
+    subtasks.appendChild(progressContainer);
     subtasks.appendChild(progressText);
+}
 
     const assignedTo = document.createElement('div');
     assignedTo.className = 'assigned-to';
-    const priority = document.createElement('div');
-    priority.className = 'priority';
-    const avatar = document.createElement('img');
-    avatar.src = './assets/Frame 217.png';
+    assignedTo.style.display = 'flex';
+    assignedTo.style.alignItems = 'center';
+    assignedTo.style.gap = '8px'; // Abstand zwischen Avataren und Icon
+
+    // Container für Avatare
+    const avatarsContainer = document.createElement('div');
+    avatarsContainer.style.display = 'flex';
+    avatarsContainer.style.gap = '4px'; // Abstand zwischen den einzelnen Avataren
+
+    // Avatare der ausgewählten Nutzer
+    if (task.users && task.users.length > 0) {
+        task.users.slice(0, 3).forEach(user => {
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'assigned-avatar';
+            avatarDiv.textContent = getInitials(user);
+            avatarDiv.style.backgroundColor = getColor(user);
+            avatarDiv.style.width = '28px';
+            avatarDiv.style.height = '28px';
+            avatarDiv.style.borderRadius = '50%';
+            avatarDiv.style.display = 'flex';
+            avatarDiv.style.alignItems = 'center';
+            avatarDiv.style.justifyContent = 'center';
+            avatarDiv.style.fontFamily = 'Inter';
+            avatarDiv.style.fontWeight = '400';
+            avatarDiv.style.fontStyle = 'normal'; // "Regular" entspricht normal
+            avatarDiv.style.fontSize = '12px';
+            avatarDiv.style.lineHeight = '120%';
+            avatarDiv.style.textAlign = 'center';
+            avatarDiv.style.verticalAlign = 'middle';
+            avatarDiv.style.color = '#FFFFFF';
+
+
+
+            avatarsContainer.appendChild(avatarDiv);
+        });
+    }
+
+    // Priority-Icon rechts
     const prioImg = document.createElement('img');
     prioImg.alt = 'Priority';
     prioImg.src = priorityIcon(task.priority);
-    priority.appendChild(avatar);
-    priority.appendChild(prioImg);
-    assignedTo.appendChild(priority);
+    prioImg.style.marginLeft = 'auto'; // schiebt es ganz nach rechts
 
-  card.appendChild(type);
-  card.appendChild(content);
-  card.appendChild(subtasks);
-  card.appendChild(assignedTo);
+    // Alles zusammenfügen
+    assignedTo.appendChild(avatarsContainer);
+    assignedTo.appendChild(prioImg);
 
-  // Add click event listener to open task details modal
-  card.addEventListener('click', () => {
-    if (!card.classList.contains('dragging')) {
-      openTaskDetailsModal(task);
-    }
-  });
 
-  // Drag handlers
-  card.addEventListener('dragstart', (e) => {
-    card.classList.add('dragging');
-    try {
-      e.dataTransfer?.setData('text/plain', String(task.id || ''));
-      e.dataTransfer?.setDragImage(card, 20, 20);
-      if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
-    } catch (_) {}
-  });
-
-  card.addEventListener('dragend', () => {
-    // Remove dragging class immediately to prevent visual glitch
-    card.classList.remove('dragging');
-  });
+    card.appendChild(type);
+    card.appendChild(content);
+    card.appendChild(subtasks);
+    card.appendChild(assignedTo);
 
     return card;
 }
@@ -211,9 +345,11 @@ function createTaskCard(task) {
 function priorityIcon(priority) {
     switch ((priority || 'medium').toLowerCase()) {
         case 'urgent':
+            return './assets/icons-board/priority-urgent.svg';
+        case 'medium':
             return './assets/icons-board/priority-medium.svg';
         case 'low':
-            return './assets/icons-board/priority-medium.svg';
+            return './assets/icons-board/priority-low.svg';
         default:
             return './assets/icons-board/priority-medium.svg';
     }
@@ -372,19 +508,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // ---------- Helpers ----------
-    function getInitials(name) {
-        if (!name) return "";
-        return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
-    }
+    // // ---------- Helpers ----------
+    // function getInitials(name) {
+    //     if (!name) return "";
+    //     return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
+    // }
 
-    function getColor(name) {
-        let hash = 0;
-        for (let i = 0; i < name.length; i++) {
-            hash = name.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        return `hsl(${Math.abs(hash) % 360},70%,50%)`;
-    }
+    // function getColor(name) {
+    //     let hash = 0;
+    //     for (let i = 0; i < name.length; i++) {
+    //         hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    //     }
+    //     return `hsl(${Math.abs(hash) % 360},70%,50%)`;
+    // }
 
     // ---------- Update Selected Avatars ----------
     function updateSelectedAvatars() {
@@ -674,312 +810,220 @@ function getTaskData() {
 }
 
 //Task an Firebase senden
-// ======================
-// Task Details Modal Functions
-// ======================
 
-function openTaskDetailsModal(task) {
-  const modal = document.getElementById('task-details-modal');
-  if (!modal) return;
+async function saveTaskToFirebase(taskData) {
+    try {
+        const response = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                title: taskData.title,
+                description: taskData.description,
+                dueDate: taskData.dueDate,
+                priority: taskData.priority,
+                status: "inProgress",
+                createdAt: new Date().toISOString(),
+                subtasks: {
+                    total: taskData.subtasks.length,
+                    completed: 0,
+                    items: taskData.subtasks
+                },
+                users: taskData.assignedTo,
+                category: taskData.category
+            })
+        });
 
-  // Populate modal with task data
-  populateTaskDetailsModal(task);
-  
-  // Show modal
-  modal.classList.remove('hidden');
-  
-  // Add event listeners
-  setupTaskDetailsModalListeners(task);
+        if (!response.ok) throw new Error("Fehler beim Speichern des Tasks");
+
+        const data = await response.json();
+        console.log("Task erfolgreich gespeichert:", data);
+        return data;
+
+    } catch (error) {
+        console.error("Firebase Save Error:", error);
+        alert("Fehler beim Speichern des Tasks!");
+    }
 }
 
-function populateTaskDetailsModal(task) {
-  // Title
-  const titleDisplay = document.getElementById('task-title-display');
-  if (titleDisplay) {
-    titleDisplay.textContent = task.title || 'Untitled';
-  }
 
-  // Description
-  const descriptionDisplay = document.getElementById('task-description-display');
-  if (descriptionDisplay) {
-    const description = task.description || 'No description provided';
-    descriptionDisplay.textContent = description;
-    if (!task.description) {
-      descriptionDisplay.classList.add('empty');
+//Create Task Button mit Firebase verbinden
+
+const createTaskBtn = document.querySelector(".sign-up-btn");
+
+createTaskBtn.addEventListener("click", async (event) => {
+    event.preventDefault(); // verhindert das Standard-Submit
+
+    // 1. Task-Daten auslesen
+    const taskData = getTaskData();
+
+    // 2. Pflichtfelder prüfen
+    if (!taskData.title || !taskData.dueDate) {
+        alert("Bitte fülle alle Pflichtfelder aus!");
+        return;
     }
-  }
 
-  // Due date
-  const dueDateDisplay = document.getElementById('task-due-date-display');
-  if (dueDateDisplay) {
-    if (task.dueDate) {
-      const date = new Date(task.dueDate);
-      dueDateDisplay.textContent = date.toLocaleDateString('de-DE');
-    } else {
-      dueDateDisplay.textContent = 'No due date set';
-      dueDateDisplay.classList.add('empty');
+    console.log("Task-Daten vor dem Speichern:", taskData);
+
+    // 3. Task an Firebase senden
+    const result = await saveTaskToFirebase(taskData);
+
+    if (result) {
+        // Erfolgsmeldung anzeigen
+        showTaskAddedMessage(() => {
+            // Callback: erst schließen, wenn Meldung weg ist
+            closeModal();
+        });
+
+        // Formular zurücksetzen (bleibt aber noch offen sichtbar!)
+        document.querySelector(".title-input").value = "";
+        document.querySelector(".description-input").value = "";
+        document.querySelector(".due-date-input").value = "";
+        document.querySelector(".selected-avatars-container").innerHTML = "";
+        document.querySelector("#subtask-list").innerHTML = "";
+
+        // Priority zurücksetzen auf Medium
+        document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
+        document.querySelector(".priority-frame:nth-child(2)").classList.add("active");
+
+        // Kategorie zurücksetzen
+        if (categoryText) categoryText.textContent = "Select task category";
     }
-  }
+});
 
-  // Priority
-  const priorityDisplay = document.getElementById('task-priority-display');
-  if (priorityDisplay) {
-    const priority = task.priority || 'medium';
-    priorityDisplay.className = `task-value priority-badge priority-${priority.toLowerCase()}`;
-    priorityDisplay.innerHTML = `
-      ${priority.charAt(0).toUpperCase() + priority.slice(1)}
-      <img src="./assets/icons-addTask/${getPriorityIcon(priority)}" alt="${priority}" width="16" height="16">
-    `;
-  }
+//Meldung anzeigen, wenn Task erfolgreich erstellt wurde
+function showTaskAddedMessage(onFinished) {
+    const img = document.createElement("img");
+    img.src = "./assets/icons-addTask/Added to board 1.png";
+    img.alt = "Task added to Board";
 
-  // Status
-  const statusDisplay = document.getElementById('task-status-display');
-  if (statusDisplay) {
-    const status = task.status || 'todo';
-    statusDisplay.className = `task-value status-badge status-${status}`;
-    statusDisplay.textContent = readableStatus(status);
-  }
-
-  // Assigned contacts
-  const assignedDisplay = document.getElementById('task-assigned-display');
-  if (assignedDisplay) {
-    if (task.assignedContacts && task.assignedContacts.length > 0) {
-      assignedDisplay.className = 'task-value assigned-contacts';
-      const contactsHtml = task.assignedContacts.map(contact => `
-        <div class="assigned-contact">
-          <div class="contact-avatar">${getInitials(contact.name)}</div>
-          <span>${contact.name}</span>
-        </div>
-      `).join('');
-      assignedDisplay.innerHTML = contactsHtml;
-    } else {
-      assignedDisplay.className = 'task-value empty';
-      assignedDisplay.textContent = 'No contacts assigned';
-    }
-  }
-
-  // Category
-  const categoryDisplay = document.getElementById('task-category-display');
-  if (categoryDisplay) {
-    if (task.category) {
-      categoryDisplay.textContent = task.category;
-    } else {
-      categoryDisplay.textContent = 'No category set';
-      categoryDisplay.classList.add('empty');
-    }
-  }
-
-  // Subtasks
-  const subtasksDisplay = document.getElementById('task-subtasks-display');
-  if (subtasksDisplay) {
-    if (task.subtasks && task.subtasks.total > 0) {
-      subtasksDisplay.className = 'task-value subtasks-list';
-      const subtasksHtml = task.subtasks.items.map(subtask => `
-        <div class="subtask-item">
-          <div class="subtask-checkbox ${subtask.completed ? 'checked' : ''}" 
-               data-subtask-id="${subtask.id}">
-          </div>
-          <span class="subtask-text">${subtask.text}</span>
-        </div>
-      `).join('');
-      subtasksDisplay.innerHTML = subtasksHtml;
-    } else {
-      subtasksDisplay.className = 'task-value empty';
-      subtasksDisplay.textContent = 'No subtasks';
-    }
-  }
-}
-
-function setupTaskDetailsModalListeners(task) {
-  const modal = document.getElementById('task-details-modal');
-  const closeBtn = document.getElementById('close-task-details-btn');
-  const closeDetailsBtn = document.getElementById('close-details-btn');
-  const editBtn = document.getElementById('edit-task-btn');
-  const deleteBtn = document.getElementById('delete-task-btn');
-
-  // Close modal functions
-  const closeModal = () => {
-    modal.classList.add('hidden');
-  };
-
-  // Close buttons
-  if (closeBtn) {
-    closeBtn.addEventListener('click', closeModal);
-  }
-  if (closeDetailsBtn) {
-    closeDetailsBtn.addEventListener('click', closeModal);
-  }
-
-  // Close on backdrop click
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        closeModal();
-      }
+    Object.assign(img.style, {
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: "9999",
+        boxShadow: "0px 0px 4px 0px #00000029",
+        transition: "transform 150ms ease-out, opacity 150ms ease-out",
+        opacity: "0",
+        pointerEvents: "none",
     });
-  }
 
-  // Edit task
-  if (editBtn) {
-    editBtn.addEventListener('click', () => {
-      closeModal();
-      // TODO: Implement edit functionality
-      console.log('Edit task:', task.id);
+    document.body.appendChild(img);
+
+    // Einblenden
+    requestAnimationFrame(() => {
+        img.style.opacity = "1";
+        img.style.transform = "translate(-50%, -50%)";
     });
-  }
 
-  // Delete task
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', () => {
-      if (confirm('Are you sure you want to delete this task?')) {
-        deleteTask(task.id);
-      }
-    });
-  }
-
-  // Subtask checkbox clicks
-  const subtaskCheckboxes = document.querySelectorAll('.subtask-checkbox');
-  subtaskCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const subtaskId = checkbox.getAttribute('data-subtask-id');
-      toggleSubtask(subtaskId, checkbox);
-    });
-  });
+    // Nach 800ms Slide-out links in 150ms
+    setTimeout(() => {
+        img.style.transform = "translate(-150%, -50%)";
+        img.style.opacity = "0";
+        img.addEventListener("transitionend", () => {
+            img.remove();
+            if (typeof onFinished === "function") {
+                onFinished(); // Modal schließen
+            }
+        });
+    }, 800);
 }
 
-function getPriorityIcon(priority) {
-  switch (priority.toLowerCase()) {
-    case 'urgent':
-      return 'Prio alta.svg';
-    case 'low':
-      return 'Prio baja.svg';
-    default:
-      return 'Capa 2.svg';
-  }
+// Drag and Drop Feature
+function getTaskIdFromCard(card) {
+    return card.dataset.taskId || card.getAttribute('data-task-id') || card.id;
 }
 
-function getInitials(name) {
-  if (!name) return '?';
-  return name.split(' ')
-    .map(word => word.charAt(0))
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
+// 1. Alle Task-Karten draggable machen, wenn das Board gerendert wurde
+function enableTaskDragAndDrop() {
+    // Alle Spalten holen
+    const columns = [
+        document.getElementById('column-todo'),
+        document.getElementById('column-inProgress'),
+        document.getElementById('column-awaitFeedback'),
+        document.getElementById('column-done')
+    ].filter(Boolean);
 
-async function deleteTask(taskId) {
-  try {
-    if (window.taskManager) {
-      await window.taskManager.deleteTask(taskId);
-      await window.taskManager.loadTasks();
-      renderBoard();
-      closeTaskDetailsModal();
-    }
-  } catch (error) {
-    console.error('Error deleting task:', error);
-    alert('Failed to delete task');
-  }
-}
-
-function closeTaskDetailsModal() {
-  const modal = document.getElementById('task-details-modal');
-  if (modal) {
-    modal.classList.add('hidden');
-  }
-}
-
-function toggleSubtask(subtaskId, checkbox) {
-  // TODO: Implement subtask toggle functionality
-  checkbox.classList.toggle('checked');
-  console.log('Toggle subtask:', subtaskId, checkbox.classList.contains('checked'));
-}
-
-// ======================
-// Drag & Drop for columns
-// ======================
-
-function setupDragAndDrop() {
-  const taskColumns = document.querySelectorAll('.task-column .tasks');
-  taskColumns.forEach((tasksEl) => {
-    const columnEl = tasksEl.closest('.task-column');
-    if (!columnEl) return;
-    const status = columnEl.getAttribute('data-status');
-    if (!status) return;
-
-    // Remove existing listeners to prevent duplicates
-    tasksEl.removeEventListener('dragover', handleDragOver);
-    tasksEl.removeEventListener('dragenter', handleDragEnter);
-    tasksEl.removeEventListener('dragleave', handleDragLeave);
-    // Note: We can't remove the drop listener easily since it's bound with status
-
-    // Add new listeners
-    tasksEl.addEventListener('dragover', handleDragOver);
-    tasksEl.addEventListener('dragenter', handleDragEnter);
-    tasksEl.addEventListener('dragleave', handleDragLeave);
-    tasksEl.addEventListener('drop', (e) => handleDrop(e, status));
-  });
-}
-
-function handleDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer && (e.dataTransfer.dropEffect = 'move');
-}
-
-function handleDragEnter(e) {
-  const target = e.currentTarget;
-  if (target && target.classList) target.classList.add('drag-over');
-}
-
-function handleDragLeave(e) {
-  const target = e.currentTarget;
-  if (target && target.classList) target.classList.remove('drag-over');
-}
-
-async function handleDrop(e, newStatus) {
-  e.preventDefault();
-  const target = e.currentTarget;
-  if (target && target.classList) target.classList.remove('drag-over');
-  try {
-    const taskId = e.dataTransfer?.getData('text/plain');
-    if (!taskId) return;
-    
-    // Find the dragged card element
-    const draggedCard = document.querySelector(`[data-task-id="${taskId}"]`);
-    if (!draggedCard) return;
-    
-    if (window.taskManager) {
-      // Update task status in backend
-      await window.taskManager.updateTask(taskId, { status: newStatus });
-      
-      // Move the card visually without full re-render
-      const newColumn = document.querySelector(`[data-status="${newStatus}"] .tasks`);
-      if (newColumn && draggedCard.parentNode !== newColumn) {
-        // Remove from old column
-        draggedCard.parentNode.removeChild(draggedCard);
-        
-        // Add to new column
-        newColumn.appendChild(draggedCard);
-        
-        // Update task data locally
-        const tasks = window.taskManager.getTasks();
-        const task = tasks.find(t => t.id == taskId);
-        if (task) {
-          task.status = newStatus;
+    // Alle Karten holen
+    const cards = document.querySelectorAll('.task-card');
+    cards.forEach(card => {
+        card.setAttribute('draggable', 'true');
+        // Optional: Eindeutige ID setzen, falls nicht vorhanden
+        if (!card.dataset.taskId) {
+            // Finde die Task anhand des Titels (besser: Task-Objekt mit ID erweitern!)
+            card.dataset.taskId = card.querySelector('.title')?.textContent || '';
         }
-      }
-    }
-  } catch (error) {
-    console.error('Error moving task:', error);
-    alert('Failed to move task');
-    // Fallback to full re-render on error
-    await window.taskManager.loadTasks();
-    renderBoard();
-    setupDragAndDrop();
-  }
+
+        card.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('text/plain', card.dataset.taskId);
+            setTimeout(() => card.classList.add('dragging'), 0);
+        });
+
+        card.addEventListener('dragend', e => {
+            card.classList.remove('dragging');
+        });
+    });
+
+    // Spalten als Dropzone vorbereiten
+    columns.forEach(column => {
+        column.addEventListener('dragover', e => {
+            e.preventDefault();
+            column.classList.add('drag-over');
+        });
+        column.addEventListener('dragleave', e => {
+            column.classList.remove('drag-over');
+        });
+        column.addEventListener('drop', e => {
+            e.preventDefault();
+            column.classList.remove('drag-over');
+            const taskId = e.dataTransfer.getData('text/plain');
+            moveTaskToColumn(taskId, column.id);
+        });
+    });
 }
 
+// 2. Task verschieben und Board neu rendern
+function moveTaskToColumn(taskId, columnId) {
+    // Status anhand der Spalten-ID bestimmen
+    let newStatus = 'todo';
+    if (columnId.includes('inProgress')) newStatus = 'inProgress';
+    else if (columnId.includes('awaitFeedback')) newStatus = 'awaitFeedback';
+    else if (columnId.includes('done')) newStatus = 'done';
 
+    // Tasks holen und Task finden
+    const tasks = window.taskManager.getTasks();
+    const task = tasks.find(t => (t.id || t.title) == taskId);
+    if (task && task.status !== newStatus) {
+        task.status = newStatus;
+        window.taskManager.saveTasks(tasks); // Du brauchst eine saveTasks-Funktion!
+        renderBoard();
+        enableTaskDragAndDrop(); // Drag & Drop nach Rendern wieder aktivieren
+    }
+}
 
+// 3. Nach jedem Render Drag & Drop aktivieren
+// (Falls du renderBoard() öfter aufrufst, dann immer danach auch enableTaskDragAndDrop() aufrufen!)
+const origRenderBoard = renderBoard;
+renderBoard = function () {
+    origRenderBoard();
+    enableTaskDragAndDrop();
+};
+// Initial aktivieren (falls Board schon gerendert)
+enableTaskDragAndDrop();
 
+// Ergänzung für Drag & Drop mit Firebase-Support
+// Beispiel: Tasks aus Firebase laden und IDs zuweisen
+window.taskManager.loadTasks = async function () {
+    const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json");
+    const data = await res.json();
+    const tasks = [];
+    for (const [key, value] of Object.entries(data || {})) {
+        value.firebaseId = key; // <-- ID zuweisen!
+        tasks.push(value);
+    }
+    window.taskManager._tasks = tasks;
+};
 
+window.taskManager.getTasks = function () {
+    return window.taskManager._tasks || [];
+};
