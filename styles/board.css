@@ -9,7 +9,6 @@ body {
 
 .layout {
     max-width: 1440px;
-    margin: 0 auto;
     display: grid;
     grid-template-columns: 232px 1fr;
     position: relative;
@@ -412,6 +411,7 @@ input {
     border-radius: 24px;
     box-shadow: 0px 0px 10px 3px #00000014;
     width: 252px;
+    height:227px;
 }
 
 .task-info {
@@ -426,8 +426,11 @@ input {
 
 /* Drag & Drop helpers */
 .task-card.dragging {
+    /* transform: rotate(5deg) scale(1.05); */
     opacity: 0.6;
     cursor: grabbing;
+    z-index: 1000;
+    box-shadow: 0px 8px 25px 5px #00000025;
 }
 
 .tasks.drag-over {
@@ -554,3 +557,19 @@ input {
 .tasks.drag-over {
     background: #e3f2fd;
 }
+
+.task-card.dragging {
+    transform: rotate(5deg) scale(1.05);
+    opacity: 0.6;
+    cursor: grabbing;
+    z-index: 1000;
+    box-shadow: 0px 8px 25px 5px #00000025;
+}
+
+.assigned-avatar {
+    width:32px;
+    height:32px;
+    margin-left: -10px;   /* zum Überlappen */
+    border: 1px solid #FFFFFF; /* weißer Rand */
+}
+

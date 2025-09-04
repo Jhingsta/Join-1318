@@ -1,5 +1,5 @@
 if (!window.taskManager.saveTasks) {
-    window.taskManager.saveTasks = function(tasks) {
+    window.taskManager.saveTasks = function (tasks) {
         // Beispiel: Speichern im LocalStorage
         localStorage.setItem('tasks', JSON.stringify(tasks));
         // Wenn du Firebase nutzt, musst du hier ein Update an die Datenbank machen!
@@ -129,7 +129,7 @@ function closeModal() {
 document.addEventListener('DOMContentLoaded', () => {
     const svgButtons = document.querySelectorAll('.svg-button'); // alle Buttons
     const modal = document.getElementById('add-task-modal');
-    const modalClose = document.getElementById('close'); 
+    const modalClose = document.getElementById('close');
 
     function openModal(button) {
         modal?.classList.remove('hidden');
@@ -201,15 +201,37 @@ function renderBoard() {
     });
 }
 
+
+// ---------- Helpers ----------
+function getInitials(name) {
+    if (!name) return "";
+    return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
+}
+
+function getColor(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return `hsl(${Math.abs(hash) % 360},70%,50%)`;
+}
+
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
 
     const type = document.createElement('div');
     type.className = 'task-type';
+
     const typeImg = document.createElement('img');
-    typeImg.src = './assets/icons-board/user-story-tag.svg';
-    typeImg.alt = 'User Story';
+    if (task.category === "User Story") {
+        typeImg.src = './assets/icons-board/user-story-tag.svg';
+        typeImg.alt = 'User Story';
+    } else if (task.category === "Technical Task") {
+        typeImg.src = './assets/icons-board/technical-task-tag.svg';
+        typeImg.alt = 'Technical Task';
+    }
+
     type.appendChild(typeImg);
 
     const content = document.createElement('div');
@@ -225,28 +247,92 @@ function createTaskCard(task) {
 
     const subtasks = document.createElement('div');
     subtasks.className = 'subtasks';
-    const progressImg = document.createElement('img');
-    progressImg.src = './assets/Progress bar.png';
-    const progressText = document.createElement('span');
-    progressText.className = 'subtasks-text';
+    subtasks.style.display = 'flex';
+    subtasks.style.alignItems = 'center';
+    subtasks.style.gap = '8px'; // Abstand zwischen Leiste und Text
+
+    // Container für die Fortschrittsleiste
+    if (task.subtasks && (task.subtasks.total || task.subtasks.completed)) {
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'progress-container';
+    progressContainer.style.width = '128px';
+    progressContainer.style.height = '8px';
+    progressContainer.style.backgroundColor = '#E0E0E0';
+    progressContainer.style.borderRadius = '4px';
+    progressContainer.style.overflow = 'hidden';
+
+    // Fortschrittsfüllung
     const completed = task.subtasks?.completed || 0;
     const total = task.subtasks?.total || 0;
+    const progressFill = document.createElement('div');
+    const percentage = total > 0 ? (completed / total) * 100 : 0;
+    progressFill.style.width = `${percentage}%`;
+    progressFill.style.height = '100%';
+    progressFill.style.backgroundColor = '#635FC7'; // z.B. lila
+    progressFill.style.transition = 'width 0.3s ease';
+
+    progressContainer.appendChild(progressFill);
+
+    // Textanzeige
+    const progressText = document.createElement('span');
+    progressText.className = 'subtasks-text';
     progressText.textContent = `${completed}/${total} Subtasks`;
-    subtasks.appendChild(progressImg);
+    progressText.style.fontSize = '13px';
+    progressText.style.color = '#000000'; // Farbe nach Bedarf
+
+    subtasks.appendChild(progressContainer);
     subtasks.appendChild(progressText);
+}
 
     const assignedTo = document.createElement('div');
     assignedTo.className = 'assigned-to';
-    const priority = document.createElement('div');
-    priority.className = 'priority';
-    const avatar = document.createElement('img');
-    avatar.src = './assets/Frame 217.png';
+    assignedTo.style.display = 'flex';
+    assignedTo.style.alignItems = 'center';
+    assignedTo.style.gap = '8px'; // Abstand zwischen Avataren und Icon
+
+    // Container für Avatare
+    const avatarsContainer = document.createElement('div');
+    avatarsContainer.style.display = 'flex';
+    avatarsContainer.style.gap = '4px'; // Abstand zwischen den einzelnen Avataren
+
+    // Avatare der ausgewählten Nutzer
+    if (task.users && task.users.length > 0) {
+        task.users.slice(0, 3).forEach(user => {
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'assigned-avatar';
+            avatarDiv.textContent = getInitials(user);
+            avatarDiv.style.backgroundColor = getColor(user);
+            avatarDiv.style.width = '28px';
+            avatarDiv.style.height = '28px';
+            avatarDiv.style.borderRadius = '50%';
+            avatarDiv.style.display = 'flex';
+            avatarDiv.style.alignItems = 'center';
+            avatarDiv.style.justifyContent = 'center';
+            avatarDiv.style.fontFamily = 'Inter';
+            avatarDiv.style.fontWeight = '400';
+            avatarDiv.style.fontStyle = 'normal'; // "Regular" entspricht normal
+            avatarDiv.style.fontSize = '12px';
+            avatarDiv.style.lineHeight = '120%';
+            avatarDiv.style.textAlign = 'center';
+            avatarDiv.style.verticalAlign = 'middle';
+            avatarDiv.style.color = '#FFFFFF';
+
+
+
+            avatarsContainer.appendChild(avatarDiv);
+        });
+    }
+
+    // Priority-Icon rechts
     const prioImg = document.createElement('img');
     prioImg.alt = 'Priority';
     prioImg.src = priorityIcon(task.priority);
-    priority.appendChild(avatar);
-    priority.appendChild(prioImg);
-    assignedTo.appendChild(priority);
+    prioImg.style.marginLeft = 'auto'; // schiebt es ganz nach rechts
+
+    // Alles zusammenfügen
+    assignedTo.appendChild(avatarsContainer);
+    assignedTo.appendChild(prioImg);
+
 
     card.appendChild(type);
     card.appendChild(content);
@@ -259,9 +345,11 @@ function createTaskCard(task) {
 function priorityIcon(priority) {
     switch ((priority || 'medium').toLowerCase()) {
         case 'urgent':
+            return './assets/icons-board/priority-urgent.svg';
+        case 'medium':
             return './assets/icons-board/priority-medium.svg';
         case 'low':
-            return './assets/icons-board/priority-medium.svg';
+            return './assets/icons-board/priority-low.svg';
         default:
             return './assets/icons-board/priority-medium.svg';
     }
@@ -420,19 +508,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // ---------- Helpers ----------
-    function getInitials(name) {
-        if (!name) return "";
-        return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
-    }
+    // // ---------- Helpers ----------
+    // function getInitials(name) {
+    //     if (!name) return "";
+    //     return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
+    // }
 
-    function getColor(name) {
-        let hash = 0;
-        for (let i = 0; i < name.length; i++) {
-            hash = name.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        return `hsl(${Math.abs(hash) % 360},70%,50%)`;
-    }
+    // function getColor(name) {
+    //     let hash = 0;
+    //     for (let i = 0; i < name.length; i++) {
+    //         hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    //     }
+    //     return `hsl(${Math.abs(hash) % 360},70%,50%)`;
+    // }
 
     // ---------- Update Selected Avatars ----------
     function updateSelectedAvatars() {
@@ -916,7 +1004,7 @@ function moveTaskToColumn(taskId, columnId) {
 // 3. Nach jedem Render Drag & Drop aktivieren
 // (Falls du renderBoard() öfter aufrufst, dann immer danach auch enableTaskDragAndDrop() aufrufen!)
 const origRenderBoard = renderBoard;
-renderBoard = function() {
+renderBoard = function () {
     origRenderBoard();
     enableTaskDragAndDrop();
 };
@@ -925,7 +1013,7 @@ enableTaskDragAndDrop();
 
 // Ergänzung für Drag & Drop mit Firebase-Support
 // Beispiel: Tasks aus Firebase laden und IDs zuweisen
-window.taskManager.loadTasks = async function() {
+window.taskManager.loadTasks = async function () {
     const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json");
     const data = await res.json();
     const tasks = [];
@@ -936,6 +1024,6 @@ window.taskManager.loadTasks = async function() {
     window.taskManager._tasks = tasks;
 };
 
-window.taskManager.getTasks = function() {
+window.taskManager.getTasks = function () {
     return window.taskManager._tasks || [];
 };
