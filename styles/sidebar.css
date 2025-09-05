@@ -57,11 +57,21 @@
   filter: brightness(0) saturate(100%) invert(40%) sepia(96%) saturate(1815%) hue-rotate(213deg) brightness(101%) contrast(101%);
 }
 
+.nav-item.active img,
+.nav-item.active span {
+  filter: brightness(0) saturate(100%) invert(40%) sepia(96%) saturate(1815%) hue-rotate(213deg) brightness(101%) contrast(101%);
+}
+
 .sidebar-footer {
+  display: none;
   flex-direction: row;
   flex: 1.2;
   justify-content: space-between;
   gap: clamp(8px, 2vw, 32px);
+}
+
+.sidebar-visitor .sidebar-footer {
+  display: flex;
 }
 
 .footer-item {
@@ -87,6 +97,10 @@
 }
 
 .footer-item:active {
+  color: #4589FF;
+}
+
+.footer-item.footer-active {
   color: #4589FF;
 }
 

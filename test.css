@@ -1,0 +1,94 @@
+/* style.css */
+#modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+  #modal-box {
+    background: #fff;
+    width: 370px;
+    border-radius: 18px;
+    padding: 26px 28px 18px 28px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+    position: relative;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  #modal-close-btn {
+    position: absolute;
+    top: 20px; right: 24px;
+    background: none; border: none;
+    font-size: 22px; color: #666; cursor: pointer;
+  }
+  .user-story-label {
+     width: 160;
+    height: 36;
+    border-radius: 8px;
+    padding-top: 4px;
+    padding-right: 24px;
+    padding-bottom: 4px;
+    padding-left: 24px;
+    gap: 10px;
+    opacity: 1;
+    background: #F66722; color: #fff;
+    font-size: 13px; letter-spacing: 0.02em;
+    display: inline-block;
+    margin-bottom: 12px;
+
+  }
+  .modal-title {
+    font-size: 2.1em; font-weight: 800;
+    margin-bottom: 14px; line-height: 1.15;
+  }
+  .modal-desc {
+    color: #333; margin-bottom: 20px; font-size: 16px;
+  }
+  .modal-detail {
+    font-size: 15px; margin-bottom: 10px;
+  }
+  .modal-section {
+    margin-bottom: 17px;
+  }
+  .modal-section-title {
+    font-weight: bold; font-size: 15px; margin-bottom: 7px;
+  }
+  .assignees {
+    display: flex; gap: 13px;
+  }
+  .avatar-group {
+    display: flex; align-items: center; gap: 7px;
+  }
+  .avatar {
+    width: 28px; height: 28px;
+    color: #fff; font-weight: 700;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  .avatar-green { background: #19b26c; }
+  .avatar-blue { background: #351AAF; }
+  .avatar-orange { background: #F66722; }
+  .subtasks label {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 15px; margin-bottom: 4px;
+  }
+  .subtasks input[type="checkbox"] {
+    accent-color: #19b26c;
+    width: 18px; height: 18px;
+  }
+  .modal-actions {
+    display: flex; gap: 15px; justify-content: flex-end; margin-top: 10px;
+  }
+  .delete-btn {
+    background: none; border: none;
+    color: #F66722; font-weight: 700; cursor: pointer;
+    font-size: 16px; display: flex; align-items: center; gap: 5px;
+  }
+  .edit-btn {
+    background: none; border: none;
+    color: #351AAF; font-weight: 700; cursor: pointer;
+    font-size: 16px; display: flex; align-items: center; gap: 5px;
+  }
+  
