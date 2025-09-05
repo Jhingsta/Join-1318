@@ -216,6 +216,132 @@ function getColor(name) {
     return `hsl(${Math.abs(hash) % 360},70%,50%)`;
 }
 
+// function createTaskCard(task) {
+//     const card = document.createElement('div');
+//     card.className = 'task-card';
+
+//     const type = document.createElement('div');
+//     type.className = 'task-type';
+
+//     const typeImg = document.createElement('img');
+//     if (task.category === "User Story") {
+//         typeImg.src = './assets/icons-board/user-story-tag.svg';
+//         typeImg.alt = 'User Story';
+//     } else if (task.category === "Technical Task") {
+//         typeImg.src = './assets/icons-board/technical-task-tag.svg';
+//         typeImg.alt = 'Technical Task';
+//     }
+
+//     type.appendChild(typeImg);
+
+//     const content = document.createElement('div');
+//     content.className = 'task-content';
+//     const title = document.createElement('div');
+//     title.className = 'title';
+//     title.textContent = task.title || 'Untitled';
+//     const info = document.createElement('div');
+//     info.className = 'task-info';
+//     info.textContent = task.description || '';
+//     content.appendChild(title);
+//     content.appendChild(info);
+
+//     const subtasks = document.createElement('div');
+//     subtasks.className = 'subtasks';
+//     subtasks.style.display = 'flex';
+//     subtasks.style.alignItems = 'center';
+//     subtasks.style.gap = '8px'; // Abstand zwischen Leiste und Text
+
+//     // Container für die Fortschrittsleiste
+//     if (task.subtasks && (task.subtasks.total || task.subtasks.completed)) {
+//         const progressContainer = document.createElement('div');
+//         progressContainer.className = 'progress-container';
+//         progressContainer.style.width = '128px';
+//         progressContainer.style.height = '8px';
+//         progressContainer.style.backgroundColor = '#E0E0E0';
+//         progressContainer.style.borderRadius = '4px';
+//         progressContainer.style.overflow = 'hidden';
+
+//         // Fortschrittsfüllung
+//         const completed = task.subtasks?.completed || 0;
+//         const total = task.subtasks?.total || 0;
+//         const progressFill = document.createElement('div');
+//         const percentage = total > 0 ? (completed / total) * 100 : 0;
+//         progressFill.style.width = `${percentage}%`;
+//         progressFill.style.height = '100%';
+//         progressFill.style.backgroundColor = '#635FC7'; // z.B. lila
+//         progressFill.style.transition = 'width 0.3s ease';
+
+//         progressContainer.appendChild(progressFill);
+
+//         // Textanzeige
+//         const progressText = document.createElement('span');
+//         progressText.className = 'subtasks-text';
+//         progressText.textContent = `${completed}/${total} Subtasks`;
+//         progressText.style.fontSize = '13px';
+//         progressText.style.color = '#000000'; // Farbe nach Bedarf
+
+//         subtasks.appendChild(progressContainer);
+//         subtasks.appendChild(progressText);
+//     }
+
+//     const assignedTo = document.createElement('div');
+//     assignedTo.className = 'assigned-to';
+//     assignedTo.style.display = 'flex';
+//     assignedTo.style.alignItems = 'center';
+//     assignedTo.style.gap = '8px'; // Abstand zwischen Avataren und Icon
+
+//     // Container für Avatare
+//     const avatarsContainer = document.createElement('div');
+//     avatarsContainer.style.display = 'flex';
+//     avatarsContainer.style.gap = '4px'; // Abstand zwischen den einzelnen Avataren
+
+//     // Avatare der ausgewählten Nutzer
+//     if (task.users && task.users.length > 0) {
+//         task.users.slice(0, 3).forEach(user => {
+//             const avatarDiv = document.createElement('div');
+//             avatarDiv.className = 'assigned-avatar';
+//             avatarDiv.textContent = getInitials(user);
+//             avatarDiv.style.backgroundColor = getColor(user);
+//             avatarDiv.style.width = '28px';
+//             avatarDiv.style.height = '28px';
+//             avatarDiv.style.borderRadius = '50%';
+//             avatarDiv.style.display = 'flex';
+//             avatarDiv.style.alignItems = 'center';
+//             avatarDiv.style.justifyContent = 'center';
+//             avatarDiv.style.fontFamily = 'Inter';
+//             avatarDiv.style.fontWeight = '400';
+//             avatarDiv.style.fontStyle = 'normal'; // "Regular" entspricht normal
+//             avatarDiv.style.fontSize = '12px';
+//             avatarDiv.style.lineHeight = '120%';
+//             avatarDiv.style.textAlign = 'center';
+//             avatarDiv.style.verticalAlign = 'middle';
+//             avatarDiv.style.color = '#FFFFFF';
+
+
+
+//             avatarsContainer.appendChild(avatarDiv);
+//         });
+//     }
+
+//     // Priority-Icon rechts
+//     const prioImg = document.createElement('img');
+//     prioImg.alt = 'Priority';
+//     prioImg.src = priorityIcon(task.priority);
+//     prioImg.style.marginLeft = 'auto'; // schiebt es ganz nach rechts
+
+//     // Alles zusammenfügen
+//     assignedTo.appendChild(avatarsContainer);
+//     assignedTo.appendChild(prioImg);
+
+
+//     card.appendChild(type);
+//     card.appendChild(content);
+//     card.appendChild(subtasks);
+//     card.appendChild(assignedTo);
+
+//     return card;
+// }
+
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
@@ -231,7 +357,6 @@ function createTaskCard(task) {
         typeImg.src = './assets/icons-board/technical-task-tag.svg';
         typeImg.alt = 'Technical Task';
     }
-
     type.appendChild(typeImg);
 
     const content = document.createElement('div');
@@ -249,53 +374,48 @@ function createTaskCard(task) {
     subtasks.className = 'subtasks';
     subtasks.style.display = 'flex';
     subtasks.style.alignItems = 'center';
-    subtasks.style.gap = '8px'; // Abstand zwischen Leiste und Text
+    subtasks.style.gap = '8px';
 
-    // Container für die Fortschrittsleiste
     if (task.subtasks && (task.subtasks.total || task.subtasks.completed)) {
-    const progressContainer = document.createElement('div');
-    progressContainer.className = 'progress-container';
-    progressContainer.style.width = '128px';
-    progressContainer.style.height = '8px';
-    progressContainer.style.backgroundColor = '#E0E0E0';
-    progressContainer.style.borderRadius = '4px';
-    progressContainer.style.overflow = 'hidden';
+        const progressContainer = document.createElement('div');
+        progressContainer.className = 'progress-container';
+        progressContainer.style.width = '128px';
+        progressContainer.style.height = '8px';
+        progressContainer.style.backgroundColor = '#E0E0E0';
+        progressContainer.style.borderRadius = '4px';
+        progressContainer.style.overflow = 'hidden';
 
-    // Fortschrittsfüllung
-    const completed = task.subtasks?.completed || 0;
-    const total = task.subtasks?.total || 0;
-    const progressFill = document.createElement('div');
-    const percentage = total > 0 ? (completed / total) * 100 : 0;
-    progressFill.style.width = `${percentage}%`;
-    progressFill.style.height = '100%';
-    progressFill.style.backgroundColor = '#635FC7'; // z.B. lila
-    progressFill.style.transition = 'width 0.3s ease';
+        const completed = task.subtasks?.completed || 0;
+        const total = task.subtasks?.total || 0;
+        const progressFill = document.createElement('div');
+        const percentage = total > 0 ? (completed / total) * 100 : 0;
+        progressFill.style.width = `${percentage}%`;
+        progressFill.style.height = '100%';
+        progressFill.style.backgroundColor = '#635FC7';
+        progressFill.style.transition = 'width 0.3s ease';
 
-    progressContainer.appendChild(progressFill);
+        progressContainer.appendChild(progressFill);
 
-    // Textanzeige
-    const progressText = document.createElement('span');
-    progressText.className = 'subtasks-text';
-    progressText.textContent = `${completed}/${total} Subtasks`;
-    progressText.style.fontSize = '13px';
-    progressText.style.color = '#000000'; // Farbe nach Bedarf
+        const progressText = document.createElement('span');
+        progressText.className = 'subtasks-text';
+        progressText.textContent = `${completed}/${total} Subtasks`;
+        progressText.style.fontSize = '13px';
+        progressText.style.color = '#000000';
 
-    subtasks.appendChild(progressContainer);
-    subtasks.appendChild(progressText);
-}
+        subtasks.appendChild(progressContainer);
+        subtasks.appendChild(progressText);
+    }
 
     const assignedTo = document.createElement('div');
     assignedTo.className = 'assigned-to';
     assignedTo.style.display = 'flex';
     assignedTo.style.alignItems = 'center';
-    assignedTo.style.gap = '8px'; // Abstand zwischen Avataren und Icon
+    assignedTo.style.gap = '8px';
 
-    // Container für Avatare
     const avatarsContainer = document.createElement('div');
     avatarsContainer.style.display = 'flex';
-    avatarsContainer.style.gap = '4px'; // Abstand zwischen den einzelnen Avataren
+    avatarsContainer.style.gap = '4px';
 
-    // Avatare der ausgewählten Nutzer
     if (task.users && task.users.length > 0) {
         task.users.slice(0, 3).forEach(user => {
             const avatarDiv = document.createElement('div');
@@ -310,37 +430,34 @@ function createTaskCard(task) {
             avatarDiv.style.justifyContent = 'center';
             avatarDiv.style.fontFamily = 'Inter';
             avatarDiv.style.fontWeight = '400';
-            avatarDiv.style.fontStyle = 'normal'; // "Regular" entspricht normal
             avatarDiv.style.fontSize = '12px';
-            avatarDiv.style.lineHeight = '120%';
-            avatarDiv.style.textAlign = 'center';
-            avatarDiv.style.verticalAlign = 'middle';
             avatarDiv.style.color = '#FFFFFF';
-
-
 
             avatarsContainer.appendChild(avatarDiv);
         });
     }
 
-    // Priority-Icon rechts
     const prioImg = document.createElement('img');
     prioImg.alt = 'Priority';
     prioImg.src = priorityIcon(task.priority);
-    prioImg.style.marginLeft = 'auto'; // schiebt es ganz nach rechts
+    prioImg.style.marginLeft = 'auto';
 
-    // Alles zusammenfügen
     assignedTo.appendChild(avatarsContainer);
     assignedTo.appendChild(prioImg);
-
 
     card.appendChild(type);
     card.appendChild(content);
     card.appendChild(subtasks);
     card.appendChild(assignedTo);
 
+    // 🆕 Klick auf Karte → Overlay öffnen
+    card.addEventListener("click", () => {
+        openTaskDetails(task);
+    });
+
     return card;
 }
+
 
 function priorityIcon(priority) {
     switch ((priority || 'medium').toLowerCase()) {
@@ -533,6 +650,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         selected.forEach(u => {
             const a = document.createElement('div');
             a.className = 'selected-avatar assigned-text';
+            a.dataset.fullname = u.name;         // NEU: vollständiger Name für Overlay
             a.textContent = getInitials(u.name);
             a.style.width = '28px';
             a.style.height = '28px';
@@ -774,6 +892,7 @@ function startEditMode(li, span) {
 // Funktion: Task-Daten auslesen
 // ----------------------------
 function getTaskData() {
+
     // 1. Überschrift
     const titleInput = document.querySelector(".title-input");
     const title = titleInput.value.trim();
@@ -796,7 +915,14 @@ function getTaskData() {
 
     // 5. Assigned to
     const assignedAvatars = document.querySelectorAll(".selected-avatars-container .assigned-text");
+
+    // Bestehende Kürzel für andere Projektteile
     const assignedTo = Array.from(assignedAvatars).map(el => el.textContent.trim());
+
+    // NEU: Vollständige Namen für Overlay
+    const assignedUsersFull = Array.from(assignedAvatars).map(el => ({
+        name: el.dataset.fullname || el.textContent.trim() // fallback, falls dataset nicht gesetzt ist
+    }));
 
     // 6. Category
     const categoryText = document.querySelector(".category-content .assigned-text");
@@ -806,8 +932,18 @@ function getTaskData() {
     const subtaskItems = document.querySelectorAll("#subtask-list li");
     const subtasks = Array.from(subtaskItems).map(el => el.textContent.trim());
 
-    return { title, description, dueDate, priority, assignedTo, category, subtasks };
+    return {
+        title,
+        description,
+        dueDate,
+        priority,
+        assignedTo,        // Kürzel
+        assignedUsersFull, // volle Namen
+        category,
+        subtasks
+    };
 }
+
 
 //Task an Firebase senden
 
@@ -829,6 +965,7 @@ async function saveTaskToFirebase(taskData) {
                     items: taskData.subtasks
                 },
                 users: taskData.assignedTo,
+                usersFull: taskData.assignedUsersFull,
                 category: taskData.category
             })
         });
@@ -965,41 +1102,51 @@ function enableTaskDragAndDrop() {
     });
 
     // Spalten als Dropzone vorbereiten
+    // Spalten als Dropzone vorbereiten
     columns.forEach(column => {
         column.addEventListener('dragover', e => {
             e.preventDefault();
             column.classList.add('drag-over');
         });
+
         column.addEventListener('dragleave', e => {
             column.classList.remove('drag-over');
         });
-        column.addEventListener('drop', e => {
+
+        column.addEventListener('drop', async e => {   // <- async hinzufügen
             e.preventDefault();
             column.classList.remove('drag-over');
             const taskId = e.dataTransfer.getData('text/plain');
-            moveTaskToColumn(taskId, column.id);
+            await moveTaskToColumn(taskId, column.id); // <- await, damit Firebase-Update fertig ist
         });
     });
+
 }
 
 // 2. Task verschieben und Board neu rendern
-function moveTaskToColumn(taskId, columnId) {
-    // Status anhand der Spalten-ID bestimmen
+async function moveTaskToColumn(taskId, columnId) {
+
     let newStatus = 'todo';
     if (columnId.includes('inProgress')) newStatus = 'inProgress';
     else if (columnId.includes('awaitFeedback')) newStatus = 'awaitFeedback';
     else if (columnId.includes('done')) newStatus = 'done';
 
-    // Tasks holen und Task finden
     const tasks = window.taskManager.getTasks();
     const task = tasks.find(t => (t.id || t.title) == taskId);
+
     if (task && task.status !== newStatus) {
-        task.status = newStatus;
-        window.taskManager.saveTasks(tasks); // Du brauchst eine saveTasks-Funktion!
-        renderBoard();
-        enableTaskDragAndDrop(); // Drag & Drop nach Rendern wieder aktivieren
+        task.status = newStatus;                         // lokal ändern
+
+        console.log("Task verschoben:", task.title, "Status:", task.status);
+        console.log("Alle Tasks:", tasks.map(t => `${t.title}:${t.status}`));
+
+        await window.taskManager.updateTaskInFirebase(task); // auf Firebase warten
+        window.taskManager.saveTasks(tasks);             // lokal speichern
+        renderBoard();                                   // Board neu rendern
+        enableTaskDragAndDrop();                         // Drag & Drop wieder aktivieren
     }
 }
+
 
 // 3. Nach jedem Render Drag & Drop aktivieren
 // (Falls du renderBoard() öfter aufrufst, dann immer danach auch enableTaskDragAndDrop() aufrufen!)
@@ -1013,17 +1160,214 @@ enableTaskDragAndDrop();
 
 // Ergänzung für Drag & Drop mit Firebase-Support
 // Beispiel: Tasks aus Firebase laden und IDs zuweisen
+// 🔹 Tasks aus Firebase laden (bleibt wie gehabt)
 window.taskManager.loadTasks = async function () {
     const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json");
     const data = await res.json();
     const tasks = [];
     for (const [key, value] of Object.entries(data || {})) {
-        value.firebaseId = key; // <-- ID zuweisen!
+        value.firebaseId = key;
+
+        // ✅ assignedUsersFull setzen: entweder usersFull oder aus users ableiten
+        if (value.usersFull && value.usersFull.length > 0) {
+            value.assignedUsersFull = value.usersFull;
+        } else if (value.users && value.users.length > 0) {
+            value.assignedUsersFull = value.users.map(u => ({ name: u }));
+        } else {
+            value.assignedUsersFull = [];
+        }
+
         tasks.push(value);
     }
     window.taskManager._tasks = tasks;
 };
 
+// 🔹 Tasks lokal abrufen (bleibt wie gehabt)
 window.taskManager.getTasks = function () {
     return window.taskManager._tasks || [];
 };
+
+// 🔹 NEU: Task in Firebase aktualisieren (diesen Block zusätzlich unten einfügen)
+window.taskManager.updateTaskInFirebase = async function (task) {
+    if (!task.firebaseId) return;
+    try {
+        await fetch(`https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${task.firebaseId}.json`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: task.status })
+        });
+    } catch (err) {
+        console.error("Fehler beim Aktualisieren in Firebase:", err);
+    }
+};
+
+
+//Task card overlay
+function openTaskDetails(task) {
+    const overlay = document.getElementById("task-detail-overlay");
+    const body = document.getElementById("task-detail-body");
+
+    // Body leeren (inklusive alten Buttons)
+    body.innerHTML = "";
+
+    // Assigned-to HTML generieren
+    let assignedHtml = "-";
+    if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
+        assignedHtml = task.assignedUsersFull.map(u => `
+        <div class="assigned-person">
+            <div class="assigned-avatar" style="
+                background-color:${getColor(u.name)};
+                width:28px;height:28px;border-radius:50%;
+                display:flex;align-items:center;justify-content:center;
+                font-family:Inter;font-weight:400;font-size:12px;color:#fff;">
+                ${getInitials(u.name)} <!-- Kürzel im Kreis -->
+            </div>
+            <span class="assigned-name-full">${u.name}</span> <!-- voller Name -->
+        </div>
+    `).join("");
+    }
+
+    // Kategorie-Logik für das Bild
+    let categoryImg = "";
+    if (task.category === "User Story") {
+        categoryImg = './assets/icons-board/user-story-tag.svg';
+    } else if (task.category === "Technical Task") {
+        categoryImg = './assets/icons-board/technical-task-tag.svg';
+    }
+
+    // Top-Bar erstellen (Category + SVG-Close Button)
+    const topBar = document.createElement("div");
+    topBar.classList.add("top-bar");
+    topBar.style.position = "relative"; // für absolute Positionierung des Buttons
+
+    const categoryImage = document.createElement("img");
+    categoryImage.src = categoryImg;
+    categoryImage.alt = task.category || "Category";
+    categoryImage.classList.add("category-image");
+
+    // SVG-Close Button
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "close-button-overlay"; // gleiche Klasse wie Modal
+    closeBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+            <path d="M6 6 L18 18" stroke="#000" stroke-width="2" stroke-linecap="round" />
+            <path d="M6 18 L18 6" stroke="#000" stroke-width="2" stroke-linecap="round" />
+        </svg>
+    `;
+    closeBtn.addEventListener("click", () => {
+        overlay.classList.add("hidden");
+    });
+
+    // Top-Bar zusammenbauen
+    topBar.appendChild(categoryImage);
+    topBar.appendChild(closeBtn);
+    body.appendChild(topBar);
+
+    // Restliche Inhalte dynamisch hinzufügen
+    const contentHtml = `
+        <h2>${task.title}</h2>
+        <p class="description-task-overlay">${task.description || ""}</p>
+        <p class="task-overlay-bullet">
+        <strong>Due date:</strong>
+        <span>${task.dueDate || "-"}</span>
+        </p>
+        <p class="task-overlay-bullet">
+        <strong>Priority:</strong>
+        <span class="overlay-value">${task.priority || ""}</span>
+        </p>
+        <p class="task-overlay-bullet">
+        <strong>Assigned To:</strong>
+        </p>
+        <div class="assigned-list">
+    ${renderAssignedUsers(task.assignedUsersFull)}
+        </div>
+        
+        <p class="task-overlay-bullet subtask-header-distance"><strong>Subtasks:</strong></p>
+<ul class="subtasks-list">
+    ${renderSubtasks(task)}
+</ul>
+    `;
+    body.insertAdjacentHTML("beforeend", contentHtml);
+
+    overlay.classList.remove("hidden");
+}
+
+
+//task detail overlay close
+function closeTaskDetails() {
+    const overlay = document.getElementById("task-detail-overlay");
+    overlay?.classList.add("hidden");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const closeBtn = document.getElementById("task-detail-close");
+    closeBtn?.addEventListener("click", closeTaskDetails);
+});
+
+//render assigned contacts
+function renderAssignedUsers(users) {
+
+    if (!users || users.length === 0) return "";
+
+    return users.map(user => {
+        // Wenn user ein String ist, nehmen wir den String als Namen
+        // Wenn user ein Objekt ist, prüfen wir auf name oder username
+        const name = typeof user === "string" ? user : (user.name || user.username || "");
+
+        return `
+      <div class="assigned-item">
+        <div class="assigned-avatar" style="
+          background-color:${getColor(name)};
+          width:42px;
+          height:42px;
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-family:Open Sans;
+          font-weight:400;
+          font-size:12px;
+          color:#fff;
+        ">
+          ${getInitials(name)} <!-- Kürzel bleibt im Kreis -->
+        </div>
+        <span class="assigned-name-full">${name}</span> <!-- kompletter Name -->
+      </div>
+    `;
+    }).join("");
+}
+
+// Subtasks rendern mit Checkbox, Text + Edit & Delete Buttons darunter
+function renderSubtasks(task) {
+    if (!task.subtasks || !task.subtasks.items || task.subtasks.items.length === 0)
+        return `<li>Keine Subtasks</li>`;
+
+    return task.subtasks.items.map((subtask, index) => `
+        <li class="subtask-item" style="margin-bottom:12px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <div class="checkbox-wrapper">
+                    <div class="hover-overlay"></div>
+                    <img src="./assets/icons-addTask/Property 1=Default.png" alt="Checkbox" data-index="${index}">
+                </div>
+                <span class="subtask-text" style="font-size:16px; font-family:'Open Sans', sans-serif;">${subtask}</span>
+            </div>
+            <div class="subtask-buttons" style="display:flex; gap:16px; justify-content: end;">
+                <div style="display:flex; align-items:center; gap:4px; cursor:pointer; font-family:'Open Sans', sans-serif; font-size:16px;" class="subtask-edit-wrapper" data-index="${index}">
+                    <img src="./assets/icons-addTask/Property 1=edit.png" alt="Edit" class="subtask-edit">
+                    <span>Edit</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:4px; cursor:pointer; font-family:'Open Sans', sans-serif; font-size:16px;" class="subtask-delete-wrapper" data-index="${index}">
+                    <img src="./assets/icons-addTask/Property 1=delete.png" alt="Delete" class="subtask-delete">
+                    <span>Delete</span>
+                </div>
+            </div>
+        </li>
+    `).join("");
+}
+
+
+
+
+
+
+
