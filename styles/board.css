@@ -277,9 +277,19 @@ input {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 0 64px;
     gap: 24px;
-    width: 100%;
+    padding: 0 64px;
+    max-height: calc(100vh - 80px - 300px);
+    /* Header + Top-Sektion abziehen */
+    overflow-y: auto;
+    /* Scrollbar erscheint bei zu viel Inhalt */
+}
+
+.bottom::-webkit-scrollbar {
+    width: 0px;
+    /* scrollbar Breite auf 0 */
+    background: transparent;
+    /* Track unsichtbar */
 }
 
 .task-column {
@@ -295,7 +305,8 @@ input {
     flex-direction: column;
     gap: 16px;
     width: 100%;
-    transition: background 0.2s ease, outline 0.2s ease;
+    padding-bottom: 20px;
+    padding-top: 20px;
 }
 
 /* Modal styles */
@@ -412,7 +423,7 @@ input {
     border-radius: 24px;
     box-shadow: 0px 0px 10px 3px #00000014;
     width: 252px;
-    height:227px;
+    height: 227px;
 }
 
 .task-info {
@@ -425,6 +436,17 @@ input {
     justify-content: space-between;
 }
 
+/* Drag & Drop helpers */
+.task-card.dragging {
+
+    transform: none;
+    /* Optional: kein Skalieren */
+    opacity: 0.6;
+    z-index: 1000;
+    box-shadow: 0px 8px 25px 5px #00000025;
+    pointer-events: none;
+    /* verhindert Einfluss auf Layout */
+}
 .tasks.drag-over {
     background: #f0f6ff;
     outline: 2px dashed #4589ff;
@@ -516,34 +538,39 @@ input {
 }
 
 .svg-button:hover svg rect {
-  stroke: #005DFF;
+    stroke: #005DFF;
 }
 
 .svg-button:hover svg path {
-  stroke: #005DFF; 
+    stroke: #005DFF;
 }
 
 .svg-button:active svg rect {
-  stroke: #A8A8A8; /* Hintergrund-Randfarbe beim Klicken */
+    stroke: #A8A8A8;
+    /* Hintergrund-Randfarbe beim Klicken */
 }
 
 .svg-button:active svg path {
-  stroke: #A8A8A8; /* Icon-Farbe beim Klicken */
+    stroke: #A8A8A8;
+    /* Icon-Farbe beim Klicken */
 }
 
 
 .svg-button svg.disabled {
-    opacity: 0.5; /* Mache das SVG halbtransparent */
-    cursor: not-allowed; 
-} 
- 
+    opacity: 0.5;
+    /* Mache das SVG halbtransparent */
+    cursor: not-allowed;
+}
+
 .svg-button svg.disabled rect {
-    stroke: #A8A8A8; /* Grau für den Rahmen */
+    stroke: #A8A8A8;
+    /* Grau für den Rahmen */
 }
 
 .svg-button svg.disabled path {
-    stroke: #A8A8A8; /* Grau für das Icon (Innenbereich) */
-} 
+    stroke: #A8A8A8;
+    /* Grau für das Icon (Innenbereich) */
+}
 
 .tasks.drag-over {
     background: #e3f2fd;
@@ -558,9 +585,266 @@ input {
 }
 
 .assigned-avatar {
-    width:32px;
-    height:32px;
-    margin-left: -10px;   /* zum Überlappen */
-    border: 1px solid #FFFFFF; /* weißer Rand */
+    width: 32px;
+    height: 32px;
+    margin-left: -10px;
+    /* zum Überlappen */
+    border: 1px solid #FFFFFF;
+    /* weißer Rand */
 }
 
+.assigned-name-full {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0;
+    vertical-align: middle;
+}
+
+/* TEST */
+.task-details-card {
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    max-width: 500px;
+    margin: auto;
+}
+
+.task-category {
+    background: orange;
+    color: white;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.task-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 10px;
+}
+
+.task-description {
+    margin: 0 0 20px;
+}
+
+.task-info p {
+    margin: 5px 0;
+}
+
+.avatars {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    background: #ccc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.task-subtasks ul {
+    list-style: none;
+    padding: 0;
+}
+
+.task-footer {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+#task-detail-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 101;
+}
+
+#task-detail-card {
+    background-color: white;
+    width: 528px;
+    display: flex;
+    justify-content: center;
+    border-radius: 30px;
+    padding-top: 48px;
+    padding-bottom: 48px;
+}
+
+h2 {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 61px;
+    line-height: 120%;
+    letter-spacing: 0;
+    max-width: 448px;
+    margin-bottom: 24px;
+}
+
+.description-task-overlay {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0;
+    margin-bottom: 24px;
+}
+
+.task-overlay-bullet {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    letter-spacing: 0;
+    margin-bottom: 24px;
+}
+
+.task-overlay-bullet strong {
+    font-family: "Inter", sans-serif;
+    font-style: normal;
+    font-size: 21px;
+    line-height: 120%;
+    color: #42526E;
+    margin-right: 25px;
+    margin-bottom: 24px;
+}
+
+.overlay-value {
+    padding-left: 18px;
+}
+
+.assigned-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.assigned-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.top-bar {
+    width: 448px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.close-button-overlay {
+    /* position: absolute; */
+    top: 24px;
+    right: 24px;
+    border: none;
+    background: none;
+    color: #4589FF;
+}
+
+.close-button-overlay:hover {
+    background-color: #E3EEFF;
+    border-radius: 52px;
+}
+
+.close-button-overlay svg path {
+    stroke: #4589FF;
+    /* Standardfarbe */
+
+}
+
+.close-button-overlay:hover svg path {
+    stroke: #005DFF;
+    /* Hover-Farbe */
+}
+
+/* TEST */
+/* ======================
+   Subtask Checkbox Wrapper
+   ====================== */
+.subtask-item .checkbox-wrapper {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.subtask-item .checkbox-wrapper img {
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.2s, filter 0.2s;
+    z-index: 1;
+}
+
+.subtask-item .checkbox-wrapper .hover-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.2s, background 0.2s;
+}
+
+/* Hover über Checkbox → Overlay sichtbar */
+.subtask-item .checkbox-wrapper:hover .hover-overlay {
+    opacity: 1;
+    background: #FFFFFF;
+}
+
+/* Checkbox sichtbar */
+.subtask-item .checkbox-wrapper img {
+    opacity: 1;
+    filter: none;
+}
+
+.subtask-header-distance {
+    margin-top: 24px;
+}
+
+.subtasks-list {
+    list-style: none;
+    /* entfernt die Standard-Bullets */
+    padding: 0;
+    /* optional: padding entfernen */
+    margin: 0;
+    /* optional: margin entfernen */
+}
+
+.checkbox-wrapper .hover-overlay {
+    position: absolute;
+    /* schon korrekt */
+    z-index: 1000;
+    /* hoch genug, damit es über Header liegt */
+}
