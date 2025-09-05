@@ -48,7 +48,7 @@
                     </button>
                 </div>
 
-                <div class="task-bar">
+                <div class="task-bar desktop-only">
                     <div class="task-header">
                         <div class="task-title">
                             <div class="title-text">To do</div>
@@ -102,17 +102,60 @@
                 </div>
             </section>
 
+            <!-- Tablet/Mobile - Titel in jeder Spalte -->
             <section class="bottom" id="board-columns">
                 <div class="task-column" data-status="todo">
+                    <div class="column-header">
+                        <div class="title-text">To do</div>
+                        <div class="title-img">
+                            <div class="svg-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF" stroke-width="2" />
+                                    <path d="M12 8V16" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
+                                    <path d="M16 12.0752L8 12.0752" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                     <div class="tasks" id="column-todo"></div>
                 </div>
+                
                 <div class="task-column" data-status="inProgress">
+                    <div class="column-header">
+                        <div class="title-text">In progress</div>
+                        <div class="title-img">
+                            <div class="svg-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF" stroke-width="2" />
+                                    <path d="M12 8V16" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
+                                    <path d="M16 12.0752L8 12.0752" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                     <div class="tasks" id="column-inProgress"></div>
                 </div>
+                
                 <div class="task-column" data-status="awaitFeedback">
+                    <div class="column-header">
+                        <div class="title-text">Await feedback</div>
+                        <div class="title-img">
+                            <div class="svg-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF" stroke-width="2" />
+                                    <path d="M12 8V16" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
+                                    <path d="M16 12.0752L8 12.0752" stroke="#4589FF" stroke-width="2" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                     <div class="tasks" id="column-awaitFeedback"></div>
                 </div>
+                
                 <div class="task-column" data-status="done">
+                    <div class="column-header">
+                        <div class="title-text">Done</div>
+                    </div>
                     <div class="tasks" id="column-done"></div>
                 </div>
             </section>
@@ -305,7 +348,7 @@
             setActiveNavigation();
             if (window.afterInclude) window.afterInclude(); // <--- NEU
         });
-    </script>s
+    </script>
     <script src="./scripts/taskmanager.js"></script>
     <script src="./scripts/board.js"></script>
 
