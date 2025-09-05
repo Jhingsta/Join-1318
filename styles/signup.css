@@ -1,4 +1,4 @@
-html, body {			
+html, body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -12,29 +12,37 @@ main {
   margin-left: auto;
   margin-right: auto;
   width: 100%;
-  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   flex: 1;
+}
+
+.logo-section {
+  flex: 0 0 150px;
 }
 
 .icon-logo {
   position: absolute;
   top: 80px;
-  left: 77px;
+  left: 80px;
   width: 100px;
   height: auto;
+}
+
+.form-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
 }
 
 .sign-up-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 10px;
   background-color: white;
-  max-width: 598px;
+  max-width: 600px;
   width: 100%;
   border-radius: 30px;
   padding: 48px 88px;
@@ -232,6 +240,10 @@ input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .check {
   font-weight: bold;
 }
 
+.privacy-link {
+  width: 110px;
+}
+
 button {
   margin-top: auto;
   padding: 10px 18px;
@@ -263,6 +275,7 @@ footer {
   flex-direction: row;
   margin-left: auto;
   margin-right: auto;
+  margin-top: auto;
 }
 
 nav {
@@ -288,4 +301,65 @@ nav a {
 
 nav a:hover {
   color: #005DFF;
+}
+
+@media (max-width: 1100px) {
+  .icon-logo {
+    top: 50px;
+    left: 50px;
+    width: 80px;
+  }
+}
+
+@media (max-width: 880px) {
+  .icon-logo {
+    top: 40px;
+    left: 40px;
+    width: 72px;
+  }
+  .sign-up-container {
+    padding: 32px 12px;
+  }
+  .sign-up-form {
+    gap: 18px;
+  }
+  h1 {
+    font-size: 45px;
+  }
+  button {
+    width: 180px;
+  }
+  .arrow-left {
+    left: 24px;
+    top: 48px;
+  }
+  nav {
+  margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 420px) {
+  .icon-logo {
+    top: 30px;
+    left: 30px;
+    width: 64px;
+  }  
+  .form-section {
+    padding: 0 1rem;
+  }
+  h1 {
+    font-size: 41px;
+  }
+  input[type="text"],
+  input[type="email"], 
+  input[type="password"] {
+    padding: 10px 40px 10px 16px;
+    font-size: 16px;
+  }
+  .sign-up-checkbox {
+    margin: 24px 0 24px;
+  }
+  input::placeholder {
+  font-size: 16px;
+  }
 }
