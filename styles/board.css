@@ -377,7 +377,7 @@ input {
     .search-top {
         flex-direction: column;
         gap: 16px;
-        padding: 24px 16px 24px 16px;
+        padding: 64px 1rem 32px;
     }
     
     .searchbar {
@@ -392,7 +392,7 @@ input {
     .bottom {
         grid-template-columns: 1fr;
         gap: 32px;
-        padding: 0 16px;
+        padding: 0 1rem;
         max-height: none;
     }
     
@@ -410,7 +410,7 @@ input {
     /* Task-Cards müssen feste Breite haben */
     .tasks .task-card {
         flex: 0 0 252px; /* Feste Breite, passt du an deine Task-Karte an */
-        scroll-snap-align: start;
+        /* scroll-snap-align: start; */
     }
     
     /* Scrollbar verstecken */
@@ -968,6 +968,9 @@ h2 {
     z-index: 1000;
     /* hoch genug, damit es über Header liegt */
 }
+
+
+
 
 @media (max-width: 768px) {
   .layout {
