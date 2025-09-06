@@ -5,7 +5,7 @@ function getDropdownElements() {
   if (!dropdownElements) {
     dropdownElements = {
       menu: document.getElementById('header-dropdown-menu'),
-      overlay: document.getElementById('overlay'),
+      overlay: document.getElementById('dropdown-menu-overlay'),
       trigger: document.querySelector('[aria-expanded]')
     };
   }
@@ -21,11 +21,6 @@ function openDropdown() {
   menu.setAttribute('aria-hidden', 'false');
   
   isDropdownOpen = true;
-
-  // Verhindert Scrollbar-Probleme
-  // if (window.innerWidth <= 768) {
-  //   document.body.style.overflow = 'hidden';
-  // }
 }
 
 function closeDropdown() {
@@ -37,9 +32,6 @@ function closeDropdown() {
   menu.setAttribute('aria-hidden', 'true');
   
   isDropdownOpen = false;
-
-  // Scrolling wieder aktivieren
-  // document.body.style.overflow = '';
 }
 
 function updateUserLogo() {
