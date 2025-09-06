@@ -9,7 +9,6 @@ body {
 
 .layout {
   max-width: 1440px;
-  margin: 0 auto;
   display: grid;
   grid-template-columns: 232px 1fr;
 }
@@ -24,29 +23,36 @@ main {
   flex-direction: column;
 }
 
-.headline {
+.content-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 48px;   
+  position: relative;
 }
 
 h1 {
   font-size: 61px;
   font-weight: 700;
-  text-wrap: balance;
+  margin-bottom: 48px;   
 }
 
 .arrow-left {
+  display: inline;
+  position: absolute;
+  right: 20px;
   width: 32px;
   height: 32px;
   cursor: pointer;
   background-image: url('../assets/icons-signup/arrow-left.svg');
   background-size: contain;
   background-position: center;
+  background-color: white;
+  border: unset;
 }
 
 .arrow-left:hover {
+  background-image: url('../assets/icons-signup/arrow-left-hover.svg');
+}
+
+.arrow-left:active {
   background-image: url('../assets/icons-signup/arrow-left-hover.svg');
 }
 
@@ -138,5 +144,12 @@ li:last-child {
   }
   .content {
     padding: 64px 1rem; 
+  }
+  h1 {
+    margin-bottom: 32px;
+    font-size: 47px;
+  }
+  h2 {
+    font-size: 23px;
   }
 }

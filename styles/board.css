@@ -454,6 +454,9 @@ input {
     outline: 2px dashed #4589ff;
     outline-offset: 4px;
     border-radius: 12px;
+    transition: background 0.2s ease, outline 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    transform: scale(1.02);
+    box-shadow: 0px 4px 15px 2px #4589ff20;
 }
 
 /* Hintergrund-Overlay */
