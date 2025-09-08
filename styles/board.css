@@ -192,8 +192,6 @@ input {
     background-color: #4589ff;
 }
 
-/* Hover-Effekt bleibt bestehen */
-
 /* Hover bleibt bestehen */
 .add-task-btn:hover {
     background-color: #005DFF;
@@ -279,19 +277,12 @@ input {
     grid-template-columns: repeat(4, 1fr);
     gap: 24px;
     padding: 0 64px;
-    /* max-height: calc(100vh - 80px - 300px); */
-    /* overflow-y: auto; */
 }
-
-/* .bottom::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
-} */
 
 .task-column {
     display: flex;
     flex-direction: column;
-    min-width: 0; /* Wichtig für Grid-Items */
+    min-width: 0;
 }
 
 .tasks {
@@ -300,7 +291,6 @@ input {
     gap: 16px;
     width: 100%;
     padding-bottom: 20px;
-    /* padding-top: 20px; */
 }
 
 .column-header .title-text {
@@ -354,7 +344,6 @@ input {
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
         padding: 0 32px;
-        /* max-height: none; */
     }
     
     .tasks {
@@ -396,7 +385,6 @@ input {
         grid-template-columns: 1fr;
         gap: 26px;
         padding: 0 1rem;
-        /* max-height: none; */
     }
     
     /* Tasks horizontal scrollbar */
@@ -597,7 +585,6 @@ input {
     justify-content: space-between;
     flex-direction: column;
     height: 100vh;
-    max-height: 100vh;
     width: 518px;
     background: #fff;
     border-radius: 30px 0 0 30px;
