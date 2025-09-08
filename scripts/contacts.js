@@ -277,6 +277,7 @@ function renderEditContactOverlay(user) {
             <div class="overlay-contact-top-box">
                 <img src="./assets/icons-header/logo-all-white.svg" alt="" class="icon-logo">
                 <div class="overlay-contact-top-box-title">Edit contact</div>
+                <div class="overlay-add-contact-top-box-subtitle">Tasks are better with a team!</div>
             </div>
         </div>
 
@@ -288,7 +289,6 @@ function renderEditContactOverlay(user) {
                     <div class="form-group">
                         <label for="overlay-edit-name" class="visually-hidden">Name</label>
                         <input id="overlay-edit-name" name="name" type="text" placeholder="Name" value="${user.name}">
-                        <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
                         <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
                     </div>
 
@@ -323,6 +323,9 @@ function showAddContactOverlay() {
   // Backdrop anzeigen
   document.getElementById('overlay-contacts').classList.add('show');
   
+  // Body-Scroll deaktivieren
+  document.body.classList.add('no-scroll');
+  
   // Overlay einsliden (kleiner Delay für smooth Animation)
   setTimeout(() => {
       document.getElementById('overlay-add-contact').classList.add('show');
@@ -335,6 +338,9 @@ function showEditContactOverlay(userData) {
   
   // Backdrop anzeigen
   document.getElementById('overlay-contacts').classList.add('show');
+  
+  // Body-Scroll deaktivieren
+  document.body.classList.add('no-scroll');
   
   // Overlay einsliden (kleiner Delay für smooth Animation)
   setTimeout(() => {
@@ -352,6 +358,8 @@ function closeContactOverlay() {
     setTimeout(() => {
       document.getElementById('overlay-contacts').classList.remove('show');
       document.getElementById('overlay-add-contact-container').innerHTML = '';
+      // Body-Scroll wieder aktivieren
+      document.body.classList.remove('no-scroll');
     }, 300);
   }
   
@@ -360,6 +368,8 @@ function closeContactOverlay() {
     setTimeout(() => {
       document.getElementById('overlay-contacts').classList.remove('show');
       document.getElementById('overlay-edit-contact-container').innerHTML = '';
+      // Body-Scroll wieder aktivieren
+      document.body.classList.remove('no-scroll');
     }, 300);
   }
 }
