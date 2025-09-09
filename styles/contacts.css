@@ -32,7 +32,6 @@ main {
   min-width: 300px;
   box-shadow: 4px 0px 6px 0px #00000014;
   padding: 0 28.5px 0 27.5px;
-  height: calc(100vh - 100px);
   overflow-y: auto;
 }
 
@@ -125,7 +124,7 @@ main {
   display: flex;
   align-items: center;
   padding: 15px 24px;
-  gap: 35px;
+  gap: 25px;
   cursor: pointer;
   border-radius: 10px;
 }
@@ -209,7 +208,7 @@ main {
   }
   main {
     order: 1;
-    min-height: calc(100vh - 80px);
+    min-height: 100vh;
     margin-bottom: 100px;
   }
   .content {
@@ -217,10 +216,10 @@ main {
     width: 100%;
     margin: 0 auto;
     box-shadow: none;   
-    height: auto;
     overflow-y: visible;
-    height: calc(100vh - 80px);
-    margin-bottom: 100px;
+  }
+  .contact {
+    gap: 35px;
   }
   .right-panel {
     display: none;
@@ -249,7 +248,6 @@ main {
     padding: 24px 0;
   }
   .contact {
-    max-width: 360px;
     padding: 15px 10px;
   }
 }
@@ -259,13 +257,19 @@ main {
     padding: 0 10px; 
   }
   .contacts {
-    padding: 12px 0;
+    padding: 8px 0;
   }
   .contact {
-    max-width: 320px;
-    padding: 12px 0;
+    padding: 12px 10px;
+    gap: 15px;
   }
   .letter {
     padding: 17px 10px;
+  }
+  .name {
+  font-size: 17px;
+  }
+  .email {
+    font-size: 14px;
   }
 }

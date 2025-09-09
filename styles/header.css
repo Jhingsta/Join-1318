@@ -133,6 +133,7 @@ header {
 @media (max-width: 768px) {
   .header-content {
     height: 80px;
+    padding: 0 25px;
   }
   .header-left {
     width: 32px;

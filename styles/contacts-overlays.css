@@ -464,7 +464,7 @@ input::placeholder {
 }
 
 /* Für größere Bildschirme mit Content-Begrenzung */
-@media (min-width: 1440px) {
+@media (min-width: 1441px) {
   .overlay-add-contact {
     right: calc((100vw - 1440px) / 2);
   }
