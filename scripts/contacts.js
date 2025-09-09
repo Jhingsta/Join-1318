@@ -75,22 +75,12 @@ function renderContacts(contacts) {
 
 // Floating Contact
 
-function showFloatingContact(name, email, phone, color, initials, contactId) {
-
-  // Alle anderen Kontakte deaktivieren
-  const allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
-  
-  // Aktuellen Kontakt aktivieren
-  const currentContact = document.getElementById(`contact-${contactId}`);
-  if (currentContact) {
-    currentContact.classList.add('active');
-  }
-  // Floating Contact Template erstellen
-  const floatingContactHtml = `
+// HTML Template Generator
+function generateContactTemplate(name, email, phone, color, initials) {
+  return `
     <div class="floating-contact-first">
       <span>Contact Information</span>
-      <button onclick="closeMobileFloatingOverlay()" class="arrow-left"></button>
+      <button onclick="closeFloatingContact()" class="arrow-left"></button>
     </div>
 
     <div class="floating-contact-second">
@@ -121,11 +111,12 @@ function showFloatingContact(name, email, phone, color, initials, contactId) {
         </div>
     </div>
   `;
+}
 
-  // Floating Contact in right-panel einfügen
+// Desktop Container erstellen/finden
+function createDesktopFloatingContact() {
   const rightPanel = document.getElementById('right-panel');
   
-  // Erst das floating-contact div erstellen falls es nicht existiert
   let floatingContact = document.getElementById('floating-contact');
   if (!floatingContact) {
     floatingContact = document.createElement('div');
@@ -133,32 +124,134 @@ function showFloatingContact(name, email, phone, color, initials, contactId) {
     floatingContact.id = 'floating-contact';
     rightPanel.appendChild(floatingContact);
   }
+  
+  return floatingContact;
+}
+
+// Mobile Container erstellen/finden
+function createMobileFloatingContact() {
+  let mobileOverlay = document.getElementById('mobile-floating-contact-overlay');
+  if (!mobileOverlay) {
+    mobileOverlay = document.createElement('div');
+    mobileOverlay.id = 'mobile-floating-contact-overlay';
+    mobileOverlay.className = 'mobile-floating-contact-overlay';
+    document.body.appendChild(mobileOverlay);
+  }
+
+  let floatingContact = mobileOverlay.querySelector('.floating-contact');
+  if (!floatingContact) {
+    floatingContact = document.createElement('div');
+    floatingContact.className = 'floating-contact';
+    mobileOverlay.appendChild(floatingContact);
+  }
+  // Mobile Overlay anzeigen
+  mobileOverlay.classList.add('show');
+  
+  return floatingContact;
+}
+
+// Vereinheitlichte Animation
+function slideInFloatingContact(floatingContactElement) {
+  // Element erst komplett ausblenden und Transition temporär deaktivieren
+  floatingContactElement.style.transition = 'none';
+  floatingContactElement.style.transform = 'translateX(100%)';
+  floatingContactElement.style.opacity = '0';
+  
+  // Sicherstellen dass das Element sichtbar ist
+  floatingContactElement.classList.add('show');
+  
+  // Kurz warten, dann Animation starten
+  setTimeout(() => {
+    floatingContactElement.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+    floatingContactElement.style.transform = 'translateX(0)';
+    floatingContactElement.style.opacity = '1';
+  }, 10);
+}
+
+// Hauptfunktion
+function showFloatingContact(name, email, phone, color, initials, contactId) {
+  // Alle anderen Kontakte deaktivieren
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
+  
+  // Aktuellen Kontakt aktivieren
+  const currentContact = document.getElementById(`contact-${contactId}`);
+  if (currentContact) {
+    currentContact.classList.add('active');
+  }
+
+  // HTML Template generieren
+  const floatingContactHtml = generateContactTemplate(name, email, phone, color, initials);
+
+  // Container je nach Bildschirmgröße erstellen
+  const floatingContact = window.innerWidth <= 768 ? createMobileFloatingContact() : createDesktopFloatingContact();
 
   // Inhalt setzen
   floatingContact.innerHTML = floatingContactHtml;
   
-  // Slide-in Animation starten
-  slideInFloatingContact();
+  // Animation starten
+  slideInFloatingContact(floatingContact);
 }
 
-function slideInFloatingContact() {
+// Desktop Schließen-Funktion
+function closeDesktopFloatingContact() {
   const floatingContact = document.getElementById('floating-contact');
+  if (floatingContact) {
+    floatingContact.classList.remove('show');
+  }
   
-  // Element erst komplett ausblenden und Transition temporär deaktivieren
-  floatingContact.style.transition = 'none';
-  floatingContact.style.transform = 'translateX(100%)';
-  floatingContact.style.opacity = '0';
-  
-  // Sicherstellen dass das Element sichtbar ist
-  floatingContact.classList.add('show');
-  
-  // Kurz warten, dann Animation starten
-  setTimeout(() => {
-    floatingContact.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
-    floatingContact.style.transform = 'translateX(0)';
-    floatingContact.style.opacity = '1';
-  }, 10);
+  // Alle aktiven Kontakte deselektieren
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
 }
+
+// Mobile Schließen-Funktion
+function closeMobileFloatingContact() {
+  const mobileOverlay = document.getElementById('mobile-floating-contact-overlay');
+  if (mobileOverlay) {
+    mobileOverlay.classList.remove('show');
+    
+    // Das floating-contact Element im Mobile-Overlay auch verstecken:
+    const mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
+    if (mobileFloatingContact) {
+      mobileFloatingContact.classList.remove('show');
+    }
+  }
+  
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
+}
+
+// Universelle Schließen-Funktion
+function closeFloatingContact() {
+  // Je nach Bildschirmgröße entsprechende Funktion aufrufen
+  if (window.innerWidth <= 768) {
+    closeMobileFloatingContact();
+  } else {
+    closeDesktopFloatingContact();
+  }
+}
+
+// Window resize listener
+window.addEventListener('resize', function() {
+  const mobileOverlay = document.getElementById('mobile-floating-contact-overlay');
+  const desktopFloatingContact = document.getElementById('floating-contact'); // im right-panel
+  
+  if (window.innerWidth > 768) {
+    // Zu Desktop gewechselt
+    if (mobileOverlay) {
+      const mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
+      if (mobileFloatingContact && mobileFloatingContact.classList.contains('show')) {
+        closeMobileFloatingContact();
+      }
+    }
+  } else {
+    // Zu Mobile gewechselt  
+    if (desktopFloatingContact && desktopFloatingContact.classList.contains('show')) {
+      closeDesktopFloatingContact();
+    }
+  }
+});
 
 // User löschen
 async function deleteContact(email) {
@@ -199,29 +292,6 @@ async function deleteContact(email) {
   } catch (error) {
     console.error("Error deleting user:", error);
   }
-}
-
-// Funktion zum Schließen des Panels:
-function closeFloatingContact() {
-  const floatingContact = document.getElementById('floating-contact');
-  if (floatingContact) {
-    floatingContact.classList.remove('show');
-  }
-  
-  // Alle aktiven Kontakte deselektieren
-  const allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
-}
-
-function closeMobileFloatingOverlay() {
-  const mobileOverlay = document.getElementById('mobile-floating-contact-overlay');
-  if (mobileOverlay) {
-    mobileOverlay.classList.remove('show');
-  }
-  
-  // Alle aktiven Kontakte deselektieren
-  const allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
 }
 
 // Add Contact Overlay HTML rendern

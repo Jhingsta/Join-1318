@@ -27,9 +27,6 @@
 
 .arrow-left {
   display: inline;
-  /* position: absolute;
-  right: 20px;
-  top: 5px; */
   width: 32px;
   height: 32px;
   cursor: pointer;
@@ -514,7 +511,7 @@ input::placeholder {
     width: 100%;
     height: 100%;
     background-color: white;
-    z-index: 1000;
+    z-index: 500;
     overflow-y: auto;
     opacity: 0;
     visibility: hidden;
@@ -526,8 +523,26 @@ input::placeholder {
   }
   .mobile-floating-contact-overlay .floating-contact {
     width: 100%;
-    height: 100%;
-    padding: 20px;
+    height: 100vh;
+    padding: 64px 1rem 0 1rem;
+  }
+  .floating-contact-first {
+    font-size: 19px;
+  }
+  .floating-contact-second {
+    gap: 20px;
+  }
+  .mobile-floating-contact-overlay .avatar-big {
+    width: 80px;
+    height: 80px;
+    font-size: 27px;
+  }
+  .floating-contact-name-big {
+    font-size: 33px;
+    font-weight: 400;
+  }
+  .floating-contact-name-bottom {
+    display: none;
   }
   .overlay-add-contact,
   .overlay-edit-contact {
