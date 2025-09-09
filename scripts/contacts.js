@@ -88,7 +88,10 @@ function showFloatingContact(name, email, phone, color, initials, contactId) {
   }
   // Floating Contact Template erstellen
   const floatingContactHtml = `
-    <div class="floating-contact-first">Contact Information</div>
+    <div class="floating-contact-first">
+      <span>Contact Information</span>
+      <button onclick="closeMobileFloatingOverlay()" class="arrow-left"></button>
+    </div>
 
     <div class="floating-contact-second">
         <div class="avatar-big" style="background-color: ${color};">${initials}</div>
@@ -203,6 +206,17 @@ function closeFloatingContact() {
   const floatingContact = document.getElementById('floating-contact');
   if (floatingContact) {
     floatingContact.classList.remove('show');
+  }
+  
+  // Alle aktiven Kontakte deselektieren
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
+}
+
+function closeMobileFloatingOverlay() {
+  const mobileOverlay = document.getElementById('mobile-floating-contact-overlay');
+  if (mobileOverlay) {
+    mobileOverlay.classList.remove('show');
   }
   
   // Alle aktiven Kontakte deselektieren
