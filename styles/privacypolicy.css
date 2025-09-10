@@ -80,20 +80,6 @@ h3 {
   color: #4589FF;
 }
 
-.help-icon {
-  display: none;
-}
-
-.header-right-text:focus-visible {
-  outline: none;
-  outline-offset: none;
-}
-
-.header-right-text {
-  pointer-events: none;
-  cursor: default;
-}
-
 @media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr;
@@ -123,9 +109,9 @@ h3 {
 
 @media (max-width: 400px) {
   h1 {
-    font-size: 38px;
+    font-size: 35px;
   }
   .arrow-left {
-    right: 5px;
+    right: 0px;
   }
 }

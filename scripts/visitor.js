@@ -11,5 +11,6 @@ document.getElementById('sidebar-container').setAttribute('w3-include-html', sid
 function adjustHeaderForVisitor() {
     if (isVisitor) {
         document.getElementById('user-logo-svg').style.display = 'none';
+        document.getElementById('help-icon').style.display = 'none';
     }
 }

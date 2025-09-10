@@ -4,6 +4,7 @@
   box-sizing: border-box;
 }
 
+/* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 /* open-sans-regular - latin */
 @font-face {
   font-display: swap;
@@ -20,6 +21,14 @@
   font-weight: 500;
   src: url('../assets/fonts/open-sans-v43-latin-500.woff2') format('woff2');
 }
+/* open-sans-600 - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../assets/fonts/open-sans-v43-latin-600.woff2') format('woff2');
+}
 /* open-sans-700 - latin */
 @font-face {
   font-display: swap;
@@ -30,9 +39,9 @@
 }
 
 body {
-    font-family: 'Open Sans';
+  font-family: 'Open Sans';
 }
 
 button, input, select, textarea { 
-    font-family: inherit; 
+  font-family: inherit; 
 }

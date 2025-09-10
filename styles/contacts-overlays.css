@@ -89,7 +89,7 @@
 
 .floating-contact-name-big {
   font-size: 47px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .floating-contact-name-bottom {
@@ -467,6 +467,17 @@ input::placeholder {
 
 .create-btn:active img {
   filter: invert(49%) sepia(80%) saturate(7491%) hue-rotate(209deg) brightness(101%) contrast(101%);
+}
+
+/* Mobile Contact Options */
+
+.mobile-contact-options {
+  width: 116px;
+  height: 100px;
+  border-radius: 20px 20px 0 20px;
+  padding: 10px;
+  background-color: white;
+  box-shadow: 0px 4px 4px 0px #00000040;
 }
 
 .visually-hidden {
