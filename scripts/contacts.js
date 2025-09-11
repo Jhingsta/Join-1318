@@ -128,14 +128,20 @@ function createDesktopFloatingContact() {
 
 // Mobile Container erstellen/finden
 function createMobileFloatingContact(name, email, phone, color, initials) {
-  let mobileOverlay = document.getElementById('mobile-floating-contact-overlay');
+  let mobileOverlay = document.getElementById('mobile-floating-contact');
   if (!mobileOverlay) {
     document.body.innerHTML += `
-      <div id="mobile-floating-contact-overlay" class="mobile-floating-contact-overlay">
+      <div id="mobile-floating-contact" class="mobile-floating-contact">
         <button class="mobile-overlay-menu-btn" onclick="openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')" aria-label="Open contact options menu"></button>
       </div>
     `;
-    mobileOverlay = document.getElementById('mobile-floating-contact-overlay');
+    mobileOverlay = document.getElementById('mobile-floating-contact');
+  } else {
+    // Overlay existiert bereits - Menu-Button mit neuen Daten aktualisieren
+    const menuBtn = mobileOverlay.querySelector('.mobile-overlay-menu-btn');
+    if (menuBtn) {
+      menuBtn.setAttribute('onclick', `openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')`);
+    }
   }
 
   let floatingContact = mobileOverlay.querySelector('.floating-contact');
@@ -146,6 +152,9 @@ function createMobileFloatingContact(name, email, phone, color, initials) {
   
   // Mobile Overlay anzeigen
   mobileOverlay.classList.add('show');
+
+  // Body-Scroll deaktivieren
+  document.body.classList.add('no-scroll');
   
   return floatingContact;
 }
@@ -207,9 +216,12 @@ function closeDesktopFloatingContact() {
 
 // Mobile Schließen-Funktion
 function closeMobileFloatingContact() {
-  const mobileOverlay = document.getElementById('mobile-floating-contact-overlay');
+  const mobileOverlay = document.getElementById('mobile-floating-contact');
   if (mobileOverlay) {
     mobileOverlay.classList.remove('show');
+
+    // Body-Scroll wieder aktivieren
+    document.body.classList.remove('no-scroll');
     
     // Das floating-contact Element im Mobile-Overlay auch verstecken:
     const mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
@@ -234,7 +246,7 @@ function closeFloatingContact() {
 
 // Mobile Contact Menu öffnen/schließen
 function openMobileContactMenu(name, email, phone, color, initials) {
-  const mobileOverlay = document.getElementById('mobile-floating-contact-overlay');
+  const mobileOverlay = document.getElementById('mobile-floating-contact');
   
   // Prüfen ob Menu bereits existiert
   let contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
@@ -243,7 +255,7 @@ function openMobileContactMenu(name, email, phone, color, initials) {
     // Menu erstellen falls nicht vorhanden
     mobileOverlay.innerHTML += `
     <div class="mobile-contact-options">
-        <div class="mobile-edit-link" onclick="showEditContactOverlay({name:'${name}', email:'${email}', phone:'${phone || ''}', color:'${color}', initials:'${initials}'})">
+        <div class="mobile-edit-link" onclick="showEditContactOverlay({name:'${name}', email:'${email}', phone:'${(phone || '')}', color:'${color}', initials:'${initials}'})">
             <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt="">
             <span>Edit</span>
         </div>
@@ -265,6 +277,19 @@ function openMobileContactMenu(name, email, phone, color, initials) {
       document.addEventListener('click', closeMobileMenuOnOutsideClick);
     }, 100);
   } else {
+    // Menu existiert bereits - mit neuen Daten aktualisieren
+    // Edit-Link aktualisieren
+    const editLink = contactMenu.querySelector('.mobile-edit-link');
+    if (editLink) {
+      editLink.setAttribute('onclick', `showEditContactOverlay({name:'${name}', email:'${email}', phone:'${(phone || '')}', color:'${color}', initials:'${initials}'})`);
+    }
+    
+    // Delete-Link aktualisieren
+    const deleteLink = contactMenu.querySelector('.mobile-delete-link');
+    if (deleteLink) {
+      deleteLink.setAttribute('onclick', `deleteContact('${email}')`);
+    }
+    
     // Menu schließen falls bereits offen
     closeMobileContactMenu();
   }
@@ -308,7 +333,7 @@ function deleteContact() {
 
 // Window resize listener
 window.addEventListener('resize', function() {
-  const mobileOverlay = document.getElementById('mobile-floating-contact-overlay');
+  const mobileOverlay = document.getElementById('mobile-floating-contact');
   const desktopFloatingContact = document.getElementById('floating-contact'); // im right-panel
   
   if (window.innerWidth > 768) {
