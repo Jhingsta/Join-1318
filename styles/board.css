@@ -16,7 +16,7 @@ body {
 }
 
 main {
-    min-height: calc(100vh - 80px);
+    min-height: calc(100vh - 100px);
 }
 
 .main-container-modal {
@@ -192,8 +192,6 @@ input {
     background-color: #4589ff;
 }
 
-/* Hover-Effekt bleibt bestehen */
-
 /* Hover bleibt bestehen */
 .add-task-btn:hover {
     background-color: #005DFF;
@@ -237,6 +235,7 @@ input {
     padding: 0 64px 16px;
 }
 
+/* Desktop: Titel-Bar oben anzeigen */
 .task-header {
     display: flex;
     flex-direction: row;
@@ -254,10 +253,9 @@ input {
     width: 25%;
 }
 
-.title-text {
-    font-size: 23px;
-    font-weight: 700px;
-    color: #42526e;
+/* Desktop: Column-Header ausblenden */
+.column-header {
+    display: none;
 }
 
 .task-content {
@@ -273,31 +271,18 @@ input {
 
 }
 
+/* Board Layout - CSS Grid für alle Breakpoints */
 .bottom {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 24px;
     padding: 0 64px;
-    max-height: calc(100vh - 80px - 300px);
-    /* Header + Top-Sektion abziehen */
-    overflow-y: auto;
-    /* Scrollbar erscheint bei zu viel Inhalt */
-}
-
-.bottom::-webkit-scrollbar {
-    width: 0px;
-    /* scrollbar Breite auf 0 */
-    background: transparent;
-    /* Track unsichtbar */
 }
 
 .task-column {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex: 1;
-    width: 25%;
+    flex-direction: column;
+    min-width: 0;
 }
 
 .tasks {
@@ -306,8 +291,129 @@ input {
     gap: 16px;
     width: 100%;
     padding-bottom: 20px;
-    padding-top: 20px;
 }
+
+.column-header .title-text {
+    font-size: 23px;
+    font-weight: 700;
+    color: #42526e;
+}
+
+.column-header .svg-button {
+    cursor: pointer;
+}
+
+.column-header .svg-button:hover svg {
+    opacity: 0.7;
+}
+
+/* TABLET - 2x2 Grid */
+@media (max-width: 1350px) {
+    .desktop-only {
+        display: none;
+    }
+    /* Column-Header Styling (für Tablet/Mobile) */
+    .column-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 16px;
+    }
+    /* Header-Bereich anpassen */
+    .search-top {
+        padding: 40px 0 32px 32px;
+        gap: 20px;
+    }
+    
+    .searchbar {
+        width: 250px;
+    }
+    
+    .add-task-btn {
+        font-size: 18px;
+        padding: 12px 8px;
+    }
+    
+    /* Column-Header einblenden */
+    .column-header {
+        display: flex;
+    }
+    
+    /* 2x2 Grid Layout */
+    .bottom {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        padding: 0 32px;
+    }
+    
+    .tasks {
+        flex-direction: column;
+        padding-top: 0;
+    }
+}
+
+/* MOBILE - 1 Spalte, horizontale Tasks */
+@media (max-width: 768px) {
+    /* Für die ganze Seite im Mobile-Modus die vertikale Scrollbar verstecken: */
+    html, body {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Header-Bereich Mobile */
+    .search-top {
+        flex-direction: column;
+        gap: 16px;
+        padding: 64px 1rem 32px;
+    }
+    
+    .searchbar {
+        width: 100%;
+    }
+    
+    .add-task-btn {
+        display: none;
+    }
+    
+    /* 1 Spalte vertikal */
+    .bottom {
+        grid-template-columns: 1fr;
+        gap: 26px;
+        padding: 0 1rem;
+    }
+    
+    /* Tasks horizontal scrollbar */
+    .tasks {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 16px;
+        padding-bottom: 0;
+        /* scroll-behavior: smooth;
+        scroll-snap-type: x mandatory; */
+        /* um die horizontale Scrollbar zu verstecken */
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
+    }
+
+    /* um die horizontale Scrollbar zu verstecken */
+    .tasks::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* Task-Cards müssen feste Breite haben */
+    .tasks .task-card {
+        flex: 0 0 252px; /* Feste Breite der Task-Karte */
+        /* scroll-snap-align: start; */
+    }
+}
+
+
 
 /* Modal styles */
 .modal-overlay {
@@ -323,8 +429,6 @@ input {
 .hidden {
     display: none !important;
 }
-
-
 
 .modal-header {
     display: flex;
@@ -481,7 +585,6 @@ input {
     justify-content: space-between;
     flex-direction: column;
     height: 100vh;
-    max-height: 100vh;
     width: 518px;
     background: #fff;
     border-radius: 30px 0 0 30px;
@@ -620,12 +723,6 @@ input {
     border-radius: 6px;
     font-size: 14px;
     margin-bottom: 10px;
-}
-
-.task-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 0 0 10px;
 }
 
 .task-description {
@@ -847,4 +944,21 @@ h2 {
     /* schon korrekt */
     z-index: 1000;
     /* hoch genug, damit es über Header liegt */
+}
+
+
+
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  aside {
+    order: 2;
+  }
+  main {
+    order: 1;
+    min-height: calc(100vh - 80px);
+    margin-bottom: 80px;
+  }
 }
