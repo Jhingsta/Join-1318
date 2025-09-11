@@ -37,74 +37,84 @@
 
                 <div class="tasks-wrapper-grid">
                         <!-- Urgent Tasks Card -->
-                        <div class="middle-row-left urgent-card">
-                            <div class="middle-row-left-left">
-                                <div class="middle-row-left-left-top">
-                                    <img src="./assets/icons-summary/tasks-urgent.png" alt="tasks-urgent" />
+                        <a href="./board.html" class="urgent-card">
+                            <div class="middle-row-left">
+                                <div class="middle-row-left-left">
+                                    <div class="middle-row-left-left-top">
+                                        <img src="./assets/icons-summary/tasks-urgent.png" alt="tasks-urgent" />
+                                        <span>0</span>
+                                    </div>
+                                    <div class="middle-row-left-left-bottom">
+                                        <span class="middle-row-left-left-bottom-span">Tasks Urgent</span>
+                                    </div>
+                                </div>
+                                <div class="middle-row-left-middle"></div>
+                                <div class="middle-row-left-right">
+                                    <span class="middle-row-left-right-top" id="deadline-date"></span>
+                                    <span class="middle-row-left-right-bottom" id="deadline-label"></span>
+                                </div>     
+                            </div>
+                         </a>
+                        <!-- Task in Board Card -->
+                        <a href="./board.html" class="board-card">
+                            <div class="middle-row-right">
+                                <div class="middle-row-right-top">
+                                    <img src="./assets/icons-summary/tasks-in-board.png" alt="Tasks in Board" />
                                     <span>0</span>
                                 </div>
-                                <div class="middle-row-left-left-bottom">
-                                    <span class="middle-row-left-left-bottom-span">Tasks Urgent</span>
+                                <div class="middle-row-right-bottom">
+                                    <span>Tasks in Board</span>
                                 </div>
                             </div>
-                            <div class="middle-row-left-middle"></div>
-                            <div class="middle-row-left-right">
-                                <span class="middle-row-left-right-top" id="deadline-date"></span>
-                                <span class="middle-row-left-right-bottom" id="deadline-label"></span>
-                            </div>
-
-                        </div>
-                        <!-- Task in Board Card -->
-                        <div class="middle-row-right board-card">
-                            <div class="middle-row-right-top">
-                                <img src="./assets/icons-summary/tasks-in-board.png" alt="Tasks in Board" />
-                                <span>0</span>
-                            </div>
-                            <div class="middle-row-right-bottom">
-                                <span>Tasks in Board</span>
-                            </div>
-                        </div>
-
+                        </a>
                         <!-- To-do Tasks Card -->
-                        <div class="bottom-row-type-1 todo-card">
-                            <div class="bottom-row-type-1-top">
-                                <img src="./assets/icons-summary/tasks-to-do.png" alt="Tasks To-Do">
-                                <span>0</span>
+                        <a href="./board.html" class="todo-card">
+                            <div class="bottom-row-type-1">
+                                <div class="bottom-row-type-1-top">
+                                    <img src="./assets/icons-summary/tasks-to-do.png" alt="Tasks To-Do">
+                                    <span>0</span>
+                                </div>
+                                <div class="bottom-row-type-1-bottom">
+                                    <span>Tasks To-do</span>
+                                </div>
                             </div>
-                            <div class="bottom-row-type-1-bottom">
-                                <span>Tasks To-do</span>
-                            </div>
-                        </div>
+                        </a>
                         <!-- Tasks in Progress Card -->
-                        <div class="bottom-row-type-2 progress-card">
-                            <div class="bottom-row-type-2-top">
-                                <img src="./assets/icons-summary/tasks-in-progress.png" alt="Tasks in Progress">
-                                <span>0</span>
+                        <a href="./board.html" class="progress-card">
+                            <div class="bottom-row-type-2">
+                                <div class="bottom-row-type-2-top">
+                                    <img src="./assets/icons-summary/tasks-in-progress.png" alt="Tasks in Progress">
+                                    <span>0</span>
+                                </div>
+                                <div class="bottom-row-type-2-bottom">
+                                    <span>Tasks in Progress</span>
+                                </div>
                             </div>
-                            <div class="bottom-row-type-2-bottom">
-                                <span>Tasks in Progress</span>
-                            </div>
-                        </div>
+                        </a>
                          <!-- Awaiting Feedback Card -->
-                        <div class="bottom-row-type-2 feedback-card">
-                            <div class="bottom-row-type-2-top">
-                                <img src="./assets/icons-summary/awaiting-feedback.png" alt="Awaiting Feedback">
-                                <span>0</span>
+                        <a href="./board.html" class="feedback-card">
+                            <div class="bottom-row-type-2">
+                                <div class="bottom-row-type-2-top">
+                                    <img src="./assets/icons-summary/awaiting-feedback.png" alt="Awaiting Feedback">
+                                    <span>0</span>
+                                </div>
+                                <div class="bottom-row-type-2-bottom">
+                                    <span>Awaiting Feedback</span>
+                                </div>
                             </div>
-                            <div class="bottom-row-type-2-bottom">
-                                <span>Awaiting Feedback</span>
-                            </div>
-                        </div>
+                        </a>
                         <!-- Tasks Done Card -->
-                        <div class="bottom-row-type-2 done-card">
-                            <div class="bottom-row-type-2-top">
-                                <img src="./assets/icons-summary/tasks-done.png" alt="Tasks Done">
-                                <span>0</span>
+                        <a href="./board.html" class="done-card">
+                            <div class="bottom-row-type-2">
+                                <div class="bottom-row-type-2-top">
+                                    <img src="./assets/icons-summary/tasks-done.png" alt="Tasks Done">
+                                    <span>0</span>
+                                </div>
+                                <div class="bottom-row-type-2-bottom">
+                                    <span>Tasks <br> Done</span>
+                                </div>
                             </div>
-                            <div class="bottom-row-type-2-bottom">
-                                <span>Tasks <br> Done</span>
-                            </div>
-                        </div>
+                        </a>
                         
                 </div>
             </div>

@@ -1,9 +1,8 @@
-.middle-row-left:hover {
-    background-color: #ffffff;
-    box-shadow: 0px 0px 4px 0px #00000029;
-    scale: 1.055;
-    transition: all 0.1s ease-in-out;
-    border-radius: 0px 30px 30px 30px;
+.urgent-card:hover {
+  background-color: #ffffff;
+  box-shadow: 0px 0px 4px 0px #00000029;
+  scale: 1.055;
+  border-radius: 0px 30px 30px 30px;
 }
 
 .middle-row-left:hover .middle-row-left-left-top span,
@@ -17,12 +16,12 @@
     background-color: #005DFF;
 }
 
-.middle-row-left:hover img{
+.board-card:hover img{
     scale: 1.2;
     transition: all 0.1s ease-in-out;
 }
 
-.middle-row-right:hover{
+.board-card:hover{
     border-radius: 0px 30px 30px 30px;
     scale: 1.055;
     transition: all 0.1s ease-in-out;
@@ -36,13 +35,11 @@
 .middle-row-right:hover img{
     border-radius: 50%;
     border: 3px solid white;
-    box-sizing: border-box;
 }
 
-.bottom-row-type-1:hover{
+.todo-card:hover{
     border-radius: 0px 30px 30px 30px;
     scale: 1.055;
-    transition: all 0.1s ease-in-out;
     background-color: #ffffff;
 }
 
@@ -64,5 +61,4 @@
 .bottom-row-type-2:hover img{
     border-radius: 50%;
     border: 3px solid white;
-    box-sizing: border-box;
 }
