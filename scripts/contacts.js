@@ -75,20 +75,13 @@ function renderContacts(contacts) {
 
 // Floating Contact
 
-function showFloatingContact(name, email, phone, color, initials, contactId) {
-
-  // Alle anderen Kontakte deaktivieren
-  const allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
-  
-  // Aktuellen Kontakt aktivieren
-  const currentContact = document.getElementById(`contact-${contactId}`);
-  if (currentContact) {
-    currentContact.classList.add('active');
-  }
-  // Floating Contact Template erstellen
-  const floatingContactHtml = `
-    <div class="floating-contact-first">Contact Information</div>
+// HTML Template Generator
+function generateContactTemplate(name, email, phone, color, initials) {
+  return `
+    <div class="floating-contact-first">
+      <span>Contact Information</span>
+      <button onclick="closeFloatingContact()" class="arrow-left"></button>
+    </div>
 
     <div class="floating-contact-second">
         <div class="avatar-big" style="background-color: ${color};">${initials}</div>
@@ -118,44 +111,246 @@ function showFloatingContact(name, email, phone, color, initials, contactId) {
         </div>
     </div>
   `;
+}
 
-  // Floating Contact in right-panel einfügen
+// Desktop Container erstellen/finden
+function createDesktopFloatingContact() {
   const rightPanel = document.getElementById('right-panel');
   
-  // Erst das floating-contact div erstellen falls es nicht existiert
   let floatingContact = document.getElementById('floating-contact');
   if (!floatingContact) {
-    floatingContact = document.createElement('div');
-    floatingContact.className = 'floating-contact';
-    floatingContact.id = 'floating-contact';
-    rightPanel.appendChild(floatingContact);
+    rightPanel.innerHTML += '<div class="floating-contact" id="floating-contact"></div>';
+    floatingContact = document.getElementById('floating-contact');
   }
+  
+  return floatingContact;
+}
+
+// Mobile Container erstellen/finden
+function createMobileFloatingContact(name, email, phone, color, initials) {
+  let mobileOverlay = document.getElementById('mobile-floating-contact');
+  if (!mobileOverlay) {
+    document.body.innerHTML += `
+      <div id="mobile-floating-contact" class="mobile-floating-contact">
+        <button class="mobile-overlay-menu-btn" onclick="openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')" aria-label="Open contact options menu"></button>
+      </div>
+    `;
+    mobileOverlay = document.getElementById('mobile-floating-contact');
+  } else {
+    // Overlay existiert bereits - Menu-Button mit neuen Daten aktualisieren
+    const menuBtn = mobileOverlay.querySelector('.mobile-overlay-menu-btn');
+    if (menuBtn) {
+      menuBtn.setAttribute('onclick', `openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')`);
+    }
+  }
+
+  let floatingContact = mobileOverlay.querySelector('.floating-contact');
+  if (!floatingContact) {
+    mobileOverlay.innerHTML += '<div class="floating-contact"></div>';
+    floatingContact = mobileOverlay.querySelector('.floating-contact');
+  }
+  
+  // Mobile Overlay anzeigen
+  mobileOverlay.classList.add('show');
+
+  // Body-Scroll deaktivieren
+  document.body.classList.add('no-scroll');
+  
+  return floatingContact;
+}
+
+// Vereinheitlichte Animation
+function slideInFloatingContact(floatingContactElement) {
+  // Element erst komplett ausblenden und Transition temporär deaktivieren
+  floatingContactElement.style.transition = 'none';
+  floatingContactElement.style.transform = 'translateX(100%)';
+  floatingContactElement.style.opacity = '0';
+  
+  // Sicherstellen dass das Element sichtbar ist
+  floatingContactElement.classList.add('show');
+  
+  // Kurz warten, dann Animation starten
+  setTimeout(() => {
+    floatingContactElement.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+    floatingContactElement.style.transform = 'translateX(0)';
+    floatingContactElement.style.opacity = '1';
+  }, 10);
+}
+
+// Hauptfunktion
+function showFloatingContact(name, email, phone, color, initials, contactId) {
+  // Alle anderen Kontakte deaktivieren
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
+  
+  // Aktuellen Kontakt aktivieren
+  const currentContact = document.getElementById(`contact-${contactId}`);
+  if (currentContact) {
+    currentContact.classList.add('active');
+  }
+
+  // HTML Template generieren
+  const floatingContactHtml = generateContactTemplate(name, email, phone, color, initials);
+
+  // Container je nach Bildschirmgröße erstellen
+  const floatingContact = window.innerWidth <= 768 ? createMobileFloatingContact(name, email, phone, color, initials) : createDesktopFloatingContact();
 
   // Inhalt setzen
   floatingContact.innerHTML = floatingContactHtml;
   
-  // Slide-in Animation starten
-  slideInFloatingContact();
+  // Animation starten
+  slideInFloatingContact(floatingContact);
 }
 
-function slideInFloatingContact() {
+// Desktop Schließen-Funktion
+function closeDesktopFloatingContact() {
   const floatingContact = document.getElementById('floating-contact');
+  if (floatingContact) {
+    floatingContact.classList.remove('show');
+  }
   
-  // Element erst komplett ausblenden und Transition temporär deaktivieren
-  floatingContact.style.transition = 'none';
-  floatingContact.style.transform = 'translateX(100%)';
-  floatingContact.style.opacity = '0';
-  
-  // Sicherstellen dass das Element sichtbar ist
-  floatingContact.classList.add('show');
-  
-  // Kurz warten, dann Animation starten
-  setTimeout(() => {
-    floatingContact.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
-    floatingContact.style.transform = 'translateX(0)';
-    floatingContact.style.opacity = '1';
-  }, 10);
+  // Alle aktiven Kontakte deselektieren
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
 }
+
+// Mobile Schließen-Funktion
+function closeMobileFloatingContact() {
+  const mobileOverlay = document.getElementById('mobile-floating-contact');
+  if (mobileOverlay) {
+    mobileOverlay.classList.remove('show');
+
+    // Body-Scroll wieder aktivieren
+    document.body.classList.remove('no-scroll');
+    
+    // Das floating-contact Element im Mobile-Overlay auch verstecken:
+    const mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
+    if (mobileFloatingContact) {
+      mobileFloatingContact.classList.remove('show');
+    }
+  }
+  
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
+}
+
+// Universelle Schließen-Funktion
+function closeFloatingContact() {
+  // Je nach Bildschirmgröße entsprechende Funktion aufrufen
+  if (window.innerWidth <= 768) {
+    closeMobileFloatingContact();
+  } else {
+    closeDesktopFloatingContact();
+  }
+}
+
+// Mobile Contact Menu öffnen/schließen
+function openMobileContactMenu(name, email, phone, color, initials) {
+  const mobileOverlay = document.getElementById('mobile-floating-contact');
+  
+  // Prüfen ob Menu bereits existiert
+  let contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
+  
+  if (!contactMenu) {
+    // Menu erstellen falls nicht vorhanden
+    mobileOverlay.innerHTML += `
+    <div class="mobile-contact-options">
+        <div class="mobile-edit-link" onclick="showEditContactOverlay({name:'${name}', email:'${email}', phone:'${(phone || '')}', color:'${color}', initials:'${initials}'})">
+            <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt="">
+            <span>Edit</span>
+        </div>
+        <div class="mobile-delete-link" onclick="deleteContact('${email}')">
+            <img src="./assets/icons-contacts/delete.svg" class="icon-delete" alt="">
+            <span>Delete</span>
+        </div>
+    </div>
+    `;
+    contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
+    
+    // Slide-in Animation starten
+    setTimeout(() => {
+      contactMenu.classList.add('show');
+    }, 10);
+    
+    // Click außerhalb des Menus schließt es
+    setTimeout(() => {
+      document.addEventListener('click', closeMobileMenuOnOutsideClick);
+    }, 100);
+  } else {
+    // Menu existiert bereits - mit neuen Daten aktualisieren
+    // Edit-Link aktualisieren
+    const editLink = contactMenu.querySelector('.mobile-edit-link');
+    if (editLink) {
+      editLink.setAttribute('onclick', `showEditContactOverlay({name:'${name}', email:'${email}', phone:'${(phone || '')}', color:'${color}', initials:'${initials}'})`);
+    }
+    
+    // Delete-Link aktualisieren
+    const deleteLink = contactMenu.querySelector('.mobile-delete-link');
+    if (deleteLink) {
+      deleteLink.setAttribute('onclick', `deleteContact('${email}')`);
+    }
+    
+    // Menu schließen falls bereits offen
+    closeMobileContactMenu();
+  }
+}
+
+// Mobile Contact Menu schließen
+function closeMobileContactMenu() {
+  const contactMenu = document.querySelector('.mobile-contact-options');
+  if (contactMenu) {
+    contactMenu.classList.remove('show');
+    
+    // Element nach Animation entfernen
+    setTimeout(() => {
+      if (contactMenu && contactMenu.parentNode) {
+        contactMenu.remove();
+      }
+      document.removeEventListener('click', closeMobileMenuOnOutsideClick);
+    }, 300);
+  }
+}
+
+function closeMobileMenuOnOutsideClick(event) {
+  const contactMenu = document.querySelector('.mobile-contact-options');
+  const menuBtn = document.querySelector('.mobile-overlay-menu-btn');
+  
+  // Prüft ob Klick weder auf Menu noch auf Button war
+  if (contactMenu && 
+      !contactMenu.contains(event.target) && 
+      !menuBtn.contains(event.target)) {
+    closeMobileContactMenu();
+  }
+}
+
+function editContact() {
+  closeMobileContactMenu();
+}
+
+function deleteContact() {
+  closeMobileContactMenu();
+}
+
+// Window resize listener
+window.addEventListener('resize', function() {
+  const mobileOverlay = document.getElementById('mobile-floating-contact');
+  const desktopFloatingContact = document.getElementById('floating-contact'); // im right-panel
+  
+  if (window.innerWidth > 768) {
+    // Zu Desktop gewechselt
+    if (mobileOverlay) {
+      const mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
+      if (mobileFloatingContact && mobileFloatingContact.classList.contains('show')) {
+        closeMobileFloatingContact();
+      }
+    }
+  } else {
+    // Zu Mobile gewechselt  
+    if (desktopFloatingContact && desktopFloatingContact.classList.contains('show')) {
+      closeDesktopFloatingContact();
+    }
+  }
+});
 
 // User löschen
 async function deleteContact(email) {
@@ -196,18 +391,6 @@ async function deleteContact(email) {
   } catch (error) {
     console.error("Error deleting user:", error);
   }
-}
-
-// Funktion zum Schließen des Panels:
-function closeFloatingContact() {
-  const floatingContact = document.getElementById('floating-contact');
-  if (floatingContact) {
-    floatingContact.classList.remove('show');
-  }
-  
-  // Alle aktiven Kontakte deselektieren
-  const allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
 }
 
 // Add Contact Overlay HTML rendern
@@ -277,6 +460,7 @@ function renderEditContactOverlay(user) {
             <div class="overlay-contact-top-box">
                 <img src="./assets/icons-header/logo-all-white.svg" alt="" class="icon-logo">
                 <div class="overlay-contact-top-box-title">Edit contact</div>
+                <div class="overlay-add-contact-top-box-subtitle">Tasks are better with a team!</div>
             </div>
         </div>
 
@@ -288,7 +472,6 @@ function renderEditContactOverlay(user) {
                     <div class="form-group">
                         <label for="overlay-edit-name" class="visually-hidden">Name</label>
                         <input id="overlay-edit-name" name="name" type="text" placeholder="Name" value="${user.name}">
-                        <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
                         <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
                     </div>
 
@@ -323,6 +506,9 @@ function showAddContactOverlay() {
   // Backdrop anzeigen
   document.getElementById('overlay-contacts').classList.add('show');
   
+  // Body-Scroll deaktivieren
+  document.body.classList.add('no-scroll');
+  
   // Overlay einsliden (kleiner Delay für smooth Animation)
   setTimeout(() => {
       document.getElementById('overlay-add-contact').classList.add('show');
@@ -335,6 +521,9 @@ function showEditContactOverlay(userData) {
   
   // Backdrop anzeigen
   document.getElementById('overlay-contacts').classList.add('show');
+  
+  // Body-Scroll deaktivieren
+  document.body.classList.add('no-scroll');
   
   // Overlay einsliden (kleiner Delay für smooth Animation)
   setTimeout(() => {
@@ -352,6 +541,8 @@ function closeContactOverlay() {
     setTimeout(() => {
       document.getElementById('overlay-contacts').classList.remove('show');
       document.getElementById('overlay-add-contact-container').innerHTML = '';
+      // Body-Scroll wieder aktivieren
+      document.body.classList.remove('no-scroll');
     }, 300);
   }
   
@@ -360,6 +551,8 @@ function closeContactOverlay() {
     setTimeout(() => {
       document.getElementById('overlay-contacts').classList.remove('show');
       document.getElementById('overlay-edit-contact-container').innerHTML = '';
+      // Body-Scroll wieder aktivieren
+      document.body.classList.remove('no-scroll');
     }, 300);
   }
 }
