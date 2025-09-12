@@ -92,6 +92,7 @@ w3.includeHTML(async () => {
 
 // Mobile Summary Animation Script
 
+// Main function called from <body onload="initSummaryAnimation()">
 function initSummaryAnimation() {
     // Check if animation should be shown (set from login)
     if (sessionStorage.getItem('showSummaryAnimation')) {
@@ -102,11 +103,12 @@ function initSummaryAnimation() {
 }
 
 function initMobileAnimation() {
+    const body = document.body;
     const greetingElement = document.querySelector('.greeting-time');
     const tasksGrid = document.querySelector('.tasks-wrapper-grid');
     
     // Set initial animation state
-    document.body.classList.add('mobile-animation-greeting');
+    body.classList.add('mobile-animation-greeting');
     
     // Add will-change for performance optimization
     if (greetingElement) {
@@ -123,12 +125,13 @@ function initMobileAnimation() {
 }
 
 function startContentAnimation() {
+    const body = document.body;
     const topRowElement = document.querySelector('.top-row'); // Changed to top-row div
     const tasksGrid = document.querySelector('.tasks-wrapper-grid');
     
     // Switch to content animation state
-    document.body.classList.remove('mobile-animation-greeting');
-    document.body.classList.add('mobile-animation-content');
+    body.classList.remove('mobile-animation-greeting');
+    body.classList.add('mobile-animation-content');
     
     // Clean up performance optimizations after animation completes
     setTimeout(() => {
@@ -139,6 +142,6 @@ function startContentAnimation() {
             tasksGrid.style.willChange = 'auto';
         }
         // Remove animation classes to clean up DOM
-        document.body.classList.remove('mobile-animation-content');
+        body.classList.remove('mobile-animation-content');
     }, 800); // Match CSS transition duration
 }

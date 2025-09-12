@@ -6,6 +6,8 @@ html, body {
 
 body {
   background-color: #4589FF;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 main {
@@ -123,7 +125,6 @@ input[type="password"] {
   border: none;
   border-bottom: 1px solid #D1D1D1;
   font-size: 19px;
-  font-weight: 400;;
   color: #000000;
   transition: all 0.3s ease;
   gap: 10px;
@@ -186,8 +187,6 @@ input[type="checkbox"] {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 400;
   color: #42526E;
 }
 
@@ -237,7 +236,7 @@ input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .check {
 }
 .checkbox-label a:hover {
   text-decoration: underline;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .privacy-link {
@@ -251,7 +250,6 @@ button {
   background-color: #4589FF;
   color: white;
   font-size: 19px;
-  font-weight:400;
   border: none;
   cursor: pointer;
   transition: all 100ms ease-in-out;
@@ -295,8 +293,6 @@ nav a {
   text-decoration: none;
   color: white;
   padding: 8px;
-  font-size: 16px;
-  font-weight: 400;
 }
 
 nav a:hover {
