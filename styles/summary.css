@@ -33,7 +33,7 @@ main {
 
 .tasks-wrapper-grid {
   display: grid;
-  gap: 32px;
+  gap: 5% 3%;
   grid-template-columns: repeat(4, 1fr);
   grid-template-areas: 
     "urgent urgent urgent board"
@@ -74,7 +74,7 @@ main {
   align-items: center;
   justify-content: center;
   gap: 35px;
-  padding: 28px 48px;
+  padding: 1% 1%;
   border-radius: 30px;
 }
 
@@ -144,7 +144,7 @@ main {
 
 .board-card .middle-row-right {
   border-radius: 30px;
-  padding: 40px;
+  padding: 20%;
   box-shadow: 0px 0px 4px 0px #00000029;
   display: flex;
   flex-direction: column;
@@ -179,7 +179,7 @@ main {
 
 .bottom-row-type-1 {
   border-radius: 30px;
-  padding: 40px;
+  padding: 20%;
   display: flex;
   flex-direction: column;
   gap: 7px;
@@ -222,7 +222,7 @@ main {
 }
 
 .bottom-row-type-2 {
-  padding: 40px;
+  padding: 20%;
   border-radius: 30px;
   box-shadow: 0px 0px 4px 0px #00000029;
   display: flex;
@@ -300,25 +300,26 @@ main {
   }
   .tasks-wrapper-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
     grid-template-areas: 
       "urgent urgent"
       "todo todo"
       "board progress"
       "feedback done";
-    padding: 64px 1rem 0;
+    padding: 64px 10px 10px;
+    gap: 2% 3%;
   }
   .top-row {
     display: none;
   }
   .urgent-card .middle-row-left {
     gap: 16px;
+    padding: 4% 6%;
   }
   .middle-row-left-left-top span {
-  font-size: 40px;
+    font-size: 40px;
   }
   .middle-row-left-left-bottom span {
-    font-size: 19px;
+    font-size: 17px;
   }
   .middle-row-left-left {
     gap: 2px;
@@ -341,7 +342,7 @@ main {
   .board-card .middle-row-right {
     justify-content: center;
     align-items: center;
-    padding: 15px 40px;
+    padding: 10% 15%;  
   }
   .middle-row-right-top,
   .middle-row-right-bottom {
@@ -355,14 +356,14 @@ main {
     gap: 16px;
     justify-content: center;
     align-items: center;
-    padding: 15px 40px;
+    padding: 8% 15%;  
   }
   .bottom-row-type-1-bottom span {
     font-size: 19px;
   }
   .bottom-row-type-2 {
     align-items: center;
-    padding: 15px 40px;
+    padding: 10% 15%;  
   }
   .bottom-row-type-2-top,
   .bottom-row-type-2-bottom {
