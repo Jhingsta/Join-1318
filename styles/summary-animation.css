@@ -62,3 +62,54 @@
     border-radius: 50%;
     border: 3px solid white;
 }
+
+/* Mobile Animation States */
+
+@media (max-width: 768px) {
+    
+    /* Initial state: Show greeting centered, hide content below viewport */
+    .mobile-animation-greeting .top-row {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        opacity: 1;
+        display: flex !important; /* Override the mobile display: none */
+        transition: opacity 0.5s ease-out;
+    }
+    
+    .mobile-animation-greeting .tasks-wrapper-grid {
+        transform: translateY(100%);
+        opacity: 0;
+        transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+    }
+    
+    /* Animation state: Fade out greeting, slide in content */
+    .mobile-animation-content .top-row {
+        opacity: 0;
+    }
+    
+    .mobile-animation-content .tasks-wrapper-grid {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (min-width: 769px) {
+    
+    /* Desktop: Ensure no animation transforms are applied */
+    .mobile-animation-greeting .top-row,
+    .mobile-animation-content .top-row {
+        position: static;
+        transform: none;
+        opacity: 1;
+        z-index: auto;
+    }
+    
+    .mobile-animation-greeting .tasks-wrapper-grid,
+    .mobile-animation-content .tasks-wrapper-grid {
+        transform: none !important;
+        opacity: 1 !important;
+    }
+}

@@ -89,3 +89,56 @@ w3.includeHTML(async () => {
         deadlineLabelEl.textContent = "Today";
     }
 });
+
+// Mobile Summary Animation Script
+
+function initSummaryAnimation() {
+    // Check if animation should be shown (set from login)
+    if (sessionStorage.getItem('showSummaryAnimation')) {
+        sessionStorage.removeItem('showSummaryAnimation'); // Remove immediately
+        initMobileAnimation();
+    }
+    // Your other existing summary initialization code can go here
+}
+
+function initMobileAnimation() {
+    const greetingElement = document.querySelector('.greeting-time');
+    const tasksGrid = document.querySelector('.tasks-wrapper-grid');
+    
+    // Set initial animation state
+    document.body.classList.add('mobile-animation-greeting');
+    
+    // Add will-change for performance optimization
+    if (greetingElement) {
+        greetingElement.style.willChange = 'opacity';
+    }
+    if (tasksGrid) {
+        tasksGrid.style.willChange = 'transform, opacity';
+    }
+    
+    // Start content animation after 3 seconds
+    setTimeout(() => {
+        startContentAnimation();
+    }, 3000);
+}
+
+function startContentAnimation() {
+    const topRowElement = document.querySelector('.top-row'); // Changed to top-row div
+    const tasksGrid = document.querySelector('.tasks-wrapper-grid');
+    
+    // Switch to content animation state
+    document.body.classList.remove('mobile-animation-greeting');
+    document.body.classList.add('mobile-animation-content');
+    
+    // Clean up performance optimizations after animation completes
+    setTimeout(() => {
+        if (topRowElement) {
+            topRowElement.style.willChange = 'auto';
+        }
+        if (tasksGrid) {
+            tasksGrid.style.willChange = 'auto';
+        }
+        // Remove animation classes to clean up DOM
+        document.body.classList.remove('mobile-animation-content');
+    }, 800); // Match CSS transition duration
+}

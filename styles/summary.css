@@ -293,10 +293,11 @@ main {
   main {
     order: 1;
     min-height: calc(100vh - 80px);
-    margin-bottom: 154px;
+    margin-bottom: 120px;
   }
   .main-content-wrapper {
     padding: 0 0;
+    height: 100%;
   }
   .tasks-wrapper-grid {
     grid-template-columns: repeat(2, 1fr);

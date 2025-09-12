@@ -17,7 +17,7 @@
     <title>Summary</title>
 </head>
 
-<body>
+<body onload="initSummaryAnimation()">
     <header>
         <div w3-include-html="header.html"></div>
     </header>
@@ -35,7 +35,7 @@
                     <span class="greeting-time" id="greeting-time"><span class="greeting-name"></span></span>
                 </div>
 
-                <div class="tasks-wrapper-grid">
+                <div class="tasks-wrapper-grid" id="tasks-wrapper-grid">
                         <!-- Urgent Tasks Card -->
                         <a href="./board.html" class="urgent-card">
                             <div class="middle-row-left">
@@ -130,7 +130,7 @@
             setActiveNavigation();
         });
     </script>
-    <script src="./scripts/taskManager.js"></script>
+    <script src="./scripts/taskmanager.js"></script>
     <script src="./scripts/summary.js"></script>
 </body>
 

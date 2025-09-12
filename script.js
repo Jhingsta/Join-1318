@@ -105,6 +105,7 @@ async function loginUser(email, password) {
             color: user.color || ""
           })
         );
+        sessionStorage.setItem('showSummaryAnimation', 'true');
         return true;
       }
     }
@@ -179,6 +180,7 @@ async function handleGuestLogin() {
       email: "guest@join.com",
     })
   );
+  sessionStorage.setItem('showSummaryAnimation', 'true');
   window.location.href = "./summary.html";
 }
 
