@@ -1,3 +1,13 @@
+// Direkt beim Laden prüfen, ob ein User existiert, sonst zur Login-Seite weiterleiten
+function enforceAuthentication() {
+  const user = getCurrentUser();
+
+  if (!user) {
+    // Kein User im localStorage → Redirect
+    window.location.href = "./index.html";
+  }
+}
+
 function getCurrentUser() {
   const userJson = localStorage.getItem("currentUser");
   return userJson ? JSON.parse(userJson) : null;
@@ -49,3 +59,6 @@ function setActiveNavigation() {
         }
     });
 }
+
+// Authentifizierung sofort prüfen, sobald das Script geladen wird
+enforceAuthentication();
