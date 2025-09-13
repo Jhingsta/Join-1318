@@ -286,7 +286,7 @@ body.loaded #splash {
   }
   .signup-box {
     top: auto;
-    bottom: 100px;
+    bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 19px;
