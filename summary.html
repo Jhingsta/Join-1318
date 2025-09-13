@@ -10,22 +10,11 @@
     <link rel="stylesheet" href="./styles/summary.css">
     <link rel="stylesheet" href="./styles/summary-animation.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
+    <script src="./scripts/summary-animation.js"></script>
     <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
     <link rel="manifest" href="./assets/site.webmanifest">
-    <script>
-        // Läuft BEVOR der Body gerendert wird
-        if (sessionStorage.getItem('showSummaryAnimation')) {
-            document.addEventListener('DOMContentLoaded', function() {
-                document.body.classList.add('should-animate');
-                // Animation direkt hier starten
-                initMobileAnimation();
-                // sessionStorage erst nach Animation-Start entfernen
-                sessionStorage.removeItem('showSummaryAnimation');
-            });
-        }
-    </script>
     <title>Summary</title>
 </head>
 

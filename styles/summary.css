@@ -78,6 +78,13 @@ main {
   border-radius: 30px;
 }
 
+.urgent-card:hover {
+  background-color: #ffffff;
+  box-shadow: 0px 0px 4px 0px #00000029;
+  scale: 1.055;
+  border-radius: 0px 30px 30px 30px;
+}
+
 .middle-row-left-left {
   display: flex;
   flex-direction: column;
@@ -133,6 +140,17 @@ main {
   color: white;
 }
 
+.middle-row-left:hover .middle-row-left-left-top span,
+.middle-row-left:hover .middle-row-left-left-bottom span,
+.middle-row-left:hover .middle-row-left-right-top,
+.middle-row-left:hover .middle-row-left-right-bottom {
+  color: #4589ff;
+}
+
+.middle-row-left:hover .middle-row-left-middle{
+  background-color: #005DFF;
+}
+
 .board-card {
   grid-area: board;
   cursor: pointer;
@@ -149,6 +167,18 @@ main {
   display: flex;
   flex-direction: column;
   gap: 7px;
+}
+
+.board-card:hover img{
+  scale: 1.2;
+  transition: all 0.1s ease-in-out;
+}
+
+.board-card:hover{
+  border-radius: 0px 30px 30px 30px;
+  scale: 1.055;
+  transition: all 0.1s ease-in-out;
+  background-color: #005DFF;
 }
 
 .middle-row-right-top {
@@ -175,6 +205,15 @@ main {
   font-size: 23px;
   color: #4589ff;
   text-align: center;
+}
+
+.middle-row-right:hover span{
+  color: #ffffff;
+}
+
+.middle-row-right:hover img{
+  border-radius: 50%;
+  border: 3px solid white;
 }
 
 .bottom-row-type-1 {
@@ -221,6 +260,16 @@ main {
   color: #4589ff;
 }
 
+.todo-card:hover{
+  border-radius: 0px 30px 30px 30px;
+  scale: 1.055;
+  background-color: #ffffff;
+}
+
+.bottom-row-type-1:hover span{
+  color: #005DFF;
+}
+
 .bottom-row-type-2 {
   padding: 20%;
   border-radius: 30px;
@@ -229,6 +278,22 @@ main {
   flex-direction: column;
   justify-content: center;
   gap: 7px;
+}
+
+.bottom-row-type-2:hover{
+  border-radius: 0px 30px 30px 30px;
+  scale: 1.055;
+  transition: all 0.1s ease-in-out;
+  background-color: #005DFF;
+}
+
+.bottom-row-type-2:hover span{
+  color: #ffffff;
+}
+
+.bottom-row-type-2:hover img{
+  border-radius: 50%;
+  border: 3px solid white;
 }
 
 .progress-card {

@@ -1,123 +1,128 @@
-.urgent-card:hover {
-  background-color: #ffffff;
-  box-shadow: 0px 0px 4px 0px #00000029;
-  scale: 1.055;
-  border-radius: 0px 30px 30px 30px;
+/* Verhindert Content-Flackern beim Seitenaufbau - spezifisch und stark */
+html body {
+    opacity: 0 !important;
 }
 
-.middle-row-left:hover .middle-row-left-left-top span,
-.middle-row-left:hover .middle-row-left-left-bottom span,
-.middle-row-left:hover .middle-row-left-right-top,
-.middle-row-left:hover .middle-row-left-right-bottom {
-    color: #4589ff;
+/* Macht Body sichtbar sobald Animation läuft oder nicht nötig ist */
+html body:not([data-summary-animate]),
+html body[data-summary-animate="true"] {
+    opacity: 1 !important;
 }
 
-.middle-row-left:hover .middle-row-left-middle{
-    background-color: #005DFF;
-}
-
-.board-card:hover img{
-    scale: 1.2;
-    transition: all 0.1s ease-in-out;
-}
-
-.board-card:hover{
-    border-radius: 0px 30px 30px 30px;
-    scale: 1.055;
-    transition: all 0.1s ease-in-out;
-    background-color: #005DFF;
-}
-
-.middle-row-right:hover span{
-    color: #ffffff;
-}
-
-.middle-row-right:hover img{
-    border-radius: 50%;
-    border: 3px solid white;
-}
-
-.todo-card:hover{
-    border-radius: 0px 30px 30px 30px;
-    scale: 1.055;
-    background-color: #ffffff;
-}
-
-.bottom-row-type-1:hover span{
-    color: #005DFF;
-}
-
-.bottom-row-type-2:hover{
-    border-radius: 0px 30px 30px 30px;
-    scale: 1.055;
-    transition: all 0.1s ease-in-out;
-    background-color: #005DFF;
-}
-
-.bottom-row-type-2:hover span{
-    color: #ffffff;
-}
-
-.bottom-row-type-2:hover img{
-    border-radius: 50%;
-    border: 3px solid white;
-}
-
-/* Mobile Animation States */
-
+/* Mobile: Content sofort verstecken (bevor Animation startet) */
 @media (max-width: 768px) {
-    
-    /* Initial state: Content instantly hidden (no transitions) */
-    .should-animate .tasks-wrapper-grid {
-        transform: translateY(100%);
-        opacity: 0;
-        /* NO transition here - instant hide */
+    html body .tasks-wrapper-grid {
+        transform: translateY(100%) !important;
+        opacity: 0 !important;
+        transition: none !important; /* Kein Übergang beim ersten Verstecken */
     }
     
-    /* Animation starts: Add transitions and show greeting centered */
-    .mobile-animation-greeting .top-row {
+    /* Nur wenn Animation NICHT läuft: Content normal anzeigen */
+    html body:not([data-summary-animate]) .tasks-wrapper-grid {
+        transform: none !important;
+        opacity: 1 !important;
+    }
+}
+
+/* POST-LOGIN ANIMATION - CSS ONLY */
+@media (max-width: 768px) {
+    
+    /* Keyframe Animation - steuert beide Phasen */
+    @keyframes post-login-welcome {
+        0% {
+            /* Phase 1: Greeting zentriert, Content versteckt */
+            --greeting-opacity: 1;
+            --greeting-scale: 1;
+            --content-transform: translateY(100%);
+            --content-opacity: 0;
+        }
+        
+        45% {
+            /* Greeting noch voll sichtbar */
+            --greeting-opacity: 1;
+            --greeting-scale: 1;
+            --content-transform: translateY(100%);
+            --content-opacity: 0;
+        }
+        
+        65% {
+            /* Greeting beginnt zu verschwinden */
+            --greeting-opacity: 0;
+            --greeting-scale: 0.9;
+            --content-transform: translateY(60%);
+            --content-opacity: 0.3;
+        }
+        
+        100% {
+            /* Content vollständig sichtbar, Greeting weg */
+            --greeting-opacity: 0;
+            --greeting-scale: 0.8;
+            --content-transform: translateY(0);
+            --content-opacity: 1;
+        }
+    }
+
+    /* Animation wird nur getriggert wenn data-post-login="true" */
+    body[data-post-login="true"] {
+        animation: post-login-welcome 4s ease-out forwards;
+        
+        /* CSS Custom Properties für Animation */
+        --greeting-opacity: 1;
+        --greeting-scale: 1;
+        --content-transform: translateY(100%);
+        --content-opacity: 0;
+    }
+
+    /* Greeting Styles während Animation */
+    body[data-post-login="true"] .top-row {
+        display: flex !important;
         position: fixed;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%) scale(var(--greeting-scale));
         z-index: 1000;
-        opacity: 1;
-        display: flex !important; /* Override mobile display: none for animation */
-        transition: opacity 0.5s ease-out;
+        opacity: var(--greeting-opacity);
+        background: white;
+    }
+
+    /* Content Styles während Animation */
+    body[data-post-login="true"] .tasks-wrapper-grid {
+        transform: var(--content-transform);
+        opacity: var(--content-opacity);
+    }
+
+    /* Nach Animation: Cleanup */
+    body[data-post-login="true"] .top-row {
+        animation: cleanup-greeting 0.1s ease-out 4s forwards;
+    }
+
+    @keyframes cleanup-greeting {
+        to {
+            display: none !important;
+            position: static;
+            transform: none;
+            opacity: 0;
+            z-index: auto;
+        }
     }
     
-    .mobile-animation-greeting .tasks-wrapper-grid {
-        transform: translateY(100%);
-        opacity: 0;
-        transition: transform 0.6s ease-out, opacity 0.6s ease-out; /* Transition only when animation starts */
-    }
-    
-    /* Animation state: Fade out greeting, slide in content */
-    .mobile-animation-content .top-row {
-        opacity: 0;
-        transition: opacity 0.5s ease-out;
-    }
-    
-    .mobile-animation-content .tasks-wrapper-grid {
-        transform: translateY(0);
-        opacity: 1;
-        transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+    @keyframes cleanup-performance {
+        to {
+            will-change: auto;
+            backface-visibility: visible;
+            transition: none;
+        }
     }
 }
 
+/* Desktop: Keine Animation */
 @media (min-width: 769px) {
-    
-    /* Desktop: Ensure no animation transforms are applied */
-    .should-animate .tasks-wrapper-grid,
-    .mobile-animation-greeting .top-row,
-    .mobile-animation-content .top-row,
-    .mobile-animation-greeting .tasks-wrapper-grid,
-    .mobile-animation-content .tasks-wrapper-grid {
-        position: static !important;
+    body[data-post-login="true"] .top-row,
+    body[data-post-login="true"] .tasks-wrapper-grid {
+        animation: none !important;
         transform: none !important;
         opacity: 1 !important;
+        position: static !important;
         z-index: auto !important;
-        display: revert !important;
-        transition: none !important;
     }
 }
