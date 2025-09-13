@@ -92,23 +92,12 @@ w3.includeHTML(async () => {
 
 // Mobile Summary Animation Script
 
-// Main function called from <body onload="initSummaryAnimation()">
-function initSummaryAnimation() {
-    // Check if animation should be shown (set from login)
-    if (sessionStorage.getItem('showSummaryAnimation')) {
-        sessionStorage.removeItem('showSummaryAnimation'); // Remove immediately
-        initMobileAnimation();
-    }
-    // Your other existing summary initialization code can go here
-}
-
 function initMobileAnimation() {
-    const body = document.body;
     const greetingElement = document.querySelector('.greeting-time');
     const tasksGrid = document.querySelector('.tasks-wrapper-grid');
     
     // Set initial animation state
-    body.classList.add('mobile-animation-greeting');
+    document.body.classList.add('mobile-animation-greeting');
     
     // Add will-change for performance optimization
     if (greetingElement) {
@@ -121,17 +110,16 @@ function initMobileAnimation() {
     // Start content animation after 3 seconds
     setTimeout(() => {
         startContentAnimation();
-    }, 3000);
+    }, 1500);
 }
 
 function startContentAnimation() {
-    const body = document.body;
     const topRowElement = document.querySelector('.top-row'); // Changed to top-row div
     const tasksGrid = document.querySelector('.tasks-wrapper-grid');
     
     // Switch to content animation state
-    body.classList.remove('mobile-animation-greeting');
-    body.classList.add('mobile-animation-content');
+    document.body.classList.remove('mobile-animation-greeting');
+    document.body.classList.add('mobile-animation-content');
     
     // Clean up performance optimizations after animation completes
     setTimeout(() => {
@@ -142,6 +130,6 @@ function startContentAnimation() {
             tasksGrid.style.willChange = 'auto';
         }
         // Remove animation classes to clean up DOM
-        body.classList.remove('mobile-animation-content');
+        document.body.classList.remove('mobile-animation-content');
     }, 800); // Match CSS transition duration
 }

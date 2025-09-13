@@ -14,10 +14,22 @@
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
     <link rel="manifest" href="./assets/site.webmanifest">
+    <script>
+        // Läuft BEVOR der Body gerendert wird
+        if (sessionStorage.getItem('showSummaryAnimation')) {
+            document.addEventListener('DOMContentLoaded', function() {
+                document.body.classList.add('should-animate');
+                // Animation direkt hier starten
+                initMobileAnimation();
+                // sessionStorage erst nach Animation-Start entfernen
+                sessionStorage.removeItem('showSummaryAnimation');
+            });
+        }
+    </script>
     <title>Summary</title>
 </head>
 
-<body class="summary-page" onload="initSummaryAnimation()">
+<body>
     <header>
         <div w3-include-html="header.html"></div>
     </header>

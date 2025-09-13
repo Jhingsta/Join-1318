@@ -164,8 +164,6 @@ async function handleLogin(event) {
   window.location.href = "./summary.html";
 }
 
-
-
 /**
  * Handles guest login functionality
  * Creates a guest user session and redirects to summary page
