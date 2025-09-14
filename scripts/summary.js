@@ -29,7 +29,17 @@ function updateGreeting() {
     if (greetingElement) {
         const greeting = getGreetingByTime();
         const userName = getCurrentUserName();
-        greetingElement.innerHTML = `${greeting}, <span class="greeting-name">${userName}</span>`;
+        
+        // NEU: Prüfung ob Guest oder normaler User
+        if (userName === 'Guest') {
+            // NEU: Für Gäste nur Tageszeit-Gruß ohne Namen und entsprechende CSS-Klasse
+            greetingElement.className = 'greeting-time-guest';
+            greetingElement.innerHTML = greeting;
+        } else {
+            // NEU: Für normale User mit Komma, Namen und entsprechende CSS-Klassen
+            greetingElement.className = 'greeting-time-user';
+            greetingElement.innerHTML = `${greeting}, <span class="greeting-name-user">${userName}</span>`;
+        }
     }
 }
 

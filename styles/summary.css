@@ -46,12 +46,18 @@ main {
   justify-content: center;
 }
 
-.greeting-time {
+.greeting-time-user {
   font-size: 48px;
-  color: #2a3647;
+  color: #2A3647;
 }
 
-.greeting-name {
+.greeting-time-guest {
+  font-size: 64px;
+  color: #2A3647;
+  font-weight: 700;
+}
+
+.greeting-name-user {
   font-size: 64px;
   font-weight: 700;
   color: #4589ff;
@@ -311,6 +317,20 @@ main {
   }
   .top-row {
     display: none;
+  }
+  .top-row {
+    display: flex;
+    flex-direction: column;
+  }
+  .greeting-time-user {
+    font-size: 33px;
+  }
+  .greeting-time-guest {
+    font-size: 48px;
+  }
+  .greeting-name-user {
+    font-size: 47px;
+    color: #005DFF;
   }
   .urgent-card .middle-row-left {
     gap: 16px;
