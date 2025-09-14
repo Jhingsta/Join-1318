@@ -2,9 +2,13 @@
 function enforceAuthentication() {
   const user = getCurrentUser();
 
-  if (!user) {
-    // Kein User im localStorage → Redirect
-    window.location.href = "./index.html";
+  // Prüfen, ob URL-Parameter "from=visitor" gesetzt ist
+  const urlParams = new URLSearchParams(window.location.search);
+  const isVisitorMode = urlParams.get("from") === "visitor";
+
+  // Wenn kein User vorhanden ist UND kein Visitor-Modus aktiv → Redirect
+  if (!user && !isVisitorMode) {
+    window.location.href = "/login.html";
   }
 }
 
