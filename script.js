@@ -105,6 +105,7 @@ async function loginUser(email, password) {
             color: user.color || ""
           })
         );
+        sessionStorage.setItem('showSummaryAnimation', 'true');
         return true;
       }
     }
@@ -163,8 +164,6 @@ async function handleLogin(event) {
   window.location.href = "./summary.html";
 }
 
-
-
 /**
  * Handles guest login functionality
  * Creates a guest user session and redirects to summary page
@@ -179,6 +178,7 @@ async function handleGuestLogin() {
       email: "guest@join.com",
     })
   );
+  sessionStorage.setItem('showSummaryAnimation', 'true');
   window.location.href = "./summary.html";
 }
 

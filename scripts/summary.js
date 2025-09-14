@@ -1,5 +1,30 @@
+// ===== POST-LOGIN ANIMATION IMPLEMENTATION =====
+
+// Check for post-login flag on page load
+function checkPostLoginAnimation() {
+    if (sessionStorage.getItem('showSummaryAnimation') === 'true') {
+        // Trigger animation
+        document.body.setAttribute('data-post-login', 'true');
+        
+        // Remove flag so animation only runs once
+        sessionStorage.removeItem('showSummaryAnimation');
+        
+        // Optional: Remove data attribute after animation completes (cleanup)
+        setTimeout(() => {
+            document.body.removeAttribute('data-post-login');
+        }, 4100); // Animation duration (4s) + cleanup time
+    }
+}
+
+// Initialize animation check on page load
+document.addEventListener('DOMContentLoaded', function() {
+    checkPostLoginAnimation();
+});
+
+// ===== REST DEINES BESTEHENDEN CODES BLEIBT GLEICH =====
+
 // ---------------------------
-// Greeting-Funktionen
+// Greeting-Funktionen (dein bestehender Code)
 // ---------------------------
 
 function getGreetingByTime() {
@@ -34,20 +59,20 @@ function updateGreeting() {
 }
 
 // ---------------------------
-// Tasks & Summary Counter aus Firebase + aktuelles Datum
+// Tasks & Summary Counter (dein bestehender Code bleibt komplett gleich)
 // ---------------------------
 
 w3.includeHTML(async () => {
     // 1. Greeting setzen
     updateGreeting();
 
-    // 2. Tasks laden
+    // 2. Tasks laden (dein bestehender Code)
     try {
         const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json");
         const data = await res.json();
         const tasks = data ? Object.values(data) : [];
 
-        // 3. Zähler initialisieren
+        // 3. Zähler initialisieren (dein bestehender Code)
         let total = tasks.length;
         let todo = 0, inProgress = 0, awaiting = 0, done = 0, urgent = 0;
 
@@ -61,7 +86,7 @@ w3.includeHTML(async () => {
             if (task.priority === "urgent") urgent++;
         });
 
-        // 4. Zähler ins HTML setzen
+        // 4. Zähler ins HTML setzen (dein bestehender Code)
         document.querySelector(".middle-row-left-left-top span").textContent = urgent;
         document.querySelector(".middle-row-right-top span").textContent = total;
         document.querySelector(".bottom-row-type-1-top span").textContent = todo;
@@ -75,7 +100,7 @@ w3.includeHTML(async () => {
         console.error("Fehler beim Laden der Tasks:", err);
     }
 
-    // 5. Datum setzen (immer heutiges Datum)
+    // 5. Datum setzen (dein bestehender Code)
     const deadlineDateEl = document.getElementById("deadline-date");
     const deadlineLabelEl = document.getElementById("deadline-label");
 
@@ -89,3 +114,6 @@ w3.includeHTML(async () => {
         deadlineLabelEl.textContent = "Today";
     }
 });
+
+// ===== ALTE ANIMATION FUNCTIONS KÖNNEN ENTFERNT WERDEN =====
+// initMobileAnimation() und startContentAnimation() werden nicht mehr benötigt

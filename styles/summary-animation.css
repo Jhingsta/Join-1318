@@ -62,3 +62,98 @@
     border-radius: 50%;
     border: 3px solid white;
 }
+
+/* POST-LOGIN ANIMATION - CSS ONLY */
+@media (max-width: 768px) {
+    
+    /* Keyframe Animation - steuert beide Phasen */
+    @keyframes post-login-welcome {
+        0% {
+            /* Phase 1: Greeting zentriert, Content versteckt */
+            --greeting-opacity: 1;
+            --greeting-scale: 1;
+            --content-transform: translateY(100%);
+            --content-opacity: 0;
+        }
+        
+        45% {
+            /* Greeting noch voll sichtbar */
+            --greeting-opacity: 1;
+            --greeting-scale: 1;
+            --content-transform: translateY(100%);
+            --content-opacity: 0;
+        }
+        
+        65% {
+            /* Greeting beginnt zu verschwinden */
+            --greeting-opacity: 0;
+            --greeting-scale: 0.9;
+            --content-transform: translateY(60%);
+            --content-opacity: 0.3;
+        }
+        
+        100% {
+            /* Content vollständig sichtbar, Greeting weg */
+            --greeting-opacity: 0;
+            --greeting-scale: 0.8;
+            --content-transform: translateY(0);
+            --content-opacity: 1;
+        }
+    }
+
+    /* Animation wird nur getriggert wenn data-summary-animate="true" */
+    body[data-summary-animate="true"] {
+        animation: post-login-welcome 4s ease-out forwards;
+        
+        /* CSS Custom Properties für Animation */
+        --greeting-opacity: 1;
+        --greeting-scale: 1;
+        --content-transform: translateY(100%);
+        --content-opacity: 0;
+    }
+
+    /* Greeting Styles während Animation */
+    body[data-summary-animate="true"] .top-row {
+        display: flex !important;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(var(--greeting-scale));
+        z-index: 1000;
+        opacity: var(--greeting-opacity);
+        background: white;
+    }
+
+    /* Content Styles während Animation */
+    body[data-summary-animate="true"] .tasks-wrapper-grid {
+        transform: var(--content-transform);
+        opacity: var(--content-opacity);
+    }
+
+    /* Nach Animation: Cleanup */
+    body[data-summary-animate="true"] .top-row {
+        animation: cleanup-greeting 0.1s ease-out 4s forwards;
+    }
+
+    @keyframes cleanup-greeting {
+        to {
+            display: none !important;
+            position: static;
+            transform: none;
+            opacity: 0;
+            z-index: auto;
+        }
+    }
+}
+
+/* Desktop: Keine Animation */
+@media (min-width: 769px) {
+    body[data-summary-animate="true"] .top-row,
+    body[data-summary-animate="true"] .tasks-wrapper-grid {
+        animation: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+        position: static !important;
+        z-index: auto !important;
+    }
+}
