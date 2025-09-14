@@ -40,7 +40,7 @@ main {
     "todo progress feedback done";
 }
 
-.top-row {
+.greeting-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -289,6 +289,10 @@ main {
   text-align: center;
 }
 
+.d-none {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr;
@@ -315,10 +319,7 @@ main {
     padding: 64px 10px 10px;
     gap: 2% 3%;
   }
-  .top-row {
-    display: none;
-  }
-  .top-row {
+  .greeting-container {
     display: flex;
     flex-direction: column;
   }
