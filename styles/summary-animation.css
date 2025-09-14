@@ -1,64 +1,67 @@
-.urgent-card:hover {
-  background-color: #ffffff;
-  box-shadow: 0px 0px 4px 0px #00000029;
-  scale: 1.055;
-  border-radius: 0px 30px 30px 30px;
-}
+/* Summary Animation Styles - Mobile Only */
 
-.middle-row-left:hover .middle-row-left-left-top span,
-.middle-row-left:hover .middle-row-left-left-bottom span,
-.middle-row-left:hover .middle-row-left-right-top,
-.middle-row-left:hover .middle-row-left-right-bottom {
-    color: #4589ff;
-}
-
-.middle-row-left:hover .middle-row-left-middle{
-    background-color: #005DFF;
-}
-
-.board-card:hover img{
-    scale: 1.2;
-    transition: all 0.1s ease-in-out;
-}
-
-.board-card:hover{
-    border-radius: 0px 30px 30px 30px;
-    scale: 1.055;
-    transition: all 0.1s ease-in-out;
-    background-color: #005DFF;
-}
-
-.middle-row-right:hover span{
-    color: #ffffff;
-}
-
-.middle-row-right:hover img{
-    border-radius: 50%;
-    border: 3px solid white;
-}
-
-.todo-card:hover{
-    border-radius: 0px 30px 30px 30px;
-    scale: 1.055;
-    background-color: #ffffff;
-}
-
-.bottom-row-type-1:hover span{
-    color: #005DFF;
-}
-
-.bottom-row-type-2:hover{
-    border-radius: 0px 30px 30px 30px;
-    scale: 1.055;
-    transition: all 0.1s ease-in-out;
-    background-color: #005DFF;
-}
-
-.bottom-row-type-2:hover span{
-    color: #ffffff;
-}
-
-.bottom-row-type-2:hover img{
-    border-radius: 50%;
-    border: 3px solid white;
+@media (max-width: 768px) {
+  
+  /* Animation Overlay - überdeckt den gesamten main-Bereich */
+  .animation-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 10;
+    
+    /* Zentriertes Greeting */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-100px); /* Verschiebt Text nach oben */
+    
+    /* Initial versteckt */
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  /* Greeting Animation Text Container */
+  .greeting-animation {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  /* Initial States für Content */
+  .main-content-wrapper {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  
+  /* Animation Trigger Klassen */
+  .animation-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  .main-content-wrapper.slide-in {
+    animation: slideInFromBottom 0.8s ease-out forwards;
+  }
+  
+  .animation-overlay.fade-out {
+    animation: fadeOut 0.3s ease-out forwards;
+  }
+  
+  /* Keyframe Animationen */
+  @keyframes slideInFromBottom {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeOut {
+    to {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
 }
