@@ -5,7 +5,7 @@ function getDropdownElements() {
   if (!dropdownElements) {
     dropdownElements = {
       menu: document.getElementById('header-dropdown-menu'),
-      overlay: document.getElementById('dropdown-menu-overlay'),
+      overlay: document.getElementById('header-dropdown-menu-overlay'),
       trigger: document.querySelector('[aria-expanded]')
     };
   }
