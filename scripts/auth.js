@@ -1,3 +1,17 @@
+// Direkt beim Laden prüfen, ob ein User existiert, sonst zur Login-Seite weiterleiten
+function enforceAuthentication() {
+  const user = getCurrentUser();
+
+  // Prüfen, ob URL-Parameter "from=visitor" gesetzt ist
+  const urlParams = new URLSearchParams(window.location.search);
+  const isVisitorMode = urlParams.get("from") === "visitor";
+
+  // Wenn kein User vorhanden ist UND kein Visitor-Modus aktiv → Redirect
+  if (!user && !isVisitorMode) {
+    window.location.href = "/login.html";
+  }
+}
+
 function getCurrentUser() {
   const userJson = localStorage.getItem("currentUser");
   return userJson ? JSON.parse(userJson) : null;
@@ -49,3 +63,6 @@ function setActiveNavigation() {
         }
     });
 }
+
+// Authentifizierung sofort prüfen, sobald das Script geladen wird
+enforceAuthentication();
