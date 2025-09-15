@@ -6,6 +6,9 @@ if (!window.taskManager.saveTasks) {
     };
 }
 
+// Ganz oben in board.js einfügen:
+const FIREBASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app";
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     const addTaskButton = document.getElementById('add-task-btn');
@@ -73,11 +76,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const status = document.getElementById('task-status').value;
         const subtasksDone = parseInt(document.getElementById('subtasks-done').value || '0', 10);
         const subtasksTotal = parseInt(document.getElementById('subtasks-total').value || '0', 10);
-
-        if (!title) {
-            alert('Please enter a title');
-            return;
-        }
+        // Dynamische Subtasks vom User
+        const subtasksInputs = document.querySelectorAll('.subtask-input');
+        const subtasksItems = Array.from(subtasksInputs)
+            .map(input => input.value.trim())
+            .filter(title => title.length > 0)
+            .map(title => ({ title, done: false })); // ✅ wichtig
 
         const payload = {
             title,
@@ -85,8 +89,131 @@ document.addEventListener('DOMContentLoaded', async () => {
             dueDate,
             priority,
             status,
-            subtasks: { completed: subtasksDone, total: subtasksTotal },
+            subtasks: {
+                items: subtasksItems,                 // Array von Objekten
+                total: subtasksItems.length,
+                completed: subtasksItems.filter(st => st.done).length
+            },
+            createdAt: new Date().toISOString()
         };
+
+
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const addTaskButton = document.getElementById('add-task-btn');
+            const modal = document.getElementById('add-task-modal');
+            const modalClose = document.getElementById('modal-close');
+            const cancelButton = document.getElementById('cancel-btn');
+            const form = document.getElementById('add-task-form');
+            const signUpBtn = document.querySelector('.sign-up-btn'); // Save Button
+            const closeButton = document.querySelector('.close');
+
+            closeButton?.addEventListener('click', closeModal);
+
+            function openModal() {
+                modal?.classList.remove('hidden');
+                addTaskButton?.classList.add('active-style'); // Button aktiv stylen
+            }
+
+            function closeModal() {
+                modal?.classList.add('hidden');
+                form?.reset();
+
+                // Standardwerte zurücksetzen
+                const priority = document.getElementById('task-priority');
+                const status = document.getElementById('task-status');
+                const done = document.getElementById('subtasks-done');
+                const total = document.getElementById('subtasks-total');
+                if (priority) priority.value = 'medium';
+                if (status) status.value = 'todo';
+                if (done) done.value = '0';
+                if (total) total.value = '0';
+
+                // Save Button zurücksetzen
+                signUpBtn?.classList.remove('active');
+
+                //Button-Styles zurücksetzen
+                addTaskButton?.classList.remove('active-style');
+            }
+
+            // Save Button beim Klick aktiv machen
+            signUpBtn?.addEventListener('click', () => {
+                signUpBtn.classList.add('active');
+            });
+
+            addTaskButton?.addEventListener('click', openModal);
+            modalClose?.addEventListener('click', closeModal);
+            cancelButton?.addEventListener('click', closeModal);
+            modal?.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            if (!window.taskManager) {
+                console.error('Task manager not loaded');
+                return;
+            }
+
+            await window.taskManager.loadTasks();
+            renderBoard();
+
+            form?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // 1️⃣ Task-Grunddaten auslesen
+                const title = document.getElementById('task-title').value.trim();
+                const description = document.getElementById('task-description').value.trim();
+                const dueDate = document.getElementById('task-dueDate').value;
+                const priority = document.getElementById('task-priority').value;
+                const status = document.getElementById('task-status').value;
+
+                if (!title) {
+                    alert('Please enter a title');
+                    return;
+                }
+
+                // 2️⃣ Subtasks einsammeln
+                const subtasksInputs = document.querySelectorAll('.subtask-input');
+                const subtasksItems = Array.from(subtasksInputs)
+                    .map(input => ({ title: input.value.trim(), completed: false }))
+                    .filter(st => st.title.length > 0); // leere ignorieren
+
+                // 3️⃣ Payload erstellen
+                const payload = {
+                    title,
+                    description,
+                    dueDate,
+                    priority,
+                    status,
+                    subtasks: {
+                        items: subtasksItems,
+                        total: subtasksItems.length,
+                        completed: subtasksItems.filter(st => st.completed).length
+                    },
+                    createdAt: new Date().toISOString()
+                };
+
+                // 4️⃣ Button während Save deaktivieren
+                const submitButton = form.querySelector('button[type="submit"]');
+                const originalText = submitButton.textContent;
+                submitButton.textContent = 'Saving...';
+                submitButton.disabled = true;
+
+                // 5️⃣ Task speichern und Board aktualisieren
+                try {
+                    await window.taskManager.createTask(payload); // Stelle sicher, dass hier push() verwendet wird
+                    await window.taskManager.loadTasks();
+                    renderBoard();
+                    closeModal();
+                } catch (err) {
+                    console.error(err);
+                    alert('Failed to save task');
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                }
+            });
+
+        });
 
         try {
             const submitButton = form.querySelector('button[type="submit"]');
@@ -169,7 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
 function renderBoard() {
     const tasks = window.taskManager.getTasks();
     const columns = {
@@ -199,7 +325,42 @@ function renderBoard() {
             columnEl.appendChild(placeholder);
         }
     });
+
+    // 🔹 Listener für Task-Updates setzen (nur die geänderte Task-Karte aktualisieren)
+    document.removeEventListener("taskUpdated", handleTaskUpdated); // alten Listener entfernen
+    document.addEventListener("taskUpdated", handleTaskUpdated);
+    document.addEventListener("taskUpdated", (e) => {
+        renderBoard();
+    });
 }
+
+// Listener-Funktion definieren
+// Funktion zum Aktualisieren einer einzelnen Task-Karte
+function handleTaskUpdated(e) {
+    const updatedTask = e.detail;
+    const card = document.getElementById(`task-${updatedTask.firebaseId}`);
+    if (!card) return;
+
+    const cardTitle = card.querySelector(".task-title");
+    const cardDesc = card.querySelector(".task-desc");
+
+    if (cardTitle) cardTitle.innerText = updatedTask.title;
+    if (cardDesc) cardDesc.innerText = updatedTask.description || "";
+
+    // Optional: Fortschritt oder andere Felder aktualisieren
+    const progressBar = card.querySelector(".progress-container div");
+    const progressText = card.querySelector(".subtasks-text");
+    if (progressBar && updatedTask.subtasks) {
+        const percent = updatedTask.subtasks.total
+            ? (updatedTask.subtasks.completed / updatedTask.subtasks.total) * 100
+            : 0;
+        progressBar.style.width = `${percent}%`;
+    }
+    if (progressText && updatedTask.subtasks) {
+        progressText.textContent = `${updatedTask.subtasks.completed}/${updatedTask.subtasks.total} Subtasks`;
+    }
+}
+
 
 
 // ---------- Helpers ----------
@@ -216,135 +377,11 @@ function getColor(name) {
     return `hsl(${Math.abs(hash) % 360},70%,50%)`;
 }
 
-// function createTaskCard(task) {
-//     const card = document.createElement('div');
-//     card.className = 'task-card';
-
-//     const type = document.createElement('div');
-//     type.className = 'task-type';
-
-//     const typeImg = document.createElement('img');
-//     if (task.category === "User Story") {
-//         typeImg.src = './assets/icons-board/user-story-tag.svg';
-//         typeImg.alt = 'User Story';
-//     } else if (task.category === "Technical Task") {
-//         typeImg.src = './assets/icons-board/technical-task-tag.svg';
-//         typeImg.alt = 'Technical Task';
-//     }
-
-//     type.appendChild(typeImg);
-
-//     const content = document.createElement('div');
-//     content.className = 'task-content';
-//     const title = document.createElement('div');
-//     title.className = 'title';
-//     title.textContent = task.title || 'Untitled';
-//     const info = document.createElement('div');
-//     info.className = 'task-info';
-//     info.textContent = task.description || '';
-//     content.appendChild(title);
-//     content.appendChild(info);
-
-//     const subtasks = document.createElement('div');
-//     subtasks.className = 'subtasks';
-//     subtasks.style.display = 'flex';
-//     subtasks.style.alignItems = 'center';
-//     subtasks.style.gap = '8px'; // Abstand zwischen Leiste und Text
-
-//     // Container für die Fortschrittsleiste
-//     if (task.subtasks && (task.subtasks.total || task.subtasks.completed)) {
-//         const progressContainer = document.createElement('div');
-//         progressContainer.className = 'progress-container';
-//         progressContainer.style.width = '128px';
-//         progressContainer.style.height = '8px';
-//         progressContainer.style.backgroundColor = '#E0E0E0';
-//         progressContainer.style.borderRadius = '4px';
-//         progressContainer.style.overflow = 'hidden';
-
-//         // Fortschrittsfüllung
-//         const completed = task.subtasks?.completed || 0;
-//         const total = task.subtasks?.total || 0;
-//         const progressFill = document.createElement('div');
-//         const percentage = total > 0 ? (completed / total) * 100 : 0;
-//         progressFill.style.width = `${percentage}%`;
-//         progressFill.style.height = '100%';
-//         progressFill.style.backgroundColor = '#635FC7'; // z.B. lila
-//         progressFill.style.transition = 'width 0.3s ease';
-
-//         progressContainer.appendChild(progressFill);
-
-//         // Textanzeige
-//         const progressText = document.createElement('span');
-//         progressText.className = 'subtasks-text';
-//         progressText.textContent = `${completed}/${total} Subtasks`;
-//         progressText.style.fontSize = '13px';
-//         progressText.style.color = '#000000'; // Farbe nach Bedarf
-
-//         subtasks.appendChild(progressContainer);
-//         subtasks.appendChild(progressText);
-//     }
-
-//     const assignedTo = document.createElement('div');
-//     assignedTo.className = 'assigned-to';
-//     assignedTo.style.display = 'flex';
-//     assignedTo.style.alignItems = 'center';
-//     assignedTo.style.gap = '8px'; // Abstand zwischen Avataren und Icon
-
-//     // Container für Avatare
-//     const avatarsContainer = document.createElement('div');
-//     avatarsContainer.style.display = 'flex';
-//     avatarsContainer.style.gap = '4px'; // Abstand zwischen den einzelnen Avataren
-
-//     // Avatare der ausgewählten Nutzer
-//     if (task.users && task.users.length > 0) {
-//         task.users.slice(0, 3).forEach(user => {
-//             const avatarDiv = document.createElement('div');
-//             avatarDiv.className = 'assigned-avatar';
-//             avatarDiv.textContent = getInitials(user);
-//             avatarDiv.style.backgroundColor = getColor(user);
-//             avatarDiv.style.width = '28px';
-//             avatarDiv.style.height = '28px';
-//             avatarDiv.style.borderRadius = '50%';
-//             avatarDiv.style.display = 'flex';
-//             avatarDiv.style.alignItems = 'center';
-//             avatarDiv.style.justifyContent = 'center';
-//             avatarDiv.style.fontFamily = 'Inter';
-//             avatarDiv.style.fontWeight = '400';
-//             avatarDiv.style.fontStyle = 'normal'; // "Regular" entspricht normal
-//             avatarDiv.style.fontSize = '12px';
-//             avatarDiv.style.lineHeight = '120%';
-//             avatarDiv.style.textAlign = 'center';
-//             avatarDiv.style.verticalAlign = 'middle';
-//             avatarDiv.style.color = '#FFFFFF';
-
-
-
-//             avatarsContainer.appendChild(avatarDiv);
-//         });
-//     }
-
-//     // Priority-Icon rechts
-//     const prioImg = document.createElement('img');
-//     prioImg.alt = 'Priority';
-//     prioImg.src = priorityIcon(task.priority);
-//     prioImg.style.marginLeft = 'auto'; // schiebt es ganz nach rechts
-
-//     // Alles zusammenfügen
-//     assignedTo.appendChild(avatarsContainer);
-//     assignedTo.appendChild(prioImg);
-
-
-//     card.appendChild(type);
-//     card.appendChild(content);
-//     card.appendChild(subtasks);
-//     card.appendChild(assignedTo);
-
-//     return card;
-// }
-
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
+
+    card.id = `task-${task.firebaseId}`;
 
     const type = document.createElement('div');
     type.className = 'task-type';
@@ -382,7 +419,7 @@ function createTaskCard(task) {
         progressContainer.style.width = '128px';
         progressContainer.style.height = '8px';
         progressContainer.style.backgroundColor = '#E0E0E0';
-        progressContainer.style.borderRadius = '4px';
+        progressContainer.style.borderRadius = '16px';
         progressContainer.style.overflow = 'hidden';
 
         const completed = task.subtasks?.completed || 0;
@@ -391,8 +428,9 @@ function createTaskCard(task) {
         const percentage = total > 0 ? (completed / total) * 100 : 0;
         progressFill.style.width = `${percentage}%`;
         progressFill.style.height = '100%';
-        progressFill.style.backgroundColor = '#635FC7';
+        progressFill.style.backgroundColor = '#4589FF';
         progressFill.style.transition = 'width 0.3s ease';
+        progressFill.style.borderRadius = '16px';
 
         progressContainer.appendChild(progressFill);
 
@@ -416,26 +454,27 @@ function createTaskCard(task) {
     avatarsContainer.style.display = 'flex';
     avatarsContainer.style.gap = '4px';
 
-    if (task.users && task.users.length > 0) {
-        task.users.slice(0, 3).forEach(user => {
-            const avatarDiv = document.createElement('div');
-            avatarDiv.className = 'assigned-avatar';
-            avatarDiv.textContent = getInitials(user);
-            avatarDiv.style.backgroundColor = getColor(user);
-            avatarDiv.style.width = '28px';
-            avatarDiv.style.height = '28px';
-            avatarDiv.style.borderRadius = '50%';
-            avatarDiv.style.display = 'flex';
-            avatarDiv.style.alignItems = 'center';
-            avatarDiv.style.justifyContent = 'center';
-            avatarDiv.style.fontFamily = 'Inter';
-            avatarDiv.style.fontWeight = '400';
-            avatarDiv.style.fontSize = '12px';
-            avatarDiv.style.color = '#FFFFFF';
+if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
+    task.assignedUsersFull.slice(0, 3).forEach(user => {
+        const avatarDiv = document.createElement('div');
+        avatarDiv.className = 'assigned-avatar';
+        avatarDiv.textContent = user.initials || getInitials(user.name);
+        avatarDiv.style.backgroundColor = user.color || '#888';
+        avatarDiv.style.width = '28px';
+        avatarDiv.style.height = '28px';
+        avatarDiv.style.borderRadius = '50%';
+        avatarDiv.style.display = 'flex';
+        avatarDiv.style.alignItems = 'center';
+        avatarDiv.style.justifyContent = 'center';
+        avatarDiv.style.fontFamily = 'Inter';
+        avatarDiv.style.fontWeight = '400';
+        avatarDiv.style.fontSize = '12px';
+        avatarDiv.style.color = '#FFFFFF';
 
-            avatarsContainer.appendChild(avatarDiv);
-        });
-    }
+        avatarsContainer.appendChild(avatarDiv);
+    });
+}
+
 
     const prioImg = document.createElement('img');
     prioImg.alt = 'Priority';
@@ -457,7 +496,6 @@ function createTaskCard(task) {
 
     return card;
 }
-
 
 function priorityIcon(priority) {
     switch ((priority || 'medium').toLowerCase()) {
@@ -538,8 +576,6 @@ dueDateIcon.addEventListener("click", openDatepicker);
 
 // Klick auf die gesamte Zeile öffnet Datepicker
 dueDateContainer.addEventListener("click", openDatepicker);
-
-
 const buttons = document.querySelectorAll(".priority-frame");
 
 buttons.forEach((btn) => {
@@ -556,7 +592,6 @@ arrowContainer.addEventListener('click', (event) => {
     event.stopPropagation();
     assignedDropdown.classList.toggle('show');
 });
-
 
 document.addEventListener('click', (event) => {
     if (!assignedDropdown.contains(event.target) && event.target !==
@@ -624,20 +659,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error("Fehler beim Laden der Users", e);
         }
     }
-
-    // // ---------- Helpers ----------
-    // function getInitials(name) {
-    //     if (!name) return "";
-    //     return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
-    // }
-
-    // function getColor(name) {
-    //     let hash = 0;
-    //     for (let i = 0; i < name.length; i++) {
-    //         hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    //     }
-    //     return `hsl(${Math.abs(hash) % 360},70%,50%)`;
-    // }
 
     // ---------- Update Selected Avatars ----------
     function updateSelectedAvatars() {
@@ -797,12 +818,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadUsers();
 });
 
-
 // ===================== CATEGORY ===================== 
 const categoryContent = document.querySelector('.category-content');
 const categoryText = categoryContent.querySelector('.assigned-text');
 const categoryArrow = categoryContent.querySelector('.assigned-arrow-icon');
-
 const categoryDropdown = document.createElement('div');
 categoryDropdown.className = 'dropdown-menu';
 
@@ -839,7 +858,6 @@ document.addEventListener('click', (e) => {
         categoryArrow.src = '/assets/icons-addTask/arrow_drop_down.png';
     }
 });
-
 
 // ===================== SUBTASK DROPDOWN ===================== 
 // // ===================== SUBTASK DROPDOWN ===================== 
@@ -886,8 +904,6 @@ function startEditMode(li, span) {
     const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addTask/Subtask's icons (1).png";
     saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
 }
-
-
 // ----------------------------
 // Funktion: Task-Daten auslesen
 // ----------------------------
@@ -944,43 +960,68 @@ function getTaskData() {
     };
 }
 
-
 //Task an Firebase senden
 
+/**
+ * Speichert einen neuen Task in Firebase
+const FIREBASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app";
+
+/**
+/**
+ * Speichert einen neuen Task in Firebase
+/**
+ * @param {Object} taskData - Daten des neuen Tasks
+ */
 async function saveTaskToFirebase(taskData) {
     try {
-        const response = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                title: taskData.title,
-                description: taskData.description,
-                dueDate: taskData.dueDate,
-                priority: taskData.priority,
-                status: "inProgress",
-                createdAt: new Date().toISOString(),
-                subtasks: {
-                    total: taskData.subtasks.length,
-                    completed: 0,
-                    items: taskData.subtasks
-                },
-                users: taskData.assignedTo,
-                usersFull: taskData.assignedUsersFull,
-                category: taskData.category
-            })
-        });
+        const response = await fetch(
+            `${FIREBASE_URL}/tasks.json`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: taskData.title,
+                    description: taskData.description,
+                    dueDate: taskData.dueDate,
+                    priority: taskData.priority,
+                    status: "inProgress",
+                    createdAt: new Date().toISOString(),
+                    // 🔹 Subtasks korrekt speichern
+                    subtasks: {
+                        total: taskData.subtasks.length,
+                        completed: 0,
+                        items: taskData.subtasks.map((st, i) => {
+                            if (typeof st === "string" && st.trim() !== "") {
+                                return { title: st, done: false };
+                            } else if (st && st.title && st.title.trim() !== "") {
+                                return { title: st.title, done: st.done || false };
+                            } else {
+                                return { title: `Subtask ${i + 1}`, done: false };
+                            } // Fallback
+                        })
+                    },
+                    users: taskData.assignedTo,
+                    usersFull: taskData.assignedUsersFull,
+                    category: taskData.category
+                })
+            }
+        )
 
-        if (!response.ok) throw new Error("Fehler beim Speichern des Tasks");
+        if (!response.ok) {
+            throw new Error(`Fehler beim Speichern des Tasks in Firebase: ${response.status}`);
+        }
 
-        const data = await response.json();
-        console.log("Task erfolgreich gespeichert:", data);
-        return data;
+        const result = await response.json();
+        console.log("Task erfolgreich gespeichert:", result);
+        return result;
 
     } catch (error) {
-        console.error("Firebase Save Error:", error);
-        alert("Fehler beim Speichern des Tasks!");
+        console.error("Error saving task:", error);
+        throw error;
     }
 }
+
+
 
 
 //Create Task Button mit Firebase verbinden
@@ -1122,8 +1163,8 @@ function enableTaskDragAndDrop() {
     });
 
 }
-
 // 2. Task verschieben und Board neu rendern
+// 2. Task verschieben und Board neu rendern / Karte updaten
 async function moveTaskToColumn(taskId, columnId) {
 
     let newStatus = 'todo';
@@ -1135,17 +1176,24 @@ async function moveTaskToColumn(taskId, columnId) {
     const task = tasks.find(t => (t.id || t.title) == taskId);
 
     if (task && task.status !== newStatus) {
-        task.status = newStatus;                         // lokal ändern
+        task.status = newStatus; // lokal ändern
 
         console.log("Task verschoben:", task.title, "Status:", task.status);
-        console.log("Alle Tasks:", tasks.map(t => `${t.title}:${t.status}`));
+        console.log("Alle Tasks:", tasks.map(t => `${t.title}: ${t.status}`));
 
-        await window.taskManager.updateTaskInFirebase(task); // auf Firebase warten
-        window.taskManager.saveTasks(tasks);             // lokal speichern
-        renderBoard();                                   // Board neu rendern
-        enableTaskDragAndDrop();                         // Drag & Drop wieder aktivieren
+        // Firebase-Update abwarten
+        await window.taskManager.updateTaskInFirebase(task);
+        window.taskManager.saveTasks(tasks); // lokal speichern
+
+        // 🔹 Event feuern, damit nur die Karte aktualisiert wird
+        document.dispatchEvent(new CustomEvent("taskUpdated", { detail: task }));
+
+        // Optional: Board neu rendern (falls nötig)
+        renderBoard();
+        enableTaskDragAndDrop();
     }
 }
+
 
 
 // 3. Nach jedem Render Drag & Drop aktivieren
@@ -1199,35 +1247,25 @@ window.taskManager.updateTaskInFirebase = async function (task) {
     } catch (err) {
         console.error("Fehler beim Aktualisieren in Firebase:", err);
     }
+
 };
 
+let currentTask = null; // aktuell geöffnete Task im Overlay
 
-//Task card overlay
 function openTaskDetails(task) {
+    currentTask = task;
     const overlay = document.getElementById("task-detail-overlay");
-    const body = document.getElementById("task-detail-body");
+    const view = document.getElementById("task-view");
+    const edit = document.getElementById("task-edit");
 
-    // Body leeren (inklusive alten Buttons)
-    body.innerHTML = "";
+    // Reset: Ansicht zeigen, Edit verstecken
+    view.classList.remove("hidden");
+    edit.classList.add("hidden");
 
-    // Assigned-to HTML generieren
-    let assignedHtml = "-";
-    if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
-        assignedHtml = task.assignedUsersFull.map(u => `
-        <div class="assigned-person">
-            <div class="assigned-avatar" style="
-                background-color:${getColor(u.name)};
-                width:28px;height:28px;border-radius:50%;
-                display:flex;align-items:center;justify-content:center;
-                font-family:Inter;font-weight:400;font-size:12px;color:#fff;">
-                ${getInitials(u.name)} <!-- Kürzel im Kreis -->
-            </div>
-            <span class="assigned-name-full">${u.name}</span> <!-- voller Name -->
-        </div>
-    `).join("");
-    }
+    // Overlay sichtbar machen
+    overlay.classList.remove("hidden");
 
-    // Kategorie-Logik für das Bild
+    // Kategorie-Icon
     let categoryImg = "";
     if (task.category === "User Story") {
         categoryImg = './assets/icons-board/user-story-tag.svg';
@@ -1235,63 +1273,36 @@ function openTaskDetails(task) {
         categoryImg = './assets/icons-board/technical-task-tag.svg';
     }
 
-    // Top-Bar erstellen (Category + SVG-Close Button)
-    const topBar = document.createElement("div");
-    topBar.classList.add("top-bar");
-    topBar.style.position = "relative"; // für absolute Positionierung des Buttons
-
-    const categoryImage = document.createElement("img");
-    categoryImage.src = categoryImg;
-    categoryImage.alt = task.category || "Category";
-    categoryImage.classList.add("category-image");
-
-    // SVG-Close Button
-    const closeBtn = document.createElement("button");
-    closeBtn.className = "close-button-overlay"; // gleiche Klasse wie Modal
-    closeBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-            <path d="M6 6 L18 18" stroke="#000" stroke-width="2" stroke-linecap="round" />
-            <path d="M6 18 L18 6" stroke="#000" stroke-width="2" stroke-linecap="round" />
-        </svg>
-    `;
-    closeBtn.addEventListener("click", () => {
-        overlay.classList.add("hidden");
-    });
-
-    // Top-Bar zusammenbauen
-    topBar.appendChild(categoryImage);
-    topBar.appendChild(closeBtn);
-    body.appendChild(topBar);
-
-    // Restliche Inhalte dynamisch hinzufügen
-    const contentHtml = `
-        <h2>${task.title}</h2>
-        <p class="description-task-overlay">${task.description || ""}</p>
-        <p class="task-overlay-bullet">
-        <strong>Due date:</strong>
-        <span>${task.dueDate || "-"}</span>
-        </p>
-        <p class="task-overlay-bullet">
-        <strong>Priority:</strong>
-        <span class="overlay-value">${task.priority || ""}</span>
-        </p>
-        <p class="task-overlay-bullet">
-        <strong>Assigned To:</strong>
-        </p>
-        <div class="assigned-list">
-    ${renderAssignedUsers(task.assignedUsersFull)}
+    // Inhalt rendern
+    view.innerHTML = `
+        <div class="top-bar">
+            <img src="${categoryImg}" alt="${task.category || "Category"}" class="category-image">
+            <button class="close-button-overlay" onclick="document.getElementById('task-detail-overlay').classList.add('hidden')">✕</button>
         </div>
-        
+
+        <h2 class="modal-title">${task.title}</h2>
+        <p class="modal-desc">${task.description || ""}</p>
+        <p class="task-overlay-bullet"><strong>Due date:</strong> <span>${task.dueDate || "-"}</span></p>
+        <p class="task-overlay-bullet"><strong>Priority:</strong> <span>${task.priority || ""}</span></p>
+
+        <p class="task-overlay-bullet"><strong>Assigned To:</strong></p>
+        <div class="assigned-list">${renderAssignedUsers(task.assignedUsersFull)}</div>
+
         <p class="task-overlay-bullet subtask-header-distance"><strong>Subtasks:</strong></p>
-<ul class="subtasks-list">
-    ${renderSubtasks(task)}
-</ul>
+        <ul class="subtasks-list">${renderSubtasks(task)}</ul>
+
+        <div class="task-detail-actions">
+            <button class="delete-btn">Delete</button>
+            <button id="edit-header-btn">Edit</button>
+        </div>
     `;
-    body.insertAdjacentHTML("beforeend", contentHtml);
 
-    overlay.classList.remove("hidden");
+    // // Edit-Button
+    const editBtn = document.getElementById("edit-header-btn");
+    if (editBtn) {
+        editBtn.addEventListener("click", () => openEditMode(task));
+    }
 }
-
 
 //task detail overlay close
 function closeTaskDetails() {
@@ -1304,70 +1315,165 @@ document.addEventListener("DOMContentLoaded", () => {
     closeBtn?.addEventListener("click", closeTaskDetails);
 });
 
-//render assigned contacts
 function renderAssignedUsers(users) {
-
     if (!users || users.length === 0) return "";
 
     return users.map(user => {
-        // Wenn user ein String ist, nehmen wir den String als Namen
-        // Wenn user ein Objekt ist, prüfen wir auf name oder username
         const name = typeof user === "string" ? user : (user.name || user.username || "");
 
         return `
-      <div class="assigned-item">
-        <div class="assigned-avatar" style="
-          background-color:${getColor(name)};
-          width:42px;
-          height:42px;
-          border-radius:50%;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          font-family:Open Sans;
-          font-weight:400;
-          font-size:12px;
-          color:#fff;
-        ">
-          ${getInitials(name)} <!-- Kürzel bleibt im Kreis -->
+        <div class="assigned-item">
+            <div class="assigned-avatar" style="
+                background-color: ${getColor(name)};
+                width:42px;
+                height:42px;
+                border-radius:50%;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-family:Open Sans;
+                font-weight:400;
+                font-size:12px;
+                color:#fff;
+            ">
+                ${getInitials(name)}
+            </div>
+            <span class="assigned-name-full">${name}</span>
         </div>
-        <span class="assigned-name-full">${name}</span> <!-- kompletter Name -->
-      </div>
-    `;
+        `;
     }).join("");
 }
 
+
+// Subtasks rendern mit Checkbox, Text + Edit & Delete Buttons darunter
 // Subtasks rendern mit Checkbox, Text + Edit & Delete Buttons darunter
 function renderSubtasks(task) {
-    if (!task.subtasks || !task.subtasks.items || task.subtasks.items.length === 0)
+    if (!task.subtasks || !task.subtasks.items || task.subtasks.items.length === 0) {
         return `<li>Keine Subtasks</li>`;
+    }
 
-    return task.subtasks.items.map((subtask, index) => `
-        <li class="subtask-item" style="margin-bottom:12px;">
+    return task.subtasks.items.map((subtask, index) => {
+        const title = subtask.title || `Subtask ${index + 1}`;
+        const isChecked = subtask.done === true;
+
+        return `
+        <li class="subtask-item">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                <div class="checkbox-wrapper">
-                    <div class="hover-overlay"></div>
-                    <img src="./assets/icons-addTask/Property 1=Default.png" alt="Checkbox" data-index="${index}">
-                </div>
-                <span class="subtask-text" style="font-size:16px; font-family:'Open Sans', sans-serif;">${subtask}</span>
-            </div>
-            <div class="subtask-buttons" style="display:flex; gap:16px; justify-content: end;">
-                <div style="display:flex; align-items:center; gap:4px; cursor:pointer; font-family:'Open Sans', sans-serif; font-size:16px;" class="subtask-edit-wrapper" data-index="${index}">
-                    <img src="./assets/icons-addTask/Property 1=edit.png" alt="Edit" class="subtask-edit">
-                    <span>Edit</span>
-                </div>
-                <div style="display:flex; align-items:center; gap:4px; cursor:pointer; font-family:'Open Sans', sans-serif; font-size:16px;" class="subtask-delete-wrapper" data-index="${index}">
-                    <img src="./assets/icons-addTask/Property 1=delete.png" alt="Delete" class="subtask-delete">
-                    <span>Delete</span>
+                <div class="subtask-row">
+                    <div class="checkbox-wrapper" onclick="toggleCheckbox(this, '${task.firebaseId}', ${index})">
+                        <input type="checkbox" class="real-checkbox" style="display:none;" ${isChecked ? 'checked' : ''}>
+                        <img src="./assets/icons-addTask/Property 1=Default.svg" class="checkbox-default" style="display:${isChecked ? 'none' : 'block'}">
+                        <img src="./assets/icons-addTask/Property 1=checked.svg" class="checkbox-checked" style="display:${isChecked ? 'block' : 'none'}">
+                    </div>
+                    <span class="subtask-text" style="font-size:16px; font-family:'Open Sans', sans-serif;">${title}</span>
                 </div>
             </div>
         </li>
-    `).join("");
+        `;
+    }).join("");
 }
 
+// 🔹 Subtask in Firebase hinzufügen
+// 🔹 Neue Subtask hinzufügen über REST
+const addSubtask = async (taskId, title) => {
+    if (!taskId || !title) return;
 
+    try {
+        // 1️⃣ Aktuelle Subtasks holen
+        const res = await fetch(`https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${taskId}/subtasks.json`);
+        if (!res.ok) throw new Error("Fehler beim Laden der Subtasks");
+        const subtasks = await res.json();
 
+        // 2️⃣ Sicherstellen, dass items Array existiert
+        const items = Array.isArray(subtasks?.items) ? subtasks.items : [];
 
+        // 3️⃣ Neue Subtask hinzufügen
+        items.push({ title, done: false });
 
+        // 4️⃣ Zähler aktualisieren
+        const total = items.length;
+        const completedCount = items.filter(st => st.done).length;
 
+        // 5️⃣ In Firebase speichern
+        await fetch(`https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${taskId}/subtasks.json`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                items: items,
+                total: total,
+                completed: completedCount
+            })
+        });
+
+        // Optional: DOM aktualisieren
+        renderBoard();
+
+    } catch (err) {
+        console.error("Fehler beim Hinzufügen der Subtask:", err);
+    }
+};
+
+// 🔹 Checkbox UI toggle + Counter aktualisieren
+// Toggle Subtask in Firebase & lokal
+async function toggleSubtask(taskId, subtaskIndex) {
+    const res = await fetch(`${FIREBASE_URL}/tasks/${taskId}/subtasks.json`);
+    const subtasks = await res.json();
+
+    if (!subtasks?.items || !subtasks.items[subtaskIndex]) return;
+
+    // Toggle done
+    subtasks.items[subtaskIndex].done = !subtasks.items[subtaskIndex].done;
+
+    // Completed zählen
+    const completed = subtasks.items.filter(st => st.done).length;
+
+    // PATCH zurück zu Firebase
+    await fetch(`${FIREBASE_URL}/tasks/${taskId}/subtasks.json`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: subtasks.items, completed })
+    });
+
+    return { items: subtasks.items, completed };
+}
+
+// Checkbox-UI + Übersicht direkt aktualisieren
+function toggleCheckbox(wrapper, taskId, subtaskIndex) {
+    const defaultSVG = wrapper.querySelector('.checkbox-default');
+    const checkedSVG = wrapper.querySelector('.checkbox-checked');
+    const isChecked = checkedSVG.style.display === 'block';
+
+    // 1️⃣ UI sofort umschalten
+    checkedSVG.style.display = isChecked ? 'none' : 'block';
+    defaultSVG.style.display = isChecked ? 'block' : 'none';
+
+    // 2️⃣ Lokale Daten aktualisieren
+    const task = window.taskManager.getTasks().find(t => t.firebaseId === taskId);
+    if (task) {
+        task.subtasks.items[subtaskIndex].done = !task.subtasks.items[subtaskIndex].done;
+        task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
+    }
+
+    // 3️⃣ Counter & Fortschritt sofort updaten
+    updateTaskCard(taskId);
+
+    // 4️⃣ Firebase aktualisieren (async, ohne UI zu blockieren)
+    toggleSubtask(taskId, subtaskIndex).catch(err => console.error(err));
+}
+
+function updateTaskCard(taskId) {
+    const task = window.taskManager.getTasks().find(t => t.firebaseId === taskId);
+    if (!task) return;
+
+    const card = document.getElementById(`task-${taskId}`);
+    if (!card) return;
+
+    // Counter updaten
+    const counter = card.querySelector('.subtasks-text');
+    if (counter) counter.textContent = `${task.subtasks.completed}/${task.subtasks.total} Subtasks`;
+
+    // Fortschritt updaten
+    const progressBar = card.querySelector('.progress-container div');
+    if (progressBar) progressBar.style.width = `${(task.subtasks.completed / task.subtasks.total) * 100}%`;
+}
 
