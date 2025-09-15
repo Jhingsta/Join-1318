@@ -160,6 +160,7 @@ async function handleLogin(event) {
   }
 
   // Erfolgreicher Login
+  sessionStorage.setItem('showSummaryAnimation', 'true');
   window.location.href = "./summary.html";
 }
 
@@ -179,6 +180,7 @@ async function handleGuestLogin() {
       email: "guest@join.com",
     })
   );
+  sessionStorage.setItem('showSummaryAnimation', 'true');
   window.location.href = "./summary.html";
 }
 
