@@ -4,6 +4,7 @@ body {
   justify-content: center;
   min-height: 100vh;
   font-weight: 400;
+  font-size: 16px;
 }
 
 #splash {
@@ -11,7 +12,7 @@ body {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 1440px;
+  width: 100%;
   height: 100vh;
   background-color: #4589FF;
   display: flex;
@@ -58,6 +59,7 @@ body {
 .login-box {
   background: white;
   max-width: 652px;
+  width: 100%;
   position: absolute;
   border-radius: 30px;
   padding: 48px 115px;
@@ -68,7 +70,6 @@ body {
   box-shadow: 0px 0px 10px 3px #00000014;
   text-align: center;
 }
-
 
 .login-box h1 {
   font-size: 48px;
@@ -82,13 +83,14 @@ form {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  max-width: 500px;
+  width: 100%;
 }
 
 input {
   border: none;
   /* border-bottom: 1px solid #ccc; */
   /* padding: 12px 0; */
-  font-size: 16px;
   outline: none;
   background: transparent;
   width: 100%;
@@ -119,10 +121,9 @@ input {
   border-bottom: 1px solid #4589FF; /* Blau bei Fokus */
 }
 
-
 /* Fehlerzustand */
 .input-error {
-  border-bottom-color: #FF8190 !important; /* Rot wie Fehlermeldung */
+  border-bottom-color: #E60026 !important; /* Rot wie Fehlermeldung */
 }
 
 input::placeholder {
@@ -130,7 +131,7 @@ input::placeholder {
 }
 
 .input-container {
-  width: 422px;
+  width: 100%;
   height: 152px;
   display: flex;
   flex-direction: column;
@@ -149,6 +150,14 @@ input::placeholder {
   padding-right: 40px;
 }
 
+.error-message {
+  display: none; 
+  gap: 8px; 
+  color: #E60026; 
+  font-size: 14px; 
+  height: 17px;
+}
+
 .btn-group {
   width: 100%;
   display: flex;
@@ -162,7 +171,6 @@ input::placeholder {
   border: none;
   border-radius: 8px;
   font-size: 23px;
-  font-weight: 400;
   cursor: pointer;
   padding: 10px 35px;
 }
@@ -173,19 +181,12 @@ input::placeholder {
   transform: scale(0.97);
 }
 
-/* .login-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background-color: #ccc; */
-/* } */
-
 .guest-btn {
   background-color: white;
   color: #647188;
   border: 1px solid #647188;
   border-radius: 8px;
   font-size: 23px;
-  font-weight: 400;
   cursor: pointer;
   padding: 10px 35px;
 }
@@ -224,7 +225,6 @@ input::placeholder {
 }
 
 .footer-links {
-  font-size: 16px;
   position: absolute;
   bottom: 20px;
   display: flex;
@@ -263,8 +263,11 @@ body.loaded #splash {
     left: 38px;
   }
   .login-box {
-    margin: 0 1rem;
     padding: 32px 16px;
+    left: 1rem;
+    right: 1rem;
+    width: auto;
+    max-width: none;
   }
   .login-box h1 {
     font-size: 47px;
