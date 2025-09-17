@@ -29,6 +29,7 @@ main {
   max-width: 950px;
   gap: 72px;
   padding: 20px 10px;
+  width: 100%;
 }
 
 .tasks-wrapper-grid {
@@ -369,6 +370,7 @@ main {
   .main-content-wrapper {
     padding: 0 0;
     height: 100%;
+    width: 80%;
   }
   .tasks-wrapper-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -456,5 +458,11 @@ main {
   }
   .bottom-row-type-2-bottom span {
     font-size: 19px;
+  }
+}
+
+@media (max-width: 540px) {
+    .main-content-wrapper {
+    width: 100%;
   }
 }
