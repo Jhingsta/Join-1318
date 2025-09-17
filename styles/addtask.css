@@ -2,12 +2,29 @@ body {
     overflow: auto;
 }
 
-.main-container-wrapper {
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.layout {
+    max-width: 1440px;
+    display: grid;
+    grid-template-columns: 232px 1fr;
+    position: relative;
+    width: 100%;
+}
+
+main {
+    min-height: calc(100vh - 100px);
     width: 100%;
     max-width: 518px;
     overflow-y: auto;
     height: calc(100vh - 80px);
-    margin: 0 auto;
 }
 
 .main-container {
@@ -746,24 +763,20 @@ body {
 
 
 .button-container {
-    position: sticky;
+    position: fixed;
     bottom: 0;
-    left: 0;
+    right: 0;
     width: 100%;
     height: auto;
     display: flex;
     justify-content: flex-end;
     gap: 25px;
-    opacity: 1;
-    transform: rotate(0deg);
     padding: 24px;
     background: #fff;
-    box-shadow: 0px -2px 6px rgba(0, 0, 0, 0.06);
 }
 
-.guest-btn {
+.clear-btn {
     display: flex;
-    width: 136px;
     height: 60px;
     background-color: white;
     color: #333;
@@ -777,28 +790,27 @@ body {
     justify-content: center;
 }
 
-.guest-btn:hover {
+.clear-btn:hover {
     border: 2px solid #4589FF;
     color: #4589FF;
 }
 
-.guest-btn:hover img {
+.clear-btn:hover img {
     filter: invert(34%) sepia(91%) saturate(5000%) hue-rotate(200deg);
 }
 
-.guest-btn:active {
+.clear-btn:active {
     border: 1px solid #005DFF;
     color: #005DFF;
 }
 
-.guest-btn:active img {
+.clear-btn:active img {
 
     filter: invert(34%) sepia(91%) saturate(5000%) hue-rotate(200deg);
 }
 
-.sign-up-btn {
+.create-btn {
     display: flex;
-    width: 174px;
     height: 60px;
     background-color: #4589FF;
     color: white;
@@ -811,17 +823,17 @@ body {
     font-weight: 400;
 }
 
-.sign-up-btn:hover {
+.create-btn:hover {
     background-color: #005DFF;
     box-shadow: 0px 6px 12px 0px #00000040;
 }
 
-.sign-up-btn:active {
+.create-btn:active {
     background-color: #FFFFFF;
     color: #005DFF;
 }
 
-.sign-up-btn:active img {
+.create-btn:active img {
     filter: invert(34%) sepia(91%) saturate(5000%) hue-rotate(200deg);
 }
 
@@ -1108,19 +1120,16 @@ body {
 }
 
 @media (max-width: 768px) {
-  html, body {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
+  .layout {
+    grid-template-columns: 1fr;
   }
-  html::-webkit-scrollbar,
-  body::-webkit-scrollbar {
-    display: none;
+  aside {
+    order: 2;
   }
-
-  .main-container-wrapper {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
+  main {
+    order: 1;
+    min-height: 100vh;
+    margin-bottom: 100px;
   }
 
   .main-container {
@@ -1130,7 +1139,14 @@ body {
   .button-container {
     padding: 16px;
     gap: 16px;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    justify-content: center;
+    z-index: 10;
   }
+
+  .priority-frame
 
   .priority-content {
     gap: 12px;

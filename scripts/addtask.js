@@ -354,7 +354,6 @@ document.addEventListener('click', (e) => {
 // ===================== SUBTASK DROPDOWN ===================== 
 // // ===================== SUBTASK DROPDOWN ===================== 
 const taskInput = document.querySelector("#subtask-text");
-const plusBtn = document.querySelector("#plus-btn");
 const checkBtn = document.querySelector("#check-btn");
 const cancelBtn = document.querySelector("#cancel-btn");
 const subtaskList = document.querySelector("#subtask-list");
@@ -362,10 +361,8 @@ const subtaskList = document.querySelector("#subtask-list");
 taskInput.addEventListener("input", () => {
     if (taskInput.value.trim() !== "") {
         checkBtn.style.display = "inline";
-        cancelBtn.style.display = "inline"; plusBtn.style.display = "none";
     } else { resetInput(); }
 });
-plusBtn.addEventListener("click", () => { taskInput.focus(); });
 checkBtn.addEventListener("click", () => {
     const currentTask = taskInput.value.trim();
     if (!currentTask)
@@ -391,7 +388,7 @@ checkBtn.addEventListener("click", () => {
     resetInput();
 });
 cancelBtn.addEventListener("click", resetInput);
-function resetInput() { taskInput.value = ""; checkBtn.style.display = "none"; cancelBtn.style.display = "none"; plusBtn.style.display = "inline"; }
+function resetInput() { taskInput.value = ""; checkBtn.style.display = "none"; cancelBtn.style.display = "none";}
 function startEditMode(li, span) {
     const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addTask/Subtask's icons (1).png";
     saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
