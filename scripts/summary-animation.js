@@ -1,8 +1,4 @@
-/**
- * Summary Animation Handler
- * Zeigt Welcome Animation nur nach frischem Login (Mobile Only)
- */
-
+// Zeigt Welcome Animation nur nach frischem Login (Mobile Only)
 function initSummaryAnimation() {
     // Prüfen ob Animation gezeigt werden soll
     const shouldAnimate = sessionStorage.getItem('showSummaryAnimation');
@@ -46,7 +42,7 @@ function startWelcomeAnimation() {
     // Overlay anzeigen
     overlay.classList.add('show');
     
-    // Nach 2 Sekunden: Overlay ausblenden und Content einblenden
+    // Nach 1.5 Sekunden: Overlay ausblenden und Content einblenden
     setTimeout(() => {
         // Overlay fade-out starten
         overlay.classList.add('fade-out');
@@ -59,7 +55,7 @@ function startWelcomeAnimation() {
             overlay.style.display = 'none';
         }, 300); // 0.3s = fadeOut animation duration
         
-    }, 2000); // 2 Sekunden Greeting anzeigen
+    }, 1500); // 1.5 Sekunden Greeting anzeigen
 }
 
 function updateAnimationGreeting(greetingElement) {
