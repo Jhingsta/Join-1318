@@ -19,10 +19,6 @@ main {
   flex: 1;
 }
 
-.logo-section {
-  flex: 0 0 150px;
-}
-
 .icon-logo {
   position: absolute;
   top: 80px;
@@ -356,6 +352,6 @@ nav a:hover {
     margin: 24px 0 24px;
   }
   input::placeholder {
-  font-size: 16px;
+    font-size: 16px;
   }
 }

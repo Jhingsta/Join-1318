@@ -142,12 +142,21 @@ input::placeholder {
   background: url(./img/mail.png) no-repeat right 10px center;
   background-size: 20px 20px;
   padding-right: 40px;
+  font-size: 19px;
+}
+
+.input-container input[type="text"] {
+  background: url(./img/mail.png) no-repeat right 10px center;
+  background-size: 20px 20px;
+  padding-right: 40px;
+  font-size: 19px;
 }
 
 .input-container input[type="password"] {
   background: url(./img/lock.png) no-repeat right 10px center;
   background-size: 16px 21px;
   padding-right: 40px;
+  font-size: 19px;
 }
 
 .error-message {
