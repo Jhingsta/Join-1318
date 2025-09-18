@@ -196,7 +196,7 @@ async function handleGuestLogin() {
  * Sets up all event listeners, loads user data, and initializes the login form
  */
 document.addEventListener("DOMContentLoaded", async () => {
-  const loginForm = document.querySelector('login-form');
+  const loginForm = document.querySelector('#login-form');
   const guestLoginButton = document.querySelector('.guest-btn');
   const emailInput = document.querySelector('input[name="email"]');
   const passwordInput = document.querySelector('input[type="password"]');
