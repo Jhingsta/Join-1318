@@ -57,7 +57,7 @@ function validateCredentials(email, password) {
  * based on whether input fields have content
  */
 function updateLoginButtonState() {
-  const email = document.querySelector('input[type="email"]').value.trim();
+  const email = document.querySelector('input[name="email"]').value.trim();
   const passwordInput = document.querySelector('.input-container-password input'); // immer dasselbe Feld
   const password = passwordInput.value.trim();
   const loginButton = document.querySelector('.login-btn');
@@ -118,10 +118,10 @@ async function loginUser(email, password) {
 }
 
 function isValidEmailBrowser(email) {
-    const input = document.createElement('input');
-    input.type = 'email';
-    input.value = email;
-    return input.validity.valid;
+  const input = document.createElement('input');
+  input.type = 'email';
+  input.value = email;
+  return input.validity.valid;
 }
 
 /**
@@ -147,8 +147,7 @@ async function handleLogin(event) {
   errorMessage.textContent = "";
 
   // Email format validation using browser-native validation
-  const emailInput = document.querySelector('input[name="email"]');
-  if (!emailInput.validity.valid) {
+  if (!isValidEmailBrowser(email)) {
     errorMessage.textContent = "Please enter a valid email address.";
     errorMessage.style.display = "flex";
     emailContainer.classList.add("input-error");
