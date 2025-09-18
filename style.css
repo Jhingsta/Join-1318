@@ -152,7 +152,6 @@ input::placeholder {
 
 .error-message {
   display: none; 
-  gap: 8px; 
   color: #E60026; 
   font-size: 14px; 
   height: 17px;

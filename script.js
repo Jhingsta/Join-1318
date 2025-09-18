@@ -117,6 +117,13 @@ async function loginUser(email, password) {
   }
 }
 
+function isValidEmailBrowser(email) {
+    const input = document.createElement('input');
+    input.type = 'email';
+    input.value = email;
+    return input.validity.valid;
+}
+
 /**
  * Handles the login form submission
  * Attempts to log in the user and redirects to summary page on success
@@ -130,21 +137,21 @@ async function handleLogin(event) {
   const passwordContainer = document.querySelector('.input-container-password');
   const errorMessage = document.querySelector('.error-message');
 
-  const email = document.querySelector('input[type="email"]').value.trim();
-  const passwordInput = document.querySelector('.input-container-password input'); // <-- hier
-  const password = passwordInput.value.trim();
+  const email = document.querySelector('input[name="email"]').value.trim();
+  const password = document.querySelector('input[type="password"]').value.trim();
 
   // Reset vorheriger Fehler
   emailContainer.classList.remove("input-error");
   passwordContainer.classList.remove("input-error");
   errorMessage.style.display = "none";
+  errorMessage.textContent = "";
 
-  if (!email || !password) {
-    // Leere Felder
-    errorMessage.textContent = "Check your email and password!";
+  // Email format validation using browser-native validation
+  const emailInput = document.querySelector('input[name="email"]');
+  if (!emailInput.validity.valid) {
+    errorMessage.textContent = "Please enter a valid email address.";
     errorMessage.style.display = "flex";
     emailContainer.classList.add("input-error");
-    passwordContainer.classList.add("input-error");
     return;
   }
 
@@ -152,7 +159,7 @@ async function handleLogin(event) {
 
   if (!success) {
     // Falscher Login
-    errorMessage.textContent = "Check your email and password!";
+    errorMessage.textContent = "Check your email and password. Please try again.";
     errorMessage.style.display = "flex";
     emailContainer.classList.add("input-error");
     passwordContainer.classList.add("input-error");
@@ -189,9 +196,9 @@ async function handleGuestLogin() {
  * Sets up all event listeners, loads user data, and initializes the login form
  */
 document.addEventListener("DOMContentLoaded", async () => {
-  const loginForm = document.querySelector('form');
+  const loginForm = document.querySelector('login-form');
   const guestLoginButton = document.querySelector('.guest-btn');
-  const emailInput = document.querySelector('input[type="email"]');
+  const emailInput = document.querySelector('input[name="email"]');
   const passwordInput = document.querySelector('input[type="password"]');
   const togglePasswordIcon = document.querySelector('.input-container-password .toggle-password');
 
