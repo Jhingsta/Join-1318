@@ -158,7 +158,7 @@ async function handleSignup(event) {
       showSignupSuccessMessage(); // ✅ Erfolgsmeldung anzeigen
       setTimeout(() => {
         window.location.href = './index.html';
-      }, 1000); // ✅ Redirect nach 1 Sekunden (damit Animation zu sehen ist)
+      }, 2000); // ✅ Redirect nach 2 Sekunden (damit Animation zu sehen ist)
     } else {
       errorMessage.textContent = "Failed to create account. Please try again.";
       errorMessage.classList.add("show");
@@ -200,6 +200,35 @@ function getColorFromName(name) {
   }
   const hue = Math.abs(hash) % 360;
   return `hsl(${hue}, 70%, 50%)`;
+}
+
+function showSignupSuccessMessage() {
+  const container = document.createElement("div");
+  container.className = "signup-success-container";
+
+  // Bild erstellen
+  const img = document.createElement("img");
+  img.src = "./assets/icons-signup/successmessage.png";
+  img.alt = "Signup success";
+  img.className = "signup-success-image";
+
+  container.appendChild(img);
+  document.body.appendChild(container);
+
+  // Phase 1: Von unten in die Mitte sliden
+  setTimeout(() => {
+    container.classList.add("slide-in");
+  }, 50);
+
+  // Phase 2: Kurz verharren, dann wegfaden
+  setTimeout(() => {
+    container.classList.add("fade-out");
+    
+    // Nach Fade-Out entfernen
+    setTimeout(() => {
+      container.remove();
+    }, 300);
+  }, 1500);
 }
 
 /**
@@ -284,42 +313,3 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initial states
   updateSignupButtonState();
 });
-
-function showSignupSuccessMessage() {
-  const container = document.createElement("div");
-
-  // Bild erstellen
-  const img = document.createElement("img");
-  img.src = "./assets/icons-signup/confirmation of reset password process.png";
-  img.alt = "Signup success";
-  img.style.maxWidth = "320px"; // Größe anpassen
-  img.style.height = "74px";
-
-  container.appendChild(img);
-
-  Object.assign(container.style, {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    zIndex: "9999",
-    opacity: "0",
-    transition: "opacity 200ms ease-out, transform 200ms ease-out"
-  });
-
-  document.body.appendChild(container);
-
-  // Einblenden
-  setTimeout(() => {
-    container.style.opacity = "1";
-  }, 50);
-
-  // Ausblenden & entfernen
-  setTimeout(() => {
-    container.style.opacity = "0";
-    container.style.transform = "translate(-50%, -60%)";
-    container.addEventListener("transitionend", () => container.remove());
-  }, 1500);
-}
-
-

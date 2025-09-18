@@ -313,6 +313,31 @@ nav a:hover {
   color: #005DFF;
 }
 
+/* Signup Success Message */
+.signup-success-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 100vh); /* Startet unterhalb */
+  z-index: 9999;
+  opacity: 1;
+  transition: transform 400ms ease-out;
+}
+
+.signup-success-container.slide-in {
+  transform: translate(-50%, -50%); /* Mitte */
+}
+
+.signup-success-container.fade-out {
+  transition: opacity 300ms ease-out;
+  opacity: 0;
+}
+
+.signup-success-image {
+  max-width: 320px;
+  height: 74px;
+}
+
 @media (max-width: 1100px) {
   .icon-logo {
     top: 50px;
