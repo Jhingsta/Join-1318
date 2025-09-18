@@ -150,12 +150,23 @@ input::placeholder {
   cursor: pointer;
 }
 
+.form-group.input-error input {
+  border-bottom-color: #E60026 !important;
+}
+
+.error-message {
+  display: none; 
+  color: #E60026; 
+  font-size: 14px; 
+  height: 17px;
+}
+
 .sign-up-checkbox {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin: 36px 0 35px;
+  margin: 19px 0 35px;
 }
 
 .checkbox-container {
@@ -225,7 +236,6 @@ input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .check {
   opacity: 1;
 }
 
-/* Linkstyles */
 .checkbox-label a {
   color: #005DFF;
   text-decoration: none;

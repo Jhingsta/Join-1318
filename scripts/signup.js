@@ -92,16 +92,6 @@ function validateSignupForm(formData) {
 }
 
 /**
- * Validates email format
- * @param {string} email - Email to validate
- * @returns {boolean} - Returns true if email is valid
- */
-function isValidEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-
-/**
  * Shows a message to the user
  * @param {string} message - Message to display
  * @param {string} type - Type of message (success, error, warning)
@@ -381,10 +371,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * Zeigt eine zentrierte Erfolgsnachricht an, wenn der Signup erfolgreich war
- */
-/**
- * Zeigt eine zentrierte Erfolgsnachricht mit Bild an
+ * Zeigt eine zentrierte Erfolgsnachricht an
  */
 function showSignupSuccessMessage() {
   const container = document.createElement("div");
@@ -393,7 +380,7 @@ function showSignupSuccessMessage() {
   const img = document.createElement("img");
   img.src = "./assets/icons-signup/confirmation of reset password process.png";
   img.alt = "Signup success";
-  img.style.maxWidth = "326px"; // Größe anpassen
+  img.style.maxWidth = "320px"; // Größe anpassen
   img.style.height = "74px";
 
   container.appendChild(img);
