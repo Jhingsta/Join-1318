@@ -56,33 +56,22 @@ async function checkUserExists(email) {
   }
 }
 
-/**
- * Validates the signup form data
- * @param {Object} formData - Form data object
- * @returns {Object} - Returns validation result with success status and errors
- */
 function validateSignupForm(formData) {
   const errors = [];
 
-  // Check if all fields are filled
-  if (!formData.name.trim()) {
-    errors.push("Name is required");
+  // Email format validation
+  if (!isValidEmailBrowser(formData.email)) {
+    errors.push("Please enter a valid email address.");
   }
 
-  if (!formData.email.trim()) {
-    errors.push("Email is required");
-  } else if (!isValidEmail(formData.email)) {
-    errors.push("Please enter a valid email address");
-  }
-
-  if (!formData.password) {
-    errors.push("Password is required");
-  } else if (formData.password.length < 6) {
-    errors.push("Password must be at least 6 characters long");
-  }
-
+  // Password match validation  
   if (formData.password !== formData.confirmPassword) {
-    errors.push("Passwords do not match");
+    errors.push("Your passwords don't match. Please try again.");
+  }
+
+  // Password length validation
+  if (formData.password.length < 6) {
+    errors.push("Passwords must be at least 6 characters long.");
   }
 
   return {
@@ -91,70 +80,15 @@ function validateSignupForm(formData) {
   };
 }
 
-/**
- * Shows a message to the user
- * @param {string} message - Message to display
- * @param {string} type - Type of message (success, error, warning)
- */
-function showMessage(message, type = 'info') {
-  // Remove existing message
-  const existingMessage = document.querySelector('.message');
-  if (existingMessage) {
-    existingMessage.remove();
-  }
-
-  // Create new message element
-  const messageDiv = document.createElement('div');
-  messageDiv.className = `message message-${type}`;
-  messageDiv.textContent = message;
-
-  // Style the message
-  messageDiv.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 15px 20px;
-    border-radius: 8px;
-    color: white;
-    font-weight: 500;
-    z-index: 1000;
-    max-width: 300px;
-    word-wrap: break-word;
-  `;
-
-  // Set background color based on type
-  switch (type) {
-    case 'success':
-      messageDiv.style.backgroundColor = '#28a745';
-      break;
-    case 'error':
-      messageDiv.style.backgroundColor = '#dc3545';
-      break;
-    case 'warning':
-      messageDiv.style.backgroundColor = '#ffc107';
-      messageDiv.style.color = '#212529';
-      break;
-    default:
-      messageDiv.style.backgroundColor = '#17a2b8';
-  }
-
-  // Add to page
-  document.body.appendChild(messageDiv);
-
-  // Auto-remove after 5 seconds
-  setTimeout(() => {
-    if (messageDiv.parentNode) {
-      messageDiv.remove();
-    }
-  }, 5000);
-}
-
-/**
- * Handles the signup form submission
- * @param {Event} event - Form submission event
- */
 async function handleSignup(event) {
   event.preventDefault();
+
+  // Get all form groups for error styling
+  const nameGroup = document.querySelector('#name').closest('.form-group');
+  const emailGroup = document.querySelector('#email').closest('.form-group'); 
+  const passwordGroup = document.querySelector('#password').closest('.form-group');
+  const confirmPasswordGroup = document.querySelector('#confirm-password').closest('.form-group');
+  const errorMessage = document.querySelector('.error-message');
 
   // Get form data
   const formData = {
@@ -164,22 +98,41 @@ async function handleSignup(event) {
     confirmPassword: document.getElementById('confirm-password').value
   };
 
-  // Validate form data
+  // Reset previous errors
+  [nameGroup, emailGroup, passwordGroup, confirmPasswordGroup].forEach(group => {
+    group.classList.remove("input-error");
+  });
+  errorMessage.classList.remove("show");
+  errorMessage.textContent = "";
+
+  // Form validation (email format, password match, password length)
   const validation = validateSignupForm(formData);
   if (!validation.success) {
-    showMessage(validation.errors.join('\n'), 'error');
+    errorMessage.textContent = validation.errors[0]; // Show first error
+    errorMessage.classList.add("show");
+    
+    // Add error styling based on error type
+    if (validation.errors[0].includes("email")) {
+      emailGroup.classList.add("input-error");
+    } else if (validation.errors[0].includes("match")) {
+      confirmPasswordGroup.classList.add("input-error");
+    } else if (validation.errors[0].includes("6 characters")) {
+      passwordGroup.classList.add("input-error");
+    }
     return;
   }
 
   // Check if user already exists
   const userExists = await checkUserExists(formData.email);
   if (userExists) {
-    showMessage('A user with this email already exists', 'error');
+    errorMessage.textContent = "A user with this email address already exists.";
+    errorMessage.classList.add("show");
+    emailGroup.classList.add("input-error");
     return;
   }
 
+  // Create user (rest bleibt gleich wie original)
   try {
-    // Generate additional user info automatically
     const userInitials = getInitials(formData.name);
     const userColor = getColorFromName(formData.name);
 
@@ -194,8 +147,6 @@ async function handleSignup(event) {
 
     const result = await createUser(userData);
 
-
-
     localStorage.setItem('newUser', JSON.stringify({
       name: formData.name,
       email: formData.email,
@@ -204,18 +155,26 @@ async function handleSignup(event) {
     }));
 
     if (result.success) {
-      showSignupSuccessMessage(); // ✅ Erfolgsmeldung mittig
+      showSignupSuccessMessage(); // ✅ Erfolgsmeldung anzeigen
       setTimeout(() => {
         window.location.href = './index.html';
-      }, 2000);
+      }, 1000); // ✅ Redirect nach 1 Sekunden (damit Animation zu sehen ist)
     } else {
-      showSignupSuccessMessage("Failed to create account"); // ❌ Fehler mittig
+      errorMessage.textContent = "Failed to create account. Please try again.";
+      errorMessage.classList.add("show");
     }
   } catch (error) {
-    showSignupSuccessMessage("An unexpected error occurred"); // ❌ Fehler mittig
+    errorMessage.textContent = "An unexpected error occurred. Please try again.";
+    errorMessage.classList.add("show");
     console.error('Signup error:', error);
   }
+}
 
+function isValidEmailBrowser(email) {
+  const input = document.createElement('input');
+  input.type = 'email';
+  input.value = email;
+  return input.validity.valid;
 }
 
 /**
@@ -270,47 +229,23 @@ function updateSignupButtonState() {
  * Main initialization function
  */
 document.addEventListener('DOMContentLoaded', () => {
-  const signupForm = document.querySelector('form');
+  const signupForm = document.querySelector('#signupForm'); // ✅ Geändert: Form-ID Selector
+  const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirm-password");
+  const passwordIcon = passwordInput.nextElementSibling;
+  const confirmPasswordIcon = confirmPasswordInput.nextElementSibling;
 
-  // Add form submission handler
+  // ✅ GEÄNDERT - Form submission (kein doppelter Submit Handler mehr)
   signupForm.addEventListener('submit', handleSignup);
 
-  // Add input event listeners for real-time validation
   const inputs = ['name', 'email', 'password', 'confirm-password'];
   inputs.forEach(inputId => {
     const input = document.getElementById(inputId);
     input.addEventListener('input', updateSignupButtonState);
   });
 
-  // Add checkbox event listener
   const privacyCheckbox = document.getElementById('accept-privacy');
   privacyCheckbox.addEventListener('change', updateSignupButtonState);
-
-  // Initial button state
-  updateSignupButtonState();
-
-  console.log('Signup form initialized successfully');
-});
-
-
-//Test password visible
-document.addEventListener("DOMContentLoaded", () => {
-  const passwordInput = document.getElementById("password");
-  const confirmPasswordInput = document.getElementById("confirm-password");
-
-  const passwordIcon = passwordInput.nextElementSibling; // img neben input
-  const confirmPasswordIcon = confirmPasswordInput.nextElementSibling;
-
-  const form = document.querySelector("form");
-
-  // Fehlermeldung direkt unter dem Confirm Password Feld
-  const errorMessage = document.createElement("div");
-  errorMessage.className = "error-message";
-  errorMessage.style.display = "none";
-  errorMessage.style.color = "#FF4D4D"; // Rot wie auf der Login-Seite
-  errorMessage.style.marginTop = "5px";
-
-  confirmPasswordInput.parentNode.appendChild(errorMessage);
 
   let passwordVisible = false;
   let confirmPasswordVisible = false;
@@ -346,33 +281,10 @@ document.addEventListener("DOMContentLoaded", () => {
   passwordInput.addEventListener("input", () => updateIcon(passwordInput, passwordIcon, passwordVisible));
   confirmPasswordInput.addEventListener("input", () => updateIcon(confirmPasswordInput, confirmPasswordIcon, confirmPasswordVisible));
 
-  // -----------------------------
-  // Form Submission Check
-  // -----------------------------
-  form.addEventListener("submit", (e) => {
-    const password = passwordInput.value.trim();
-    const confirmPassword = confirmPasswordInput.value.trim();
-
-    if (password !== confirmPassword) {
-      e.preventDefault();
-      errorMessage.textContent = "Your passwords don't match. Please try again.";
-      errorMessage.style.display = "flex";
-
-      // Nur das Confirm Password Feld rot markieren
-      confirmPasswordInput.style.borderBottom = "1px solid #FF4D4D";
-
-      return false;
-    }
-
-    // Reset Fehler, falls alles passt
-    errorMessage.style.display = "none";
-    confirmPasswordInput.style.borderBottom = "";
-  });
+  // Initial states
+  updateSignupButtonState();
 });
 
-/**
- * Zeigt eine zentrierte Erfolgsnachricht an
- */
 function showSignupSuccessMessage() {
   const container = document.createElement("div");
 

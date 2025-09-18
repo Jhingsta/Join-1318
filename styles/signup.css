@@ -155,10 +155,18 @@ input::placeholder {
 }
 
 .error-message {
-  display: none; 
+  display: flex;
+  width: 100%;
+  text-align: start;
   color: #E60026; 
   font-size: 14px; 
   height: 17px;
+  margin-top: 8px;
+  visibility: hidden;
+}
+
+.error-message.show {
+  visibility: visible;
 }
 
 .sign-up-checkbox {
@@ -166,7 +174,7 @@ input::placeholder {
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin: 19px 0 35px;
+  margin: 11px 0 35px;
 }
 
 .checkbox-container {
