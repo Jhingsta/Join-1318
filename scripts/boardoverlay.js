@@ -3,8 +3,13 @@
  */
 async function updateTaskInFirebase(task) {
     if (!task.firebaseId) {
+        console.error("Task hat keine firebaseId!");
         return;
     }
+
+    // Alte Felder löschen, nur assignedUsersFull nutzen
+    delete task.users;
+    delete task.usersFull;
 
     try {
         await fetch(
@@ -21,14 +26,17 @@ async function updateTaskInFirebase(task) {
                 }),
             }
         );
+        console.log("✅ Task erfolgreich aktualisiert:", task.firebaseId);
+
+        // Event feuern, damit Board-Ansicht sich sofort updated
         document.dispatchEvent(new CustomEvent("taskUpdated", { detail: task }));
     } catch (err) {
-        console.error("Fehler beim Firebase-Update:", err);
+        console.error("❌ Fehler beim Firebase-Update:", err);
     }
 }
 
 /**
- * Hilfsfunktion für Initialen
+ * Hilfsfunktion: Initialen aus Namen bilden
  */
 function getInitials(name) {
     if (!name) return '';
@@ -36,7 +44,7 @@ function getInitials(name) {
 }
 
 /**
- * Kontakte aus Firebase laden
+ * Kontakte aus Firebase laden (mit stabiler id)
  */
 async function loadContactsFromFirebase() {
     try {
@@ -51,37 +59,22 @@ async function loadContactsFromFirebase() {
 }
 
 /**
- * Task normalisieren – alte Strukturen in assignedUsersFull migrieren
+ * Task normalisieren – assignedUsersFull anhand von Kontakten reparieren
  */
-function normalizeTask(task) {
+function normalizeTask(task, contacts = []) {
     if (!task.assignedUsersFull) task.assignedUsersFull = [];
 
-    // Alte Felder migrieren
-    if (task.usersFull?.length > 0) {
-        task.usersFull.forEach(user => {
-            if (!task.assignedUsersFull.find(u => u.name === user.name)) {
-                task.assignedUsersFull.push({
-                    id: user.id || user.name,
-                    name: user.name,
-                    color: user.color || "#888",
-                    initials: getInitials(user.name)
-                });
-            }
-        });
-    }
+    const contactMap = new Map(contacts.map(c => [c.id, c]));
 
-    if (task.users?.length > 0) {
-        task.users.forEach(initials => {
-            if (!task.assignedUsersFull.find(u => u.initials === initials)) {
-                task.assignedUsersFull.push({
-                    id: initials,
-                    name: initials,
-                    color: "#888",
-                    initials
-                });
-            }
-        });
-    }
+    task.assignedUsersFull = task.assignedUsersFull.map(user => {
+        const contact = contactMap.get(user.id) || contactMap.get(user.name);
+        return {
+            id: contact ? contact.id : user.id || user.name,
+            name: contact ? contact.name : user.name,
+            color: contact ? contact.color : (user.color ?? "#888"),
+            initials: user.initials || getInitials(user.name)
+        };
+    });
 
     delete task.usersFull;
     delete task.users;
@@ -101,57 +94,69 @@ function renderAvatars(task) {
         const avatarDiv = document.createElement("div");
         avatarDiv.className = "assigned-avatar";
         avatarDiv.textContent = user.initials || getInitials(user.name);
-        avatarDiv.style.backgroundColor = user.color || "#888";
+        avatarDiv.style.backgroundColor = user.color ?? "#888";
+
+
+        // ✅ Hier die data-* Attribute setzen
+        avatarDiv.dataset.id = user.id;
+        avatarDiv.dataset.fullname = user.name;
+        avatarDiv.dataset.color = user.color ?? "#888";
+        avatarDiv.dataset.initials = user.initials;
         avatarsContainer.appendChild(avatarDiv);
     });
 }
 
+/**
+ * Dropdown für Assigned Users rendern
+ */
 async function renderAssignedDropdownOverlay(task) {
     const dropdown = document.getElementById("edit-assigned-dropdown-overlay");
     if (!dropdown) return;
 
-    // Dropdown nur einmal rendern
-    if (!dropdown.hasChildNodes()) {
-        const users = await loadContactsFromFirebase();
-        users.forEach(user => {
-            const item = document.createElement("div");
-            item.className = "dropdown-item";
-            item.textContent = user.name;
+    dropdown.innerHTML = "";
+    const users = await loadContactsFromFirebase();
 
-            // Vorausgewählt markieren
-            if (task.assignedUsersFull?.some(u => u.id === user.id)) {
+    users.forEach(user => {
+        const item = document.createElement("div");
+        item.className = "dropdown-item";
+        item.textContent = user.name;
+
+        if (task.assignedUsersFull?.some(u => u.id === user.id)) {
+            item.classList.add("selected");
+        }
+
+        item.addEventListener("click", () => {
+            if (!task.assignedUsersFull) task.assignedUsersFull = [];
+
+            const index = task.assignedUsersFull.findIndex(u => u.id === user.id);
+            if (index !== -1) {
+                task.assignedUsersFull.splice(index, 1);
+                item.classList.remove("selected");
+            } else {
+                task.assignedUsersFull.push({
+                    id: user.id,
+                    name: user.name,
+                    initials: getInitials(user.name),
+                    color: user.color ?? "#888"
+                });
                 item.classList.add("selected");
             }
 
-            item.addEventListener("click", () => {
-                const index = task.assignedUsersFull.findIndex(u => u.id === user.id);
-                if (index !== -1) {
-                    task.assignedUsersFull.splice(index, 1);
-                    item.classList.remove("selected");
-                } else {
-                    task.assignedUsersFull.push({
-                        id: user.id,
-                        name: user.name,
-                        initials: getInitials(user.name),
-                        color: user.color || "#888"
-                    });
-                    item.classList.add("selected");
-                }
-                renderAvatars(task); // nur Avatare neu rendern
-            });
-
-            dropdown.appendChild(item);
+            renderAvatars(task); // ✅ Avatar-Container neu rendern
         });
-    }
-}
 
+
+        dropdown.appendChild(item);
+    });
+
+    renderAvatars(task);
+}
 
 /**
  * Edit-Mode öffnen
  */
 async function openEditMode(task) {
-    task = normalizeTask(task);
-
+    const contacts = await loadContactsFromFirebase();
     const view = document.getElementById("task-view");
     const edit = document.getElementById("task-edit");
     const editForm = document.getElementById("edit-form-fields");
@@ -160,7 +165,7 @@ async function openEditMode(task) {
     edit.classList.remove("hidden");
 
     let isoDate = "";
-    if (task.dueDate?.includes(".")) {
+    if (task.dueDate && task.dueDate.includes(".")) {
         const [day, month, year] = task.dueDate.split(".");
         isoDate = `${year}-${month}-${day}`;
     }
@@ -170,10 +175,13 @@ async function openEditMode(task) {
     editForm.innerHTML = `
         <label for="edit-title">Title</label>
         <input type="text" id="edit-title" value="${task.title || ""}">
+
         <label for="edit-desc">Description</label>
         <textarea id="edit-desc">${task.description || ""}</textarea>
+
         <label for="edit-dueDate">Due Date</label>
         <input type="date" id="edit-dueDate" value="${isoDate}">
+
         <label>Priority</label>
         <div id="edit-priority" class="priority-options">
             <button class="priority-btn" data-priority="Low">Low</button>
@@ -182,7 +190,6 @@ async function openEditMode(task) {
         </div>
     `;
 
-    // Priority Buttons
     const priorityButtons = edit.querySelectorAll('.priority-btn');
     priorityButtons.forEach(btn => {
         if (btn.dataset.priority.toLowerCase() === priority.toLowerCase()) btn.classList.add('active');
@@ -193,42 +200,51 @@ async function openEditMode(task) {
         });
     });
 
-    // Assigned-To Dropdown + Avatare
-    await renderAssignedDropdownOverlay(task);
+    task = normalizeTask(task, contacts);
+    currentTask = task;
 
+    await renderAssignedDropdownOverlay(task);
     const dropdownBtn = document.getElementById("edit-assigned-dropdown-btn");
     const dropdown = document.getElementById("edit-assigned-dropdown-overlay");
     if (dropdownBtn && dropdown) {
-        dropdownBtn.addEventListener("click", () => {
-            dropdown.classList.toggle("hidden");
-        });
+        dropdownBtn.onclick = () => dropdown.classList.toggle("hidden");
     }
 
-    // Save-Button
-    document.getElementById("save-task").onclick = async () => {
-        task.title = document.getElementById("edit-title").value;
-        task.description = document.getElementById("edit-desc").value;
-        task.priority = task.priority || 'Low';
+document.getElementById("save-task").onclick = async () => {
+    if (!currentTask) return;
 
-        const newDue = document.getElementById("edit-dueDate").value;
-        if (newDue) {
-            const [y, m, d] = newDue.split("-");
-            task.dueDate = `${d}.${m}.${y}`;
-        }
+    console.log("💾 Save gestartet:", currentTask);
 
-        await updateTaskInFirebase(task);
+    currentTask.title = document.getElementById("edit-title").value;
+    currentTask.description = document.getElementById("edit-desc").value;
+    currentTask.priority = currentTask.priority || 'Low';
 
-        const tasks = window.taskManager.getTasks();
-        const idx = tasks.findIndex(t => t.firebaseId === task.firebaseId);
-        if (idx !== -1) {
-            tasks[idx] = task;
-            window.taskManager.saveTasks(tasks);
-        }
+    const newDue = document.getElementById("edit-dueDate").value;
+    if (newDue) {
+        const [y, m, d] = newDue.split("-");
+        currentTask.dueDate = `${d}.${m}.${y}`;
+    }
 
-        updateTaskCard(task.firebaseId);
+    dropdown.classList.add("hidden");
 
-        edit.classList.add("hidden");
-        view.classList.remove("hidden");
-        renderBoard();
-    };
+    await updateTaskInFirebase(currentTask);
+    openTaskDetails(currentTask);
+    renderBoard();
+};
+}
+/**
+ * Detail-Overlay rendern
+ */
+function renderDetailOverlay(task) {
+    const container = document.getElementById("detail-avatars-container");
+    if (!container) return;
+    container.innerHTML = "";
+
+    (task.assignedUsersFull || []).forEach(user => {
+        const avatarDiv = document.createElement("div");
+        avatarDiv.className = "assigned-avatar";
+        avatarDiv.textContent = user.initials || getInitials(user.name);
+        avatarDiv.style.backgroundColor = user.color ?? "#888";
+        container.appendChild(avatarDiv);
+    });
 }
