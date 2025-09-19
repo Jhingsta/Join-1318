@@ -26,6 +26,7 @@ main {
 }
 
 .content {
+  height: calc(100vh - 100px);
   flex-basis: 456px;
   flex-shrink: 1;
   flex-grow: 0;
@@ -212,11 +213,13 @@ main {
     margin-bottom: 100px;
   }
   .content {
+    height: auto;
     flex: 1 1 300px;
     width: 100%;
     margin: 0 auto;
     box-shadow: none;   
-    overflow-y: visible;
+    overflow-y: auto;
+    min-height: 0;
   }
   .contact {
     gap: 35px;
