@@ -1,9 +1,28 @@
 body {
-    overflow: hidden;
+    overflow: auto;
 }
 
-.main-container-wrapper {
-    width: 488px;
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.layout {
+    max-width: 1440px;
+    display: grid;
+    grid-template-columns: 232px 1fr;
+    position: relative;
+    width: 100%;
+}
+
+main {
+    min-height: calc(100vh - 100px);
+    width: 100%;
+    max-width: 518px;
     overflow-y: auto;
     height: calc(100vh - 80px);
 }
@@ -89,7 +108,8 @@ body {
 
 
 .title-container {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     min-height: 84px;
     display: flex;
     flex-direction: column;
@@ -98,7 +118,8 @@ body {
 }
 
 .title-input {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 64px;
     padding: 13px 16px;
     background: #FFFFFF;
@@ -154,7 +175,8 @@ body {
 
 
 .description-container {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 154px;
     display: flex;
     flex-direction: column;
@@ -164,7 +186,8 @@ body {
 }
 
 .description-header {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 23px;
     display: flex;
     align-items: center;
@@ -195,7 +218,8 @@ body {
 }
 
 .description-input {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 103px;
     background-color: #FFFFFF;
     border: 1px solid #D1D1D1;
@@ -227,7 +251,8 @@ body {
 }
 
 .due-date-container {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 99px;
     display: flex;
     flex-direction: column;
@@ -253,7 +278,8 @@ body {
 }
 
 .due-date-content {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 48px;
     display: flex;
     justify-content: space-between;
@@ -321,7 +347,8 @@ body {
 
 
 .priority-container {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 82px;
     display: flex;
     flex-direction: column;
@@ -345,7 +372,8 @@ body {
 }
 
 .priority-content {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 51px;
     display: flex;
     gap: 16px;
@@ -439,7 +467,8 @@ body {
 }
 
 .assigned-container {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -449,7 +478,8 @@ body {
 }
 
 .category-container {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 79px;
     display: flex;
     flex-direction: column;
@@ -460,7 +490,8 @@ body {
 }
 
 .task-container {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 79px;
     display: flex;
     flex-direction: column;
@@ -492,7 +523,8 @@ body {
 
     position: relative;
     cursor: pointer;
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 48px;
     display: flex;
     justify-content: space-between;
@@ -525,7 +557,8 @@ body {
     position: relative;
     cursor: pointer;
 
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 48px;
     display: flex;
     justify-content: space-between;
@@ -539,7 +572,8 @@ body {
 .task-content-addtask {
     position: relative;
     cursor: pointer;
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 48px;
     display: flex;
     justify-content: space-between;
@@ -553,7 +587,8 @@ body {
 
 .task-container {
 
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     min-height: 79px;
     display: flex;
     /* flex-direction: column; */
@@ -571,6 +606,7 @@ body {
     background-color: white;
     border: 1px solid #ccc;
     width: 100%;
+    max-width: 440px;
     z-index: 10;
 }
 
@@ -599,7 +635,8 @@ body {
     position: absolute;
     top: 100%;
     left: 0;
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     max-height: 280px;
     overflow-y: auto;
     background-color: #fff;
@@ -660,7 +697,8 @@ body {
 
 
 #assigned-dropdown {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     /* 416px + 24px scrollbar */
     max-height: 280px;
     /* 5 * 56px */
@@ -725,19 +763,20 @@ body {
 
 
 .button-container {
-    position: absolute;
-    bottom: 55px;
-    left: 1063px;
-    height: 61px;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
     display: flex;
+    justify-content: flex-end;
     gap: 25px;
-    opacity: 1;
-    transform: rotate(0deg);
+    padding: 24px;
+    background: #fff;
 }
 
-.guest-btn {
+.clear-btn {
     display: flex;
-    width: 136px;
     height: 60px;
     background-color: white;
     color: #333;
@@ -751,28 +790,27 @@ body {
     justify-content: center;
 }
 
-.guest-btn:hover {
+.clear-btn:hover {
     border: 2px solid #4589FF;
     color: #4589FF;
 }
 
-.guest-btn:hover img {
+.clear-btn:hover img {
     filter: invert(34%) sepia(91%) saturate(5000%) hue-rotate(200deg);
 }
 
-.guest-btn:active {
+.clear-btn:active {
     border: 1px solid #005DFF;
     color: #005DFF;
 }
 
-.guest-btn:active img {
+.clear-btn:active img {
 
     filter: invert(34%) sepia(91%) saturate(5000%) hue-rotate(200deg);
 }
 
-.sign-up-btn {
+.create-btn {
     display: flex;
-    width: 174px;
     height: 60px;
     background-color: #4589FF;
     color: white;
@@ -785,17 +823,17 @@ body {
     font-weight: 400;
 }
 
-.sign-up-btn:hover {
+.create-btn:hover {
     background-color: #005DFF;
     box-shadow: 0px 6px 12px 0px #00000040;
 }
 
-.sign-up-btn:active {
+.create-btn:active {
     background-color: #FFFFFF;
     color: #005DFF;
 }
 
-.sign-up-btn:active img {
+.create-btn:active img {
     filter: invert(34%) sepia(91%) saturate(5000%) hue-rotate(200deg);
 }
 
@@ -817,7 +855,8 @@ body {
 
 
 .end-spacer {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
     height: 48px;
     opacity: 0;
 }
@@ -1073,4 +1112,45 @@ body {
     filter: brightness(0) invert(1); /* weiß */
     z-index: 0;
 }
+
+@media (max-width: 1350px) {
+  .main-container {
+    padding: 40px 20px 0 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  aside {
+    order: 2;
+  }
+  main {
+    order: 1;
+    min-height: 100vh;
+    margin-bottom: 100px;
+  }
+
+  .main-container {
+    padding: 64px 16px 96px 16px;
+  }
+
+  .button-container {
+    padding: 16px;
+    gap: 16px;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .priority-frame
+
+  .priority-content {
+    gap: 12px;
+  }
+}
+
 
