@@ -1,62 +1,171 @@
+let currentNewTask = null;
+
 if (!window.taskManager.saveTasks) {
     window.taskManager.saveTasks = function (tasks) {
-        // Beispiel: Speichern im LocalStorage
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        // Wenn du Firebase nutzt, musst du hier ein Update an die Datenbank machen!
     };
+}
+
+function saveTask(task) {
+    const taskData = getTaskData(); // Task-Daten inkl. assignedUsersFull
+    fetch(`${FIREBASE_URL}/tasks/${task.firebaseId || ''}.json`, {
+        method: task.firebaseId ? 'PATCH' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(taskData)
+    })
+        .then(res => res.json())
+        .then(data => {
+            console.log('Task gespeichert:', data);
+        })
+        .catch(err => console.error('Fehler beim Speichern:', err));
 }
 
 // Ganz oben in board.js einfügen:
 const FIREBASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app";
+let users = [];
+async function loadUsers() {
+    const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
+    const data = await res.json();
+    users = data
+        ? Object.keys(data).map(key => ({ id: key, ...data[key] }))
+        : [];
+    populateDropdown();
+}
 
+const modal = document.getElementById('add-task-modal');
+const signUpBtn = document.querySelector('.sign-up-btn'); // Save Button
+const addTaskButton = document.getElementById('add-task-btn');
+const form = document.getElementById('add-task-form');
+const svgButtons = document.querySelectorAll('.svg-button'); // alle Buttons
 
+const assignedContent = document.querySelector('.assigned-content');
+const assignedTextContainer = assignedContent.querySelector('.assigned-text-container');
+const assignedText = assignedTextContainer.querySelector('.assigned-text');
+const assignedInput = assignedContent.querySelector('.assigned-input');
+const arrowContainer = assignedContent.querySelector('.assigned-arrow-container');
+const arrowIcon = arrowContainer.querySelector('img');
+const assignedDropdown = document.getElementById('assigned-dropdown');
+const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
+
+function closeModal() {
+    modal?.classList.add('hidden');
+    form?.reset();
+
+    const priority = document.getElementById('task-priority');
+    const status = document.getElementById('task-status');
+    const done = document.getElementById('subtasks-done');
+    const total = document.getElementById('subtasks-total');
+
+    if (priority) priority.value = 'medium';
+    if (status) status.value = 'todo';
+    if (done) done.value = '0';
+    if (total) total.value = '0';
+
+    signUpBtn?.classList.remove('active');
+    addTaskButton?.classList.remove('active-style');
+    // Plus-Buttons wieder freischalten
+    svgButtons.forEach(btn => {
+        const svg = btn.querySelector('svg');
+        if (svg) svg.classList.remove('disabled');
+    });
+}
+
+/////////////////////DOM 1////////////////////////////////////////////////
 document.addEventListener('DOMContentLoaded', async () => {
-    const addTaskButton = document.getElementById('add-task-btn');
-    const modal = document.getElementById('add-task-modal');
     const modalClose = document.getElementById('modal-close');
     const cancelButton = document.getElementById('cancel-btn');
-    const form = document.getElementById('add-task-form');
-    const signUpBtn = document.querySelector('.sign-up-btn'); // Save Button
     const closeButton = document.querySelector('.close');
-
     closeButton?.addEventListener('click', closeModal);
+    addTaskButton?.addEventListener('click', openModal);
 
     function openModal() {
         modal?.classList.remove('hidden');
         addTaskButton?.classList.add('active-style'); // Button aktiv stylen
+        // Neues Task-Objekt für die Auswahl
+        currentNewTask = { assignedUsersFull: [] };
+        renderAssignedDropdownModal(currentNewTask);
+
+        // Plus-Buttons ausgrauen
+        svgButtons.forEach(btn => {
+            const svg = btn.querySelector('svg');
+            if (svg) svg.classList.add('disabled');
+        });
     }
 
-    function closeModal() {
-        modal?.classList.add('hidden');
-        form?.reset();
-
-        // Standardwerte zurücksetzen
-        const priority = document.getElementById('task-priority');
-        const status = document.getElementById('task-status');
-        const done = document.getElementById('subtasks-done');
-        const total = document.getElementById('subtasks-total');
-        if (priority) priority.value = 'medium';
-        if (status) status.value = 'todo';
-        if (done) done.value = '0';
-        if (total) total.value = '0';
-
-        // Save Button zurücksetzen
-        signUpBtn?.classList.remove('active');
-
-        //Button-Styles zurücksetzen
-        addTaskButton?.classList.remove('active-style');
-    }
-
-    // Save Button beim Klick aktiv machen
-    signUpBtn?.addEventListener('click', () => {
-        signUpBtn.classList.add('active');
+    // jedem Button einen eigenen Klick-Handler geben
+    svgButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            openModal(button);
+        });
     });
 
-    addTaskButton?.addEventListener('click', openModal);
+    // Eventlistener
+    closeButton?.addEventListener('click', closeModal);
     modalClose?.addEventListener('click', closeModal);
     cancelButton?.addEventListener('click', closeModal);
     modal?.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
+    });
+    /**
+ * Dropdown für Assigned Users in der Modalbox rendern
+ */    await window.taskManager.loadTasks();
+    renderBoard();
+
+    async function renderAssignedDropdownModal(task) {
+        const dropdown = document.getElementById("add-assigned-dropdown");
+        if (!dropdown) return;
+
+        dropdown.innerHTML = "";
+        const contacts = await loadContactsFromFirebase(); // <-- gleiche Funktion wie im Edit
+
+        contacts.forEach(user => {
+            const item = document.createElement("div");
+            item.className = "dropdown-item";
+            item.textContent = user.name;
+            if (task.assignedUsersFull?.some(u => u.id === user.id)) {
+                item.classList.add("selected");
+            }
+            item.addEventListener("click", () => {
+                if (!task.assignedUsersFull) task.assignedUsersFull = [];
+                const index = task.assignedUsersFull.findIndex(u => u.id === user.id);
+                if (index !== -1) {
+                    // Entfernen
+                    task.assignedUsersFull.splice(index, 1);
+                    item.classList.remove("selected");
+                } else {
+                    // Hinzufügen
+                    task.assignedUsersFull.push({
+                        id: user.id,
+                        name: user.name,
+                        initials: getInitials(user.name),
+                        color: user.color ?? "#888"
+                    });
+                    item.classList.add("selected");
+                }
+                renderAvatarsModal(task); // Avatare live aktualisieren
+            });
+            dropdown.appendChild(item);
+        });
+        renderAvatarsModal(task);
+    }
+    /**
+     * Avatare in der Modalbox rendern
+     */
+    function renderAvatarsModal(task) {
+        const avatarsContainer = document.getElementById("add-avatars-container");
+        if (!avatarsContainer) return;
+        avatarsContainer.innerHTML = "";
+
+        (task.assignedUsersFull || []).forEach(user => {
+            const avatarDiv = document.createElement("div");
+            avatarDiv.className = "assigned-avatar";
+            avatarDiv.textContent = user.initials || getInitials(user.name);
+            avatarDiv.style.backgroundColor = user.color ?? "#888";
+            avatarsContainer.appendChild(avatarDiv);
+        });
+    }
+    // Save Button beim Klick aktiv machen
+    signUpBtn?.addEventListener('click', () => {
+        signUpBtn.classList.add('active');
     });
 
     if (!window.taskManager) {
@@ -94,206 +203,30 @@ document.addEventListener('DOMContentLoaded', async () => {
                 total: subtasksItems.length,
                 completed: subtasksItems.filter(st => st.done).length
             },
+            assignedUsersFull: currentNewTask.assignedUsersFull,
             createdAt: new Date().toISOString()
         };
+        // 4️⃣ Button während Save deaktivieren
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.textContent = 'Saving...';
+        submitButton.disabled = true;
 
-
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const addTaskButton = document.getElementById('add-task-btn');
-            const modal = document.getElementById('add-task-modal');
-            const modalClose = document.getElementById('modal-close');
-            const cancelButton = document.getElementById('cancel-btn');
-            const form = document.getElementById('add-task-form');
-            const signUpBtn = document.querySelector('.sign-up-btn'); // Save Button
-            const closeButton = document.querySelector('.close');
-
-            closeButton?.addEventListener('click', closeModal);
-
-            function openModal() {
-                modal?.classList.remove('hidden');
-                addTaskButton?.classList.add('active-style'); // Button aktiv stylen
-            }
-
-            function closeModal() {
-                modal?.classList.add('hidden');
-                form?.reset();
-
-                // Standardwerte zurücksetzen
-                const priority = document.getElementById('task-priority');
-                const status = document.getElementById('task-status');
-                const done = document.getElementById('subtasks-done');
-                const total = document.getElementById('subtasks-total');
-                if (priority) priority.value = 'medium';
-                if (status) status.value = 'todo';
-                if (done) done.value = '0';
-                if (total) total.value = '0';
-
-                // Save Button zurücksetzen
-                signUpBtn?.classList.remove('active');
-
-                //Button-Styles zurücksetzen
-                addTaskButton?.classList.remove('active-style');
-            }
-
-            // Save Button beim Klick aktiv machen
-            signUpBtn?.addEventListener('click', () => {
-                signUpBtn.classList.add('active');
-            });
-
-            addTaskButton?.addEventListener('click', openModal);
-            modalClose?.addEventListener('click', closeModal);
-            cancelButton?.addEventListener('click', closeModal);
-            modal?.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
-            });
-
-            if (!window.taskManager) {
-                console.error('Task manager not loaded');
-                return;
-            }
-
-            await window.taskManager.loadTasks();
-            renderBoard();
-
-            form?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                // 1️⃣ Task-Grunddaten auslesen
-                const title = document.getElementById('task-title').value.trim();
-                const description = document.getElementById('task-description').value.trim();
-                const dueDate = document.getElementById('task-dueDate').value;
-                const priority = document.getElementById('task-priority').value;
-                const status = document.getElementById('task-status').value;
-
-                if (!title) {
-                    alert('Please enter a title');
-                    return;
-                }
-
-                // 2️⃣ Subtasks einsammeln
-                const subtasksInputs = document.querySelectorAll('.subtask-input');
-                const subtasksItems = Array.from(subtasksInputs)
-                    .map(input => ({ title: input.value.trim(), completed: false }))
-                    .filter(st => st.title.length > 0); // leere ignorieren
-
-                // 3️⃣ Payload erstellen
-                const payload = {
-                    title,
-                    description,
-                    dueDate,
-                    priority,
-                    status,
-                    subtasks: {
-                        items: subtasksItems,
-                        total: subtasksItems.length,
-                        completed: subtasksItems.filter(st => st.completed).length
-                    },
-                    createdAt: new Date().toISOString()
-                };
-
-                // 4️⃣ Button während Save deaktivieren
-                const submitButton = form.querySelector('button[type="submit"]');
-                const originalText = submitButton.textContent;
-                submitButton.textContent = 'Saving...';
-                submitButton.disabled = true;
-
-                // 5️⃣ Task speichern und Board aktualisieren
-                try {
-                    await window.taskManager.createTask(payload); // Stelle sicher, dass hier push() verwendet wird
-                    await window.taskManager.loadTasks();
-                    renderBoard();
-                    closeModal();
-                } catch (err) {
-                    console.error(err);
-                    alert('Failed to save task');
-                } finally {
-                    submitButton.disabled = false;
-                    submitButton.textContent = originalText;
-                }
-            });
-
-        });
-
+        // 5️⃣ Task speichern und Board aktualisieren
         try {
-            const submitButton = form.querySelector('button[type="submit"]');
-            const originalText = submitButton.textContent;
-            submitButton.textContent = 'Saving...';
-            submitButton.disabled = true;
-
-            await window.taskManager.createTask(payload);
+            await window.taskManager.createTask(payload); // Stelle sicher, dass hier push() verwendet wird
             await window.taskManager.loadTasks();
             renderBoard();
-            closeModal(); // Hier wird auch der Save Button wieder zurückgesetzt
+            closeModal();
         } catch (err) {
             console.error(err);
             alert('Failed to save task');
         } finally {
-            const submitButton = form.querySelector('button[type="submit"]');
-            submitButton.disabled = false; // Text nicht zurücksetzen, closeModal kümmert sich drum
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
         }
     });
-});
 
-function closeModal() {
-    const modal = document.getElementById('add-task-modal');
-    const form = document.getElementById('add-task-form');
-
-    modal?.classList.add('hidden');
-    form?.reset();
-
-    const priority = document.getElementById('task-priority');
-    const status = document.getElementById('task-status');
-    const done = document.getElementById('subtasks-done');
-    const total = document.getElementById('subtasks-total');
-
-    if (priority) priority.value = 'medium';
-    if (status) status.value = 'todo';
-    if (done) done.value = '0';
-    if (total) total.value = '0';
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const svgButtons = document.querySelectorAll('.svg-button'); // alle Buttons
-    const modal = document.getElementById('add-task-modal');
-    const modalClose = document.getElementById('close');
-
-    function openModal(button) {
-        modal?.classList.remove('hidden');
-        const svg = button.querySelector('svg'); // SVG vom geklickten Button
-        if (svg) {
-            svg.classList.add('disabled');
-            console.log("Modal geöffnet - SVG deaktiviert");
-        }
-    }
-
-    function closeModal() {
-        modal?.classList.add('hidden');
-        console.log("Modal geschlossen");
-
-        // alle SVGs wieder freischalten
-        svgButtons.forEach(btn => {
-            const svg = btn.querySelector('svg');
-            if (svg) svg.classList.remove('disabled');
-        });
-    }
-
-    // jedem Button einen eigenen Klick-Handler geben
-    svgButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            console.log('SVG Button geklickt!');
-            openModal(button);
-        });
-    });
-
-    // Schließen über "X" oder Klick außerhalb
-    if (modalClose) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal || e.target === modalClose) {
-                closeModal();
-            }
-        });
-    }
 });
 
 function renderBoard() {
@@ -329,13 +262,9 @@ function renderBoard() {
     // 🔹 Listener für Task-Updates setzen (nur die geänderte Task-Karte aktualisieren)
     document.removeEventListener("taskUpdated", handleTaskUpdated); // alten Listener entfernen
     document.addEventListener("taskUpdated", handleTaskUpdated);
-    document.addEventListener("taskUpdated", (e) => {
-        renderBoard();
-    });
 }
 
-// Listener-Funktion definieren
-// Funktion zum Aktualisieren einer einzelnen Task-Karte
+// Funktion zum Aktualisieren einer einzelnen Task-Karte (TEST: drag and drop)
 function handleTaskUpdated(e) {
     const updatedTask = e.detail;
     const card = document.getElementById(`task-${updatedTask.firebaseId}`);
@@ -361,8 +290,6 @@ function handleTaskUpdated(e) {
     }
 }
 
-
-
 // ---------- Helpers ----------
 function getInitials(name) {
     if (!name) return "";
@@ -377,12 +304,172 @@ function getColor(name) {
     return `hsl(${Math.abs(hash) % 360},70%,50%)`;
 }
 
+// ---------- Populate Dropdown ----------
+function populateDropdown() {
+    const assignedDropdown = document.getElementById('assigned-dropdown');
+    const selectedAvatarsContainer = document.querySelector('.selected-avatars-container');
+
+    if (!assignedDropdown) {
+        console.warn('populateDropdown: #assigned-dropdown nicht gefunden.');
+        return;
+    }
+    if (!selectedAvatarsContainer) {
+        console.warn('populateDropdown: .selected-avatars-container nicht gefunden.');
+        return;
+    }
+
+    assignedDropdown.innerHTML = "";
+
+    (users || []).forEach((user, i) => {
+        const div = document.createElement('div');
+        div.className = 'dropdown-item';
+        div.dataset.clicked = "false";
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'assigned-wrapper';
+
+        const avatar = document.createElement('div');
+        avatar.className = 'dropdown-avatar';
+        avatar.textContent = getInitials(user.name);
+        avatar.style.backgroundColor = getColor(user.name);
+
+        const span = document.createElement('span');
+        span.textContent = user.name;
+
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(span);
+
+        // Checkbox
+        const checkboxWrapper = document.createElement('div');
+        checkboxWrapper.className = 'checkbox-wrapper';
+        const checkbox = document.createElement('img');
+        checkbox.src = "./assets/icons-addTask/Property 1=Default.png";
+
+        // Hover-Kreis
+        const hoverOverlay = document.createElement('div');
+        hoverOverlay.className = 'hover-overlay';
+        checkboxWrapper.appendChild(hoverOverlay);
+        checkboxWrapper.appendChild(checkbox);
+
+        div.appendChild(wrapper);
+        div.appendChild(checkboxWrapper);
+        assignedDropdown.appendChild(div);
+
+        // ---------- Klick auf Zeile → nur Highlight ----------
+        div.addEventListener('click', (e) => {
+            if (e.target === checkbox || e.target === hoverOverlay) return;
+            div.classList.toggle('active'); // nur Highlight beim Zeilen-Klick
+        });
+
+        // ---------- Klick auf Checkbox ----------
+        checkboxWrapper.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            const isChecked = checkboxWrapper.classList.contains('checked');
+            checkboxWrapper.classList.toggle('checked', !isChecked);
+
+            checkbox.src = isChecked
+                ? "./assets/icons-addTask/Property 1=Default.png"
+                : "./assets/icons-addTask/Property 1=checked.svg";
+
+            // nur aufrufen, wenn Funktion existiert
+            if (typeof updateSelectedAvatars === 'function') {
+                updateSelectedAvatars();
+            }
+        });
+    });
+    // initial update (falls updateSelectedAvatars schon existiert)
+    if (typeof updateSelectedAvatars === 'function') {
+        updateSelectedAvatars();
+    }
+}
+
+// ---------- Update Selected Avatars ----------
+function updateSelectedAvatars() {
+    selectedAvatarsContainer.innerHTML = "";
+    const selected = users.filter((u, i) => {
+        const img = assignedDropdown.children[i].querySelector('img');
+        return img.src.includes("checked");
+    }).slice(0, 3);
+
+    selected.forEach(u => {
+        const a = document.createElement('div');
+        a.className = 'selected-avatar assigned-text';
+        a.dataset.fullname = u.name;         // NEU: vollständiger Name für Overlay
+        a.textContent = getInitials(u.name);
+        a.style.backgroundColor = getColor(u.name);
+        selectedAvatarsContainer.appendChild(a);
+    });
+    selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
+}
+
+// ---------- Dropdown toggle ----------
+function toggleDropdown(e) {
+    e.stopPropagation();
+    const isOpen = assignedDropdown.classList.contains('open');
+    if (!isOpen) {
+        assignedDropdown.classList.add('open');
+        assignedDropdown.style.display = 'block';
+        assignedInput.style.display = 'inline';
+        assignedText.style.display = 'none';
+        arrowIcon.src = '/assets/icons-addTask/arrow_drop_down_up.png';
+        assignedInput.focus();
+
+        // ✅ FIX: Checkboxen beim Öffnen zurücksetzen
+        Array.from(assignedDropdown.children).forEach(div => {
+            div.querySelector('.checkbox-wrapper').style.display = 'flex';
+        });
+    } else {
+        assignedDropdown.classList.remove('open');
+        assignedDropdown.style.display = 'none';
+        assignedInput.style.display = 'none';
+        assignedText.style.display = 'block';
+        arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
+        assignedInput.value = '';
+    }
+}
+
+assignedTextContainer.addEventListener('click', toggleDropdown);
+arrowContainer.addEventListener('click', toggleDropdown);
+
+// ---------- Klick außerhalb schließt Dropdown ----------
+document.addEventListener('click', e => {
+    if (!assignedTextContainer.contains(e.target) && !arrowContainer.contains(e.target)) {
+        assignedDropdown.classList.remove('open');
+        assignedDropdown.style.display = 'none';
+        assignedInput.style.display = 'none';
+        assignedText.style.display = 'block';
+        arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
+
+        // Checkboxen beibehalten, wenn gesetzt
+        Array.from(assignedDropdown.children).forEach(div => {
+            const checkboxWrapper = div.querySelector('.checkbox-wrapper');
+            const checkbox = checkboxWrapper.querySelector('img');
+
+            if (checkbox.src.includes('checked')) {
+                checkboxWrapper.style.display = 'flex'; // bleibt sichtbar
+            } else {
+                checkboxWrapper.style.display = 'none'; // ungesetzte Checkbox ausblenden
+            }
+        });
+    }
+});
+
+// ---------- Filter input ----------
+assignedInput.addEventListener('input', () => {
+    const filter = assignedInput.value.toLowerCase();
+    Array.from(assignedDropdown.children).forEach(div => {
+        const name = div.querySelector('span').textContent.toLowerCase();
+        div.style.display = name.includes(filter) ? 'flex' : 'none';
+    });
+});
+
+loadUsers();
+
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
-
     card.id = `task-${task.firebaseId}`;
-
     const type = document.createElement('div');
     type.className = 'task-type';
 
@@ -425,6 +512,7 @@ function createTaskCard(task) {
         const completed = task.subtasks?.completed || 0;
         const total = task.subtasks?.total || 0;
         const progressFill = document.createElement('div');
+        progressFill.className = 'progress-fill';
         const percentage = total > 0 ? (completed / total) * 100 : 0;
         progressFill.style.width = `${percentage}%`;
         progressFill.style.height = '100%';
@@ -454,27 +542,26 @@ function createTaskCard(task) {
     avatarsContainer.style.display = 'flex';
     avatarsContainer.style.gap = '4px';
 
-if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
-    task.assignedUsersFull.slice(0, 3).forEach(user => {
-        const avatarDiv = document.createElement('div');
-        avatarDiv.className = 'assigned-avatar';
-        avatarDiv.textContent = user.initials || getInitials(user.name);
-        avatarDiv.style.backgroundColor = user.color || '#888';
-        avatarDiv.style.width = '28px';
-        avatarDiv.style.height = '28px';
-        avatarDiv.style.borderRadius = '50%';
-        avatarDiv.style.display = 'flex';
-        avatarDiv.style.alignItems = 'center';
-        avatarDiv.style.justifyContent = 'center';
-        avatarDiv.style.fontFamily = 'Inter';
-        avatarDiv.style.fontWeight = '400';
-        avatarDiv.style.fontSize = '12px';
-        avatarDiv.style.color = '#FFFFFF';
+    if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
+        task.assignedUsersFull.slice(0, 3).forEach(user => {
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'assigned-avatar';
+            avatarDiv.textContent = user.initials || getInitials(user.name);
+            avatarDiv.style.backgroundColor = user.color || '#888';
+            avatarDiv.style.width = '28px';
+            avatarDiv.style.height = '28px';
+            avatarDiv.style.borderRadius = '50%';
+            avatarDiv.style.display = 'flex';
+            avatarDiv.style.alignItems = 'center';
+            avatarDiv.style.justifyContent = 'center';
+            avatarDiv.style.fontFamily = 'Inter';
+            avatarDiv.style.fontWeight = '400';
+            avatarDiv.style.fontSize = '12px';
+            avatarDiv.style.color = '#FFFFFF';
 
-        avatarsContainer.appendChild(avatarDiv);
-    });
-}
-
+            avatarsContainer.appendChild(avatarDiv);
+        });
+    }
 
     const prioImg = document.createElement('img');
     prioImg.alt = 'Priority';
@@ -585,8 +672,7 @@ buttons.forEach((btn) => {
     });
 });
 
-const arrowContainer = document.querySelector('.assigned-content');
-const assignedDropdown = document.getElementById('assigned-dropdown');
+//Öffnen und schliessen des assigned to dropdowns
 
 arrowContainer.addEventListener('click', (event) => {
     event.stopPropagation();
@@ -600,6 +686,7 @@ document.addEventListener('click', (event) => {
     }
 });
 
+//Dropdown-Menü für die Task-Kategorie im Modal erstellen
 function populateCategoryDropdown() {
     const container = document.querySelector('.category-container .category-content');
     if (!container) return;
@@ -635,188 +722,6 @@ function populateCategoryDropdown() {
         }
     });
 }
-
-document.addEventListener("DOMContentLoaded", async () => {
-    const assignedContent = document.querySelector('.assigned-content');
-    const assignedTextContainer = assignedContent.querySelector('.assigned-text-container');
-    const assignedText = assignedTextContainer.querySelector('.assigned-text');
-    const assignedInput = assignedContent.querySelector('.assigned-input');
-    const arrowContainer = assignedContent.querySelector('.assigned-arrow-container');
-    const arrowIcon = arrowContainer.querySelector('img');
-    const assignedDropdown = document.getElementById('assigned-dropdown');
-    const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
-
-    let users = [];
-
-    // ---------- Load Users ----------
-    async function loadUsers() {
-        try {
-            const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
-            const data = await res.json();
-            users = data ? Object.values(data) : [];
-            populateDropdown();
-        } catch (e) {
-            console.error("Fehler beim Laden der Users", e);
-        }
-    }
-
-    // ---------- Update Selected Avatars ----------
-    function updateSelectedAvatars() {
-        selectedAvatarsContainer.innerHTML = "";
-        const selected = users.filter((u, i) => {
-            const img = assignedDropdown.children[i].querySelector('img');
-            return img.src.includes("checked");
-        }).slice(0, 3);
-
-        selected.forEach(u => {
-            const a = document.createElement('div');
-            a.className = 'selected-avatar assigned-text';
-            a.dataset.fullname = u.name;         // NEU: vollständiger Name für Overlay
-            a.textContent = getInitials(u.name);
-            a.style.width = '28px';
-            a.style.height = '28px';
-            a.style.borderRadius = '50%';
-            a.style.display = 'flex';
-            a.style.alignItems = 'center';
-            a.style.justifyContent = 'center';
-            a.style.fontWeight = 'bold';
-            a.style.fontSize = '13px';
-            a.style.color = 'white';
-            a.style.backgroundColor = getColor(u.name);
-            a.style.marginRight = '4px';
-            a.style.flex = '0 0 auto';
-            selectedAvatarsContainer.appendChild(a);
-        });
-
-        selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
-    }
-
-    // ---------- Populate Dropdown ----------
-    function populateDropdown() {
-        assignedDropdown.innerHTML = "";
-
-        users.forEach((user, i) => {
-            const div = document.createElement('div');
-            div.className = 'dropdown-item';
-            div.dataset.clicked = "false";
-
-            const wrapper = document.createElement('div');
-            wrapper.className = 'assigned-wrapper';
-
-            const avatar = document.createElement('div');
-            avatar.className = 'dropdown-avatar';
-            avatar.textContent = getInitials(user.name);
-            avatar.style.backgroundColor = getColor(user.name);
-
-            const span = document.createElement('span');
-            span.textContent = user.name;
-
-            wrapper.appendChild(avatar);
-            wrapper.appendChild(span);
-
-            // Checkbox
-            const checkboxWrapper = document.createElement('div');
-            checkboxWrapper.className = 'checkbox-wrapper';
-            const checkbox = document.createElement('img');
-            checkbox.src = "./assets/icons-addTask/Property 1=Default.png";
-
-            // Hover-Kreis
-            const hoverOverlay = document.createElement('div');
-            hoverOverlay.className = 'hover-overlay';
-            checkboxWrapper.appendChild(hoverOverlay);
-            checkboxWrapper.appendChild(checkbox);
-
-            div.appendChild(wrapper);
-            div.appendChild(checkboxWrapper);
-            assignedDropdown.appendChild(div);
-
-            // ---------- Klick auf Zeile → nur Highlight ----------
-            div.addEventListener('click', (e) => {
-                if (e.target === checkbox || e.target === hoverOverlay) return;
-                div.classList.toggle('active'); // nur Highlight beim Zeilen-Klick
-            });
-
-            // ---------- Klick auf Checkbox ----------
-            checkboxWrapper.addEventListener('click', (e) => {
-                e.stopPropagation();
-
-                const isChecked = checkboxWrapper.classList.contains('checked');
-                checkboxWrapper.classList.toggle('checked', !isChecked); // Klasse setzen
-
-                checkbox.src = isChecked
-                    ? "./assets/icons-addTask/Property 1=Default.png"
-                    : "./assets/icons-addTask/Property 1=checked.svg";
-
-                updateSelectedAvatars();
-            });
-
-        });
-    }
-
-    // ---------- Dropdown toggle ----------
-    function toggleDropdown(e) {
-        e.stopPropagation();
-        const isOpen = assignedDropdown.classList.contains('open');
-        if (!isOpen) {
-            assignedDropdown.classList.add('open');
-            assignedDropdown.style.display = 'block';
-            assignedInput.style.display = 'inline';
-            assignedText.style.display = 'none';
-            arrowIcon.src = '/assets/icons-addTask/arrow_drop_down_up.png';
-            assignedInput.focus();
-
-            // ✅ FIX: Checkboxen beim Öffnen zurücksetzen
-            Array.from(assignedDropdown.children).forEach(div => {
-                div.querySelector('.checkbox-wrapper').style.display = 'flex';
-            });
-        } else {
-            assignedDropdown.classList.remove('open');
-            assignedDropdown.style.display = 'none';
-            assignedInput.style.display = 'none';
-            assignedText.style.display = 'block';
-            arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
-            assignedInput.value = '';
-        }
-    }
-
-    assignedTextContainer.addEventListener('click', toggleDropdown);
-    arrowContainer.addEventListener('click', toggleDropdown);
-
-    // ---------- Klick außerhalb schließt Dropdown ----------
-    // ---------- Klick außerhalb schließt Dropdown ----------
-    document.addEventListener('click', e => {
-        if (!assignedTextContainer.contains(e.target) && !arrowContainer.contains(e.target)) {
-            assignedDropdown.classList.remove('open');
-            assignedDropdown.style.display = 'none';
-            assignedInput.style.display = 'none';
-            assignedText.style.display = 'block';
-            arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
-
-            // Checkboxen beibehalten, wenn gesetzt
-            Array.from(assignedDropdown.children).forEach(div => {
-                const checkboxWrapper = div.querySelector('.checkbox-wrapper');
-                const checkbox = checkboxWrapper.querySelector('img');
-
-                if (checkbox.src.includes('checked')) {
-                    checkboxWrapper.style.display = 'flex'; // bleibt sichtbar
-                } else {
-                    checkboxWrapper.style.display = 'none'; // ungesetzte Checkbox ausblenden
-                }
-            });
-        }
-    });
-
-    // ---------- Filter input ----------
-    assignedInput.addEventListener('input', () => {
-        const filter = assignedInput.value.toLowerCase();
-        Array.from(assignedDropdown.children).forEach(div => {
-            const name = div.querySelector('span').textContent.toLowerCase();
-            div.style.display = name.includes(filter) ? 'flex' : 'none';
-        });
-    });
-
-    await loadUsers();
-});
 
 // ===================== CATEGORY ===================== 
 const categoryContent = document.querySelector('.category-content');
@@ -908,7 +813,6 @@ function startEditMode(li, span) {
 // Funktion: Task-Daten auslesen
 // ----------------------------
 function getTaskData() {
-
     // 1. Überschrift
     const titleInput = document.querySelector(".title-input");
     const title = titleInput.value.trim();
@@ -929,16 +833,32 @@ function getTaskData() {
     const priorityBtn = document.querySelector(".priority-frame.active");
     const priority = priorityBtn ? priorityBtn.textContent.trim() : null;
 
-    // 5. Assigned to
+    // 5. Assigned to (Kürzel)
     const assignedAvatars = document.querySelectorAll(".selected-avatars-container .assigned-text");
-
-    // Bestehende Kürzel für andere Projektteile
     const assignedTo = Array.from(assignedAvatars).map(el => el.textContent.trim());
 
-    // NEU: Vollständige Namen für Overlay
-    const assignedUsersFull = Array.from(assignedAvatars).map(el => ({
-        name: el.dataset.fullname || el.textContent.trim() // fallback, falls dataset nicht gesetzt ist
-    }));
+    // 5. Assigned Users Full (Vollständige Daten)
+    let assignedUsersFull = [];
+    const assignedDropdown = document.getElementById('assigned-dropdown');
+    if (assignedDropdown) {
+        assignedDropdown.querySelectorAll('.dropdown-item').forEach(div => {
+            const checkboxWrapper = div.querySelector('.checkbox-wrapper');
+            if (checkboxWrapper.classList.contains('checked')) {
+                const name = div.querySelector('span').textContent.trim();
+                const user = users.find(u => u.name === name);
+                if (user) {
+                    assignedUsersFull.push({
+                        id: user.id,
+                        name: user.name,
+                        initials: user.initials,
+                        color: user.color
+                    });
+                }
+            }
+        });
+    }
+
+
 
     // 6. Category
     const categoryText = document.querySelector(".category-content .assigned-text");
@@ -954,17 +874,11 @@ function getTaskData() {
         dueDate,
         priority,
         assignedTo,        // Kürzel
-        assignedUsersFull, // volle Namen
+        assignedUsersFull, // volle User-Daten
         category,
         subtasks
     };
 }
-
-//Task an Firebase senden
-
-/**
- * Speichert einen neuen Task in Firebase
-const FIREBASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app";
 
 /**
 /**
@@ -974,6 +888,7 @@ const FIREBASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedataba
  */
 async function saveTaskToFirebase(taskData) {
     try {
+        // 1. Task in Firebase speichern (Firebase generiert eine ID)
         const response = await fetch(
             `${FIREBASE_URL}/tasks.json`,
             {
@@ -986,7 +901,6 @@ async function saveTaskToFirebase(taskData) {
                     priority: taskData.priority,
                     status: "inProgress",
                     createdAt: new Date().toISOString(),
-                    // 🔹 Subtasks korrekt speichern
                     subtasks: {
                         total: taskData.subtasks.length,
                         completed: 0,
@@ -997,38 +911,42 @@ async function saveTaskToFirebase(taskData) {
                                 return { title: st.title, done: st.done || false };
                             } else {
                                 return { title: `Subtask ${i + 1}`, done: false };
-                            } // Fallback
+                            }
                         })
                     },
-                    users: taskData.assignedTo,
-                    usersFull: taskData.assignedUsersFull,
+                    assignedUsersFull: taskData.assignedUsersFull,
                     category: taskData.category
                 })
             }
-        )
+        );
 
         if (!response.ok) {
             throw new Error(`Fehler beim Speichern des Tasks in Firebase: ${response.status}`);
         }
 
+        // 2. Antwort enthält die neue Firebase-ID
         const result = await response.json();
-        console.log("Task erfolgreich gespeichert:", result);
-        return result;
+        const firebaseId = result.name;
+
+        // 3. Task lokal mit der ID erweitern
+        taskData.firebaseId = firebaseId;
+
+        // 4. ID auch ins Task-Objekt bei Firebase zurückpatchen (optional, aber praktisch)
+        await fetch(`${FIREBASE_URL}/tasks/${firebaseId}.json`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ firebaseId })
+        });
+        return { ...taskData }; // Task mit firebaseId zurückgeben
 
     } catch (error) {
-        console.error("Error saving task:", error);
+        console.error("❌ Error saving task:", error);
         throw error;
     }
 }
 
-
-
-
 //Create Task Button mit Firebase verbinden
-
-const createTaskBtn = document.querySelector(".sign-up-btn");
-
-createTaskBtn.addEventListener("click", async (event) => {
+signUpBtn.addEventListener("click", async (event) => {
     event.preventDefault(); // verhindert das Standard-Submit
 
     // 1. Task-Daten auslesen
@@ -1039,9 +957,6 @@ createTaskBtn.addEventListener("click", async (event) => {
         alert("Bitte fülle alle Pflichtfelder aus!");
         return;
     }
-
-    console.log("Task-Daten vor dem Speichern:", taskData);
-
     // 3. Task an Firebase senden
     const result = await saveTaskToFirebase(taskData);
 
@@ -1143,7 +1058,6 @@ function enableTaskDragAndDrop() {
     });
 
     // Spalten als Dropzone vorbereiten
-    // Spalten als Dropzone vorbereiten
     columns.forEach(column => {
         column.addEventListener('dragover', e => {
             e.preventDefault();
@@ -1163,7 +1077,7 @@ function enableTaskDragAndDrop() {
     });
 
 }
-// 2. Task verschieben und Board neu rendern
+
 // 2. Task verschieben und Board neu rendern / Karte updaten
 async function moveTaskToColumn(taskId, columnId) {
 
@@ -1178,9 +1092,6 @@ async function moveTaskToColumn(taskId, columnId) {
     if (task && task.status !== newStatus) {
         task.status = newStatus; // lokal ändern
 
-        console.log("Task verschoben:", task.title, "Status:", task.status);
-        console.log("Alle Tasks:", tasks.map(t => `${t.title}: ${t.status}`));
-
         // Firebase-Update abwarten
         await window.taskManager.updateTaskInFirebase(task);
         window.taskManager.saveTasks(tasks); // lokal speichern
@@ -1194,10 +1105,7 @@ async function moveTaskToColumn(taskId, columnId) {
     }
 }
 
-
-
 // 3. Nach jedem Render Drag & Drop aktivieren
-// (Falls du renderBoard() öfter aufrufst, dann immer danach auch enableTaskDragAndDrop() aufrufen!)
 const origRenderBoard = renderBoard;
 renderBoard = function () {
     origRenderBoard();
@@ -1206,24 +1114,17 @@ renderBoard = function () {
 // Initial aktivieren (falls Board schon gerendert)
 enableTaskDragAndDrop();
 
-// Ergänzung für Drag & Drop mit Firebase-Support
 // Beispiel: Tasks aus Firebase laden und IDs zuweisen
 // 🔹 Tasks aus Firebase laden (bleibt wie gehabt)
 window.taskManager.loadTasks = async function () {
-    const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json");
+    const res = await fetch(`${FIREBASE_URL}/tasks.json`);
     const data = await res.json();
     const tasks = [];
     for (const [key, value] of Object.entries(data || {})) {
         value.firebaseId = key;
 
-        // ✅ assignedUsersFull setzen: entweder usersFull oder aus users ableiten
-        if (value.usersFull && value.usersFull.length > 0) {
-            value.assignedUsersFull = value.usersFull;
-        } else if (value.users && value.users.length > 0) {
-            value.assignedUsersFull = value.users.map(u => ({ name: u }));
-        } else {
-            value.assignedUsersFull = [];
-        }
+        // ✅ Nur assignedUsersFull nutzen, alte Felder ignorieren
+        value.assignedUsersFull = value.assignedUsersFull || [];
 
         tasks.push(value);
     }
@@ -1257,6 +1158,9 @@ function openTaskDetails(task) {
     const overlay = document.getElementById("task-detail-overlay");
     const view = document.getElementById("task-view");
     const edit = document.getElementById("task-edit");
+
+    // Task-ID am Overlay speichern
+    overlay.dataset.firebaseId = task.firebaseId;
 
     // Reset: Ansicht zeigen, Edit verstecken
     view.classList.remove("hidden");
@@ -1344,8 +1248,6 @@ function renderAssignedUsers(users) {
     }).join("");
 }
 
-
-// Subtasks rendern mit Checkbox, Text + Edit & Delete Buttons darunter
 // Subtasks rendern mit Checkbox, Text + Edit & Delete Buttons darunter
 function renderSubtasks(task) {
     if (!task.subtasks || !task.subtasks.items || task.subtasks.items.length === 0) {
@@ -1373,7 +1275,6 @@ function renderSubtasks(task) {
     }).join("");
 }
 
-// 🔹 Subtask in Firebase hinzufügen
 // 🔹 Neue Subtask hinzufügen über REST
 const addSubtask = async (taskId, title) => {
     if (!taskId || !title) return;
@@ -1433,7 +1334,6 @@ async function toggleSubtask(taskId, subtaskIndex) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items: subtasks.items, completed })
     });
-
     return { items: subtasks.items, completed };
 }
 
@@ -1476,4 +1376,3 @@ function updateTaskCard(taskId) {
     const progressBar = card.querySelector('.progress-container div');
     if (progressBar) progressBar.style.width = `${(task.subtasks.completed / task.subtasks.total) * 100}%`;
 }
-
