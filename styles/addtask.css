@@ -302,7 +302,6 @@ main {
 }
 
 .priority-header {
-    width: 72px;
     height: 23px;
     font-weight: 700;
     font-size: 19px;
@@ -398,7 +397,6 @@ main {
     gap: 10px;
     border-radius: 10px;
     box-shadow: 0px 0px 4px 0px #00000029;
-    font-family: 'Open Sans', sans-serif;
     font-size: 19px;
     border-bottom: 2px solid transparent;
 }
@@ -1004,11 +1002,32 @@ main {
     overflow-y: auto;
   }
   .main-container {
-    padding: 64px 16px 0 16px;
+    padding: 64px 10px 0 10px;
     margin-bottom: 100px;
+  }
+  .desc-title,
+  .desc-optional,
+  .description-input,
+  .description-input::placeholder,
+  .due-date-header,
+  .due-date-input,
+  .priority-header,
+  .priority-frame,
+  .assigned-header,
+  .assigned-text,
+  .assigned-wrapper span,
+  .subtask-text,
+  .assigned-input {
+    font-size: 16px;
   }
   .priority-content {
     gap: 12px;
+  }
+  .priority-frame {
+    gap: 8px;
+  }
+  .priority-frame {
+    width: 120px;
   }
   .button-container {
     padding: 8px 0;
@@ -1024,4 +1043,12 @@ main {
   }
 }
 
-
+@media (max-width: 425px) {
+  .priority-content {
+    gap: 5px;
+  }
+  .priority-frame {
+    width: 90px;
+    padding: 18px 5px;
+  }
+}
