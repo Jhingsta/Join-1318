@@ -91,7 +91,8 @@ w3.includeHTML(async () => {
 
     if (deadlineDateEl && deadlineLabelEl) {
         const today = new Date();
-        deadlineDateEl.textContent = today.toLocaleDateString("en-GB", {
+        // Englisches Langformat: "October 16, 2022"
+        deadlineDateEl.textContent = today.toLocaleDateString("en-US", {
             day: "numeric",
             month: "long",
             year: "numeric"
