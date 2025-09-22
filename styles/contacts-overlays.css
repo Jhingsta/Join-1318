@@ -308,9 +308,7 @@ filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99
   width: 100%;
 }
 
-input[type="text"],
-input[type="email"], 
-input[type="tel"] {
+input[type="text"] {
   width: 100%;
   padding: 12px 21px 12px 21px;
   border: none;
@@ -322,9 +320,7 @@ input[type="tel"] {
   background-color: white;
 }
 
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="tel"]:focus {
+input[type="text"]:focus {
   outline: none;
   border-bottom: 1px solid #005DFF;
   background-color: white;
@@ -333,6 +329,25 @@ input[type="tel"]:focus {
 input::placeholder {
   color: #D1D1D1;
   font-size: 19px;
+}
+
+/* Error-Zustand für Input-Felder */
+.form-group.input-error input {
+  border-bottom-color: #E60026 !important;
+}
+
+/* Error-Message Container */
+.error-message {
+  display: block;
+  color: #E60026; 
+  font-size: 14px; 
+  height: 17px;
+  width: 100%;
+  visibility: hidden;
+}
+
+.error-message.show {
+  visibility: visible;
 }
 
 .input-icon {

@@ -19,10 +19,6 @@ main {
   flex: 1;
 }
 
-.logo-section {
-  flex: 0 0 150px;
-}
-
 .icon-logo {
   position: absolute;
   top: 80px;
@@ -154,12 +150,31 @@ input::placeholder {
   cursor: pointer;
 }
 
+.form-group.input-error input {
+  border-bottom-color: #E60026 !important;
+}
+
+.error-message {
+  display: flex;
+  width: 100%;
+  text-align: start;
+  color: #E60026; 
+  font-size: 14px; 
+  height: 17px;
+  margin-top: 8px;
+  visibility: hidden;
+}
+
+.error-message.show {
+  visibility: visible;
+}
+
 .sign-up-checkbox {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin: 36px 0 35px;
+  margin: 11px 0 35px;
 }
 
 .checkbox-container {
@@ -229,7 +244,6 @@ input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .check {
   opacity: 1;
 }
 
-/* Linkstyles */
 .checkbox-label a {
   color: #005DFF;
   text-decoration: none;
@@ -299,6 +313,31 @@ nav a:hover {
   color: #005DFF;
 }
 
+/* Signup Success Message */
+.signup-success-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 100vh); /* Startet unterhalb */
+  z-index: 9999;
+  opacity: 1;
+  transition: transform 400ms ease-out;
+}
+
+.signup-success-container.slide-in {
+  transform: translate(-50%, -50%); /* Mitte */
+}
+
+.signup-success-container.fade-out {
+  transition: opacity 300ms ease-out;
+  opacity: 0;
+}
+
+.signup-success-image {
+  max-width: 320px;
+  height: 74px;
+}
+
 @media (max-width: 1100px) {
   .icon-logo {
     top: 50px;
@@ -356,6 +395,6 @@ nav a:hover {
     margin: 24px 0 24px;
   }
   input::placeholder {
-  font-size: 16px;
+    font-size: 16px;
   }
 }
