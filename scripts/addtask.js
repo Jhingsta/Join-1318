@@ -23,22 +23,7 @@ const dueDateIcon = document.querySelector(".due-date-icon");
 const dueDateContainer = document.querySelector(".due-date-content");
 const dueDateError = document.querySelector(".due-date-container .error-message");
 const dueDateInput = document.querySelector(".due-date-input");
-const dueDateDisplay = document.querySelector(".due-date-display");
 
-// change -> formatiere ins englische Format und schreibe in span
-dueDateInput.addEventListener("change", () => {
-  if (!dueDateInput.value) {
-    dueDateDisplay.textContent = "";
-    return;
-  }
-  const d = new Date(dueDateInput.value); // value ist ISO YYYY-MM-DD
-  // en-US Beispiel: "Sep 22, 2025"
-  dueDateDisplay.textContent = d.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric"
-  });
-});
 
 // Blur-Event (Validierung)
 dueDateInput.addEventListener("blur", () => {
@@ -411,10 +396,13 @@ function getTaskData() {
 
     // 3. Due Date
     const dueDateInput = document.querySelector(".due-date-input");
-    let dueDate = dueDateInput.value; // yyyy-mm-dd
+    let dueDate = dueDateInput.value; // Standardwert: yyyy-mm-dd
+    let formattedDate = "";
+
     if (dueDate) {
         const [year, month, day] = dueDate.split("-");
-        dueDate = `${day}.${month}.${year}`;
+        // Umwandlung in dd/mm/yyyy
+        formattedDate = `${day}/${month}/${year}`;
     }
 
     // 4. Priority
