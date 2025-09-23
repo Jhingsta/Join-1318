@@ -165,6 +165,7 @@ main {
   border-radius: 30px;
   background-color: #ffffff;
   transition: all 0.1s ease-in-out;
+  transform-origin: right;
 }
 
 .board-card .middle-row-right {
@@ -183,7 +184,7 @@ main {
 
 .board-card:hover{
   border-radius: 0px 30px 30px 30px;
-  scale: 1.055;
+  transform: scaleX(1.2);  
   transition: all 0.1s ease-in-out;
   background-color: #005DFF;
 }
@@ -243,6 +244,7 @@ main {
   justify-content: center;
   align-items: center;
   transition: all 0.1s ease-in-out;
+  transform-origin: left;
 }
 
 .bottom-row-type-1-top {
@@ -269,7 +271,7 @@ main {
 
 .todo-card:hover{
   border-radius: 0px 30px 30px 30px;
-  scale: 1.055;
+  transform: scaleX(1.2);
   background-color: #ffffff;
 }
 
