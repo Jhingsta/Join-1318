@@ -1,0 +1,69 @@
+.arrow-btn-svg {
+    width: 30px;
+    height: 30px;
+    background-color: #F4F4F4;
+    border-radius: 6px;
+    padding: 2px 3px;
+    box-shadow: 1px 1px 2px 0px #00000026;
+    cursor: pointer;
+}
+
+.arrow-btn-svg:active {
+    filter: invert(10%);
+}
+
+.mobile-btn-overlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 106px;
+    height: 113px;
+    gap: 16px;
+    border-radius: 0 20px 20px 20px;
+    background-color: #4589FF;
+    color: white;
+    padding: 6px 8px 16px;
+}
+
+.btn-overlay-title {
+    font-size: 16px;
+    font-weight: 700;
+    width: 88px;
+    padding-top: 7px;
+}
+
+.move-to {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.move-to-container {
+    width: 90px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 5px 4px 2px;
+}
+
+.move-to-container:active {
+    background-color: #E3EEFF;
+    color: #4589FF;
+}
+
+.mobile-icon {
+  width: 20px;
+  height: 20px;
+  color: white;
+}
+
+.move-to-container:active .mobile-icon {
+  color: #4589FF;
+}
