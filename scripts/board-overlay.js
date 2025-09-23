@@ -302,77 +302,30 @@ async function openEditMode(task) {
     const priority = (task.priority || 'Low').trim();
 
     editForm.innerHTML = `
-        <label for="edit-title">Title</label>
-        <input type="text" id="edit-title" value="${task.title || ""}">
+<label class="title-input" for="edit-title"></label>
+<input 
+  type="text" 
+  id="edit-title" 
+  value="${task.title || ''}" 
+  placeholder="Enter a title">
 
-        <label for="edit-desc">Description</label>
-        <textarea id="edit-desc">${task.description || ""}</textarea>
+    <label for="edit-desc">Description</label>
+    <textarea id="edit-desc">${task.description || ""}</textarea>
 
-        <label for="edit-dueDate">Due Date</label>
-        <input type="date" id="edit-dueDate" value="${isoDate}">
+    <label for="edit-dueDate">Due Date</label>
+    <input type="date" id="edit-dueDate" value="${isoDate}">
 
-        <label>Priority</label>
-        <div id="edit-priority" class="priority-options">
-            <button class="priority-btn" data-priority="Low">Low</button>
-            <button class="priority-btn" data-priority="Medium">Medium</button>
-            <button class="priority-btn" data-priority="Urgent">Urgent</button>
-        </div>
+    <label>Priority</label>
+    <div id="edit-priority" class="priority-options">
+        <button class="priority-btn" data-priority="Low">Low</button>
+        <button class="priority-btn" data-priority="Medium">Medium</button>
+        <button class="priority-btn" data-priority="Urgent">Urgent</button>
+    </div>
 
-        <label>Category</label>
-        <div class="category-container">
-            <div class="category-content">
-                <span class="assigned-text">${task.category || "Select task category"}</span>
-                <div class="assigned-arrow-container">
-                    <img class="assigned-arrow-icon" src="/assets/icons-addTask/arrow_drop_down.png" alt="Arrow">
-                </div>
-            </div>
-        </div>
-
-        <div id="edit-subtask-list"></div>
-        <input type="text" id="edit-subtask-input" placeholder="New subtask">
-        <button id="edit-subtask-add">+</button>
-    `;
-
-    // Kategorien-Array
-    const categories = ["User Story", "Technical Task"];
-    const categoryContainer = edit.querySelector('.category-container .category-content');
-    const categoryText = categoryContainer.querySelector('.assigned-text');
-    const categoryArrow = categoryContainer.querySelector('.assigned-arrow-icon');
-
-    const categoryDropdown = document.createElement('div');
-    categoryDropdown.className = 'dropdown-menu';
-
-    categories.forEach(cat => {
-        const item = document.createElement('div');
-        item.className = 'dropdown-item';
-        item.textContent = cat;
-        item.addEventListener('click', (e) => {
-            e.stopPropagation();
-            categoryText.textContent = cat;
-            categoryDropdown.classList.remove('show');
-            categoryArrow.src = '/assets/icons-addTask/arrow_drop_down.png';
-            task.category = cat;
-        });
-        categoryDropdown.appendChild(item);
-    });
-
-    categoryContainer.appendChild(categoryDropdown);
-    categoryContainer.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = categoryDropdown.classList.contains('show');
-        categoryDropdown.classList.toggle('show', !isOpen);
-        categoryArrow.src = !isOpen
-            ? '/assets/icons-addTask/arrow_drop_down_up.png'
-            : '/assets/icons-addTask/arrow_drop_down.png';
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!categoryContainer.contains(e.target)) {
-            categoryDropdown.classList.remove('show');
-            categoryArrow.src = '/assets/icons-addTask/arrow_drop_down.png';
-        }
-    });
-
+    <div id="edit-subtask-list"></div>
+    <input type="text" id="edit-subtask-input" placeholder="New subtask">
+    <button id="edit-subtask-add">+</button>
+`;
     const priorityButtons = edit.querySelectorAll('.priority-btn');
     priorityButtons.forEach(btn => {
         if (btn.dataset.priority.toLowerCase() === priority.toLowerCase()) btn.classList.add('active');

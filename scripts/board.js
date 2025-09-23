@@ -1172,22 +1172,28 @@ function openTaskDetails(task) {
     // Kategorie-Icon
     let categoryImg = "";
     if (task.category === "User Story") {
-        categoryImg = './assets/icons-board/user-story-tag.svg';
+        categoryImg = './assets/icons-board/user-story-tag-overlay.svg';
     } else if (task.category === "Technical Task") {
-        categoryImg = './assets/icons-board/technical-task-tag.svg';
+        categoryImg = './assets/icons-board/technical-task-tag-overlay.svg';
     }
 
     // Inhalt rendern
     view.innerHTML = `
         <div class="top-bar">
             <img src="${categoryImg}" alt="${task.category || "Category"}" class="category-image">
-            <button class="close-button-overlay" onclick="document.getElementById('task-detail-overlay').classList.add('hidden')">✕</button>
+            <button class="close-button-overlay" onclick="document.getElementById('task-detail-overlay').classList.add('hidden')"><img src="./assets/icons-board/close.svg" alt="Schließen" class="close-icon"></button>
         </div>
 
         <h2 class="modal-title">${task.title}</h2>
         <p class="modal-desc">${task.description || ""}</p>
         <p class="task-overlay-bullet"><strong>Due date:</strong> <span>${task.dueDate || "-"}</span></p>
-        <p class="task-overlay-bullet"><strong>Priority:</strong> <span>${task.priority || ""}</span></p>
+        <p class="task-overlay-bullet">
+        <strong>Priority:</strong> 
+        <span class="priority_value">
+            ${task.priority || ""}
+            <img src="${priorityIcon(task.priority)}" alt="${task.priority || "Priority"}" class="priority-icon-overlay">
+        </span>
+    </p>
 
         <p class="task-overlay-bullet"><strong>Assigned To:</strong></p>
         <div class="assigned-list">${renderAssignedUsers(task.assignedUsersFull)}</div>
@@ -1196,8 +1202,8 @@ function openTaskDetails(task) {
         <ul class="subtasks-list">${renderSubtasks(task)}</ul>
 
         <div class="task-detail-actions">
-            <button class="delete-btn">Delete</button>
-            <button id="edit-header-btn">Edit</button>
+            <button class="delete-btn"><img src="./assets/icons-board/Property 1=delete.png" alt="Delete Icon" class="action-icon">Delete</button>
+            <button id="edit-header-btn"><img src="./assets/icons-board/Property 1=edit.png" alt="Edit Icon" class="action-icon"> Edit</button>
         </div>
     `;
 
