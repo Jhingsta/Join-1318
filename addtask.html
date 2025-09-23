@@ -7,11 +7,13 @@
     <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/header.css">
     <link rel="stylesheet" href="./styles/sidebar.css">
-    <link rel="stylesheet" href="./styles/board.css">
     <link rel="stylesheet" href="./styles/addtask.css">
     <script src="https://www.w3schools.com/lib/w3.js"></script>
-
-    <title>add task</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
+    <link rel="manifest" href="./assets/site.webmanifest">
+    <title>Add Task</title>
 </head>
 
 <body>
@@ -23,16 +25,8 @@
 
         <aside>
             <div w3-include-html="./sidebar.html"></div>
-            <script>
-                w3.includeHTML(() => {
-                    const plusBtn = document.querySelector("#plus-btn");
-                    plusBtn.addEventListener("click", () => {
-                    });
-
-                });
-            </script>
         </aside>
-        <div class="main-container-wrapper">
+        <main>
             <div class="main-container">
                 <div class="title-container">
                     <input type="text" class="title-input" placeholder="Enter a title" required>
@@ -120,9 +114,6 @@
 
                         <div class="assigned-arrow-container">
 
-                            <img id="plus-btn" src="/assets/icons-addTask/Subtask's icons.png" alt="Add subtask"
-                                class="assigned-arrow-icon">
-
                             <img id="cancel-btn" src="/assets/icons-addTask/Subtask cancel.png" alt="Cancel subtask"
                                 class="assigned-arrow-icon" style="display:none;">
 
@@ -143,13 +134,21 @@
 
                 <div class="end-spacer"></div>
             </div>
-        </div>
+        </main>
         <div class="button-container">
-            <button class="guest-btn">Clear <img src="./assets/icons-addTask/iconoir_cancel (1).png" alt=""></button>
-            <button class="sign-up-btn">Create Task <img src="./assets/icons-addTask/check (1).png" alt=""></button>
+            <button class="clear-btn">Clear <img src="./assets/icons-addTask/iconoir_cancel (1).png" alt=""></button>
+            <button class="create-btn">Create Task <img src="./assets/icons-addTask/check (1).png" alt=""></button>
         </div>
 
         <script src="./scripts/addtask.js"></script>
+        <script src="./scripts/auth.js"></script>
+    <script src="./scripts/header.js"></script>
+    <script>
+        w3.includeHTML(() => {            
+            updateUserLogo();
+            setActiveNavigation();
+            });
+    </script>
 </body>
 
 

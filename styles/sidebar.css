@@ -9,7 +9,7 @@
   width: 100%;
   z-index: 10;
   box-shadow: 0px -1px 6px 0px #0000001A;
-  padding: 0 16px;
+  padding: 0 10px;
   justify-content: space-between;
   gap: clamp(8px, 2vw, 32px);
 }
@@ -19,7 +19,7 @@
   flex-direction: row;
   justify-content: space-between;
   flex: 1;
-  gap: clamp(8px, 2vw, 32px);
+  gap: clamp(6px, 2vw, 32px);
 }
 
 .nav-item {

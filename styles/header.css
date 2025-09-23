@@ -88,7 +88,7 @@ header {
   visibility: visible;
 }
 
-.dropdown-item {
+.header-dropdown-item {
   display: block;
   width: 100%;
   padding: 8px 16px;
@@ -103,7 +103,7 @@ header {
   background-color: white;
 }
 
-.dropdown-item:hover {
+.header-dropdown-item:hover {
   background-color: #E3EEFF;
 }
 
@@ -111,7 +111,7 @@ header {
   display: none;
 }
 
-.dropdown-menu-overlay {
+.header-dropdown-menu-overlay {
   height: 100vh;
   width: 100%;
   position: fixed;
@@ -125,7 +125,7 @@ header {
   visibility: hidden;
 }
 
-.dropdown-menu-overlay.show {
+.header-dropdown-menu-overlay.show {
   opacity: 1;
   visibility: visible;
 }
@@ -133,6 +133,7 @@ header {
 @media (max-width: 768px) {
   .header-content {
     height: 80px;
+    padding: 0 25px;
   }
   .header-left {
     width: 32px;
@@ -164,10 +165,10 @@ header {
   .header-dropdown-menu.show {
     transform: translateX(0);
   }
-  .dropdown-item {
+  .header-dropdown-item {
     color: #005DFF;
   }
-  .dropdown-item:hover {
+  .header-dropdown-item:hover {
     background-color: transparent;
   }
 }

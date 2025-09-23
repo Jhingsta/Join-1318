@@ -56,7 +56,6 @@ h1 {
 }
 
 .text-content {
-  line-height: 1.2;
   hyphens: auto; 
   overflow-wrap: break-word;
 }
@@ -80,20 +79,6 @@ h3 {
 
 .light-blue {
   color: #4589FF;
-}
-
-.help-icon, .user-logo-svg, .guest-logo-svg {
-  display: none;
-}
-
-.header-right-text:focus-visible {
-  outline: none;
-  outline-offset: none;
-}
-
-.header-right-text {
-  pointer-events: none;
-  cursor: default;
 }
 
 @media (max-width: 768px) {

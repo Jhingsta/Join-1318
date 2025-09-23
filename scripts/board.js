@@ -519,7 +519,6 @@ function createTaskCard(task) {
         progressFill.style.backgroundColor = '#4589FF';
         progressFill.style.transition = 'width 0.3s ease';
         progressFill.style.borderRadius = '16px';
-
         progressContainer.appendChild(progressFill);
 
         const progressText = document.createElement('span');
@@ -583,6 +582,7 @@ function createTaskCard(task) {
 
     return card;
 }
+
 
 function priorityIcon(priority) {
     switch ((priority || 'medium').toLowerCase()) {
@@ -723,6 +723,202 @@ function populateCategoryDropdown() {
     });
 }
 
+document.addEventListener("DOMContentLoaded", async () => {
+    const assignedContent = document.querySelector('.assigned-content');
+    const assignedTextContainer = assignedContent.querySelector('.assigned-text-container');
+    const assignedText = assignedTextContainer.querySelector('.assigned-text');
+    const assignedInput = assignedContent.querySelector('.assigned-input');
+    const arrowContainer = assignedContent.querySelector('.assigned-arrow-container');
+    const arrowIcon = arrowContainer.querySelector('img');
+    const assignedDropdown = document.getElementById('assigned-dropdown');
+    const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
+
+    let users = [];
+
+    // ---------- Load Users ----------
+    async function loadUsers() {
+        try {
+            const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
+            const data = await res.json();
+            users = data ? Object.values(data) : [];
+            populateDropdown();
+        } catch (e) {
+            console.error("Fehler beim Laden der Users", e);
+        }
+    }
+
+    // // ---------- Helpers ----------
+    // function getInitials(name) {
+    //     if (!name) return "";
+    //     return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
+    // }
+
+    // function getColor(name) {
+    //     let hash = 0;
+    //     for (let i = 0; i < name.length; i++) {
+    //         hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    //     }
+    //     return `hsl(${Math.abs(hash) % 360},70%,50%)`;
+    // }
+
+    // ---------- Update Selected Avatars ----------
+    function updateSelectedAvatars() {
+        selectedAvatarsContainer.innerHTML = "";
+        const selected = users.filter((u, i) => {
+            const img = assignedDropdown.children[i].querySelector('img');
+            return img.src.includes("checked");
+        }).slice(0, 3);
+
+        selected.forEach(u => {
+            const a = document.createElement('div');
+            a.className = 'selected-avatar assigned-text';
+            a.dataset.fullname = u.name;         // NEU: vollständiger Name für Overlay
+            a.textContent = getInitials(u.name);
+            a.style.width = '28px';
+            a.style.height = '28px';
+            a.style.borderRadius = '50%';
+            a.style.display = 'flex';
+            a.style.alignItems = 'center';
+            a.style.justifyContent = 'center';
+            a.style.fontWeight = 'bold';
+            a.style.fontSize = '13px';
+            a.style.color = 'white';
+            a.style.backgroundColor = getColor(u.name);
+            a.style.marginRight = '4px';
+            a.style.flex = '0 0 auto';
+            selectedAvatarsContainer.appendChild(a);
+        });
+
+        selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
+    }
+
+    // ---------- Populate Dropdown ----------
+    function populateDropdown() {
+        assignedDropdown.innerHTML = "";
+
+        users.forEach((user, i) => {
+            const div = document.createElement('div');
+            div.className = 'dropdown-item';
+            div.dataset.clicked = "false";
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'assigned-wrapper';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'dropdown-avatar';
+            avatar.textContent = getInitials(user.name);
+            avatar.style.backgroundColor = getColor(user.name);
+
+            const span = document.createElement('span');
+            span.textContent = user.name;
+
+            wrapper.appendChild(avatar);
+            wrapper.appendChild(span);
+
+            // Checkbox
+            const checkboxWrapper = document.createElement('div');
+            checkboxWrapper.className = 'checkbox-wrapper';
+            const checkbox = document.createElement('img');
+            checkbox.src = "./assets/icons-addTask/Property 1=Default.png";
+
+            // Hover-Kreis
+            const hoverOverlay = document.createElement('div');
+            hoverOverlay.className = 'hover-overlay';
+            checkboxWrapper.appendChild(hoverOverlay);
+            checkboxWrapper.appendChild(checkbox);
+
+            div.appendChild(wrapper);
+            div.appendChild(checkboxWrapper);
+            assignedDropdown.appendChild(div);
+
+            // ---------- Klick auf Zeile → nur Highlight ----------
+            div.addEventListener('click', (e) => {
+                if (e.target === checkbox || e.target === hoverOverlay) return;
+                div.classList.toggle('active'); // nur Highlight beim Zeilen-Klick
+            });
+
+            // ---------- Klick auf Checkbox ----------
+            checkboxWrapper.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                const isChecked = checkboxWrapper.classList.contains('checked');
+                checkboxWrapper.classList.toggle('checked', !isChecked); // Klasse setzen
+
+                checkbox.src = isChecked
+                    ? "./assets/icons-addTask/Property 1=Default.png"
+                    : "./assets/icons-addTask/Property 1=checked.svg";
+
+                updateSelectedAvatars();
+            });
+
+        });
+    }
+
+    // ---------- Dropdown toggle ----------
+    function toggleDropdown(e) {
+        e.stopPropagation();
+        const isOpen = assignedDropdown.classList.contains('open');
+        if (!isOpen) {
+            assignedDropdown.classList.add('open');
+            assignedDropdown.style.display = 'block';
+            assignedInput.style.display = 'inline';
+            assignedText.style.display = 'none';
+            arrowIcon.src = '/assets/icons-addTask/arrow_drop_down_up.png';
+            assignedInput.focus();
+
+            // ✅ FIX: Checkboxen beim Öffnen zurücksetzen
+            Array.from(assignedDropdown.children).forEach(div => {
+                div.querySelector('.checkbox-wrapper').style.display = 'flex';
+            });
+        } else {
+            assignedDropdown.classList.remove('open');
+            assignedDropdown.style.display = 'none';
+            assignedInput.style.display = 'none';
+            assignedText.style.display = 'block';
+            arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
+            assignedInput.value = '';
+        }
+    }
+
+    assignedTextContainer.addEventListener('click', toggleDropdown);
+    arrowContainer.addEventListener('click', toggleDropdown);
+
+    // ---------- Klick außerhalb schließt Dropdown ----------
+    // ---------- Klick außerhalb schließt Dropdown ----------
+    document.addEventListener('click', e => {
+        if (!assignedTextContainer.contains(e.target) && !arrowContainer.contains(e.target)) {
+            assignedDropdown.classList.remove('open');
+            assignedDropdown.style.display = 'none';
+            assignedInput.style.display = 'none';
+            assignedText.style.display = 'block';
+            arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
+
+            // Checkboxen beibehalten, wenn gesetzt
+            Array.from(assignedDropdown.children).forEach(div => {
+                const checkboxWrapper = div.querySelector('.checkbox-wrapper');
+                const checkbox = checkboxWrapper.querySelector('img');
+
+                if (checkbox.src.includes('checked')) {
+                    checkboxWrapper.style.display = 'flex'; // bleibt sichtbar
+                } else {
+                    checkboxWrapper.style.display = 'none'; // ungesetzte Checkbox ausblenden
+                }
+            });
+        }
+    });
+
+    // ---------- Filter input ----------
+    assignedInput.addEventListener('input', () => {
+        const filter = assignedInput.value.toLowerCase();
+        Array.from(assignedDropdown.children).forEach(div => {
+            const name = div.querySelector('span').textContent.toLowerCase();
+            div.style.display = name.includes(filter) ? 'flex' : 'none';
+        });
+    });
+
+    await loadUsers();
+});
+
 // ===================== CATEGORY ===================== 
 const categoryContent = document.querySelector('.category-content');
 const categoryText = categoryContent.querySelector('.assigned-text');
@@ -813,6 +1009,7 @@ function startEditMode(li, span) {
 // Funktion: Task-Daten auslesen
 // ----------------------------
 function getTaskData() {
+
     // 1. Überschrift
     const titleInput = document.querySelector(".title-input");
     const title = titleInput.value.trim();
@@ -835,6 +1032,8 @@ function getTaskData() {
 
     // 5. Assigned to (Kürzel)
     const assignedAvatars = document.querySelectorAll(".selected-avatars-container .assigned-text");
+
+    // Bestehende Kürzel für andere Projektteile
     const assignedTo = Array.from(assignedAvatars).map(el => el.textContent.trim());
 
     // 5. Assigned Users Full (Vollständige Daten)
@@ -857,8 +1056,6 @@ function getTaskData() {
             }
         });
     }
-
-
 
     // 6. Category
     const categoryText = document.querySelector(".category-content .assigned-text");
@@ -1058,6 +1255,7 @@ function enableTaskDragAndDrop() {
     });
 
     // Spalten als Dropzone vorbereiten
+    // Spalten als Dropzone vorbereiten
     columns.forEach(column => {
         column.addEventListener('dragover', e => {
             e.preventDefault();
@@ -1105,6 +1303,7 @@ async function moveTaskToColumn(taskId, columnId) {
     }
 }
 
+
 // 3. Nach jedem Render Drag & Drop aktivieren
 const origRenderBoard = renderBoard;
 renderBoard = function () {
@@ -1125,7 +1324,6 @@ window.taskManager.loadTasks = async function () {
 
         // ✅ Nur assignedUsersFull nutzen, alte Felder ignorieren
         value.assignedUsersFull = value.assignedUsersFull || [];
-
         tasks.push(value);
     }
     window.taskManager._tasks = tasks;
@@ -1148,7 +1346,6 @@ window.taskManager.updateTaskInFirebase = async function (task) {
     } catch (err) {
         console.error("Fehler beim Aktualisieren in Firebase:", err);
     }
-
 };
 
 let currentTask = null; // aktuell geöffnete Task im Overlay
@@ -1382,3 +1579,4 @@ function updateTaskCard(taskId) {
     const progressBar = card.querySelector('.progress-container div');
     if (progressBar) progressBar.style.width = `${(task.subtasks.completed / task.subtasks.total) * 100}%`;
 }
+

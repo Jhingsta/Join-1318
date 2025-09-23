@@ -75,20 +75,13 @@ function renderContacts(contacts) {
 
 // Floating Contact
 
-function showFloatingContact(name, email, phone, color, initials, contactId) {
-
-  // Alle anderen Kontakte deaktivieren
-  const allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
-  
-  // Aktuellen Kontakt aktivieren
-  const currentContact = document.getElementById(`contact-${contactId}`);
-  if (currentContact) {
-    currentContact.classList.add('active');
-  }
-  // Floating Contact Template erstellen
-  const floatingContactHtml = `
-    <div class="floating-contact-first">Contact Information</div>
+// HTML Template Generator
+function generateContactTemplate(name, email, phone, color, initials) {
+  return `
+    <div class="floating-contact-first">
+      <span>Contact Information</span>
+      <button onclick="closeFloatingContact()" class="arrow-left"></button>
+    </div>
 
     <div class="floating-contact-second">
         <div class="avatar-big" style="background-color: ${color};">${initials}</div>
@@ -118,44 +111,246 @@ function showFloatingContact(name, email, phone, color, initials, contactId) {
         </div>
     </div>
   `;
+}
 
-  // Floating Contact in right-panel einfügen
+// Desktop Container erstellen/finden
+function createDesktopFloatingContact() {
   const rightPanel = document.getElementById('right-panel');
   
-  // Erst das floating-contact div erstellen falls es nicht existiert
   let floatingContact = document.getElementById('floating-contact');
   if (!floatingContact) {
-    floatingContact = document.createElement('div');
-    floatingContact.className = 'floating-contact';
-    floatingContact.id = 'floating-contact';
-    rightPanel.appendChild(floatingContact);
+    rightPanel.innerHTML += '<div class="floating-contact" id="floating-contact"></div>';
+    floatingContact = document.getElementById('floating-contact');
   }
+  
+  return floatingContact;
+}
+
+// Mobile Container erstellen/finden
+function createMobileFloatingContact(name, email, phone, color, initials) {
+  let mobileOverlay = document.getElementById('mobile-floating-contact');
+  if (!mobileOverlay) {
+    document.body.innerHTML += `
+      <div id="mobile-floating-contact" class="mobile-floating-contact">
+        <button class="mobile-overlay-menu-btn" onclick="openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')" aria-label="Open contact options menu"></button>
+      </div>
+    `;
+    mobileOverlay = document.getElementById('mobile-floating-contact');
+  } else {
+    // Overlay existiert bereits - Menu-Button mit neuen Daten aktualisieren
+    const menuBtn = mobileOverlay.querySelector('.mobile-overlay-menu-btn');
+    if (menuBtn) {
+      menuBtn.setAttribute('onclick', `openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')`);
+    }
+  }
+
+  let floatingContact = mobileOverlay.querySelector('.floating-contact');
+  if (!floatingContact) {
+    mobileOverlay.innerHTML += '<div class="floating-contact"></div>';
+    floatingContact = mobileOverlay.querySelector('.floating-contact');
+  }
+  
+  // Mobile Overlay anzeigen
+  mobileOverlay.classList.add('show');
+
+  // Body-Scroll deaktivieren
+  document.body.classList.add('no-scroll');
+  
+  return floatingContact;
+}
+
+// Vereinheitlichte Animation
+function slideInFloatingContact(floatingContactElement) {
+  // Element erst komplett ausblenden und Transition temporär deaktivieren
+  floatingContactElement.style.transition = 'none';
+  floatingContactElement.style.transform = 'translateX(100%)';
+  floatingContactElement.style.opacity = '0';
+  
+  // Sicherstellen dass das Element sichtbar ist
+  floatingContactElement.classList.add('show');
+  
+  // Kurz warten, dann Animation starten
+  setTimeout(() => {
+    floatingContactElement.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+    floatingContactElement.style.transform = 'translateX(0)';
+    floatingContactElement.style.opacity = '1';
+  }, 10);
+}
+
+// Hauptfunktion
+function showFloatingContact(name, email, phone, color, initials, contactId) {
+  // Alle anderen Kontakte deaktivieren
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
+  
+  // Aktuellen Kontakt aktivieren
+  const currentContact = document.getElementById(`contact-${contactId}`);
+  if (currentContact) {
+    currentContact.classList.add('active');
+  }
+
+  // HTML Template generieren
+  const floatingContactHtml = generateContactTemplate(name, email, phone, color, initials);
+
+  // Container je nach Bildschirmgröße erstellen
+  const floatingContact = window.innerWidth <= 768 ? createMobileFloatingContact(name, email, phone, color, initials) : createDesktopFloatingContact();
 
   // Inhalt setzen
   floatingContact.innerHTML = floatingContactHtml;
   
-  // Slide-in Animation starten
-  slideInFloatingContact();
+  // Animation starten
+  slideInFloatingContact(floatingContact);
 }
 
-function slideInFloatingContact() {
+// Desktop Schließen-Funktion
+function closeDesktopFloatingContact() {
   const floatingContact = document.getElementById('floating-contact');
+  if (floatingContact) {
+    floatingContact.classList.remove('show');
+  }
   
-  // Element erst komplett ausblenden und Transition temporär deaktivieren
-  floatingContact.style.transition = 'none';
-  floatingContact.style.transform = 'translateX(100%)';
-  floatingContact.style.opacity = '0';
-  
-  // Sicherstellen dass das Element sichtbar ist
-  floatingContact.classList.add('show');
-  
-  // Kurz warten, dann Animation starten
-  setTimeout(() => {
-    floatingContact.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
-    floatingContact.style.transform = 'translateX(0)';
-    floatingContact.style.opacity = '1';
-  }, 10);
+  // Alle aktiven Kontakte deselektieren
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
 }
+
+// Mobile Schließen-Funktion
+function closeMobileFloatingContact() {
+  const mobileOverlay = document.getElementById('mobile-floating-contact');
+  if (mobileOverlay) {
+    mobileOverlay.classList.remove('show');
+
+    // Body-Scroll wieder aktivieren
+    document.body.classList.remove('no-scroll');
+    
+    // Das floating-contact Element im Mobile-Overlay auch verstecken:
+    const mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
+    if (mobileFloatingContact) {
+      mobileFloatingContact.classList.remove('show');
+    }
+  }
+  
+  const allContacts = document.querySelectorAll('.contact');
+  allContacts.forEach(contact => contact.classList.remove('active'));
+}
+
+// Universelle Schließen-Funktion
+function closeFloatingContact() {
+  // Je nach Bildschirmgröße entsprechende Funktion aufrufen
+  if (window.innerWidth <= 768) {
+    closeMobileFloatingContact();
+  } else {
+    closeDesktopFloatingContact();
+  }
+}
+
+// Mobile Contact Menu öffnen/schließen
+function openMobileContactMenu(name, email, phone, color, initials) {
+  const mobileOverlay = document.getElementById('mobile-floating-contact');
+  
+  // Prüfen ob Menu bereits existiert
+  let contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
+  
+  if (!contactMenu) {
+    // Menu erstellen falls nicht vorhanden
+    mobileOverlay.innerHTML += `
+    <div class="mobile-contact-options">
+        <div class="mobile-edit-link" onclick="showEditContactOverlay({name:'${name}', email:'${email}', phone:'${(phone || '')}', color:'${color}', initials:'${initials}'})">
+            <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt="">
+            <span>Edit</span>
+        </div>
+        <div class="mobile-delete-link" onclick="deleteContact('${email}')">
+            <img src="./assets/icons-contacts/delete.svg" class="icon-delete" alt="">
+            <span>Delete</span>
+        </div>
+    </div>
+    `;
+    contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
+    
+    // Slide-in Animation starten
+    setTimeout(() => {
+      contactMenu.classList.add('show');
+    }, 10);
+    
+    // Click außerhalb des Menus schließt es
+    setTimeout(() => {
+      document.addEventListener('click', closeMobileMenuOnOutsideClick);
+    }, 100);
+  } else {
+    // Menu existiert bereits - mit neuen Daten aktualisieren
+    // Edit-Link aktualisieren
+    const editLink = contactMenu.querySelector('.mobile-edit-link');
+    if (editLink) {
+      editLink.setAttribute('onclick', `showEditContactOverlay({name:'${name}', email:'${email}', phone:'${(phone || '')}', color:'${color}', initials:'${initials}'})`);
+    }
+    
+    // Delete-Link aktualisieren
+    const deleteLink = contactMenu.querySelector('.mobile-delete-link');
+    if (deleteLink) {
+      deleteLink.setAttribute('onclick', `deleteContact('${email}')`);
+    }
+    
+    // Menu schließen falls bereits offen
+    closeMobileContactMenu();
+  }
+}
+
+// Mobile Contact Menu schließen
+function closeMobileContactMenu() {
+  const contactMenu = document.querySelector('.mobile-contact-options');
+  if (contactMenu) {
+    contactMenu.classList.remove('show');
+    
+    // Element nach Animation entfernen
+    setTimeout(() => {
+      if (contactMenu && contactMenu.parentNode) {
+        contactMenu.remove();
+      }
+      document.removeEventListener('click', closeMobileMenuOnOutsideClick);
+    }, 300);
+  }
+}
+
+function closeMobileMenuOnOutsideClick(event) {
+  const contactMenu = document.querySelector('.mobile-contact-options');
+  const menuBtn = document.querySelector('.mobile-overlay-menu-btn');
+  
+  // Prüft ob Klick weder auf Menu noch auf Button war
+  if (contactMenu && 
+      !contactMenu.contains(event.target) && 
+      !menuBtn.contains(event.target)) {
+    closeMobileContactMenu();
+  }
+}
+
+function editContact() {
+  closeMobileContactMenu();
+}
+
+function deleteContact() {
+  closeMobileContactMenu();
+}
+
+// Window resize listener
+window.addEventListener('resize', function() {
+  const mobileOverlay = document.getElementById('mobile-floating-contact');
+  const desktopFloatingContact = document.getElementById('floating-contact'); // im right-panel
+  
+  if (window.innerWidth > 768) {
+    // Zu Desktop gewechselt
+    if (mobileOverlay) {
+      const mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
+      if (mobileFloatingContact && mobileFloatingContact.classList.contains('show')) {
+        closeMobileFloatingContact();
+      }
+    }
+  } else {
+    // Zu Mobile gewechselt  
+    if (desktopFloatingContact && desktopFloatingContact.classList.contains('show')) {
+      closeDesktopFloatingContact();
+    }
+  }
+});
 
 // User löschen
 async function deleteContact(email) {
@@ -198,18 +393,6 @@ async function deleteContact(email) {
   }
 }
 
-// Funktion zum Schließen des Panels:
-function closeFloatingContact() {
-  const floatingContact = document.getElementById('floating-contact');
-  if (floatingContact) {
-    floatingContact.classList.remove('show');
-  }
-  
-  // Alle aktiven Kontakte deselektieren
-  const allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
-}
-
 // Add Contact Overlay HTML rendern
 function renderAddContactOverlay() {
   return `
@@ -220,34 +403,42 @@ function renderAddContactOverlay() {
               <path d="M16.0001 17.8642L9.46673 24.389C9.22229 24.6331 8.91118 24.7552 8.5334 24.7552C8.15562 24.7552 7.84451 24.6331 7.60007 24.389C7.35562 24.1449 7.2334 23.8342 7.2334 23.4569C7.2334 23.0796 7.35562 22.7689 7.60007 22.5248L14.1334 16L7.60007 9.47527C7.35562 9.23115 7.2334 8.92045 7.2334 8.54316C7.2334 8.16588 7.35562 7.85518 7.60007 7.61106C7.84451 7.36693 8.15562 7.24487 8.5334 7.24487C8.91118 7.24487 9.22229 7.36693 9.46673 7.61106L16.0001 14.1358L22.5334 7.61106C22.7778 7.36693 23.089 7.24487 23.4667 7.24487C23.8445 7.24487 24.1556 7.36693 24.4001 7.61106C24.6445 7.85518 24.7667 8.16588 24.7667 8.54316C24.7667 8.92045 24.6445 9.23115 24.4001 9.47527L17.8667 16L24.4001 22.5248C24.6445 22.7689 24.7667 23.0796 24.7667 23.4569C24.7667 23.8342 24.6445 24.1449 24.4001 24.389C24.1556 24.6331 23.8445 24.7552 23.4667 24.7552C23.089 24.7552 22.7778 24.6331 22.5334 24.389L16.0001 17.8642Z" fill="white"/>
             </svg>
           </button>
+
           <div class="overlay-contact-top-box">
             <img src="./assets/icons-header/logo-all-white.svg" alt="" class="icon-logo">
             <div class="overlay-contact-top-box-title">Add contact</div>
             <div class="overlay-add-contact-top-box-subtitle">Tasks are better with a team!</div>
           </div>
         </div>
+
         <div class="overlay-contact-bottom">
           <div class="overlay-contact-userbox">
             <div class="avatar-big-placeholder">
               <img src="./assets/icons-contacts/person-white.svg" alt="" class="icon-avatar-placeholder">
             </div>
+
             <div class="overlay-contact-form" aria-label="Add contact form">
               <div class="form-group">
                 <label for="overlay-add-name" class="visually-hidden">Name</label>
                 <input id="overlay-add-name" name="name" type="text" placeholder="Name">
                 <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
               </div>
+
               <div class="form-group">
                 <label for="overlay-add-email" class="visually-hidden">Email</label>
-                <input id="overlay-add-email" name="email" type="email" placeholder="Email">
+                <input id="overlay-add-email" name="email" type="text" placeholder="Email">
                 <img src="./assets/icons-signup/mail.svg" alt="" class="input-icon">
               </div>
+
               <div class="form-group">
                 <label for="overlay-add-phone" class="visually-hidden">Phone</label>
-                <input id="overlay-add-phone" name="phone" type="tel" placeholder="Phone">
+                <input id="overlay-add-phone" name="phone" type="text" placeholder="Phone">
                 <img src="./assets/icons-contacts/call.svg" alt="" class="input-icon">
               </div>
+
+              <div class="error-message"></div>
             </div>
+
             <div class="buttons-container">
               <button class="cancel-btn" onclick="closeContactOverlay()">
                 Cancel<img src="./assets/icons-contacts/cancel.png" alt="">
@@ -277,6 +468,7 @@ function renderEditContactOverlay(user) {
             <div class="overlay-contact-top-box">
                 <img src="./assets/icons-header/logo-all-white.svg" alt="" class="icon-logo">
                 <div class="overlay-contact-top-box-title">Edit contact</div>
+                <div class="overlay-add-contact-top-box-subtitle">Tasks are better with a team!</div>
             </div>
         </div>
 
@@ -289,20 +481,21 @@ function renderEditContactOverlay(user) {
                         <label for="overlay-edit-name" class="visually-hidden">Name</label>
                         <input id="overlay-edit-name" name="name" type="text" placeholder="Name" value="${user.name}">
                         <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
-                        <img src="./assets/icons-signup/person.svg" alt="" class="input-icon">
                     </div>
 
                     <div class="form-group">
                         <label for="overlay-edit-email" class="visually-hidden">Email</label>
-                        <input id="overlay-edit-email" name="email" type="email" placeholder="Email" value="${user.email}">                        
+                        <input id="overlay-edit-email" name="email" type="text" placeholder="Email" value="${user.email}">                        
                         <img src="./assets/icons-signup/mail.svg" alt="" class="input-icon">
                     </div>
 
                     <div class="form-group">
                         <label for="overlay-edit-phone" class="visually-hidden">Phone</label>
-                        <input id="overlay-edit-phone" name="phone" type="tel" placeholder="Phone" value="${user.phone || ''}">                        
+                        <input id="overlay-edit-phone" name="phone" type="text" placeholder="Phone" value="${user.phone || ''}">                        
                         <img src="./assets/icons-contacts/call.svg" alt="" class="input-icon">
                     </div>
+
+                    <div class="error-message"></div>
                 </div>
 
                 <div class="buttons-container">
@@ -323,6 +516,9 @@ function showAddContactOverlay() {
   // Backdrop anzeigen
   document.getElementById('overlay-contacts').classList.add('show');
   
+  // Body-Scroll deaktivieren
+  document.body.classList.add('no-scroll');
+  
   // Overlay einsliden (kleiner Delay für smooth Animation)
   setTimeout(() => {
       document.getElementById('overlay-add-contact').classList.add('show');
@@ -335,6 +531,9 @@ function showEditContactOverlay(userData) {
   
   // Backdrop anzeigen
   document.getElementById('overlay-contacts').classList.add('show');
+  
+  // Body-Scroll deaktivieren
+  document.body.classList.add('no-scroll');
   
   // Overlay einsliden (kleiner Delay für smooth Animation)
   setTimeout(() => {
@@ -352,6 +551,8 @@ function closeContactOverlay() {
     setTimeout(() => {
       document.getElementById('overlay-contacts').classList.remove('show');
       document.getElementById('overlay-add-contact-container').innerHTML = '';
+      // Body-Scroll wieder aktivieren
+      document.body.classList.remove('no-scroll');
     }, 300);
   }
   
@@ -360,44 +561,87 @@ function closeContactOverlay() {
     setTimeout(() => {
       document.getElementById('overlay-contacts').classList.remove('show');
       document.getElementById('overlay-edit-contact-container').innerHTML = '';
+      // Body-Scroll wieder aktivieren
+      document.body.classList.remove('no-scroll');
     }, 300);
   }
 }
 
-async function createContact() {
-  // Get form data
+async function handleContactValidation(isEdit = false, originalEmail = null) {
+  // Form data sammeln basierend auf Edit/Add Modus
+  const nameId = isEdit ? 'overlay-edit-name' : 'overlay-add-name';
+  const emailId = isEdit ? 'overlay-edit-email' : 'overlay-add-email';
+  const phoneId = isEdit ? 'overlay-edit-phone' : 'overlay-add-phone';
+  
   const formData = {
-    name: document.getElementById('overlay-add-name').value.trim(),
-    email: document.getElementById('overlay-add-email').value.trim(),
-    phone: document.getElementById('overlay-add-phone').value.trim()
+    name: document.getElementById(nameId).value.trim(),
+    email: document.getElementById(emailId).value.trim(),
+    phone: document.getElementById(phoneId).value.trim()
   };
-  
-  // Minimale Validierung  
-  if (!formData.name.trim() || !formData.email.trim()) {
-    return; // Einfach abbrechen bei fehlenden Pflichtfeldern
+
+  // Form groups für error styling
+  const nameGroup = document.getElementById(nameId).closest('.form-group');
+  const emailGroup = document.getElementById(emailId).closest('.form-group');
+  const phoneGroup = document.getElementById(phoneId).closest('.form-group');
+  const errorMessage = document.querySelector('.error-message');
+
+  // Reset previous errors
+  [nameGroup, emailGroup, phoneGroup].forEach(group => {
+    group.classList.remove("input-error");
+  });
+  errorMessage.classList.remove("show");
+  errorMessage.textContent = "";
+
+  // Basic form validation
+  const validation = validateContactForm(formData);
+  if (!validation.success) {
+    errorMessage.textContent = validation.errors[0]; // Erste Fehlermeldung anzeigen
+    errorMessage.classList.add("show");
+    
+    // Error styling basierend auf Fehlertyp
+    if (validation.errors[0].includes("Name")) {
+      nameGroup.classList.add("input-error");
+    } else if (validation.errors[0].includes("Email is required")) {
+      emailGroup.classList.add("input-error");
+    } else if (validation.errors[0].includes("valid email")) {
+      emailGroup.classList.add("input-error");
+    } else if (validation.errors[0].includes("phone")) {
+      phoneGroup.classList.add("input-error");
+    }
+    return null; // Validation failed
   }
-  
-  // Email-Format prüfen
-  if (!isValidEmail(formData.email)) {
-    return; // Einfach abbrechen bei ungültiger Email
+
+  // Check if email already exists (außer bei Edit mit unveränderter Email)
+  if (!isEdit || (isEdit && formData.email !== originalEmail)) {
+    const emailExists = await checkUserExists(formData.email);
+    if (emailExists) {
+      errorMessage.textContent = "A user with this email address already exists.";
+      errorMessage.classList.add("show");
+      emailGroup.classList.add("input-error");
+      return null; // Email exists
+    }
   }
-  
-  // Check if contact already exists
-  const contactExists = await checkUserExists(formData.email);
-  if (contactExists) {
-    return; // Einfach abbrechen wenn Kontakt bereits existiert
+
+  return formData; // Validation successful, return form data
+}
+
+async function createContact() {
+  // Validation durchführen
+  const validatedData = await handleContactValidation(false);
+  if (!validatedData) {
+    return; // Validation failed, stop here
   }
-  
+
   try {
     // Generate additional contact info automatically
-    const userInitials = getInitials(formData.name);
-    const userColor = getColorFromName(formData.name);
+    const userInitials = getInitials(validatedData.name);
+    const userColor = getColorFromName(validatedData.name);
     
     // Create contact data object
     const userData = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
+      name: validatedData.name,
+      email: validatedData.email,
+      phone: validatedData.phone,
       password: "", // Placeholder, not used for contacts
       initials: userInitials,
       color: userColor
@@ -413,9 +657,17 @@ async function createContact() {
 
       // Erfolgsmeldung anzeigen
       showCreateSuccessMessage();
+    } else {
+      // Server-Fehler anzeigen
+      const errorMessage = document.querySelector('.error-message');
+      errorMessage.textContent = "Failed to create contact. Please try again.";
+      errorMessage.classList.add("show");
     }
   } catch (error) {
     console.error('Create contact error:', error);
+    const errorMessage = document.querySelector('.error-message');
+    errorMessage.textContent = "An unexpected error occurred. Please try again.";
+    errorMessage.classList.add("show");
   }
 }
 
@@ -471,28 +723,42 @@ function getColorFromName(name) {
     return `hsl(${hue}, 70%, 50%)`;
 }
 
-/**
- * Validates email format
- * @param {string} email - Email to validate
- * @returns {boolean} - Returns true if email is valid
- */
-function isValidEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+function isValidPhone(phone) {
+  if (!phone) return true; // Phone ist optional
+  
+  // Erlaubt: Zahlen, Leerzeichen, Bindestriche, Plus
+  // Mindestens 6, höchstens 15 Ziffern
+  const phoneRegex = /^[\+\-\s\d]+$/;
+  const digitsOnly = phone.replace(/[\+\-\s]/g, '');
+  
+  return phoneRegex.test(phone) && digitsOnly.length >= 6 && digitsOnly.length <= 15;
+}
+
+function isValidEmailBrowser(email) {
+  const input = document.createElement('input');
+  input.type = 'email';
+  input.value = email;
+  return input.validity.valid;
 }
 
 function validateContactForm(formData) {
   const errors = [];
   
-  // Check if all fields are filled
+  // Name validation
   if (!formData.name.trim()) {
-    errors.push("Name is required");
+    errors.push("Name is required.");
   }
   
+  // Email validation
   if (!formData.email.trim()) {
-    errors.push("Email is required");
-  } else if (!isValidEmail(formData.email)) {
-    errors.push("Please enter a valid email address");
+    errors.push("Email is required.");
+  } else if (!isValidEmailBrowser(formData.email)) {
+    errors.push("Please enter a valid email address.");
+  }
+  
+  // Phone validation (optional, but if provided must be valid)
+  if (formData.phone.trim() && !isValidPhone(formData.phone)) {
+    errors.push("Please enter a valid phone number.");
   }
   
   return {
@@ -521,31 +787,12 @@ async function checkUserExists(email) {
 }
 
 async function updateContact(originalEmail, originalColor) {
-  // Get form data
-  const formData = {
-    name: document.getElementById('overlay-edit-name').value.trim(),
-    email: document.getElementById('overlay-edit-email').value.trim(),
-    phone: document.getElementById('overlay-edit-phone').value.trim()
-  };
-  
-  // Minimale Validierung ohne showMessage
-  if (!formData.name.trim() || !formData.email.trim()) {
-    return; // Einfach abbrechen bei fehlenden Pflichtfeldern
+  // Validation durchführen
+  const validatedData = await handleContactValidation(true, originalEmail);
+  if (!validatedData) {
+    return; // Validation failed, stop here
   }
-  
-  // Email-Format prüfen
-  if (!isValidEmail(formData.email)) {
-    return; // Einfach abbrechen bei ungültiger Email
-  }
-  
-  // Wenn Email geändert wurde, prüfen ob neue Email bereits existiert
-  if (formData.email !== originalEmail) {
-    const emailExists = await checkUserExists(formData.email);
-    if (emailExists) {
-      return; // Einfach abbrechen wenn neue Email bereits existiert
-    }
-  }
-  
+
   try {
     // Alle User laden um den richtigen Firebase-Key zu finden
     const response = await fetch(`${BASE_URL}users.json`);
@@ -563,14 +810,14 @@ async function updateContact(originalEmail, originalColor) {
     }
     
     if (userKey) {
-      // Neue Initialen und Farbe generieren falls Name geändert wurde
-      const userInitials = getInitials(formData.name);
+      // Neue Initialen generieren falls Name geändert wurde
+      const userInitials = getInitials(validatedData.name);
       
-      // Update-Daten zusammenstellen (nur geänderte Felder)
+      // Update-Daten zusammenstellen
       const updateData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
+        name: validatedData.name,
+        email: validatedData.email,
+        phone: validatedData.phone,
         initials: userInitials,
         color: originalColor // die Farbe bleibt gleich
       };
@@ -591,13 +838,21 @@ async function updateContact(originalEmail, originalColor) {
         closeFloatingContact();
         closeContactOverlay();
       } else {
-        console.error("Failed to update contact:", updateResponse.status);
+        // Server-Fehler anzeigen
+        const errorMessage = document.querySelector('.error-message');
+        errorMessage.textContent = "Failed to update contact. Please try again.";
+        errorMessage.classList.add("show");
       }
     } else {
-      console.error("Contact not found");
+      const errorMessage = document.querySelector('.error-message');
+      errorMessage.textContent = "Contact not found. Please try again.";
+      errorMessage.classList.add("show");
     }
   } catch (error) {
     console.error('Update contact error:', error);
+    const errorMessage = document.querySelector('.error-message');
+    errorMessage.textContent = "An unexpected error occurred. Please try again.";
+    errorMessage.classList.add("show");
   }
 }
 
