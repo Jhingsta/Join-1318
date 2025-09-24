@@ -552,12 +552,12 @@ input::placeholder {
   }
   .mobile-edit-link:active,
   .mobile-delete-link:active {
-  font-weight: 700;
-  color: #005DFF;
+    font-weight: 700;
+    color: #005DFF;
   }
   .mobile-edit-link:active .icon-edit,
   .mobile-delete-link:active .icon-delete {
-  filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99%) contrast(106%);
+    filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99%) contrast(106%);
   }
   .mobile-overlay-menu-btn {
     width: 64px;
