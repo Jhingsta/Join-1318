@@ -1,14 +1,11 @@
 body {
-    overflow: auto;
-}
-
-body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: white;
     font-size: 16px;
     font-weight: 400;
+    overflow: hidden;
 }
 
 .layout {
@@ -20,19 +17,18 @@ body {
 }
 
 main {
-    min-height: calc(100vh - 100px);
+    display: flex;
     width: 100%;
     max-width: 518px;
     overflow-y: auto;
-    height: calc(100vh - 80px);
+    height: calc(100vh - 100px);
 }
 
 .main-container {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding: 64px 24px 0 24px;
-    box-sizing: border-box;
+    padding: 64px 24px 86px 24px;
     background-color: #fff;
 }
 
@@ -89,8 +85,6 @@ main {
 }
 
 .subtask-edit-input {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
     border: 1px solid #ccc;
     padding: 4px 8px;
     border-radius: 6px;
@@ -105,7 +99,6 @@ main {
     border-color: transparent;
     /* falls du gar keinen sichtbaren Rahmen willst */
 }
-
 
 .title-container {
     width: 100%;
@@ -125,13 +118,8 @@ main {
     background: #FFFFFF;
     border: none;
     border-bottom: 1px solid #D1D1D1;
-    box-sizing: border-box;
-    font-family: "Open Sans", sans-serif;
     font-weight: 600;
-    font-style: normal;
     font-size: 32px;
-    line-height: 120%;
-    letter-spacing: 0;
 }
 
 .title-input:hover {
@@ -139,21 +127,12 @@ main {
 }
 
 .title-input::placeholder {
-    width: 172px;
-    height: 38px;
     color: #D1D1D1;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 32px;
-    line-height: 120%;
-    letter-spacing: 0;
-    opacity: 1;
 }
 
 .title-input:focus {
     outline: none;
-
     border-bottom: 1px solid #005DFF;
 }
 
@@ -167,12 +146,9 @@ main {
 
 .error-message {
     color: #FF4D4D;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
     font-size: 14px;
     display: none;
 }
-
 
 .description-container {
     width: 100%;
@@ -181,7 +157,6 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    box-sizing: border-box;
     margin-bottom: 12px;
 }
 
@@ -192,28 +167,17 @@ main {
     display: flex;
     align-items: center;
     gap: 4px;
-    opacity: 1;
     padding: 0 4px;
-    box-sizing: border-box;
 }
 
 .desc-title {
-    font-family: 'Open Sans', sans-serif;
     font-weight: 700;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #42526E;
 }
 
 .desc-optional {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #42526E
 }
 
@@ -227,27 +191,14 @@ main {
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
     padding: 8px 12px;
-    box-sizing: border-box;
-    font-family: 'Open Sans', sans-serif;
     font-size: 19px;
-    line-height: 120%;
     color: #000000;
     position: relative;
-    font-weight: 400;
-    font-style: normal;
 }
 
 .description-input::placeholder {
-    width: 172px;
-    height: 38px;
     color: #D1D1D1;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
-    opacity: 1;
 }
 
 .due-date-container {
@@ -257,21 +208,12 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    opacity: 1;
-    box-sizing: border-box;
     margin-bottom: 24px;
 }
 
 .due-date-header {
-    width: 86px;
-    height: 23px;
-    opacity: 1;
-    font-family: 'Open Sans', sans-serif;
     font-weight: 700;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #42526E;
     display: flex;
     align-items: center;
@@ -284,11 +226,10 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    opacity: 1;
+    cursor: pointer;
     padding: 12px 16px;
     background-color: #FFFFFF;
     border-bottom: 1px solid #D1D1D1;
-    box-sizing: border-box;
 }
 
 .due-date-content:hover {
@@ -300,27 +241,25 @@ main {
     /* Chrome, Safari, Edge */
 }
 
-.due-date-input::placeholder {
-    color: #999;
-}
-
 .due-date-input {
     height: 23px;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #000000;
     border-bottom: none;
     padding: 0 4px;
-    box-sizing: border-box;
     display: flex;
     align-items: center;
     padding: 0.5em;
     outline: none;
     border-bottom: none !important;
     box-shadow: none !important;
+    /* border: none;         
+    outline: none;      
+    box-shadow: none; */
+}
+
+.due-date-input::placeholder {
+    color: #999;
 }
 
 .due-date-input:focus {
@@ -333,7 +272,6 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 1;
     cursor: pointer;
 }
 
@@ -345,7 +283,6 @@ main {
     background-repeat: no-repeat;
 }
 
-
 .priority-container {
     width: 100%;
     max-width: 440px;
@@ -353,22 +290,14 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    opacity: 1;
-    box-sizing: border-box;
     margin-bottom: 24px;
 }
 
 .priority-header {
-    width: 72px;
     height: 23px;
-    font-family: 'Open Sans', sans-serif;
     font-weight: 700;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #42526E;
-    opacity: 1;
 }
 
 .priority-content {
@@ -379,7 +308,6 @@ main {
     gap: 16px;
     padding: 2px;
     justify-content: space-between;
-    box-sizing: border-box;
 }
 
 .priority-content button:nth-child(1):hover {
@@ -455,14 +383,11 @@ main {
     cursor: pointer;
     width: 136px;
     height: 51px;
-    opacity: 1;
     padding: 18px 10px;
     gap: 10px;
     border-radius: 10px;
     box-shadow: 0px 0px 4px 0px #00000029;
-    font-family: 'Open Sans', sans-serif;
     font-size: 19px;
-    font-weight: 400;
     border-bottom: 2px solid transparent;
 }
 
@@ -472,8 +397,6 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    opacity: 1;
-    box-sizing: border-box;
     margin-bottom: 24px;
 }
 
@@ -484,8 +407,6 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    opacity: 1;
-    box-sizing: border-box;
     margin-bottom: 24px;
 }
 
@@ -496,31 +417,19 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    opacity: 1;
-    box-sizing: border-box;
     margin-bottom: 24px;
 }
-
 
 .assigned-header {
     width: 199px;
     height: 23px;
-    font-family: 'Open Sans', sans-serif;
     font-weight: 700;
     font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #42526E;
-    opacity: 1;
-}
-
-.assigned-header span.optional {
-    font-weight: 400;
 }
 
 .assigned-content {
-
     position: relative;
     cursor: pointer;
     width: 100%;
@@ -531,8 +440,6 @@ main {
     align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid #D1D1D1;
-    box-sizing: border-box;
-    opacity: 1;
 }
 
 #selected-avatars {
@@ -556,7 +463,6 @@ main {
 .category-content {
     position: relative;
     cursor: pointer;
-
     width: 100%;
     max-width: 440px;
     height: 48px;
@@ -565,8 +471,6 @@ main {
     align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid #D1D1D1;
-    box-sizing: border-box;
-    opacity: 1;
 }
 
 .task-content-addtask {
@@ -580,13 +484,10 @@ main {
     align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid #D1D1D1;
-    box-sizing: border-box;
-    opacity: 1;
     overflow: visible;
 }
 
 .task-container {
-
     width: 100%;
     max-width: 440px;
     min-height: 79px;
@@ -670,12 +571,8 @@ main {
     display: block;
 }
 
-
 .assigned-text {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
     font-size: 19px;
-    line-height: 120%;
     color: #000000;
     opacity: 1;
 }
@@ -687,14 +584,12 @@ main {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    opacity: 1;
 }
 
 .assigned-arrow-icon {
     width: 24px;
     height: 24px;
 }
-
 
 #assigned-dropdown {
     width: 100%;
@@ -722,11 +617,7 @@ main {
 }
 
 .assigned-wrapper span {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
     vertical-align: middle;
     height: 23px;
     display: flex;
@@ -734,7 +625,6 @@ main {
 }
 
 .dropdown-item {
-
     height: 56px;
     padding: 0 16px;
     display: flex;
@@ -743,12 +633,8 @@ main {
     cursor: pointer;
 }
 
-
 .subtask-text {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
     font-size: 19px;
-    line-height: 120%;
     color: #000000;
     opacity: 1;
 }
@@ -761,33 +647,28 @@ main {
     gap: 8px;
 }
 
-
 .button-container {
     position: fixed;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: auto;
+    bottom: 55px;
+    right: 42px;
     display: flex;
     justify-content: flex-end;
     gap: 25px;
-    padding: 24px;
-    background: #fff;
 }
 
 .clear-btn {
     display: flex;
     height: 60px;
     background-color: white;
-    color: #333;
-    border: 1px solid #ccc;
+    color: #647188;
+    border: 1px solid #647188;
     border-radius: 10px;
     font-size: 23px;
     cursor: pointer;
     padding: 16px 10px;
     gap: 10px;
-    font-weight: 400;
     justify-content: center;
+    align-items: center;
 }
 
 .clear-btn:hover {
@@ -805,7 +686,6 @@ main {
 }
 
 .clear-btn:active img {
-
     filter: invert(34%) sepia(91%) saturate(5000%) hue-rotate(200deg);
 }
 
@@ -820,7 +700,6 @@ main {
     font-size: 23px;
     cursor: pointer;
     gap: 4px;
-    font-weight: 400;
 }
 
 .create-btn:hover {
@@ -853,14 +732,6 @@ main {
     /* Bezugspunkt für absolutes Dropdown */
 }
 
-
-.end-spacer {
-    width: 100%;
-    max-width: 440px;
-    height: 48px;
-    opacity: 0;
-}
-
 .assigned-content {
     position: relative;
     display: flex;
@@ -879,11 +750,7 @@ main {
     display: none;
     border: none;
     outline: none;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
     vertical-align: middle;
     height: 23px;
     display: flex;
@@ -950,7 +817,6 @@ main {
     width: 100%;
 }
 
-
 .assigned-content {
     display: flex;
     align-items: center;
@@ -976,9 +842,7 @@ main {
     background-color: #D2E3FF;
 }
 
-/* ======================
-   Dropdown Zeilen
-   ====================== */
+/* Dropdown Zeilen */
 .dropdown-item {
     background-color: white;
     /* Standardfarbe */
@@ -1007,9 +871,7 @@ main {
     background-color: #4589FF;
 }
 
-/* ======================
-   Checkbox Wrapper
-   ====================== */
+/* Checkbox Wrapper */
 .checkbox-wrapper {
     position: relative;
     width: 24px;
@@ -1020,9 +882,6 @@ main {
     cursor: pointer;
 }
 
-/* ======================
-   Checkbox Image
-   ====================== */
 .checkbox-wrapper img {
     width: 100%;
     height: 100%;
@@ -1030,9 +889,7 @@ main {
     z-index: 1;
 }
 
-/* ======================
-   Hover Overlay (weißer Kreis)
-   ====================== */
+/* Hover Overlay (weißer Kreis) */
 .checkbox-wrapper .hover-overlay {
     position: absolute;
     top: 50%;
@@ -1048,14 +905,10 @@ main {
     transition: opacity 0.2s, background 0.2s;
 }
 
-/* ======================
-   Unselektierte Zeilen
-   ====================== */
-
 /* Hover über Checkbox → Overlay sichtbar */
 .dropdown-item:not(.active) .checkbox-wrapper:hover .hover-overlay {
     opacity: 1;
-    background: #FFFFFF; 
+    background: #FFFFFF;
 }
 
 /* Checkbox in unselektierter Zeile → immer sichtbar */
@@ -1063,10 +916,6 @@ main {
     opacity: 1;
     filter: none; /* normale Farbe */
 }
-
-/* ======================
-   Selektierte Zeile
-   ====================== */
 
 /* Selektiert + nicht hover Zeile + nicht checked → unsichtbar */
 .dropdown-item.active:not(:hover) .checkbox-wrapper:not(.checked) img {
@@ -1113,12 +962,6 @@ main {
     z-index: 0;
 }
 
-@media (max-width: 1350px) {
-  .main-container {
-    padding: 40px 20px 0 20px;
-  }
-}
-
 @media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr;
@@ -1128,29 +971,58 @@ main {
   }
   main {
     order: 1;
-    min-height: 100vh;
+    max-width: none;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+  .main-container {
+    padding: 64px 10px 0 10px;
     margin-bottom: 100px;
   }
-
-  .main-container {
-    padding: 64px 16px 96px 16px;
+  .desc-title,
+  .desc-optional,
+  .description-input,
+  .description-input::placeholder,
+  .due-date-header,
+  .due-date-input,
+  .priority-header,
+  .priority-frame,
+  .assigned-header,
+  .assigned-text,
+  .assigned-wrapper span,
+  .subtask-text,
+  .assigned-input {
+    font-size: 16px;
   }
-
-  .button-container {
-    padding: 16px;
-    gap: 16px;
-    bottom: 100px;
-    left: 0;
-    right: 0;
-    justify-content: center;
-    z-index: 10;
-  }
-
-  .priority-frame
-
   .priority-content {
     gap: 12px;
   }
+  .priority-frame {
+    gap: 8px;
+  }
+  .priority-frame {
+    width: 120px;
+  }
+  .button-container {
+    padding: 8px 0;
+    gap: 0;
+    bottom: 85px;
+    left: 0;
+    right: 0;
+    justify-content: space-evenly;
+    background-color: white;
+  }
+  .create-btn {
+    font-size: 19px;
+  }
 }
 
-
+@media (max-width: 425px) {
+  .priority-content {
+    gap: 5px;
+  }
+  .priority-frame {
+    width: 90px;
+    padding: 18px 5px;
+  }
+}

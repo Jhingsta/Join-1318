@@ -1,16 +1,16 @@
 // Direkt beim Laden prüfen, ob ein User existiert, sonst zur Login-Seite weiterleiten
-function enforceAuthentication() {
-  const user = getCurrentUser();
+// function enforceAuthentication() {
+//   const user = getCurrentUser();
 
-  // Prüfen, ob URL-Parameter "from=visitor" gesetzt ist
-  const urlParams = new URLSearchParams(window.location.search);
-  const isVisitorMode = urlParams.get("from") === "visitor";
+//   // Prüfen, ob URL-Parameter "from=visitor" gesetzt ist
+//   const urlParams = new URLSearchParams(window.location.search);
+//   const isVisitorMode = urlParams.get("from") === "visitor";
 
-  // Wenn kein User vorhanden ist UND kein Visitor-Modus aktiv → Redirect
-  if (!user && !isVisitorMode) {
-    window.location.href = "/login.html";
-  }
-}
+//   // Wenn kein User vorhanden ist UND kein Visitor-Modus aktiv → Redirect
+//   if (!user && !isVisitorMode) {
+//     window.location.href = "/index.html";
+//   }
+// }
 
 function getCurrentUser() {
   const userJson = localStorage.getItem("currentUser");

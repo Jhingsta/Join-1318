@@ -19,10 +19,11 @@ titleInput.addEventListener("input", () => {
     }
 });
 
-const dueDateInput = document.querySelector(".due-date-input");
 const dueDateIcon = document.querySelector(".due-date-icon");
 const dueDateContainer = document.querySelector(".due-date-content");
 const dueDateError = document.querySelector(".due-date-container .error-message");
+const dueDateInput = document.querySelector(".due-date-input");
+
 
 // Blur-Event (Validierung)
 dueDateInput.addEventListener("blur", () => {
@@ -136,20 +137,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // ---------- Helpers ----------
-    function getInitials(name) {
-        if (!name) return "";
-        return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
-    }
-
-    function getColor(name) {
-        let hash = 0;
-        for (let i = 0; i < name.length; i++) {
-            hash = name.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        return `hsl(${Math.abs(hash) % 360},70%,50%)`;
-    }
-
     // ---------- Update Selected Avatars ----------
     function updateSelectedAvatars() {
         selectedAvatarsContainer.innerHTML = "";
@@ -161,7 +148,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         selected.forEach(u => {
             const a = document.createElement('div');
             a.className = 'selected-avatar assigned-text';
-            a.textContent = getInitials(u.name);
+            a.textContent = u.initials;
             a.style.width = '28px';
             a.style.height = '28px';
             a.style.borderRadius = '50%';
@@ -171,7 +158,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             a.style.fontWeight = 'bold';
             a.style.fontSize = '13px';
             a.style.color = 'white';
-            a.style.backgroundColor = getColor(u.name);
+            a.style.backgroundColor = u.color;
             a.style.marginRight = '4px';
             a.style.flex = '0 0 auto';
             selectedAvatarsContainer.appendChild(a);
@@ -194,8 +181,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const avatar = document.createElement('div');
             avatar.className = 'dropdown-avatar';
-            avatar.textContent = getInitials(user.name);
-            avatar.style.backgroundColor = getColor(user.name);
+            avatar.textContent = user.initials;
+            avatar.style.backgroundColor = user.color;
 
             const span = document.createElement('span');
             span.textContent = user.name;
@@ -409,10 +396,13 @@ function getTaskData() {
 
     // 3. Due Date
     const dueDateInput = document.querySelector(".due-date-input");
-    let dueDate = dueDateInput.value; // yyyy-mm-dd
+    let dueDate = dueDateInput.value; // Standardwert: yyyy-mm-dd
+    let formattedDate = "";
+
     if (dueDate) {
         const [year, month, day] = dueDate.split("-");
-        dueDate = `${day}.${month}.${year}`;
+        // Umwandlung in dd/mm/yyyy
+        formattedDate = `${day}/${month}/${year}`;
     }
 
     // 4. Priority
@@ -434,7 +424,7 @@ function getTaskData() {
     return { title, description, dueDate, priority, assignedTo, category, subtasks };
 }
 
-const resetBtn = document.querySelector(".guest-btn");
+const resetBtn = document.querySelector(".clear-btn");
 resetBtn.addEventListener("click", () => {
     // Felder zurücksetzen
     document.querySelector(".title-input").value = "";
@@ -493,7 +483,7 @@ async function saveTaskToFirebase(taskData) {
 
 //Create Task Button mit Firebase verbinden
 
-const createTaskBtn = document.querySelector(".sign-up-btn");
+const createTaskBtn = document.querySelector(".create-btn");
 
 createTaskBtn.addEventListener("click", async (event) => {
     event.preventDefault(); // verhindert das Standard-Submit
