@@ -129,7 +129,6 @@ main {
 .title-input::placeholder {
     color: #D1D1D1;
     font-size: 32px;
-    opacity: 1;
 }
 
 .title-input:focus {
@@ -168,7 +167,6 @@ main {
     display: flex;
     align-items: center;
     gap: 4px;
-    opacity: 1;
     padding: 0 4px;
 }
 
@@ -201,7 +199,6 @@ main {
 .description-input::placeholder {
     color: #D1D1D1;
     font-size: 19px;
-    opacity: 1;
 }
 
 .due-date-container {
@@ -211,12 +208,10 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    opacity: 1;
     margin-bottom: 24px;
 }
 
 .due-date-header {
-    opacity: 1;
     font-weight: 700;
     font-size: 19px;
     color: #42526E;
@@ -231,7 +226,6 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    opacity: 1;
     cursor: pointer;
     padding: 12px 16px;
     background-color: #FFFFFF;
@@ -278,7 +272,6 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 1;
     cursor: pointer;
 }
 
@@ -297,7 +290,6 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    opacity: 1;
     margin-bottom: 24px;
 }
 
@@ -306,7 +298,6 @@ main {
     font-weight: 700;
     font-size: 19px;
     color: #42526E;
-    opacity: 1;
 }
 
 .priority-content {
@@ -392,7 +383,6 @@ main {
     cursor: pointer;
     width: 136px;
     height: 51px;
-    opacity: 1;
     padding: 18px 10px;
     gap: 10px;
     border-radius: 10px;
@@ -407,7 +397,6 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    opacity: 1;
     margin-bottom: 24px;
 }
 
@@ -418,7 +407,6 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    opacity: 1;
     margin-bottom: 24px;
 }
 
@@ -429,7 +417,6 @@ main {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    opacity: 1;
     margin-bottom: 24px;
 }
 
@@ -440,7 +427,6 @@ main {
     font-style: normal;
     font-size: 19px;
     color: #42526E;
-    opacity: 1;
 }
 
 .assigned-content {
@@ -454,7 +440,6 @@ main {
     align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid #D1D1D1;
-    opacity: 1;
 }
 
 #selected-avatars {
@@ -486,7 +471,6 @@ main {
     align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid #D1D1D1;
-    opacity: 1;
 }
 
 .task-content-addtask {
@@ -500,7 +484,6 @@ main {
     align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid #D1D1D1;
-    opacity: 1;
     overflow: visible;
 }
 
@@ -601,7 +584,6 @@ main {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    opacity: 1;
 }
 
 .assigned-arrow-icon {
@@ -748,14 +730,6 @@ main {
 .task-container {
     position: relative;
     /* Bezugspunkt für absolutes Dropdown */
-}
-
-
-.end-spacer {
-    width: 100%;
-    max-width: 440px;
-    height: 48px;
-    opacity: 0;
 }
 
 .assigned-content {

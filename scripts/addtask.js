@@ -424,7 +424,7 @@ function getTaskData() {
     return { title, description, dueDate, priority, assignedTo, category, subtasks };
 }
 
-const resetBtn = document.querySelector(".guest-btn");
+const resetBtn = document.querySelector(".clear-btn");
 resetBtn.addEventListener("click", () => {
     // Felder zurücksetzen
     document.querySelector(".title-input").value = "";
@@ -483,7 +483,7 @@ async function saveTaskToFirebase(taskData) {
 
 //Create Task Button mit Firebase verbinden
 
-const createTaskBtn = document.querySelector(".sign-up-btn");
+const createTaskBtn = document.querySelector(".create-btn");
 
 createTaskBtn.addEventListener("click", async (event) => {
     event.preventDefault(); // verhindert das Standard-Submit
