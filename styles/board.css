@@ -53,7 +53,6 @@ main {
 
 .searchbar {
     width: 312px;
-    height: 48px;
     border: 1px solid #a8a8a8;
     border-radius: 10px;
     display: flex;
@@ -64,26 +63,6 @@ main {
 
 .searchbar:hover {
     border-color: #4589ff;
-}
-
-.searchbar svg:hover path {
-    fill: #4589FF;
-}
-
-.searchbar svg:active path {
-    fill: #005DFF;
-}
-
-.icon-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.2s;
-}
-
-.icon-wrapper:hover {
-    background-color: #E3EEFF;
 }
 
 input {
@@ -98,16 +77,28 @@ input {
     width: 100%;
 }
 
-.search-icon {
-    width: 32px;
-    height: 32px;
-    margin: 0 10px;
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.search-icon-clear {
-    width: 28px;
-    height: 28px;
+.searchbar-icon {
+    width: 24px;
+    height: 24px;
     margin: 0 10px;
+    color: #42526E;
+    border-radius: 12px;
+}
+
+.icon-wrapper:hover .searchbar-icon {
+    color: #4589FF;
+    background-color: #E3EEFF;
+}
+
+.icon-wrapper:active .searchbar-icon {
+    color: #005DFF;
+    background-color: none;
 }
 
 .create-btn {
@@ -907,10 +898,6 @@ input {
         gap: 20px;
     }
 
-    .searchbar {
-        width: 280px;
-    }
-
     .add-task-btn {
         font-size: 18px;
         padding: 12px 8px;
@@ -1222,31 +1209,6 @@ input {
     }
 }
 
-/* Standardfarbe der Lupe */
-#search-icon #search-path {
-    fill: #42526E;
-    transition: fill 0.15s ease;
-}
-
-/* Hover → hellblau */
-#search-icon:hover #search-path {
-    fill: #4589FF;
-}
-
-/* Klick → dunkelblau */
-#search-icon.active #search-path {
-    fill: #005DFF;
-}
-
-/* Hover-Kreis bleibt unverändert */
-#search-icon:hover {
-    background-color: #D2E3FF;
-}
-
-#search-icon.active {
-    background-color: transparent;
-}
-
 .svg-button:hover svg rect {
     stroke: #005DFF;
 }
@@ -1264,7 +1226,6 @@ input {
     stroke: #A8A8A8;
     /* Icon-Farbe beim Klicken */
 }
-
 
 .svg-button svg.disabled {
     opacity: 0.5;
