@@ -13,7 +13,6 @@ async function loadTasks() {
   }
 }
 
-
 async function createTask(taskData) {
   const defaultTask = {
     title: "",
