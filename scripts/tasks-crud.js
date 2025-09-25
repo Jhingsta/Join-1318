@@ -2,15 +2,17 @@ const BASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.a
 
 async function loadTasks() {
   try {
-    const response = await fetch(`${BASE_URL}tasks.json`);
-    const data = await response.json();
-    const tasks = firebaseObjectToArray(data);
-    return tasks; // gibt einfach die geladenen Tasks zurück
+      const response = await fetch(`${BASE_URL}tasks.json`);
+      const data = await response.json();
+      // Umwandlung in Array mit id-Feld
+      const tasks = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+      return tasks;
   } catch (error) {
-    console.error("Error loading tasks:", error);
-    return []; // im Fehlerfall leeres Array zurückgeben
+      console.error("Error loading tasks:", error);
+      return [];
   }
 }
+
 
 async function createTask(taskData) {
   const defaultTask = {
