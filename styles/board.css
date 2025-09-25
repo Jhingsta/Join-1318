@@ -60,37 +60,30 @@ main {
     justify-content: space-between;
     align-items: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    padding-right: 16px;
 }
 
 .searchbar:hover {
     border-color: #4589ff;
 }
 
-.searchbar svg:hover {
-    background-color: #E3EEFF;
-    width: 32px;
-    /* kannst du weglassen, ist eh schon gesetzt */
-    height: 32px;
-    opacity: 1;
-    border-radius: 12px;
-    cursor: pointer;
-}
-
 .searchbar svg:hover path {
     fill: #4589FF;
-    /* Lupen-Farbe */
-}
-
-/* Active */
-.searchbar svg:active {
-    background-color: transparent;
-    /* Hintergrund weg */
 }
 
 .searchbar svg:active path {
     fill: #005DFF;
-    /* Klick-Farbe */
+}
+
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.icon-wrapper:hover {
+    background-color: #E3EEFF;
 }
 
 input {
@@ -101,18 +94,20 @@ input {
     font-size: 16px;
     outline: none;
     color: black;
+    border-right: 1px solid #d1d1d1;
     width: 100%;
 }
 
-
-#search-icon {
+.search-icon {
     width: 32px;
     height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    transition: background-color 0.2s ease;
+    margin: 0 10px;
+}
+
+.search-icon-clear {
+    width: 28px;
+    height: 28px;
+    margin: 0 10px;
 }
 
 .create-btn {
@@ -913,7 +908,7 @@ input {
     }
 
     .searchbar {
-        width: 250px;
+        width: 280px;
     }
 
     .add-task-btn {
