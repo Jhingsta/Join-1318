@@ -26,77 +26,111 @@ function getCurrentUserName() {
 
 function updateGreeting() {
     const greetingElement = document.getElementById('greeting-time');
-    if (greetingElement) {
-        const greeting = getGreetingByTime();
-        const userName = getCurrentUserName();
-        
-        // NEU: Prüfung ob Guest oder normaler User
-        if (userName === 'Guest') {
-            // NEU: Für Gäste nur Tageszeit-Gruß ohne Namen und entsprechende CSS-Klasse
-            greetingElement.className = 'greeting-time-guest';
-            greetingElement.innerHTML = greeting;
-        } else {
-            // NEU: Für normale User mit Komma, Namen und entsprechende CSS-Klassen
-            greetingElement.className = 'greeting-time-user';
-            greetingElement.innerHTML = `${greeting}, <span class="greeting-name-user">${userName}</span>`;
-        }
+    if (!greetingElement) return;
+
+    const greeting = getGreetingByTime();
+    const userName = getCurrentUserName();
+
+    if (userName === 'Guest') {
+        greetingElement.className = 'greeting-time-guest';
+        greetingElement.innerHTML = greeting;
+    } else {
+        greetingElement.className = 'greeting-time-user';
+        greetingElement.innerHTML = `${greeting}, <span class="greeting-name-user">${userName}</span>`;
     }
 }
 
 // ---------------------------
-// Tasks & Summary Counter aus Firebase + aktuelles Datum
+// Tasks & Summary Helper-Funktionen
 // ---------------------------
 
-w3.includeHTML(async () => {
-    // 1. Greeting setzen
-    updateGreeting();
+// Gibt eine Kopie des Task-Arrays zurück
+function getTasksCopy(tasks) {
+    return tasks.slice();
+}
 
-    // 2. Tasks laden
+// Zählt Tasks nach Status und Priorität
+function getTaskStatistics(tasks) {
+    return {
+        total: tasks.length,
+        urgent: tasks.filter(t => t.priority === "urgent").length,
+        todo: tasks.filter(t => t.status === "todo").length,
+        inProgress: tasks.filter(t => t.status === "inProgress").length,
+        awaitingFeedback: tasks.filter(t => t.status === "awaitingFeedback").length,
+        done: tasks.filter(t => t.status === "done").length,
+    };
+}
+
+// Gibt die nächste Deadline zurück (oder null)
+function getUpcomingDeadline(tasks) {
+    const withDueDate = tasks
+        .filter(t => t.dueDate)  // Nur Tasks mit Datum
+        .map(t => ({ ...t, dueTime: new Date(t.dueDate).getTime() }))  // + Timestamp
+        .filter(t => !isNaN(t.dueTime))  // Nur gültige Daten
+        .sort((a, b) => a.dueTime - b.dueTime);  // Nach Datum sortieren
+    return withDueDate[0] || null; // Erste = nächste Deadline
+}
+
+// Update der Summary-Counter im HTML
+function updateSummaryCounters({ total, todo, inProgress, awaitingFeedback, done, urgent }) {
+    document.querySelector(".middle-row-left-left-top span").textContent = urgent;
+    document.querySelector(".middle-row-right-top span").textContent = total;
+    document.querySelector(".bottom-row-type-1-top span").textContent = todo;
+
+    const bottomRow2 = document.querySelectorAll(".bottom-row-type-2-top span");
+    bottomRow2[0].textContent = inProgress;
+    bottomRow2[1].textContent = awaitingFeedback;
+    bottomRow2[2].textContent = done;
+}
+
+// ---------------------------
+// Datum
+// ---------------------------
+
+function initDate(deadlineDate = null, label = "Today") {
+    const deadlineDateEl = document.getElementById("deadline-date");
+    const deadlineLabelEl = document.getElementById("deadline-label");
+
+    if (!deadlineDateEl || !deadlineLabelEl) return;
+
+    const dateToShow = deadlineDate || new Date();
+    deadlineDateEl.textContent = dateToShow.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+    deadlineLabelEl.textContent = label;
+}
+
+// ---------------------------
+// Tasks Summary Initialisierung
+// ---------------------------
+
+async function initTasksSummary() {
     try {
-        const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json");
-        const data = await res.json();
-        const tasks = data ? Object.values(data) : [];
+        const tasks = await loadTasks();
+        const tasksCopy = getTasksCopy(tasks);
 
-        // 3. Zähler initialisieren
-        let total = tasks.length;
-        let todo = 0, inProgress = 0, awaiting = 0, done = 0, urgent = 0;
+        const stats = getTaskStatistics(tasksCopy);
+        updateSummaryCounters(stats);
 
-        tasks.forEach(task => {
-            switch (task.status) {
-                case "todo": todo++; break;
-                case "inProgress": inProgress++; break;
-                case "awaitFeedback": awaiting++; break;
-                case "done": done++; break;
-            }
-            if (task.priority === "urgent") urgent++;
-        });
-
-        // 4. Zähler ins HTML setzen
-        document.querySelector(".middle-row-left-left-top span").textContent = urgent;
-        document.querySelector(".middle-row-right-top span").textContent = total;
-        document.querySelector(".bottom-row-type-1-top span").textContent = todo;
-
-        const bottomRow2 = document.querySelectorAll(".bottom-row-type-2-top span");
-        bottomRow2[0].textContent = inProgress;
-        bottomRow2[1].textContent = awaiting;
-        bottomRow2[2].textContent = done;
+        const nextDeadlineTask = getUpcomingDeadline(tasksCopy);
+        if (nextDeadlineTask) {
+            initDate(new Date(nextDeadlineTask.dueDate), "Next Due");
+        } else {
+            initDate(); // falls keine Deadline vorhanden, heutiges Datum
+        }
 
     } catch (err) {
         console.error("Fehler beim Laden der Tasks:", err);
     }
+}
 
-    // 5. Datum setzen (immer heutiges Datum)
-    const deadlineDateEl = document.getElementById("deadline-date");
-    const deadlineLabelEl = document.getElementById("deadline-label");
+// ---------------------------
+// Initialisierung nach HTML Include
+// ---------------------------
 
-    if (deadlineDateEl && deadlineLabelEl) {
-        const today = new Date();
-        // Englisches Langformat: "October 16, 2022"
-        deadlineDateEl.textContent = today.toLocaleDateString("en-US", {
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        });
-        deadlineLabelEl.textContent = "Today";
-    }
+w3.includeHTML(async () => {
+    updateGreeting();
+    await initTasksSummary();
 });
