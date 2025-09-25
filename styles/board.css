@@ -54,7 +54,6 @@ main {
 }
 
 .searchbar:hover {
-    transform: translateX(-1px);
     border-color: #4589ff;
 }
 
