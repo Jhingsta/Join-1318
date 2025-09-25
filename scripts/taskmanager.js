@@ -111,18 +111,6 @@ const BASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.a
     return state.tasks.slice();
   }
 
-  function getTaskStatistics() {
-    const stats = {
-      total: state.tasks.length,
-      urgent: state.tasks.filter(t => t.priority === "urgent").length,
-      todo: state.tasks.filter(t => t.status === "todo").length,
-      inProgress: state.tasks.filter(t => t.status === "inProgress").length,
-      awaitingFeedback: state.tasks.filter(t => t.status === "awaitingFeedback").length,
-      done: state.tasks.filter(t => t.status === "done").length,
-    };
-    return stats;
-  }
-
   function getUpcomingDeadline() {
     const withDueDate = state.tasks
       .filter(t => t.dueDate)
@@ -138,7 +126,6 @@ const BASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.a
     createTask,
     updateTask,
     deleteTask,
-    getTaskStatistics,
     getUpcomingDeadline,
   };
 })();
