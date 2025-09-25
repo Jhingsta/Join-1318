@@ -93,7 +93,7 @@ function renderAvatars(task) {
 
     (task.assignedUsersFull || []).forEach(user => {
         const avatarDiv = document.createElement("div");
-        avatarDiv.className = "assigned-avatar";
+        avatarDiv.className = "selected-avatar";
         avatarDiv.textContent = user.initials || getInitials(user.name);
         avatarDiv.style.backgroundColor = user.color ?? "#888";
 
@@ -113,42 +113,87 @@ async function renderAssignedDropdownOverlay(task) {
     if (!dropdown) return;
 
     dropdown.innerHTML = "";
+
+    // Sicherstellen, dass das Array existiert
+    if (!task.assignedUsersFull) task.assignedUsersFull = [];
+
     const users = await loadContactsFromFirebase();
 
     users.forEach(user => {
+        // Initialer Selektionszustand (true/false)
+        const initiallySelected = task.assignedUsersFull.some(u => u.id === user.id);
+
         const item = document.createElement("div");
         item.className = "dropdown-item";
-        item.textContent = user.name;
+        if (initiallySelected) item.classList.add("selected");
 
-        if (task.assignedUsersFull?.some(u => u.id === user.id)) {
-            item.classList.add("selected");
-        }
+        // Name (zuerst)
+        const label = document.createElement("span");
+        label.className = "dropdown-label";
+        label.textContent = user.name;
 
-        item.addEventListener("click", () => {
-            if (!task.assignedUsersFull) task.assignedUsersFull = [];
+        // Checkbox-Icons (danach)
+        const checkboxWrapper = document.createElement("div");
+        checkboxWrapper.className = "checkbox-wrapper";
 
-            const index = task.assignedUsersFull.findIndex(u => u.id === user.id);
-            if (index !== -1) {
-                task.assignedUsersFull.splice(index, 1);
-                item.classList.remove("selected");
+        const defaultIcon = document.createElement("img");
+        defaultIcon.className = "checkbox-default";
+        defaultIcon.src = "./assets/icons-addTask/Property 1=Default.png"; // dein Default-Icon
+        defaultIcon.alt = "unchecked";
+
+        const checkedIcon = document.createElement("img");
+        checkedIcon.className = "checkbox-checked";
+        checkedIcon.src = "./assets/icons-addTask/Property 1=checked.svg"; // dein Checked-Icon
+        checkedIcon.alt = "checked";
+
+        // Sichtbar/unsichtbar initial setzen
+        defaultIcon.style.display = initiallySelected ? "none" : "block";
+        checkedIcon.style.display = initiallySelected ? "block" : "none";
+
+        checkboxWrapper.appendChild(defaultIcon);
+        checkboxWrapper.appendChild(checkedIcon);
+
+        // Zusammensetzen: Name zuerst, Checkbox danach
+        item.appendChild(label);
+        item.appendChild(checkboxWrapper);
+
+        // Klick-Handler: robust, ohne veraltete Closure-Variablen
+        item.addEventListener("click", (e) => {
+            e.stopPropagation();
+
+            // Toggle Klasse → guter Single-Source-of-truth für UI
+            const nowSelected = item.classList.toggle("selected");
+
+            if (nowSelected) {
+                // Hinzufügen (nur, wenn nicht schon vorhanden)
+                if (!task.assignedUsersFull.some(u => u.id === user.id)) {
+                    task.assignedUsersFull.push({
+                        id: user.id,
+                        name: user.name,
+                        initials: getInitials(user.name),
+                        color: user.color ?? "#888"
+                    });
+                }
+                defaultIcon.style.display = "none";
+                checkedIcon.style.display = "block";
             } else {
-                task.assignedUsersFull.push({
-                    id: user.id,
-                    name: user.name,
-                    initials: getInitials(user.name),
-                    color: user.color ?? "#888"
-                });
-                item.classList.add("selected");
+                // Entfernen
+                task.assignedUsersFull = task.assignedUsersFull.filter(u => u.id !== user.id);
+                defaultIcon.style.display = "block";
+                checkedIcon.style.display = "none";
             }
 
-            renderAvatars(task); // Avatar-Container neu rendern
+            // Avatare in Overlay neu rendern
+            renderAvatars(task);
         });
 
         dropdown.appendChild(item);
     });
 
+    // Avatare initial rendern
     renderAvatars(task);
 }
+
 
 /**
  * Subtasks rendern
@@ -159,31 +204,9 @@ function renderEditSubtasks(task) {
 
     list.innerHTML = "";
 
-    if (!task.subtasks || !task.subtasks.items || task.subtasks.items.length === 0) {
-        list.innerHTML = `<li>Keine Subtasks</li>`;
-        return;
-    }
-
     task.subtasks.items.forEach((st, index) => {
         const li = document.createElement("li");
         li.className = "subtask-item";
-
-        const checkboxWrapper = document.createElement("div");
-        checkboxWrapper.className = "checkbox-wrapper";
-
-        const checkboxDefault = document.createElement("img");
-        checkboxDefault.src = "./assets/icons-addTask/Property 1=Default.svg";
-        checkboxDefault.className = "checkbox-default";
-        checkboxDefault.style.display = st.done ? "none" : "block";
-
-        const checkboxChecked = document.createElement("img");
-        checkboxChecked.src = "./assets/icons-addTask/Property 1=checked.svg";
-        checkboxChecked.className = "checkbox-checked";
-        checkboxChecked.style.display = st.done ? "block" : "none";
-
-        checkboxWrapper.appendChild(checkboxDefault);
-        checkboxWrapper.appendChild(checkboxChecked);
-        checkboxWrapper.addEventListener("click", () => toggleSubtaskInEdit(task, index));
 
         const span = document.createElement("span");
         span.textContent = st.title;
@@ -208,7 +231,6 @@ function renderEditSubtasks(task) {
         iconsDiv.appendChild(editIcon);
         iconsDiv.appendChild(deleteIcon);
 
-        li.appendChild(checkboxWrapper);
         li.appendChild(span);
         li.appendChild(iconsDiv);
 
@@ -289,6 +311,7 @@ async function openEditMode(task) {
     const view = document.getElementById("task-view");
     const edit = document.getElementById("task-edit");
     const editForm = document.getElementById("edit-form-fields");
+    
 
     view.classList.add("hidden");
     edit.classList.remove("hidden");
@@ -302,39 +325,71 @@ async function openEditMode(task) {
     const priority = (task.priority || 'Low').trim();
 
     editForm.innerHTML = `
-<label class="title-input" for="edit-title"></label>
-<input 
-  type="text" 
-  id="edit-title" 
-  value="${task.title || ''}" 
-  placeholder="Enter a title">
+    <input class="input-title" type="text" id="edit-title" value="${task.title || ""}">
+    
+<div class="description-container">
+    <label class="desc-title" for="edit-desc">Description</label>
+    <textarea class="description-input" id="edit-desc">${task.description || ""}</textarea>
+</div>
 
-    <label for="edit-desc">Description</label>
-    <textarea id="edit-desc">${task.description || ""}</textarea>
-
-    <label for="edit-dueDate">Due Date</label>
+<div class="due-date-container">
+    <label class="due-date-header" for="edit-dueDate">Due Date</label>
     <input type="date" id="edit-dueDate" value="${isoDate}">
+</div>
 
-    <label>Priority</label>
-    <div id="edit-priority" class="priority-options">
-        <button class="priority-btn" data-priority="Low">Low</button>
-        <button class="priority-btn" data-priority="Medium">Medium</button>
-        <button class="priority-btn" data-priority="Urgent">Urgent</button>
+
+   
+    <div id="edit-priority" class="priority-container">
+    <label class="priority-header">Priority</label>
+    <div class="priority-content">
+        <button class="priority-frame" data-priority="Low">Low</button>
+        <button class="priority-frame" data-priority="Medium">Medium</button>
+        <button class="priority-frame" data-priority="Urgent">Urgent</button>
     </div>
+</div>
 
+<!-- Assigned To --> 
+<div class="assigned-container-overlay"> 
+<div class="assigned-header"> Assigned to <span class="optional">(optional)</span> </div> 
+<div class="assigned-content"> 
+<div class="assigned-text-container"> 
+<div class="assigned-text" id="edit-assigned-dropdown-btn">Select contacts to assign</div> 
+<img id="edit-assigned-arrow" 
+           src="./assets/icons-addTask/arrow_drop_down.png" 
+           class="assigned-arrow-icon">
+<div id="edit-assigned-dropdown-overlay" class="dropdown-menu-overlay-edit hidden"></div> 
+</div> 
+</div> 
+</div> 
+<div id="edit-avatars-container-overlay" class="avatars-container-overlay"></div> 
+</div>
+
+
+    <label class="assigned-header">Subtasks</label>
+    <div id="task-content-addtask">
+    <input type="text" id="edit-subtask-input" placeholder="Add new subtask">
+    <div id="assigned-arrow-container">
+    <button id="edit-subtask-add">
+    <img id="cancel-btn" src="/assets/icons-addTask/Subtask cancel.png" alt="Cancel subtask" class="assigned-arrow-icon" style="display: inline;">
+    <img id="check-btn" src="/assets/icons-addTask/Subtask's icons (1).png" alt="Confirm subtask" class="assigned-arrow-icon" style="display:none;"></button>
+    </div>
+    </div>
     <div id="edit-subtask-list"></div>
-    <input type="text" id="edit-subtask-input" placeholder="New subtask">
-    <button id="edit-subtask-add">+</button>
+    
 `;
-    const priorityButtons = edit.querySelectorAll('.priority-btn');
-    priorityButtons.forEach(btn => {
-        if (btn.dataset.priority.toLowerCase() === priority.toLowerCase()) btn.classList.add('active');
-        btn.addEventListener('click', () => {
-            priorityButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            task.priority = btn.dataset.priority;
-        });
+
+
+const priorityButtons = edit.querySelectorAll('.priority-frame');
+priorityButtons.forEach(btn => {
+    if (btn.dataset.priority.toLowerCase() === priority.toLowerCase()) {
+        btn.classList.add('active');
+    }
+    btn.addEventListener('click', () => {
+        priorityButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        task.priority = btn.dataset.priority;
     });
+});
 
     task = normalizeTask(task, contacts);
     currentTask = task;
@@ -391,7 +446,7 @@ function renderDetailOverlay(task) {
 
     (task.assignedUsersFull || []).forEach(user => {
         const avatarDiv = document.createElement("div");
-        avatarDiv.className = "assigned-avatar";
+        avatarDiv.className = "selected-avatar";
         avatarDiv.textContent = user.initials || getInitials(user.name);
         avatarDiv.style.backgroundColor = user.color ?? "#888";
         container.appendChild(avatarDiv);

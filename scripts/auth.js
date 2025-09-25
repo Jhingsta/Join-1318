@@ -8,7 +8,7 @@ function enforceAuthentication() {
 
   // Wenn kein User vorhanden ist UND kein Visitor-Modus aktiv → Redirect
   if (!user && !isVisitorMode) {
-    window.location.href = "/login.html";
+    window.location.href = "./index.html";
   }
 }
 

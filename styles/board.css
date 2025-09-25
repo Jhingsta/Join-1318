@@ -96,15 +96,15 @@ main {
 
 input {
     border: none;
-    border-right: 1px solid #d1d1d1;
     height: 31px;
-    width: 85%;
     cursor: pointer;
     padding: 8px 16px;
     font-size: 16px;
     outline: none;
-    color:black;
+    color: black;
+    width: 100%;
 }
+
 
 #search-icon {
     width: 32px;
@@ -338,14 +338,14 @@ input {
 }
 
 .subtask-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .subtask-text {
-  font-size: 14px;
-  color: #333;
+    font-size: 14px;
+    color: #333;
 }
 
 .title-input {
@@ -363,7 +363,7 @@ input {
     font-size: 32px;
     line-height: 120%;
     letter-spacing: 0;
-    color:#D1D1D1;
+    color: #D1D1D1;
 }
 
 .title-input:hover {
@@ -384,9 +384,9 @@ input {
 }
 
 .error-message {
-  color: red;
-  font-size: 12px;
-  margin-top: 4px;
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
 }
 
 .description-container {
@@ -453,9 +453,9 @@ input {
 }
 
 .due-date-container {
+    border-bottom: 1px solid #D1D1D1;
     width: 100%;
     max-width: 440px;
-    height: 99px;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -465,7 +465,6 @@ input {
 }
 
 .due-date-header {
-    width: 86px;
     height: 23px;
     opacity: 1;
     font-family: 'Open Sans', sans-serif;
@@ -554,6 +553,21 @@ input {
     box-sizing: border-box;
     margin-bottom: 24px;
 }
+
+.priority-btn {
+    padding: 6px 12px;
+    margin-right: 4px;
+    border: 1px solid #ccc;
+    background-color: #f5f5f5;
+    cursor: pointer;
+}
+
+.priority-btn.active {
+    background-color: #007bff; /* Blau als Beispiel */
+    color: white;
+    border-color: #007bff;
+}
+
 
 .priority-header {
     width: 72px;
@@ -663,7 +677,7 @@ input {
     border-bottom: 2px solid transparent;
 }
 
-.assigned-container {
+.assigned-container-overlay {
     width: 100%;
     max-width: 440px;
     display: flex;
@@ -671,7 +685,7 @@ input {
     gap: 8px;
     opacity: 1;
     box-sizing: border-box;
-    margin-bottom: 24px;
+    /* margin-bottom: 24px; */
 }
 
 .category-container {
@@ -696,6 +710,15 @@ input {
     opacity: 1;
     box-sizing: border-box;
     margin-bottom: 24px;
+}
+
+.assigned-container {
+    width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 1;
+    box-sizing: border-box;
 }
 
 .assigned-header {
@@ -738,29 +761,32 @@ input {
     line-height: 120%;
     color: #000000;
     opacity: 1;
+    background-color: white;
+    border: none;
 }
+
+.assigned-text-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+
 
 .assigned-input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-.assigned-arrow-container {
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
 }
 
 .assigned-arrow-icon {
-  width: 16px;
-  height: 16px;
+    width: 16px;
+    height: 16px;
 }
 
 .dropdown-item {
-    background-color:white;
+    background-color: white;
     height: 56px;
     padding: 0 16px;
     display: flex;
@@ -770,14 +796,50 @@ input {
     transition: background-color 0.2s;
 }
 
+/* Unselektiert + Hover */
 .dropdown-item:hover {
-  background-color: #f0f0f0;
+    background-color: #D2E3FF;
+}
+
+/* Selektiert (kein Hover) */
+.dropdown-item.active {
+    background-color: #4589FF;
+    color: white;
+}
+
+/* Selektiert + Hover */
+.dropdown-item.active:hover {
+    background-color: #005DFF;
+    color: white;
+}
+
+/* Selektiert + Maus weg */
+.dropdown-item.active.mouse-leave {
+    background-color: #4589FF;
+}
+
+#edit-avatars-container-overlay {
+    display: flex;
+}
+
+.selected-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 13px;
+    color: white;
+    margin-right: 4px;
+    flex: 0 0 auto;
 }
 
 .selected-avatars-container {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
 }
 
 .category-container {
@@ -809,25 +871,25 @@ input {
 }
 
 .task-container {
-  margin-bottom: 16px;
+    margin-bottom: 16px;
 }
 
 .task-content-addtask {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .task-dropdown {
-  margin-top: 8px;
+    margin-top: 8px;
 }
 
 .end-spacer {
-  height: 16px;
+    height: 16px;
 }
 
 .create-btn:hover {
-  background-color: #1c2533;
+    background-color: #1c2533;
 }
 
 
@@ -836,6 +898,7 @@ input {
     .desktop-only {
         display: none;
     }
+
     /* Column-Header Styling (für Tablet/Mobile) */
     .column-header {
         display: flex;
@@ -843,33 +906,34 @@ input {
         align-items: center;
         padding-bottom: 16px;
     }
+
     /* Header-Bereich anpassen */
     .search-top {
         padding: 40px 0 32px 32px;
         gap: 20px;
     }
-    
+
     .searchbar {
         width: 250px;
     }
-    
+
     .add-task-btn {
         font-size: 18px;
         padding: 12px 8px;
     }
-    
+
     /* Column-Header einblenden */
     .column-header {
         display: flex;
     }
-    
+
     /* 2x2 Grid Layout */
     .bottom {
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
         padding: 0 32px;
     }
-    
+
     .tasks {
         flex-direction: column;
         padding-top: 0;
@@ -878,10 +942,14 @@ input {
 
 /* MOBILE - 1 Spalte, horizontale Tasks */
 @media (max-width: 768px) {
+
     /* Für die ganze Seite im Mobile-Modus die vertikale Scrollbar verstecken: */
-    html, body {
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE/Edge */
+    html,
+    body {
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE/Edge */
     }
 
     html::-webkit-scrollbar,
@@ -895,22 +963,22 @@ input {
         gap: 16px;
         padding: 64px 1rem 32px;
     }
-    
+
     .searchbar {
         width: 100%;
     }
-    
+
     .add-task-btn {
         display: none;
     }
-    
+
     /* 1 Spalte vertikal */
     .bottom {
         grid-template-columns: 1fr;
         gap: 26px;
         padding: 0 1rem;
     }
-    
+
     /* Tasks horizontal scrollbar */
     .tasks {
         flex-direction: row;
@@ -921,18 +989,21 @@ input {
         /* scroll-behavior: smooth;
         scroll-snap-type: x mandatory; */
         /* um die horizontale Scrollbar zu verstecken */
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE/Edge */
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE/Edge */
     }
 
     /* um die horizontale Scrollbar zu verstecken */
     .tasks::-webkit-scrollbar {
         display: none;
     }
-    
+
     /* Task-Cards müssen feste Breite haben */
     .tasks .task-card {
-        flex: 0 0 252px; /* Feste Breite der Task-Karte */
+        flex: 0 0 252px;
+        /* Feste Breite der Task-Karte */
         /* scroll-snap-align: start; */
     }
 }
@@ -1319,19 +1390,24 @@ input {
 }
 
 #edit-title {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 32px;
-  line-height: 120%;
-  letter-spacing: 0;
-  color: #D1D1D1;
-  width: 440px;                /* feste Breite */
-  border: none;                /* alle Ränder entfernen */
-  border-bottom: 1px solid #D1D1D1; /* nur untere Linie */
-  margin-bottom: 24px;
-  background: transparent;     /* kein Hintergrund */
-  outline: none;               /* kein Fokus-Rahmen */
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 32px;
+    line-height: 120%;
+    letter-spacing: 0;
+    color: #D1D1D1;
+    width: 440px;
+    /* feste Breite */
+    border: none;
+    /* alle Ränder entfernen */
+    border-bottom: 1px solid #D1D1D1;
+    /* nur untere Linie */
+    margin-bottom: 24px;
+    background: transparent;
+    /* kein Hintergrund */
+    outline: none;
+    /* kein Fokus-Rahmen */
 }
 
 .delete-btn {
@@ -1357,6 +1433,11 @@ input {
     z-index: 101;
 }
 
+.task-detail-actions {
+    display: flex;
+    justify-content: end;
+}
+
 #task-detail-card {
     background-color: white;
     width: 528px;
@@ -1365,6 +1446,48 @@ input {
     border-radius: 30px;
     padding-top: 48px;
     padding-bottom: 48px;
+}
+
+.dropdown-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 12px;
+}
+
+#edit-assigned-dropdown-overlay {
+    width: 440px;
+    max-height: 280px;
+    overflow-y: auto;
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    z-index: 100;
+
+}
+
+.assigned-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 42px;
+}
+
+.assigned-wrapper span {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 19px;
+    line-height: 120%;
+    vertical-align: middle;
+    height: 23px;
+    display: flex;
+    align-items: center;
 }
 
 h2 {
@@ -1574,15 +1697,112 @@ h2 {
 }
 
 @media (max-width: 768px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-  aside {
-    order: 2;
-  }
-  main {
-    order: 1;
-    min-height: calc(100vh - 80px);
-    margin-bottom: 80px;
-  }
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    aside {
+        order: 2;
+    }
+
+    main {
+        order: 1;
+        min-height: calc(100vh - 80px);
+        margin-bottom: 80px;
+    }
+}
+
+#edit-title {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    font-size: 32px;
+    line-height: 120%;
+    letter-spacing: 0;
+    color: #000000;
+    width: 440px;
+    /* feste Breite */
+    border: none;
+    /* alle Ränder entfernen */
+    border-bottom: 1px solid #D1D1D1;
+    /* nur untere Linie */
+    margin-bottom: 24px;
+    background: transparent;
+    /* kein Hintergrund */
+    outline: none;
+    /* kein Fokus-Rahmen */
+}
+
+.edit-actions {
+    display: flex;
+    justify-content: end;
+}
+
+/* Container für Assigned Users */
+.assigned-container-overlay {
+    position: relative;
+    /* damit das Dropdown absolut innerhalb dieses Containers sitzt */
+    margin-bottom: 8px;
+    gap: 8px;
+}
+
+/* Dropdown selbst */
+.dropdown-menu-overlay-edit {
+    position: absolute;
+    top: 100%;
+    /* direkt unter der Zeile */
+    left: 0;
+    /* am linken Rand des Containers */
+    width: 100%;
+    /* volle Breite der Zeile */
+    z-index: 1000;
+    /* damit es über allem liegt */
+}
+
+/* Optional: Schatten und Hintergrund */
+.dropdown-menu-overlay-edit {
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+}
+
+#edit-avatars-container-overlay {
+    margin-bottom: 24px;
+}
+
+#edit-subtask-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+#edit-subtask-buttons img {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+}
+
+#edit-subtask-list .subtask-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    transition: background 0.2s;
+    height: 32px;
+}
+
+#edit-subtask-list .subtask-item:hover {
+    background-color: #E3EEFF;
+}
+
+.subtask-icons {
+    display: none;
+    gap: 4px;
+}
+
+.subtask-item:hover .subtask-icons {
+    display: flex;
 }
