@@ -29,6 +29,7 @@
 
         <main>
             <div class="main-container">
+
                 <div class="title-container">
                     <input type="text" class="title-input" placeholder="Enter a title" required>
                     <span class="error-message">This field is required</span>
@@ -41,6 +42,7 @@
                     </div>
                     <textarea class="description-input" placeholder="Enter a description"></textarea>
                 </div>
+
                 <div class="due-date-container">
                     <div class="due-date-header">Due date</div>
                     <div class="due-date-content">
@@ -58,11 +60,11 @@
                     <div class="priority-header">Priority</div>
                     <div class="priority-content">
                         <button type="button" class="priority-frame">Urgent <img
-                                src="./assets/icons-addTask/Prio alta.svg" alt=""></button>
+                                src="./assets/icons-addtask/Prio alta.svg" alt=""></button>
                         <button type="button" class="priority-frame active">Medium <img
-                                src="./assets/icons-addTask/Capa 2.svg" alt=""></button>
-                        <button type="button" class="priority-frame">Low <img src="./assets/icons-addTask/Prio baja.svg"
-                                alt=""></button>
+                                src="./assets/icons-addtask/Capa 2.svg" alt=""></button>
+                        <button type="button" class="priority-frame">Low <img 
+                                src="./assets/icons-addtask/Prio baja.svg" alt=""></button>
                     </div>
                 </div>
 
@@ -78,12 +80,12 @@
                         </div>
 
                         <!-- Input für Suche -->
-                        <input type="text" class="assigned-input" placeholder="" style="display:none;">
+                        <input type="text" class="assigned-input" placeholder="">
 
                         <!-- Pfeil jetzt in separatem Container -->
                         <div class="assigned-arrow-container">
-                            <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts"
-                                class="assigned-arrow-icon">
+                            <img src="/assets/icons-addtask/arrow_drop_down.png" alt="Select contacts"
+                                class="assigned-arrow-down">
                         </div>
 
                         <!-- Dropdown -->
@@ -93,7 +95,6 @@
                     <div class="selected-avatars-container"></div>
                 </div>
 
-
                 <div class="category-container">
                     <div class="assigned-header">
                         Category
@@ -101,35 +102,29 @@
                     <div class="category-content">
                         <div class="assigned-text">Select task category</div>
                         <div class="assigned-arrow-container">
-                            <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts"
-                                class="assigned-arrow-icon">
+                            <img src="/assets/icons-addtask/arrow_drop_down.png" alt="Select contacts"
+                                class="assigned-arrow-down">
                         </div>
                     </div>
-
                 </div>
-                <div class="task-container">
+
+                <div class="subtask-container">
                     <div class="assigned-header">
                         Subtasks <span class="optional">(optional)</span>
                     </div>
 
-                    <div class="task-content-addtask">
+                    <div class="subtask-content-addtask">
                         <input type="text" id="subtask-text" class="subtask-text" placeholder="Add new subtask">
 
                         <div class="assigned-arrow-container">
-
-                            <img id="cancel-btn" src="/assets/icons-addTask/Subtask cancel.png" alt="Cancel subtask"
-                                class="assigned-arrow-icon" style="display:none;">
-
-                            <img id="check-btn" src="/assets/icons-addTask/Subtask's icons (1).png"
-                                alt="Confirm subtask" class="assigned-arrow-icon" style="display:none;">
-
+                            <img id="cancel-btn" src="/assets/icons-addtask/cancel.png" alt="Cancel subtask"
+                                class="assigned-arrow-icon">
+                            <img id="check-btn" src="/assets/icons-addtask/check.png" alt="Confirm subtask"
+                                class="assigned-arrow-icon">
                         </div>
                     </div>
 
-
-                    <div id="task-dropdown" class="task-dropdown" style="display:none;">
-
-                    </div>
+                    <div id="task-dropdown" class="task-dropdown"></div>
 
                     <ul id="subtask-list" class="subtask-list"></ul>
                 </div>
@@ -139,19 +134,19 @@
     </div>
 
     <div class="button-container">
-        <button class="clear-btn">Clear <img src="./assets/icons-addTask/iconoir_cancel (1).png" alt=""></button>
-        <button class="create-btn">Create Task <img src="./assets/icons-addTask/check (1).png" alt=""></button>
+        <button class="clear-btn">Clear <img src="./assets/icons-addtask/iconoir_cancel (1).png" alt=""></button>
+        <button class="create-btn">Create Task <img src="./assets/icons-addtask/check (1).png" alt=""></button>
     </div>        
 
     <script src="./scripts/auth.js"></script>
     <script src="./scripts/header.js"></script>
-    <script src="./scripts/addtask.js"></script>
     <script>
         w3.includeHTML(() => {            
             updateUserLogo();
             setActiveNavigation();
             });
     </script>
+    <script src="./scripts/addtask.js"></script>
 
 </body>
 </html>

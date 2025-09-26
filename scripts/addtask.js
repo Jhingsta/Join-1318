@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const checkboxWrapper = document.createElement('div');
             checkboxWrapper.className = 'checkbox-wrapper';
             const checkbox = document.createElement('img');
-            checkbox.src = "./assets/icons-addTask/Property 1=Default.png";
+            checkbox.src = "./assets/icons-addtask/Property 1=Default.png";
 
             // Hover-Kreis
             const hoverOverlay = document.createElement('div');
@@ -220,8 +220,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 checkboxWrapper.classList.toggle('checked', !isChecked); // Klasse setzen
 
                 checkbox.src = isChecked
-                    ? "./assets/icons-addTask/Property 1=Default.png"
-                    : "./assets/icons-addTask/Property 1=checked.svg";
+                    ? "./assets/icons-addtask/Property 1=Default.png"
+                    : "./assets/icons-addtask/Property 1=checked.svg";
 
                 updateSelectedAvatars();
             });
@@ -238,7 +238,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             assignedDropdown.style.display = 'block';
             assignedInput.style.display = 'inline';
             assignedText.style.display = 'none';
-            arrowIcon.src = '/assets/icons-addTask/arrow_drop_down_up.png';
+            arrowIcon.src = '/assets/icons-addtask/arrow_drop_down_up.png';
             assignedInput.focus();
 
             // ✅ FIX: Checkboxen beim Öffnen zurücksetzen
@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             assignedDropdown.style.display = 'none';
             assignedInput.style.display = 'none';
             assignedText.style.display = 'block';
-            arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
+            arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
             assignedInput.value = '';
         }
     }
@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             assignedDropdown.style.display = 'none';
             assignedInput.style.display = 'none';
             assignedText.style.display = 'block';
-            arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
+            arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
 
             // Checkboxen beibehalten, wenn gesetzt
             Array.from(assignedDropdown.children).forEach(div => {
@@ -325,15 +325,15 @@ categoryContent.addEventListener('click', (e) => {
     const isOpen = categoryDropdown.classList.contains('show');
     categoryDropdown.classList.toggle('show', !isOpen); // ✅ Toggle über Klasse
     categoryArrow.src = !isOpen
-        ? '/assets/icons-addTask/arrow_drop_down_up.png'
-        : '/assets/icons-addTask/arrow_drop_down.png';
+        ? '/assets/icons-addtask/arrow_drop_down_up.png'
+        : '/assets/icons-addtask/arrow_drop_down.png';
 });
 
 // Klick außerhalb schließt Dropdown
 document.addEventListener('click', (e) => {
     if (!categoryContent.contains(e.target)) {
         categoryDropdown.classList.remove('show'); // ✅ nur über Klasse
-        categoryArrow.src = '/assets/icons-addTask/arrow_drop_down.png';
+        categoryArrow.src = '/assets/icons-addtask/arrow_drop_down.png';
     }
 });
 
@@ -361,11 +361,11 @@ checkBtn.addEventListener("click", () => {
     const icons = document.createElement("div");
     icons.classList.add("subtask-icons");
     const editIcon = document.createElement("img");
-    editIcon.src = "./assets/icons-addTask/Property 1=edit.png";
+    editIcon.src = "./assets/icons-addtask/Property 1=edit.png";
     editIcon.alt = "Edit";
     editIcon.addEventListener("click", () => { startEditMode(li, span); });
     const deleteIcon = document.createElement("img");
-    deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png";
+    deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
     deleteIcon.alt = "Delete";
     deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); });
     icons.appendChild(editIcon);
@@ -377,8 +377,8 @@ checkBtn.addEventListener("click", () => {
 cancelBtn.addEventListener("click", resetInput);
 function resetInput() { taskInput.value = ""; checkBtn.style.display = "none"; cancelBtn.style.display = "none";}
 function startEditMode(li, span) {
-    const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addTask/Subtask's icons (1).png";
-    saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
+    const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
+    saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
 }
 
 
@@ -525,7 +525,7 @@ createTaskBtn.addEventListener("click", async (event) => {
 //Meldung anzeigen, wenn Task erfolgreich erstellt wurde
 function showTaskAddedMessage() {
     const img = document.createElement("img");
-    img.src = "./assets/icons-addTask/Added to board 1.png";
+    img.src = "./assets/icons-addtask/Added to board 1.png";
     img.alt = "Task added to Board";
 
     // Styles für zentrierte Position & Shadow
