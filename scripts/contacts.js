@@ -352,7 +352,7 @@ window.addEventListener('resize', function() {
   }
 });
 
-// User löschen
+// User löschen und aus allen Tasks entfernen
 async function deleteContact(email) {
   try {
     // Alle User laden um den richtigen Schlüssel zu finden
@@ -378,6 +378,10 @@ async function deleteContact(email) {
       
       if (deleteResponse.ok) {
         console.log("User deleted successfully");
+        
+        // User auch aus allen Tasks entfernen
+        await removeUserFromAllTasks(userKey);
+        
         // Panel schließen und Liste neu laden
         closeFloatingContact();
         closeContactOverlay();
@@ -390,6 +394,37 @@ async function deleteContact(email) {
     }
   } catch (error) {
     console.error("Error deleting user:", error);
+  }
+}
+
+// Hilfsfunktion: User aus allen Tasks entfernen
+async function removeUserFromAllTasks(userKey) {
+  try {
+    // Alle Tasks laden
+    const tasks = await loadTasks();
+    
+    // Durch alle Tasks gehen und prüfen, ob der User zugewiesen ist
+    for (const task of tasks) {
+      if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
+        // Prüfen, ob der zu löschende User in dieser Task ist
+        const originalLength = task.assignedUsersFull.length;
+        
+        // User aus assignedUsersFull Array entfernen
+        task.assignedUsersFull = task.assignedUsersFull.filter(user => user.id !== userKey);
+        
+        // Nur updaten wenn sich etwas geändert hat
+        if (task.assignedUsersFull.length !== originalLength) {
+          await updateTask(task.id, {
+            assignedUsersFull: task.assignedUsersFull
+          });
+          console.log(`User removed from task: ${task.title || task.id}`);
+        }
+      }
+    }
+    
+    console.log("User removed from all tasks successfully");
+  } catch (error) {
+    console.error("Error removing user from tasks:", error);
   }
 }
 
