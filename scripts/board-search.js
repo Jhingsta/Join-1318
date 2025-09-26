@@ -1,6 +1,10 @@
 // Globale Variable für aktuelle Suchterme
 let currentSearchTerm;
 
+const input = document.getElementById("search-input");
+const icon = document.getElementById("search-icon");
+const clear = document.getElementById("search-icon-clear");
+
 // Funktion zum Rendern des gefilterten Boards
 function renderFilteredBoard(searchTerm) {
     const allTasks = window.taskManager.getTasks();
@@ -45,26 +49,20 @@ function renderFilteredBoard(searchTerm) {
 
 // Hauptsuchfunktion die bei onkeyup aufgerufen wird
 function handleSearch() {
-    const searchInput = document.getElementById('search-input');
-    const searchTerm = searchInput.value.trim();
-    
-    currentSearchTerm = searchTerm;
-    
-    if (searchTerm === '') {
-        // Bei leerer Suche: zurück zur normalen Board-Ansicht
-        renderBoard();
-    } else {
-        // Bei aktiver Suche: gefilterte Ansicht
-        renderFilteredBoard(searchTerm);
-    }
+
+  if (input.value.trim() !== "") {
+    icon.classList.add("hidden");
+    clear.classList.remove("hidden");
+    renderFilteredBoard(input.value);
+  } else {
+    icon.classList.remove("hidden");
+    clear.classList.add("hidden");
+    renderBoard();
+  }
 }
 
-// Funktion zum Zurücksetzen der Suche (optional, falls du einen Reset-Button haben möchtest)
-// function clearSearch() {
-//     const searchInput = document.getElementById('search-input');
-//     if (searchInput) {
-//         searchInput.value = '';
-//     }
-//     currentSearchTerm = '';
-//     renderBoard();
-// }
+function clearSearch() {
+
+  input.value = "";
+  handleSearch();
+}
