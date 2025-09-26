@@ -56,7 +56,7 @@ function getTaskStatistics(tasks) {
         urgent: tasks.filter(t => t.priority === "urgent").length,
         todo: tasks.filter(t => t.status === "todo").length,
         inProgress: tasks.filter(t => t.status === "inProgress").length,
-        awaitingFeedback: tasks.filter(t => t.status === "awaitingFeedback").length,
+        awaitFeedback: tasks.filter(t => t.status === "awaitFeedback").length,
         done: tasks.filter(t => t.status === "done").length,
     };
 }
@@ -72,19 +72,19 @@ function getUpcomingDeadline(tasks) {
 }
 
 // Update der Summary-Counter im HTML
-function updateSummaryCounters({ total, todo, inProgress, awaitingFeedback, done, urgent }) {
+function updateSummaryCounters({ total, todo, inProgress, awaitFeedback, done, urgent }) {
     const urgentEl = document.querySelector(".summary-urgent");
     const totalEl = document.querySelector(".summary-total");
     const todoEl = document.querySelector(".summary-todo");
     const inProgressEl = document.querySelector(".summary-inprogress");
-    const awaitingEl = document.querySelector(".summary-awaiting");
+    const awaitingEl = document.querySelector(".summary-feedback");
     const doneEl = document.querySelector(".summary-done");
 
     if (urgentEl) urgentEl.textContent = urgent;
     if (totalEl) totalEl.textContent = total;
     if (todoEl) todoEl.textContent = todo;
     if (inProgressEl) inProgressEl.textContent = inProgress;
-    if (awaitingEl) awaitingEl.textContent = awaitingFeedback;
+    if (awaitingEl) awaitingEl.textContent = awaitFeedback;
     if (doneEl) doneEl.textContent = done;
 }
 
