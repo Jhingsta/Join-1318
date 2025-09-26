@@ -70,6 +70,48 @@ async function createTask(taskData) {
   }
 }
 
+async function updateTask(taskId, updates) {
+  try {
+    // Spezielle Behandlung für Subtasks falls nötig
+    let processedUpdates = { ...updates };
+    
+    if (updates.subtasks && Array.isArray(updates.subtasks)) {
+      const processedSubtasks = updates.subtasks.map((st, i) => {
+        if (typeof st === "string" && st.trim() !== "") {
+          return { title: st.trim(), done: false };
+        } else if (st && st.title && st.title.trim() !== "") {
+          return { title: st.title.trim(), done: st.done || false };
+        } else {
+          return { title: `Subtask ${i + 1}`, done: false };
+        }
+      });
+      
+      processedUpdates.subtasks = {
+        total: processedSubtasks.length,
+        completed: processedSubtasks.filter(st => st.done).length,
+        items: processedSubtasks,
+      };
+    }
+    
+    const response = await fetch(`${BASE_URL}tasks/${taskId}.json`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(processedUpdates),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    // Nur die bestätigten Updates zurückgeben
+    return processedUpdates;
+  } catch (error) {
+    console.error("Error updating task:", error);
+    throw error;
+  }
+}
+
 async function deleteTask(taskId) {
   try {
     const response = await fetch(`${BASE_URL}tasks/${taskId}.json`, {
