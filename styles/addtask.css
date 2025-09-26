@@ -46,8 +46,6 @@ main {
 
 .subtask-list {
     list-style: none;
-    margin: 0;
-    padding: 0;
     position: absolute;
     top: 100%;
     left: 0;
@@ -63,7 +61,7 @@ main {
     padding: 4px 16px;
     border-radius: 10px;
     height: 32px;
-    width: 440px;
+    width: 100%;
     transition: background 0.2s ease;
 }
 
@@ -73,13 +71,11 @@ main {
 
 .subtask-icons {
     display: none;
-    /* Standard ausgeblendet */
     gap: 8px;
 }
 
 .subtask-list li:hover .subtask-icons {
     display: flex;
-    /* Sichtbar beim Hover */
 }
 
 .subtask-edit-input {
@@ -374,6 +370,7 @@ main {
 }
 
 .subtask-container {
+    position: relative;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -525,30 +522,33 @@ main {
 }
 
 .assigned-arrow-container {
-    width: 24px;
-    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
 }
 
-.assigned-arrow-icon {
+.assigned-icon {
+    display: none;
     width: 24px;
     height: 24px;
-    display: none;
     border-radius: 15px;
     transition: background-color 0.2s ease, transform 0.2s ease;
     cursor: pointer;
     padding: 4px;
 }
 
-.assigned-arrow-icon:hover {
+.assigned-icon:hover {
     background-color: #D2E3FF;
-    transform: scale(2);
+    transform: scale(1.1);
 }
 
-.assigned-arrow-icon.open {
+.arrow-dropdown {
+    width: 24px;
+    height: 24px;
+}
+
+.arrow-dropdown.open {
     transform: rotate(180deg);
 }
 
@@ -686,11 +686,6 @@ main {
     border: 1px solid #ccc;
     width: 200px;
     z-index: 100;
-}
-
-.task-container {
-    position: relative;
-    /* Bezugspunkt für absolutes Dropdown */
 }
 
 .assigned-content {
