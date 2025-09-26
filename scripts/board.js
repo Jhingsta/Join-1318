@@ -32,10 +32,10 @@ async function loadUsers() {
 }
 
 const modal = document.getElementById('add-task-modal');
-const createBtn = document.querySelector('.create-btn'); 
+const createBtn = document.querySelector('.create-btn');
 const addTaskButton = document.getElementById('add-task-btn');
 const form = document.getElementById('add-task-form');
-const svgButtons = document.querySelectorAll('.svg-button'); 
+const svgButtons = document.querySelectorAll('.svg-button');
 
 const assignedContent = document.querySelector('.assigned-content');
 const assignedTextContainer = assignedContent.querySelector('.assigned-text-container');
@@ -101,9 +101,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Eventlistener
     closeButton?.addEventListener('click', closeModal);
     modalClose?.addEventListener('click', closeModal);
-    cancelButton?.addEventListener('click', closeModal);
+
     modal?.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
+    });
+    // Nur Eingabe in Subtask-Leiste leeren
+    cancelButton?.addEventListener('click', () => {
+        const subtaskInput = document.querySelector('#subtask-input'); // ID oder Klasse deiner Eingabe
+        if (subtaskInput) subtaskInput.value = '';
     });
     /**
  * Dropdown für Assigned Users in der Modalbox rendern
@@ -803,7 +808,7 @@ checkBtn.addEventListener("click", () => {
     resetInput();
 });
 cancelBtn.addEventListener("click", resetInput);
-function resetInput() { taskInput.value = ""; checkBtn.style.display = "none"; cancelBtn.style.display = "none";}
+function resetInput() { taskInput.value = ""; checkBtn.style.display = "none"; cancelBtn.style.display = "none"; }
 function startEditMode(li, span) {
     const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addTask/Subtask's icons (1).png";
     saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
@@ -1211,6 +1216,40 @@ function openTaskDetails(task) {
     if (editBtn) {
         editBtn.addEventListener("click", () => openEditMode(task));
     }
+    // Delete-Button Handler
+    // Delete-Button Handler
+    const deleteBtn = view.querySelector(".delete-btn");
+    if (deleteBtn) {
+        deleteBtn.addEventListener("click", async () => {
+            if (!task.firebaseId) return;
+
+            // Task in Firebase löschen
+            await fetch(
+                `https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${task.firebaseId}.json`,
+                { method: "DELETE" }
+            );
+
+            // Overlay schließen
+            document.getElementById("task-detail-overlay").classList.add("hidden");
+
+            // Board sofort neu laden
+            await loadAndRenderBoard();
+        });
+    }
+
+}
+
+async function loadAndRenderBoard() {
+    const res = await fetch(
+        "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json"
+    );
+    const data = await res.json() || {};
+    const tasksArray = Object.entries(data).map(([id, task]) => ({
+        firebaseId: id,
+        ...task
+    }));
+
+    renderBoard(tasksArray); // Deine bestehende Board-Renderfunktion
 }
 
 //task detail overlay close
