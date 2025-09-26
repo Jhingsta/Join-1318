@@ -5,7 +5,6 @@ body {
     background-color: white;
     font-size: 16px;
     font-weight: 400;
-    /* overflow: hidden; */
 }
 
 .layout {
@@ -872,6 +871,29 @@ main {
     z-index: 0;
 }
 
+/* Task Added Message */
+.task-added-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    box-shadow: 0px 0px 4px 0px #00000029;
+    transition: transform 150ms ease-out, opacity 150ms ease-out;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.task-added-message.show {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+}
+
+.task-added-message.hide {
+    opacity: 0;
+    transform: translate(-150%, -50%);
+}
+
 @media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr;
@@ -886,7 +908,7 @@ main {
   }
   .main-container {
     padding: 64px 10% 0 10%;
-    margin-bottom: 150px;
+    margin-bottom: 160px;
     max-width: none;
     width: 100%;
   }

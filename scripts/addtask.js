@@ -140,27 +140,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ---------- Update Selected Avatars ----------
     function updateSelectedAvatars() {
         selectedAvatarsContainer.innerHTML = "";
+
         const selected = users.filter((u, i) => {
             const img = assignedDropdown.children[i].querySelector('img');
             return img.src.includes("checked");
         }).slice(0, 3);
 
-        selected.forEach(u => {
+        selected.forEach(user => {
             const a = document.createElement('div');
-            a.className = 'selected-avatar assigned-text';
-            a.textContent = u.initials;
-            a.style.width = '28px';
-            a.style.height = '28px';
-            a.style.borderRadius = '50%';
-            a.style.display = 'flex';
-            a.style.alignItems = 'center';
-            a.style.justifyContent = 'center';
-            a.style.fontWeight = 'bold';
-            a.style.fontSize = '13px';
-            a.style.color = 'white';
-            a.style.backgroundColor = u.color;
-            a.style.marginRight = '4px';
-            a.style.flex = '0 0 auto';
+            a.className = 'selected-avatar';
+            a.textContent = user.initials;
+            a.style.backgroundColor = user.color;
             selectedAvatarsContainer.appendChild(a);
         });
 
@@ -259,7 +249,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     arrowContainer.addEventListener('click', toggleDropdown);
 
     // ---------- Klick außerhalb schließt Dropdown ----------
-    // ---------- Klick außerhalb schließt Dropdown ----------
     document.addEventListener('click', e => {
         if (!assignedTextContainer.contains(e.target) && !arrowContainer.contains(e.target)) {
             assignedDropdown.classList.remove('open');
@@ -319,7 +308,6 @@ categories.forEach(cat => {
 categoryContent.appendChild(categoryDropdown);
 
 // Dropdown & Pfeil Toggle
-// Dropdown & Pfeil Toggle
 categoryContent.addEventListener('click', (e) => {
     e.stopPropagation();
     const isOpen = categoryDropdown.classList.contains('show');
@@ -337,8 +325,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-
-// ===================== SUBTASK DROPDOWN ===================== 
 // // ===================== SUBTASK DROPDOWN ===================== 
 const taskInput = document.querySelector("#subtask-text");
 const checkBtn = document.querySelector("#check-btn");
@@ -381,50 +367,37 @@ function startEditMode(li, span) {
     saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
 }
 
-
 // ----------------------------
 // Funktion: Task-Daten auslesen
 // ----------------------------
 function getTaskData() {
-    // 1. Überschrift
-    const titleInput = document.querySelector(".title-input");
-    const title = titleInput.value.trim();
+    const title = document.querySelector(".title-input").value.trim();
+    const description = document.querySelector(".description-input").value.trim();
 
-    // 2. Description
-    const descriptionInput = document.querySelector(".description-input");
-    const description = descriptionInput.value.trim();
-
-    // 3. Due Date
-    const dueDateInput = document.querySelector(".due-date-input");
-    let dueDate = dueDateInput.value; // Standardwert: yyyy-mm-dd
+    const dueDateInput = document.querySelector(".due-date-input").value;
     let formattedDate = "";
-
-    if (dueDate) {
-        const [year, month, day] = dueDate.split("-");
-        // Umwandlung in dd/mm/yyyy
+    if (dueDateInput) {
+        const [year, month, day] = dueDateInput.split("-");
         formattedDate = `${day}/${month}/${year}`;
     }
 
-    // 4. Priority
     const priorityBtn = document.querySelector(".priority-frame.active");
     const priority = priorityBtn ? priorityBtn.textContent.trim() : null;
 
-    // 5. Assigned to
     const assignedAvatars = document.querySelectorAll(".selected-avatars-container .assigned-text");
-    const assignedTo = Array.from(assignedAvatars).map(el => el.textContent.trim());
+    const assignedUsersFull = Array.from(assignedAvatars).map(el => el.textContent.trim());
 
-    // 6. Category
     const categoryText = document.querySelector(".category-content .assigned-text");
     const category = categoryText ? categoryText.textContent.trim() : null;
 
-    // 7. Subtasks
     const subtaskItems = document.querySelectorAll("#subtask-list li");
     const subtasks = Array.from(subtaskItems).map(el => el.textContent.trim());
 
-    return { title, description, dueDate, priority, assignedTo, category, subtasks };
+    return { title, description, dueDate: formattedDate, priority, assignedUsersFull, category, subtasks };
 }
 
 const resetBtn = document.querySelector(".clear-btn");
+
 resetBtn.addEventListener("click", () => {
     // Felder zurücksetzen
     document.querySelector(".title-input").value = "";
@@ -444,68 +417,30 @@ resetBtn.addEventListener("click", () => {
     if (categoryText) categoryText.textContent = "Select task category";
 });
 
-//Task an Firebase senden
-
-async function saveTaskToFirebase(taskData) {
-    try {
-        const response = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                title: taskData.title,
-                description: taskData.description,
-                dueDate: taskData.dueDate,
-                priority: taskData.priority,
-                status: "inProgress",
-                createdAt: new Date().toISOString(),
-                subtasks: {
-                    total: taskData.subtasks.length,
-                    completed: 0,
-                    items: taskData.subtasks
-                },
-                users: taskData.assignedTo,
-                category: taskData.category
-            })
-        });
-
-        if (!response.ok) throw new Error("Fehler beim Speichern des Tasks");
-
-        const data = await response.json();
-        console.log("Task erfolgreich gespeichert:", data);
-        return data;
-
-    } catch (error) {
-        console.error("Firebase Save Error:", error);
-        alert("Fehler beim Speichern des Tasks!");
-    }
-}
-
-
 //Create Task Button mit Firebase verbinden
-
 const createTaskBtn = document.querySelector(".create-btn");
 
 createTaskBtn.addEventListener("click", async (event) => {
-    event.preventDefault(); // verhindert das Standard-Submit
+    event.preventDefault();
 
-    // 1. Task-Daten auslesen
     const taskData = getTaskData();
 
-    // 2. Pflichtfelder prüfen
+    // Pflichtfelder prüfen
     if (!taskData.title || !taskData.dueDate) {
         alert("Bitte fülle alle Pflichtfelder aus!");
         return;
     }
 
-    console.log("Task-Daten vor dem Speichern:", taskData);
+    try {
+        // Task an Firebase senden
+        const newTask = await createTask(taskData);
 
-    // 3. Task an Firebase senden
-    const result = await saveTaskToFirebase(taskData);
+        console.log("Task erfolgreich erstellt:", newTask);
 
-    if (result) {
+        // Task-Bestätigung anzeigen
         showTaskAddedMessage();
 
-        // 4. Formular zurücksetzen
+        // Formular zurücksetzen
         document.querySelector(".title-input").value = "";
         document.querySelector(".description-input").value = "";
         document.querySelector(".due-date-input").value = "";
@@ -519,6 +454,10 @@ createTaskBtn.addEventListener("click", async (event) => {
         // Kategorie zurücksetzen
         const categoryText = document.querySelector(".category-content .assigned-text");
         if (categoryText) categoryText.textContent = "Select task category";
+
+    } catch (error) {
+        console.error("Fehler beim Erstellen des Tasks:", error);
+        alert("Fehler beim Erstellen des Tasks!");
     }
 });
 
@@ -527,32 +466,19 @@ function showTaskAddedMessage() {
     const img = document.createElement("img");
     img.src = "./assets/icons-addtask/Added to board 1.png";
     img.alt = "Task added to Board";
-
-    // Styles für zentrierte Position & Shadow
-    Object.assign(img.style, {
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        zIndex: "9999",
-        boxShadow: "0px 0px 4px 0px #00000029",
-        transition: "transform 150ms ease-out, opacity 150ms ease-out",
-        opacity: "0",
-        pointerEvents: "none",
-    });
+    img.classList.add("task-added-message");
 
     document.body.appendChild(img);
 
     // Einblenden
     requestAnimationFrame(() => {
-        img.style.opacity = "1";
-        img.style.transform = "translate(-50%, -50%)";
+        img.classList.add("show");
     });
 
     // Nach 800ms Slide-out links in 150ms
     setTimeout(() => {
-        img.style.transform = "translate(-150%, -50%)";
-        img.style.opacity = "0";
+        img.classList.remove("show");
+        img.classList.add("hide");
         img.addEventListener("transitionend", () => img.remove());
     }, 800);
 }

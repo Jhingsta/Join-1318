@@ -17,15 +17,37 @@ async function createTask(taskData) {
   const defaultTask = {
     title: "",
     description: "",
-    status: "todo",
+    status: "todo", // Standardstatus
     priority: "medium",
     dueDate: "",
-    subtasks: { completed: 0, total: 0 },
+    category: null,
     assignedUsersFull: [],
     createdAt: new Date().toISOString(),
+    subtasks: { total: 0, completed: 0, items: [] },
   };
 
-  const payload = { ...defaultTask, ...taskData };
+  // Robuste Subtask-Verarbeitung (Strings oder Objekte erlaubt)
+  const processedSubtasks = Array.isArray(taskData.subtasks)
+    ? taskData.subtasks.map((st, i) => {
+        if (typeof st === "string" && st.trim() !== "") {
+          return { title: st.trim(), done: false };
+        } else if (st && st.title && st.title.trim() !== "") {
+          return { title: st.title.trim(), done: st.done || false };
+        } else {
+          return { title: `Subtask ${i + 1}`, done: false };
+        }
+      })
+    : [];
+
+  const payload = {
+    ...defaultTask,
+    ...taskData,
+    subtasks: {
+      total: processedSubtasks.length,
+      completed: processedSubtasks.filter(st => st.done).length,
+      items: processedSubtasks,
+    },
+  };
 
   try {
     const response = await fetch(`${BASE_URL}tasks.json`, {
@@ -41,29 +63,9 @@ async function createTask(taskData) {
 
     const result = await response.json();
     const newTask = { id: result.name, ...payload };
-    return newTask; // Rückgabe der neuen Task, Aufrufer verwaltet Liste
+    return newTask; // Fertiges Objekt mit ID zurückgeben
   } catch (error) {
     console.error("Error creating task:", error);
-    throw error;
-  }
-}
-
-async function updateTask(taskId, updates) {
-  try {
-    const response = await fetch(`${BASE_URL}tasks/${taskId}.json`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updates),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-
-    return { id: taskId, ...updates }; // Aufrufer aktualisiert seine Task-Liste
-  } catch (error) {
-    console.error("Error updating task:", error);
     throw error;
   }
 }
