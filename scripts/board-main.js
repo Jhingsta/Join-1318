@@ -1,35 +1,7 @@
-let currentNewTask = null;
-
-if (!window.taskManager.saveTasks) {
-    window.taskManager.saveTasks = function (tasks) {
-    };
-}
-
-function saveTask(task) {
-    const taskData = getTaskData(); // Task-Daten inkl. assignedUsersFull
-    fetch(`${FIREBASE_URL}/tasks/${task.firebaseId || ''}.json`, {
-        method: task.firebaseId ? 'PATCH' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(taskData)
-    })
-        .then(res => res.json())
-        .then(data => {
-            console.log('Task gespeichert:', data);
-        })
-        .catch(err => console.error('Fehler beim Speichern:', err));
-}
-
-// Ganz oben in board.js einfügen:
-const FIREBASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app";
+let tasks = [];
 let users = [];
-async function loadUsers() {
-    const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
-    const data = await res.json();
-    users = data
-        ? Object.keys(data).map(key => ({ id: key, ...data[key] }))
-        : [];
-    populateDropdown();
-}
+let currentNewTask = null;
+let currentTask = null; // aktuell geöffnete Task im Overlay
 
 const modal = document.getElementById('add-task-modal');
 const createBtn = document.querySelector('.create-btn');
@@ -41,10 +13,73 @@ const assignedContent = document.querySelector('.assigned-content');
 const assignedTextContainer = assignedContent.querySelector('.assigned-text-container');
 const assignedText = assignedTextContainer.querySelector('.assigned-text');
 const assignedInput = assignedContent.querySelector('.assigned-input');
+
 const arrowContainer = assignedContent.querySelector('.assigned-arrow-container');
+const arrow = assignedContent.querySelector('.assigned-arrow-container');
 const arrowIcon = arrowContainer.querySelector('img');
+
 const assignedDropdown = document.getElementById('assigned-dropdown');
+const dropdown = document.getElementById("add-assigned-dropdown");
 const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
+
+const categoryContent = document.querySelector('.category-content');
+const categoryText = categoryContent.querySelector('.assigned-text');
+const categoryArrow = categoryContent.querySelector('.assigned-arrow-icon');
+const categoryDropdown = document.createElement('div');
+
+const taskInput = document.querySelector("#subtask-text");
+const checkBtn = document.querySelector("#check-btn");
+const cancelBtn = document.querySelector("#cancel-btn");
+const subtaskList = document.querySelector("#subtask-list");
+
+const modalClose = document.getElementById('modal-close');
+const cancelButton = document.getElementById('cancel-btn');
+const closeButton = document.querySelector('.close');
+
+const categories = ["Technical Task", "User Story"];
+const titleInput = document.querySelector(".title-input");
+const titleError = document.querySelector(".error-message");
+
+const dueDateInput = document.querySelector(".due-date-input");
+const dueDateIcon = document.querySelector(".due-date-icon");
+const dueDateContainer = document.querySelector(".due-date-content");
+const dueDateError = document.querySelector(".due-date-container .error-message");
+
+async function loadTasksForBoard() {
+    try {
+        tasks = await loadTasks(); // Nutzt die Funktion aus tasks-crud.js
+        
+        // Stelle sicher, dass assignedUsersFull existiert
+        tasks = tasks.map(task => ({
+            ...task,
+            assignedUsersFull: task.assignedUsersFull || []
+        }));
+        
+        return tasks;
+    } catch (error) {
+        console.error("Error loading tasks for board:", error);
+        tasks = [];
+        return [];
+    }
+}
+
+async function loadUsers() {
+    const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
+    const data = await res.json();
+    users = data
+        ? Object.keys(data).map(key => ({ id: key, ...data[key] }))
+        : [];
+    populateDropdown();
+}
+
+// Helper-Funktion um Tasks zu holen (ersetzt window.taskManager.getTasks())
+function getTasks() {
+    return tasks;
+}
+
+function getTasks() {
+    return tasks || [];
+}
 
 function closeModal() {
     modal?.classList.add('hidden');
@@ -71,9 +106,6 @@ function closeModal() {
 
 /////////////////////DOM 1////////////////////////////////////////////////
 document.addEventListener('DOMContentLoaded', async () => {
-    const modalClose = document.getElementById('modal-close');
-    const cancelButton = document.getElementById('cancel-btn');
-    const closeButton = document.querySelector('.close');
     closeButton?.addEventListener('click', closeModal);
     addTaskButton?.addEventListener('click', openModal);
 
@@ -110,27 +142,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         const subtaskInput = document.querySelector('#subtask-input'); // ID oder Klasse deiner Eingabe
         if (subtaskInput) subtaskInput.value = '';
     });
-    /**
- * Dropdown für Assigned Users in der Modalbox rendern
- */    await window.taskManager.loadTasks();
+    await loadTasksForBoard();
     renderBoard();
 
     async function renderAssignedDropdownModal(task) {
-        const dropdown = document.getElementById("add-assigned-dropdown");
         if (!dropdown) return;
-
         dropdown.innerHTML = "";
-        const contacts = await loadContactsFromFirebase(); // <-- gleiche Funktion wie im Edit
-
-        contacts.forEach(user => {
+        
+        // ✅ KORRIGIERT: Verwende loadUsers() statt loadContactsFromFirebase()
+        // Warte auf das Laden der Users (falls noch nicht geladen)
+        if (users.length === 0) {
+            await loadUsers();
+        }
+        
+        users.forEach(user => {
             const item = document.createElement("div");
             item.className = "dropdown-item";
             item.textContent = user.name;
+            
+            // Prüfen ob User bereits zugewiesen ist
             if (task.assignedUsersFull?.some(u => u.id === user.id)) {
                 item.classList.add("selected");
             }
+            
             item.addEventListener("click", () => {
                 if (!task.assignedUsersFull) task.assignedUsersFull = [];
+                
                 const index = task.assignedUsersFull.findIndex(u => u.id === user.id);
                 if (index !== -1) {
                     // Entfernen
@@ -141,8 +178,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     task.assignedUsersFull.push({
                         id: user.id,
                         name: user.name,
-                        initials: getInitials(user.name),
-                        color: user.color ?? "#888"
+                        initials: user.initials,
+                        color: user.color
                     });
                     item.classList.add("selected");
                 }
@@ -163,8 +200,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         (task.assignedUsersFull || []).forEach(user => {
             const avatarDiv = document.createElement("div");
             avatarDiv.className = "assigned-avatar";
-            avatarDiv.textContent = user.initials || getInitials(user.name);
-            avatarDiv.style.backgroundColor = user.color ?? "#888";
+            avatarDiv.textContent = user.initials; 
+            avatarDiv.style.backgroundColor = user.color; 
             avatarsContainer.appendChild(avatarDiv);
         });
     }
@@ -173,13 +210,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         createBtn.classList.add('active');
     });
 
-    if (!window.taskManager) {
-        console.error('Task manager not loaded');
+    try {
+        await loadTasksForBoard();
+        renderBoard();
+    } catch (error) {
+        console.error('Error loading tasks:', error);
         return;
     }
-
-    await window.taskManager.loadTasks();
-    renderBoard();
 
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -203,11 +240,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             dueDate,
             priority,
             status,
-            subtasks: {
-                items: subtasksItems,                 // Array von Objekten
-                total: subtasksItems.length,
-                completed: subtasksItems.filter(st => st.done).length
-            },
+            subtasks: subtasksItems, // ✅ Direkt das Array - createTask() macht den Rest
             assignedUsersFull: currentNewTask.assignedUsersFull,
             createdAt: new Date().toISOString()
         };
@@ -219,9 +252,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 5️⃣ Task speichern und Board aktualisieren
         try {
-            await window.taskManager.createTask(payload); // Stelle sicher, dass hier push() verwendet wird
-            await window.taskManager.loadTasks();
-            renderBoard();
+            const newTask = await createTask(payload); // Statt window.taskManager.createTask()
+            tasks.push(newTask); // Task zur lokalen Liste hinzufügen
+            renderBoard(); // Board neu rendern
             closeModal();
         } catch (err) {
             console.error(err);
@@ -231,29 +264,32 @@ document.addEventListener('DOMContentLoaded', async () => {
             submitButton.textContent = originalText;
         }
     });
-
 });
 
 function renderBoard() {
-    const tasks = window.taskManager.getTasks();
+    // ✅ GEÄNDERT: getTasks() statt window.taskManager.getTasks()
+    const boardTasks = getTasks(); // Nutzt unsere neue getTasks() Funktion
+    
     const columns = {
         todo: document.getElementById('column-todo'),
         inProgress: document.getElementById('column-inProgress'),
         awaitFeedback: document.getElementById('column-awaitFeedback'),
         done: document.getElementById('column-done'),
     };
-
+    
+    // Spalten leeren
     Object.values(columns).forEach((el) => el && (el.innerHTML = ''));
-
-    tasks.forEach((task) => {
+    
+    // Tasks rendern
+    boardTasks.forEach((task) => {
         const card = createTaskCard(task);
         const column = columns[task.status] || columns.todo;
         if (column) {
             column.appendChild(card);
         }
     });
-
-    // If a column is empty, show placeholder
+    
+    // Placeholder für leere Spalten
     Object.entries(columns).forEach(([status, columnEl]) => {
         if (!columnEl) return;
         if (columnEl.children.length === 0) {
@@ -263,56 +299,11 @@ function renderBoard() {
             columnEl.appendChild(placeholder);
         }
     });
-
-    // 🔹 Listener für Task-Updates setzen (nur die geänderte Task-Karte aktualisieren)
-    document.removeEventListener("taskUpdated", handleTaskUpdated); // alten Listener entfernen
-    document.addEventListener("taskUpdated", handleTaskUpdated);
-}
-
-// Funktion zum Aktualisieren einer einzelnen Task-Karte (TEST: drag and drop)
-function handleTaskUpdated(e) {
-    const updatedTask = e.detail;
-    const card = document.getElementById(`task-${updatedTask.firebaseId}`);
-    if (!card) return;
-
-    const cardTitle = card.querySelector(".task-title");
-    const cardDesc = card.querySelector(".task-desc");
-
-    if (cardTitle) cardTitle.innerText = updatedTask.title;
-    if (cardDesc) cardDesc.innerText = updatedTask.description || "";
-
-    // Optional: Fortschritt oder andere Felder aktualisieren
-    const progressBar = card.querySelector(".progress-container div");
-    const progressText = card.querySelector(".subtasks-text");
-    if (progressBar && updatedTask.subtasks) {
-        const percent = updatedTask.subtasks.total
-            ? (updatedTask.subtasks.completed / updatedTask.subtasks.total) * 100
-            : 0;
-        progressBar.style.width = `${percent}%`;
-    }
-    if (progressText && updatedTask.subtasks) {
-        progressText.textContent = `${updatedTask.subtasks.completed}/${updatedTask.subtasks.total} Subtasks`;
-    }
-}
-
-// ---------- Helpers ----------
-function getInitials(name) {
-    if (!name) return "";
-    return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
-}
-
-function getColor(name) {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-        hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return `hsl(${Math.abs(hash) % 360},70%,50%)`;
+    setTimeout(initializeDragAndDrop, 0);
 }
 
 // ---------- Populate Dropdown ----------
 function populateDropdown() {
-    const assignedDropdown = document.getElementById('assigned-dropdown');
-    const selectedAvatarsContainer = document.querySelector('.selected-avatars-container');
 
     if (!assignedDropdown) {
         console.warn('populateDropdown: #assigned-dropdown nicht gefunden.');
@@ -335,8 +326,8 @@ function populateDropdown() {
 
         const avatar = document.createElement('div');
         avatar.className = 'dropdown-avatar';
-        avatar.textContent = getInitials(user.name);
-        avatar.style.backgroundColor = getColor(user.name);
+        avatar.textContent = user.initials;
+        avatar.style.backgroundColor = user.color;
 
         const span = document.createElement('span');
         span.textContent = user.name;
@@ -397,12 +388,12 @@ function updateSelectedAvatars() {
         return img.src.includes("checked");
     }).slice(0, 3);
 
-    selected.forEach(u => {
+    selected.forEach(user => {
         const a = document.createElement('div');
         a.className = 'selected-avatar assigned-text';
         a.dataset.fullname = u.name;         // NEU: vollständiger Name für Overlay
-        a.textContent = getInitials(u.name);
-        a.style.backgroundColor = getColor(u.name);
+        a.textContent = user.initials;
+        a.style.backgroundColor = user.color;
         selectedAvatarsContainer.appendChild(a);
     });
     selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
@@ -469,12 +460,12 @@ assignedInput.addEventListener('input', () => {
     });
 });
 
-loadUsers();
-
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
-    card.id = `task-${task.firebaseId}`;
+    // ✅ Verwende task.id (von loadTasks()) statt task.firebaseId
+    card.id = `task-${task.id}`;
+    
     const type = document.createElement('div');
     type.className = 'task-type';
 
@@ -551,8 +542,8 @@ function createTaskCard(task) {
         task.assignedUsersFull.slice(0, 3).forEach(user => {
             const avatarDiv = document.createElement('div');
             avatarDiv.className = 'assigned-avatar';
-            avatarDiv.textContent = user.initials || getInitials(user.name);
-            avatarDiv.style.backgroundColor = user.color || '#888';
+            avatarDiv.textContent = user.initials;
+            avatarDiv.style.backgroundColor = user.color;
             avatarDiv.style.width = '28px';
             avatarDiv.style.height = '28px';
             avatarDiv.style.borderRadius = '50%';
@@ -617,10 +608,6 @@ function readableStatus(status) {
     }
 }
 
-const categories = ["Technical Task", "User Story"];
-const titleInput = document.querySelector(".title-input");
-const titleError = document.querySelector(".error-message");
-
 titleInput.addEventListener("blur", () => {
     if (!titleInput.value.trim()) {
         titleInput.style.borderBottom = "1px solid #FF4D4D";
@@ -637,11 +624,6 @@ titleInput.addEventListener("input", () => {
         titleError.style.display = "none";
     }
 });
-
-const dueDateInput = document.querySelector(".due-date-input");
-const dueDateIcon = document.querySelector(".due-date-icon");
-const dueDateContainer = document.querySelector(".due-date-content");
-const dueDateError = document.querySelector(".due-date-container .error-message");
 
 // Blur-Event (Validierung)
 dueDateInput.addEventListener("blur", () => {
@@ -714,7 +696,6 @@ function populateCategoryDropdown() {
 
     container.appendChild(menu);
 
-    const arrow = container.querySelector('.assigned-arrow-container');
     arrow.addEventListener('click', (e) => {
         e.stopPropagation();
         menu.style.display = menu.style.display === 'block' ? 'none' :
@@ -729,10 +710,7 @@ function populateCategoryDropdown() {
 }
 
 // ===================== CATEGORY ===================== 
-const categoryContent = document.querySelector('.category-content');
-const categoryText = categoryContent.querySelector('.assigned-text');
-const categoryArrow = categoryContent.querySelector('.assigned-arrow-icon');
-const categoryDropdown = document.createElement('div');
+
 categoryDropdown.className = 'dropdown-menu';
 
 categories.forEach(cat => {
@@ -751,7 +729,6 @@ categories.forEach(cat => {
 categoryContent.appendChild(categoryDropdown);
 
 // Dropdown & Pfeil Toggle
-// Dropdown & Pfeil Toggle
 categoryContent.addEventListener('click', (e) => {
     e.stopPropagation();
     const isOpen = categoryDropdown.classList.contains('show');
@@ -768,13 +745,6 @@ document.addEventListener('click', (e) => {
         categoryArrow.src = '/assets/icons-addTask/arrow_drop_down.png';
     }
 });
-
-// ===================== SUBTASK DROPDOWN ===================== 
-// // ===================== SUBTASK DROPDOWN ===================== 
-const taskInput = document.querySelector("#subtask-text");
-const checkBtn = document.querySelector("#check-btn");
-const cancelBtn = document.querySelector("#cancel-btn");
-const subtaskList = document.querySelector("#subtask-list");
 
 taskInput.addEventListener("input", () => {
     if (taskInput.value.trim() !== "") {
@@ -827,37 +797,25 @@ function getTaskData() {
 
     // 3. Due Date
     const dueDateInput = document.querySelector(".due-date-input");
-    let dueDate = dueDateInput.value; // yyyy-mm-dd
-    if (dueDate) {
-        const [year, month, day] = dueDate.split("-");
-        dueDate = `${day}.${month}.${year}`;
-    }
+    const dueDate = dueDateInput.value; // Behalte yyyy-mm-dd (ISO-Format)
 
     // 4. Priority
     const priorityBtn = document.querySelector(".priority-frame.active");
-    const priority = priorityBtn ? priorityBtn.textContent.trim() : null;
-
-    // 5. Assigned to (Kürzel)
-    const assignedAvatars = document.querySelectorAll(".selected-avatars-container .assigned-text");
-    const assignedTo = Array.from(assignedAvatars).map(el => el.textContent.trim());
+    const priority = priorityBtn ? priorityBtn.textContent.trim().toLowerCase() : "medium";
 
     // 5. Assigned Users Full (Vollständige Daten)
     let assignedUsersFull = [];
-    const assignedDropdown = document.getElementById('assigned-dropdown');
-    if (assignedDropdown) {
-        assignedDropdown.querySelectorAll('.dropdown-item').forEach(div => {
-            const checkboxWrapper = div.querySelector('.checkbox-wrapper');
-            if (checkboxWrapper.classList.contains('checked')) {
-                const name = div.querySelector('span').textContent.trim();
-                const user = users.find(u => u.name === name);
-                if (user) {
-                    assignedUsersFull.push({
-                        id: user.id,
-                        name: user.name,
-                        initials: user.initials,
-                        color: user.color
-                    });
-                }
+    if (dropdown) {
+        dropdown.querySelectorAll('.dropdown-item.selected').forEach(div => {
+            const name = div.textContent.trim();
+            const user = users.find(u => u.name === name);
+            if (user) {
+                assignedUsersFull.push({
+                    id: user.id,
+                    name: user.name,
+                    initials: user.initials,
+                    color: user.color
+                });
             }
         });
     }
@@ -868,59 +826,88 @@ function getTaskData() {
 
     // 7. Subtasks
     const subtaskItems = document.querySelectorAll("#subtask-list li");
-    const subtasks = Array.from(subtaskItems).map(el => el.textContent.trim());
+    const subtasks = Array.from(subtaskItems)
+        .map(el => el.textContent.trim())
+        .filter(text => text.length > 0);
 
     return {
         title,
         description,
         dueDate,
         priority,
-        assignedTo,        // Kürzel
-        assignedUsersFull, // volle User-Daten
+        assignedUsersFull,
         category,
         subtasks
     };
 }
 
+async function saveTask(taskData) {
+    try {
+        // Verwende die createTask() Funktion aus tasks-crud.js
+        const newTask = await createTask({
+            title: taskData.title,
+            description: taskData.description,
+            dueDate: taskData.dueDate,
+            priority: taskData.priority,
+            assignedUsersFull: taskData.assignedUsersFull,
+            category: taskData.category,
+            subtasks: taskData.subtasks // createTask() verarbeitet das bereits richtig
+        });
+        
+        // Task zur lokalen Liste hinzufügen
+        tasks.push(newTask);
+        
+        return newTask; // Zurückgeben mit id statt firebaseId
+    } catch (error) {
+        console.error("❌ Error saving task:", error);
+        throw error;
+    }
+}
+
 //Create Task Button mit Firebase verbinden
 createBtn.addEventListener("click", async (event) => {
-    event.preventDefault();
+    event.preventDefault(); // verhindert das Standard-Submit
+
+    // 1. Task-Daten auslesen
     const taskData = getTaskData();
+
+    // 2. Pflichtfelder prüfen
     if (!taskData.title || !taskData.dueDate) {
         alert("Bitte fülle alle Pflichtfelder aus!");
         return;
     }
-    try {
-        const task = await window.taskManager.createTask(taskData);
-        // Board neu laden
-        await loadAndRenderBoard();
-        // Erfolgsmeldung anzeigen + Modal schließen im Callback
+    // 3. Task an Firebase senden
+    const result = await saveTask(taskData);
+
+    if (result) {
+        // Erfolgsmeldung anzeigen
         showTaskAddedMessage(() => {
+            // Callback: erst schließen, wenn Meldung weg ist
             closeModal();
         });
-        // Formular zurücksetzen
+
+        // Formular zurücksetzen (bleibt aber noch offen sichtbar!)
         document.querySelector(".title-input").value = "";
         document.querySelector(".description-input").value = "";
         document.querySelector(".due-date-input").value = "";
         document.querySelector(".selected-avatars-container").innerHTML = "";
         document.querySelector("#subtask-list").innerHTML = "";
+
         // Priority zurücksetzen auf Medium
         document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
         document.querySelector(".priority-frame:nth-child(2)").classList.add("active");
+
         // Kategorie zurücksetzen
         if (categoryText) categoryText.textContent = "Select task category";
-    } catch (err) {
-        console.error("Fehler beim Erstellen der Task:", err);
-        alert("Fehler beim Speichern der Task. Siehe Konsole.");
     }
 });
-
 
 //Meldung anzeigen, wenn Task erfolgreich erstellt wurde
 function showTaskAddedMessage(onFinished) {
     const img = document.createElement("img");
     img.src = "./assets/icons-addTask/Added to board 1.png";
     img.alt = "Task added to Board";
+
     Object.assign(img.style, {
         position: "fixed",
         top: "50%",
@@ -932,7 +919,9 @@ function showTaskAddedMessage(onFinished) {
         opacity: "0",
         pointerEvents: "none",
     });
+
     document.body.appendChild(img);
+
     // Einblenden
     requestAnimationFrame(() => {
         img.style.opacity = "1";
@@ -952,157 +941,61 @@ function showTaskAddedMessage(onFinished) {
     }, 800);
 }
 
-<<<<<<< HEAD:scripts/board.js
-// Drag and Drop Feature
-function getTaskIdFromCard(card) {
-    return card.dataset.taskId || card.getAttribute('data-task-id') || card.id;
-}
-
-// 1. Alle Task-Karten draggable machen, wenn das Board gerendert wurde
-function enableTaskDragAndDrop() {
-    // Alle Spalten holen
-    const columns = [
-        document.getElementById('column-todo'),
-        document.getElementById('column-inProgress'),
-        document.getElementById('column-awaitFeedback'),
-        document.getElementById('column-done')
-    ].filter(Boolean);
-
-    // Alle Karten holen
-    const cards = document.querySelectorAll('.task-card');
-    cards.forEach(card => {
-        card.setAttribute('draggable', 'true');
-        // Optional: Eindeutige ID setzen, falls nicht vorhanden
-        if (!card.dataset.taskId) {
-            // Finde die Task anhand des Titels (besser: Task-Objekt mit ID erweitern!)
-            card.dataset.taskId = card.querySelector('.title')?.textContent || '';
-        }
-
-        card.addEventListener('dragstart', e => {
-            e.dataTransfer.setData('text/plain', card.dataset.taskId);
-            setTimeout(() => card.classList.add('dragging'), 0);
-        });
-
-        card.addEventListener('dragend', e => {
-            card.classList.remove('dragging');
-        });
-    });
-
-    // Spalten als Dropzone vorbereiten
-    columns.forEach(column => {
-        column.addEventListener('dragover', e => {
-            e.preventDefault();
-            column.classList.add('drag-over');
-        });
-
-        column.addEventListener('dragleave', e => {
-            column.classList.remove('drag-over');
-        });
-
-        column.addEventListener('drop', async e => {   // <- async hinzufügen
-            e.preventDefault();
-            column.classList.remove('drag-over');
-            const taskId = e.dataTransfer.getData('text/plain');
-            await moveTaskToColumn(taskId, column.id); // <- await, damit Firebase-Update fertig ist
-        });
-    });
-
-}
-
-// 2. Task verschieben und Board neu rendern / Karte updaten
-async function moveTaskToColumn(taskId, columnId) {
-
-    let newStatus = 'todo';
-    if (columnId.includes('inProgress')) newStatus = 'inProgress';
-    else if (columnId.includes('awaitFeedback')) newStatus = 'awaitFeedback';
-    else if (columnId.includes('done')) newStatus = 'done';
-
-    const tasks = window.taskManager.getTasks();
-    const task = tasks.find(t => (t.id || t.title) == taskId);
-
-    if (task && task.status !== newStatus) {
-        task.status = newStatus; // lokal ändern
-
-        // Firebase-Update abwarten
-        await window.taskManager.updateTaskInFirebase(task);
-        window.taskManager.saveTasks(tasks); // lokal speichern
-
-        // 🔹 Event feuern, damit nur die Karte aktualisiert wird
-        document.dispatchEvent(new CustomEvent("taskUpdated", { detail: task }));
-
-        // Optional: Board neu rendern (falls nötig)
-        renderBoard();
-        enableTaskDragAndDrop();
-    }
-}
-
-// 3. Nach jedem Render Drag & Drop aktivieren
-const origRenderBoard = renderBoard;
-renderBoard = function () {
-    origRenderBoard();
-    enableTaskDragAndDrop();
-};
-// Initial aktivieren (falls Board schon gerendert)
-enableTaskDragAndDrop();
-
-// 
-=======
-// Beispiel: Tasks aus Firebase laden und IDs zuweisen
->>>>>>> origin/main:scripts/board-main.js
-// 🔹 Tasks aus Firebase laden (bleibt wie gehabt)
-window.taskManager.loadTasks = async function () {
-    const res = await fetch(`${FIREBASE_URL}/tasks.json`);
-    const data = await res.json();
-    const tasks = [];
-    for (const [key, value] of Object.entries(data || {})) {
-        value.firebaseId = key;
-
-        // ✅ Nur assignedUsersFull nutzen, alte Felder ignorieren
-        value.assignedUsersFull = value.assignedUsersFull || [];
-
-        tasks.push(value);
-    }
-    window.taskManager._tasks = tasks;
-};
-
-// 🔹 Tasks lokal abrufen (bleibt wie gehabt)
-window.taskManager.getTasks = function () {
-    return window.taskManager._tasks || [];
-};
-
-// 🔹 NEU: Task in Firebase aktualisieren (diesen Block zusätzlich unten einfügen)
-window.taskManager.updateTaskInFirebase = async function (task) {
-    if (!task.firebaseId) return;
+// Ersetze window.taskManager.updateTaskInFirebase mit:
+async function updateTaskStatus(task, newStatus) {
+    if (!task.id) return;
+    
     try {
-        await fetch(`https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${task.firebaseId}.json`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: task.status })
-        });
-    } catch (err) {
-        console.error("Fehler beim Aktualisieren in Firebase:", err);
+        // Verwende updateTask() aus tasks-crud.js
+        await updateTask(task.id, { status: newStatus });
+        
+        // Task auch lokal aktualisieren
+        const localTask = tasks.find(t => t.id === task.id);
+        if (localTask) {
+            localTask.status = newStatus;
+        }
+        
+        console.log('Task status aktualisiert:', task.id, newStatus);
+    } catch (error) {
+        console.error("Fehler beim Aktualisieren in Firebase:", error);
+        throw error;
     }
+}
 
-};
+// Allgemeinere Funktion für alle Task-Updates:
+async function updateTaskData(taskId, updates) {
+    try {
+        await updateTask(taskId, updates);
+        
+        // Task auch lokal aktualisieren
+        const localTask = tasks.find(t => t.id === taskId);
+        if (localTask) {
+            Object.assign(localTask, updates);
+        }
+        
+        return localTask;
+    } catch (error) {
+        console.error("Fehler beim Aktualisieren:", error);
+        throw error;
+    }
+}
 
-let currentTask = null; // aktuell geöffnete Task im Overlay
 
 function openTaskDetails(task) {
     currentTask = task;
     const overlay = document.getElementById("task-detail-overlay");
     const view = document.getElementById("task-view");
     const edit = document.getElementById("task-edit");
-
-    // Task-ID am Overlay speichern
-    overlay.dataset.firebaseId = task.firebaseId;
-
+    
+    // ✅ GEÄNDERT: task.id statt task.firebaseId
+    overlay.dataset.taskId = task.id;
+    
     // Reset: Ansicht zeigen, Edit verstecken
     view.classList.remove("hidden");
     edit.classList.add("hidden");
-
     // Overlay sichtbar machen
     overlay.classList.remove("hidden");
-
+    
     // Kategorie-Icon
     let categoryImg = "";
     if (task.category === "User Story") {
@@ -1147,39 +1040,33 @@ function openTaskDetails(task) {
         editBtn.addEventListener("click", () => openEditMode(task));
     }
     // Delete-Button Handler
-    // Delete-Button Handler
     const deleteBtn = view.querySelector(".delete-btn");
     if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
-            if (!task.firebaseId) return;
-
-            // Task in Firebase löschen
-            await fetch(
-                `https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${task.firebaseId}.json`,
-                { method: "DELETE" }
-            );
-
-            // Overlay schließen
-            document.getElementById("task-detail-overlay").classList.add("hidden");
-
-            // Board sofort neu laden
-            await loadAndRenderBoard();
+            if (!task.id) return;
+            
+            try {
+                // ✅ GEÄNDERT: Verwende deleteTask() aus tasks-crud.js
+                await deleteTask(task.id);
+                
+                // ✅ GEÄNDERT: Task aus lokaler Liste entfernen
+                const taskIndex = tasks.findIndex(t => t.id === task.id);
+                if (taskIndex > -1) {
+                    tasks.splice(taskIndex, 1);
+                }
+                
+                // Overlay schließen
+                document.getElementById("task-detail-overlay").classList.add("hidden");
+                
+                // ✅ GEÄNDERT: Nur Board neu rendern, kein erneutes Laden nötig
+                renderBoard();
+                
+            } catch (error) {
+                console.error('Error deleting task:', error);
+                alert('Failed to delete task');
+            }
         });
     }
-
-}
-
-async function loadAndRenderBoard() {
-    const res = await fetch(
-        "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json"
-    );
-    const data = await res.json() || {};
-    const tasksArray = Object.entries(data).map(([id, task]) => ({
-        firebaseId: id,
-        ...task
-    }));
-
-    renderBoard(tasksArray); // Deine bestehende Board-Renderfunktion
 }
 
 //task detail overlay close
@@ -1194,32 +1081,25 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function renderAssignedUsers(users) {
-    if (!users || users.length === 0) return "";
-
-    return users.map(user => {
-        const name = typeof user === "string" ? user : (user.name || user.username || "");
-
-        return `
+    return users.map(user =>  `
         <div class="assigned-item">
             <div class="assigned-avatar" style="
-                background-color: ${getColor(name)};
+                background-color: ${user.color};
                 width:42px;
                 height:42px;
                 border-radius:50%;
                 display:flex;
                 align-items:center;
                 justify-content:center;
-                font-family:Open Sans;
                 font-weight:400;
                 font-size:12px;
                 color:#fff;
             ">
-                ${getInitials(name)}
+                ${user.initials}
             </div>
-            <span class="assigned-name-full">${name}</span>
+            <span class="assigned-name-full">${user.name}</span>
         </div>
-        `;
-    }).join("");
+    `).join("");
 }
 
 // Subtasks rendern mit Checkbox, Text + Edit & Delete Buttons darunter
@@ -1236,7 +1116,7 @@ function renderSubtasks(task) {
         <li class="subtask-item">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
                 <div class="subtask-row">
-                    <div class="checkbox-wrapper" onclick="toggleCheckbox(this, '${task.firebaseId}', ${index})">
+                    <div class="checkbox-wrapper" onclick="toggleCheckbox(this, '${task.id}', ${index})">
                         <input type="checkbox" class="real-checkbox" style="display:none;" ${isChecked ? 'checked' : ''}>
                         <img src="./assets/icons-addTask/Property 1=Default.svg" class="checkbox-default" style="display:${isChecked ? 'none' : 'block'}">
                         <img src="./assets/icons-addTask/Property 1=checked.svg" class="checkbox-checked" style="display:${isChecked ? 'block' : 'none'}">
@@ -1249,66 +1129,51 @@ function renderSubtasks(task) {
     }).join("");
 }
 
-// 🔹 Neue Subtask hinzufügen über REST
-const addSubtask = async (taskId, title) => {
+// 🔹 Neue Subtask hinzufügen
+async function addSubtask(taskId, title) {
     if (!taskId || !title) return;
 
     try {
-        // 1️⃣ Aktuelle Subtasks holen
-        const res = await fetch(`https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${taskId}/subtasks.json`);
-        if (!res.ok) throw new Error("Fehler beim Laden der Subtasks");
-        const subtasks = await res.json();
+        // Task aus lokaler Liste holen
+        const task = getTasks().find(t => t.id === taskId);
+        if (!task) {
+            console.error('Task nicht gefunden:', taskId);
+            return;
+        }
 
-        // 2️⃣ Sicherstellen, dass items Array existiert
-        const items = Array.isArray(subtasks?.items) ? subtasks.items : [];
+        // Sicherstellen dass Subtasks-Struktur existiert
+        if (!task.subtasks) {
+            task.subtasks = { items: [], total: 0, completed: 0 };
+        }
+        if (!Array.isArray(task.subtasks.items)) {
+            task.subtasks.items = [];
+        }
 
-        // 3️⃣ Neue Subtask hinzufügen
-        items.push({ title, done: false });
+        // Neue Subtask hinzufügen
+        task.subtasks.items.push({ title, done: false });
+        
+        // Zähler aktualisieren
+        task.subtasks.total = task.subtasks.items.length;
+        task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
 
-        // 4️⃣ Zähler aktualisieren
-        const total = items.length;
-        const completedCount = items.filter(st => st.done).length;
-
-        // 5️⃣ In Firebase speichern
-        await fetch(`https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${taskId}/subtasks.json`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                items: items,
-                total: total,
-                completed: completedCount
-            })
+        // Verwende updateTask() aus tasks-crud.js
+        await updateTask(taskId, {
+            subtasks: {
+                items: task.subtasks.items,
+                total: task.subtasks.total,
+                completed: task.subtasks.completed
+            }
         });
 
-        // Optional: DOM aktualisieren
+        // DOM aktualisieren
         renderBoard();
 
-    } catch (err) {
-        console.error("Fehler beim Hinzufügen der Subtask:", err);
+        console.log('Subtask hinzugefügt:', title);
+
+    } catch (error) {
+        console.error("Fehler beim Hinzufügen der Subtask:", error);
+        throw error; // Für Error-Handling im aufrufenden Code
     }
-};
-
-// 🔹 Checkbox UI toggle + Counter aktualisieren
-// Toggle Subtask in Firebase & lokal
-async function toggleSubtask(taskId, subtaskIndex) {
-    const res = await fetch(`${FIREBASE_URL}/tasks/${taskId}/subtasks.json`);
-    const subtasks = await res.json();
-
-    if (!subtasks?.items || !subtasks.items[subtaskIndex]) return;
-
-    // Toggle done
-    subtasks.items[subtaskIndex].done = !subtasks.items[subtaskIndex].done;
-
-    // Completed zählen
-    const completed = subtasks.items.filter(st => st.done).length;
-
-    // PATCH zurück zu Firebase
-    await fetch(`${FIREBASE_URL}/tasks/${taskId}/subtasks.json`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: subtasks.items, completed })
-    });
-    return { items: subtasks.items, completed };
 }
 
 // Checkbox-UI + Übersicht direkt aktualisieren
@@ -1322,8 +1187,10 @@ function toggleCheckbox(wrapper, taskId, subtaskIndex) {
     defaultSVG.style.display = isChecked ? 'block' : 'none';
 
     // 2️⃣ Lokale Daten aktualisieren
-    const task = window.taskManager.getTasks().find(t => t.firebaseId === taskId);
-    if (task) {
+    // ✅ GEÄNDERT: getTasks() statt window.taskManager.getTasks()
+    // ✅ GEÄNDERT: t.id statt t.firebaseId
+    const task = getTasks().find(t => t.id === taskId);
+    if (task && task.subtasks && task.subtasks.items) {
         task.subtasks.items[subtaskIndex].done = !task.subtasks.items[subtaskIndex].done;
         task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
     }
@@ -1332,21 +1199,50 @@ function toggleCheckbox(wrapper, taskId, subtaskIndex) {
     updateTaskCard(taskId);
 
     // 4️⃣ Firebase aktualisieren (async, ohne UI zu blockieren)
-    toggleSubtask(taskId, subtaskIndex).catch(err => console.error(err));
+    // ✅ GEÄNDERT: Verwende unsere updateTask() Funktion
+    updateSubtaskInFirebase(taskId, task).catch(err => console.error(err));
+}
+
+// ✅ NEUE HILFSFUNKTION für Firebase-Update:
+async function updateSubtaskInFirebase(taskId, task) {
+    try {
+        await updateTask(taskId, {
+            subtasks: {
+                total: task.subtasks.items.length,
+                completed: task.subtasks.completed,
+                items: task.subtasks.items
+            }
+        });
+    } catch (error) {
+        console.error('Error updating subtask in Firebase:', error);
+        // Optional: UI-Rollback bei Fehler
+    }
 }
 
 function updateTaskCard(taskId) {
-    const task = window.taskManager.getTasks().find(t => t.firebaseId === taskId);
+    // ✅ GEÄNDERT: getTasks() statt window.taskManager.getTasks()
+    // ✅ GEÄNDERT: t.id statt t.firebaseId
+    const task = getTasks().find(t => t.id === taskId);
     if (!task) return;
 
     const card = document.getElementById(`task-${taskId}`);
     if (!card) return;
 
+    // Sicherheitscheck für subtasks
+    if (!task.subtasks || !task.subtasks.items) return;
+
     // Counter updaten
     const counter = card.querySelector('.subtasks-text');
-    if (counter) counter.textContent = `${task.subtasks.completed}/${task.subtasks.total} Subtasks`;
+    if (counter) {
+        counter.textContent = `${task.subtasks.completed}/${task.subtasks.total} Subtasks`;
+    }
 
     // Fortschritt updaten
     const progressBar = card.querySelector('.progress-container div');
-    if (progressBar) progressBar.style.width = `${(task.subtasks.completed / task.subtasks.total) * 100}%`;
+    if (progressBar) {
+        const percentage = task.subtasks.total > 0 
+            ? (task.subtasks.completed / task.subtasks.total) * 100 
+            : 0;
+        progressBar.style.width = `${percentage}%`;
+    }
 }
