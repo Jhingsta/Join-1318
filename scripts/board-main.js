@@ -1128,42 +1128,50 @@ function renderSubtasks(task) {
     }).join("");
 }
 
-// 🔹 Neue Subtask hinzufügen über REST
+// 🔹 Neue Subtask hinzufügen
 const addSubtask = async (taskId, title) => {
     if (!taskId || !title) return;
 
     try {
-        // 1️⃣ Aktuelle Subtasks holen
-        const res = await fetch(`https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${taskId}/subtasks.json`);
-        if (!res.ok) throw new Error("Fehler beim Laden der Subtasks");
-        const subtasks = await res.json();
+        // ✅ GEÄNDERT: Task aus lokaler Liste holen
+        const task = getTasks().find(t => t.id === taskId);
+        if (!task) {
+            console.error('Task nicht gefunden:', taskId);
+            return;
+        }
 
-        // 2️⃣ Sicherstellen, dass items Array existiert
-        const items = Array.isArray(subtasks?.items) ? subtasks.items : [];
+        // ✅ GEÄNDERT: Sicherstellen dass Subtasks-Struktur existiert
+        if (!task.subtasks) {
+            task.subtasks = { items: [], total: 0, completed: 0 };
+        }
+        if (!Array.isArray(task.subtasks.items)) {
+            task.subtasks.items = [];
+        }
 
-        // 3️⃣ Neue Subtask hinzufügen
-        items.push({ title, done: false });
+        // Neue Subtask hinzufügen
+        task.subtasks.items.push({ title, done: false });
+        
+        // Zähler aktualisieren
+        task.subtasks.total = task.subtasks.items.length;
+        task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
 
-        // 4️⃣ Zähler aktualisieren
-        const total = items.length;
-        const completedCount = items.filter(st => st.done).length;
-
-        // 5️⃣ In Firebase speichern
-        await fetch(`https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${taskId}/subtasks.json`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                items: items,
-                total: total,
-                completed: completedCount
-            })
+        // ✅ GEÄNDERT: Verwende updateTask() aus tasks-crud.js
+        await updateTask(taskId, {
+            subtasks: {
+                items: task.subtasks.items,
+                total: task.subtasks.total,
+                completed: task.subtasks.completed
+            }
         });
 
-        // Optional: DOM aktualisieren
+        // DOM aktualisieren
         renderBoard();
 
-    } catch (err) {
-        console.error("Fehler beim Hinzufügen der Subtask:", err);
+        console.log('Subtask hinzugefügt:', title);
+
+    } catch (error) {
+        console.error("Fehler beim Hinzufügen der Subtask:", error);
+        throw error; // Für Error-Handling im aufrufenden Code
     }
 };
 
