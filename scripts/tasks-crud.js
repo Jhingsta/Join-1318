@@ -72,9 +72,21 @@ async function createTask(taskData) {
 
 async function updateTask(taskId, updates) {
   try {
-    // Spezielle Behandlung für Subtasks falls nötig
-    let processedUpdates = { ...updates };
+    // 1. Zuerst die aktuelle Task laden
+    const response = await fetch(`${BASE_URL}tasks/${taskId}.json`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: Failed to load task`);
+    }
     
+    const currentTask = await response.json();
+    if (!currentTask) {
+      throw new Error('Task not found');
+    }
+    
+    // 2. Updates auf die aktuelle Task anwenden
+    const updatedTask = { ...currentTask, ...updates };
+    
+    // 3. Spezielle Behandlung für Subtasks falls nötig
     if (updates.subtasks && Array.isArray(updates.subtasks)) {
       const processedSubtasks = updates.subtasks.map((st, i) => {
         if (typeof st === "string" && st.trim() !== "") {
@@ -86,26 +98,27 @@ async function updateTask(taskId, updates) {
         }
       });
       
-      processedUpdates.subtasks = {
+      updatedTask.subtasks = {
         total: processedSubtasks.length,
         completed: processedSubtasks.filter(st => st.done).length,
         items: processedSubtasks,
       };
     }
     
-    const response = await fetch(`${BASE_URL}tasks/${taskId}.json`, {
-      method: "PATCH",
+    // 4. PUT statt PATCH verwenden
+    const updateResponse = await fetch(`${BASE_URL}tasks/${taskId}.json`, {
+      method: "PUT", // ✅ PUT statt PATCH
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(processedUpdates),
+      body: JSON.stringify(updatedTask), // Komplette Task senden
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    if (!updateResponse.ok) {
+      const errorText = await updateResponse.text();
+      throw new Error(`HTTP ${updateResponse.status}: ${errorText}`);
     }
 
-    // Nur die bestätigten Updates zurückgeben
-    return processedUpdates;
+    // Nur die Updates zurückgeben
+    return updates;
   } catch (error) {
     console.error("Error updating task:", error);
     throw error;
