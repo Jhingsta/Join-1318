@@ -72,8 +72,6 @@ async function loadUsers() {
     populateDropdown();
 }
 
-loadUsers();
-
 // Helper-Funktion um Tasks zu holen (ersetzt window.taskManager.getTasks())
 function getTasks() {
     return tasks;
@@ -180,8 +178,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     task.assignedUsersFull.push({
                         id: user.id,
                         name: user.name,
-                        initials: user.initials || getInitials(user.name), // Fallback
-                        color: user.color || "#888"
+                        initials: user.initials,
+                        color: user.color
                     });
                     item.classList.add("selected");
                 }
@@ -202,8 +200,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         (task.assignedUsersFull || []).forEach(user => {
             const avatarDiv = document.createElement("div");
             avatarDiv.className = "assigned-avatar";
-            avatarDiv.textContent = user.initials || getInitials(user.name);
-            avatarDiv.style.backgroundColor = user.color ?? "#888";
+            avatarDiv.textContent = user.initials; 
+            avatarDiv.style.backgroundColor = user.color; 
             avatarsContainer.appendChild(avatarDiv);
         });
     }
@@ -266,7 +264,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             submitButton.textContent = originalText;
         }
     });
-
 });
 
 function renderBoard() {
@@ -304,20 +301,6 @@ function renderBoard() {
     });
 }
 
-// ---------- Helpers ----------
-function getInitials(name) {
-    if (!name) return "";
-    return name.trim().split(" ").map(n => n[0].toUpperCase()).slice(0, 2).join("");
-}
-
-function getColor(name) {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-        hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return `hsl(${Math.abs(hash) % 360},70%,50%)`;
-}
-
 // ---------- Populate Dropdown ----------
 function populateDropdown() {
 
@@ -342,8 +325,8 @@ function populateDropdown() {
 
         const avatar = document.createElement('div');
         avatar.className = 'dropdown-avatar';
-        avatar.textContent = getInitials(user.name);
-        avatar.style.backgroundColor = getColor(user.name);
+        avatar.textContent = user.initials;
+        avatar.style.backgroundColor = user.color;
 
         const span = document.createElement('span');
         span.textContent = user.name;
@@ -404,12 +387,12 @@ function updateSelectedAvatars() {
         return img.src.includes("checked");
     }).slice(0, 3);
 
-    selected.forEach(u => {
+    selected.forEach(user => {
         const a = document.createElement('div');
         a.className = 'selected-avatar assigned-text';
         a.dataset.fullname = u.name;         // NEU: vollständiger Name für Overlay
-        a.textContent = getInitials(u.name);
-        a.style.backgroundColor = getColor(u.name);
+        a.textContent = user.initials;
+        a.style.backgroundColor = user.color;
         selectedAvatarsContainer.appendChild(a);
     });
     selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
@@ -558,8 +541,8 @@ function createTaskCard(task) {
         task.assignedUsersFull.slice(0, 3).forEach(user => {
             const avatarDiv = document.createElement('div');
             avatarDiv.className = 'assigned-avatar';
-            avatarDiv.textContent = user.initials || getInitials(user.name);
-            avatarDiv.style.backgroundColor = user.color || '#888';
+            avatarDiv.textContent = user.initials;
+            avatarDiv.style.backgroundColor = user.color;
             avatarDiv.style.width = '28px';
             avatarDiv.style.height = '28px';
             avatarDiv.style.borderRadius = '50%';
@@ -829,8 +812,8 @@ function getTaskData() {
                 assignedUsersFull.push({
                     id: user.id,
                     name: user.name,
-                    initials: user.initials || getInitials(user.name), // Fallback
-                    color: user.color || "#888"
+                    initials: user.initials,
+                    color: user.color
                 });
             }
         });
@@ -1097,32 +1080,25 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function renderAssignedUsers(users) {
-    if (!users || users.length === 0) return "";
-
-    return users.map(user => {
-        const name = typeof user === "string" ? user : (user.name || user.username || "");
-
-        return `
+    return users.map(user =>  `
         <div class="assigned-item">
             <div class="assigned-avatar" style="
-                background-color: ${getColor(name)};
+                background-color: ${user.color};
                 width:42px;
                 height:42px;
                 border-radius:50%;
                 display:flex;
                 align-items:center;
                 justify-content:center;
-                font-family:Open Sans;
                 font-weight:400;
                 font-size:12px;
                 color:#fff;
             ">
-                ${getInitials(name)}
+                ${user.initials}
             </div>
-            <span class="assigned-name-full">${name}</span>
+            <span class="assigned-name-full">${user.name}</span>
         </div>
-        `;
-    }).join("");
+    `).join("");
 }
 
 // Subtasks rendern mit Checkbox, Text + Edit & Delete Buttons darunter
