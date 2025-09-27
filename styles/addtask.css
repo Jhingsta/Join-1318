@@ -521,6 +521,10 @@ main {
     opacity: 1;
 }
 
+.assigned-text-container {
+    width: 100%;
+}
+
 .assigned-arrow-container {
     display: flex;
     align-items: center;
@@ -711,6 +715,7 @@ main {
     height: 23px;
     display: flex;
     align-items: center;
+    width: 100%;
 }
 
 .assigned-arrow-container-fixed {
