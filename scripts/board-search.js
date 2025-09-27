@@ -1,20 +1,24 @@
-// Globale Variable für aktuelle Suchterme
-let currentSearchTerm;
+// ===== BOARD SEARCH SYSTEM =====
 
+// Globale Variable für aktuelle Suchterme
+let currentSearchTerm = "";
+
+// DOM-Elemente
 const input = document.getElementById("search-input");
 const icon = document.getElementById("search-icon");
 const clear = document.getElementById("search-icon-clear");
 
 // Funktion zum Rendern des gefilterten Boards
 function renderFilteredBoard(searchTerm) {
-    const allTasks = window.taskManager.getTasks();
+    const allTasks = getTasks(); // oder window.taskManager.getTasks()
     
-    // Tasks basierend auf Suchterm filtern
+    // Tasks basierend auf Titel und Beschreibung filtern
     const filteredTasks = allTasks.filter(task => 
-        task.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        task.description.toLowerCase().includes(searchTerm.toLowerCase())
+        (task.title && task.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (task.description && task.description.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-    
+
+    // Spalten-Container
     const columns = {
         todo: document.getElementById('column-todo'),
         inProgress: document.getElementById('column-inProgress'),
@@ -23,22 +27,18 @@ function renderFilteredBoard(searchTerm) {
     };
 
     // Alle Spalten leeren
-    Object.values(columns).forEach((el) => el && (el.innerHTML = ''));
+    Object.values(columns).forEach(el => el && (el.innerHTML = ''));
 
     // Gefilterte Tasks rendern
-    filteredTasks.forEach((task) => {
+    filteredTasks.forEach(task => {
         const card = createTaskCard(task);
         const column = columns[task.status] || columns.todo;
-        if (column) {
-            column.appendChild(card);
-        }
+        if (column) column.appendChild(card);
     });
 
-    // Platzhalter für leere Spalten bei der Suche
-    Object.entries(columns).forEach(([status, columnEl]) => {
-        if (!columnEl) return;
-        
-        if (columnEl.children.length === 0) {
+    // Platzhalter für leere Spalten
+    Object.values(columns).forEach(columnEl => {
+        if (columnEl && columnEl.children.length === 0) {
             const placeholder = document.createElement('div');
             placeholder.className = 'task-placeholder';
             placeholder.textContent = 'No tasks found';
@@ -47,22 +47,25 @@ function renderFilteredBoard(searchTerm) {
     });
 }
 
-// Hauptsuchfunktion die bei onkeyup aufgerufen wird
+// Hauptsuchfunktion, die bei onkeyup aufgerufen wird
 function handleSearch() {
+    const searchTerm = input.value.trim();
+    currentSearchTerm = searchTerm;
 
-  if (input.value.trim() !== "") {
-    icon.classList.add("hidden");
-    clear.classList.remove("hidden");
-    renderFilteredBoard(input.value);
-  } else {
-    icon.classList.remove("hidden");
-    clear.classList.add("hidden");
-    renderBoard();
-  }
+    if (searchTerm !== "") {
+        icon.classList.add("hidden");
+        clear.classList.remove("hidden");
+        renderFilteredBoard(searchTerm);
+    } else {
+        icon.classList.remove("hidden");
+        clear.classList.add("hidden");
+        renderBoard();
+    }
 }
 
+// Such-Eingabe leeren
 function clearSearch() {
-
-  input.value = "";
-  handleSearch();
+    input.value = "";
+    currentSearchTerm = "";
+    handleSearch();
 }

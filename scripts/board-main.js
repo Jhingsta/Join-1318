@@ -866,39 +866,38 @@ async function saveTask(taskData) {
 
 //Create Task Button mit Firebase verbinden
 createBtn.addEventListener("click", async (event) => {
-    event.preventDefault(); // verhindert das Standard-Submit
-
-    // 1. Task-Daten auslesen
+    event.preventDefault();
     const taskData = getTaskData();
 
-    // 2. Pflichtfelder prüfen
     if (!taskData.title || !taskData.dueDate) {
         alert("Bitte fülle alle Pflichtfelder aus!");
         return;
     }
-    // 3. Task an Firebase senden
-    const result = await saveTask(taskData);
 
-    if (result) {
-        // Erfolgsmeldung anzeigen
-        showTaskAddedMessage(() => {
-            // Callback: erst schließen, wenn Meldung weg ist
-            closeModal();
-        });
+    try {
+        // 3. Task an Firebase senden
+        const result = await saveTask(taskData);
 
-        // Formular zurücksetzen (bleibt aber noch offen sichtbar!)
-        document.querySelector(".title-input").value = "";
-        document.querySelector(".description-input").value = "";
-        document.querySelector(".due-date-input").value = "";
-        document.querySelector(".selected-avatars-container").innerHTML = "";
-        document.querySelector("#subtask-list").innerHTML = "";
-
-        // Priority zurücksetzen auf Medium
-        document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
-        document.querySelector(".priority-frame:nth-child(2)").classList.add("active");
-
-        // Kategorie zurücksetzen
-        if (categoryText) categoryText.textContent = "Select task category";
+        if (result) {
+            // Erfolgsmeldung anzeigen
+            showTaskAddedMessage(() => {
+                closeModal();
+            });
+            // Formular zurücksetzen
+            document.querySelector(".title-input").value = "";
+            document.querySelector(".description-input").value = "";
+            document.querySelector(".due-date-input").value = "";
+            document.querySelector(".selected-avatars-container").innerHTML = "";
+            document.querySelector("#subtask-list").innerHTML = "";
+            // Priority zurücksetzen auf Medium
+            document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
+            document.querySelector(".priority-frame:nth-child(2)").classList.add("active");
+            // Kategorie zurücksetzen
+            if (categoryText) categoryText.textContent = "Select task category";
+        }
+    } catch (err) {
+        console.error("Fehler beim Erstellen der Task:", err);
+        alert("Fehler beim Speichern der Task. Siehe Konsole.");
     }
 });
 
@@ -907,7 +906,6 @@ function showTaskAddedMessage(onFinished) {
     const img = document.createElement("img");
     img.src = "./assets/icons-addTask/Added to board 1.png";
     img.alt = "Task added to Board";
-
     Object.assign(img.style, {
         position: "fixed",
         top: "50%",
@@ -919,9 +917,7 @@ function showTaskAddedMessage(onFinished) {
         opacity: "0",
         pointerEvents: "none",
     });
-
     document.body.appendChild(img);
-
     // Einblenden
     requestAnimationFrame(() => {
         img.style.opacity = "1";
@@ -961,7 +957,7 @@ async function updateTaskStatus(task, newStatus) {
         throw error;
     }
 }
-
+  
 // Allgemeinere Funktion für alle Task-Updates:
 async function updateTaskData(taskId, updates) {
     try {
@@ -979,7 +975,6 @@ async function updateTaskData(taskId, updates) {
         throw error;
     }
 }
-
 
 function openTaskDetails(task) {
     currentTask = task;
