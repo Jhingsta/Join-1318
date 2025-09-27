@@ -952,6 +952,7 @@ function showTaskAddedMessage(onFinished) {
     }, 800);
 }
 
+<<<<<<< HEAD:scripts/board.js
 // Drag and Drop Feature
 function getTaskIdFromCard(card) {
     return card.dataset.taskId || card.getAttribute('data-task-id') || card.id;
@@ -1045,6 +1046,9 @@ renderBoard = function () {
 enableTaskDragAndDrop();
 
 // 
+=======
+// Beispiel: Tasks aus Firebase laden und IDs zuweisen
+>>>>>>> origin/main:scripts/board-main.js
 // 🔹 Tasks aus Firebase laden (bleibt wie gehabt)
 window.taskManager.loadTasks = async function () {
     const res = await fetch(`${FIREBASE_URL}/tasks.json`);

@@ -380,22 +380,20 @@
             </div>
         </div>
 
-        <script src="./scripts/auth.js"></script>
-        <script src="./scripts/header.js"></script>
-        <script>
-            w3.includeHTML(() => {
-                updateUserLogo();
-                setActiveNavigation();
-                if (window.afterInclude) window.afterInclude(); // <--- NEU
-            });
-        </script>
-
-        <!-- Dann deine Skripte -->
-        <script src="./scripts/board-global.js"></script>
-        <script src="./scripts/taskmanager.js"></script>
-        <script src="./scripts/board.js"></script>
-        <script src="./scripts/board-template.js"></script>
-        <script src="./scripts/board-overlay.js"></script>
+    <script src="./scripts/auth.js"></script>
+    <script src="./scripts/header.js"></script>
+    <script>
+        w3.includeHTML(() => {
+            updateUserLogo();
+            setActiveNavigation();
+            // if (window.afterInclude) window.afterInclude();
+        });
+    </script>
+    <script src="./scripts/tasks-crud.js"></script>
+    <script src="./scripts/board-overlay.js"></script>
+    <script src="./scripts/board-main.js"></script>
+    <script src="./scripts/board-drag.js"></script>
+    <script src="./scripts/board-search.js"></script>
 
 </body>
 

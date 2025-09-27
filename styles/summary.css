@@ -64,6 +64,7 @@ main {
   color: #4589ff;
 }
 
+/* Karte selbst */
 .urgent-card {
   grid-area: urgent;
   cursor: pointer;
@@ -76,20 +77,42 @@ main {
   justify-content: center;
 }
 
+/* Inhalt der Karte */
 .urgent-card .middle-row-left {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 35px;
-  padding: 1% 1%;
+  padding: 1%;
   border-radius: 30px;
 }
 
+/* Hover-Effekt auf Karte */
 .urgent-card:hover {
   background-color: #ffffff;
   box-shadow: 0px 0px 4px 0px #00000029;
   scale: 1.055;
   border-radius: 0px 30px 30px 30px;
+}
+
+/* Text & Icons bei Hover */
+.urgent-card:hover .middle-row-left-left-top span,
+.urgent-card:hover .middle-row-left-left-bottom span,
+.urgent-card:hover .middle-row-left-right-top,
+.urgent-card:hover .middle-row-left-right-bottom {
+  color: #4589ff;
+}
+
+/* Mittlere Trennlinie bei Hover */
+.urgent-card .middle-row-left-middle {
+  width: 3px;
+  height: 145px;
+  background-color: white;
+  transition: background-color 0.1s ease-in-out;
+}
+
+.urgent-card:hover .middle-row-left-middle {
+  background-color: #005DFF;
 }
 
 .middle-row-left-left {
@@ -124,12 +147,6 @@ main {
   color: white;
 }
 
-.middle-row-left-middle {
-  width: 3px;
-  height: 145px;
-  background-color: white;
-}
-
 .middle-row-left-right {
   display: flex;
   flex-direction: column;
@@ -145,17 +162,6 @@ main {
 .middle-row-left-right-bottom {
   font-size: 23px;
   color: white;
-}
-
-.middle-row-left:hover .middle-row-left-left-top span,
-.middle-row-left:hover .middle-row-left-left-bottom span,
-.middle-row-left:hover .middle-row-left-right-top,
-.middle-row-left:hover .middle-row-left-right-bottom {
-  color: #4589ff;
-}
-
-.middle-row-left:hover .middle-row-left-middle{
-  background-color: #005DFF;
 }
 
 .board-card {
