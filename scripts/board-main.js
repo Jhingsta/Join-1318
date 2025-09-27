@@ -3,6 +3,48 @@ let users = [];
 let currentNewTask = null;
 let currentTask = null; // aktuell geöffnete Task im Overlay
 
+const modal = document.getElementById('add-task-modal');
+const createBtn = document.querySelector('.create-btn');
+const addTaskButton = document.getElementById('add-task-btn');
+const form = document.getElementById('add-task-form');
+const svgButtons = document.querySelectorAll('.svg-button');
+
+const assignedContent = document.querySelector('.assigned-content');
+const assignedTextContainer = assignedContent.querySelector('.assigned-text-container');
+const assignedText = assignedTextContainer.querySelector('.assigned-text');
+const assignedInput = assignedContent.querySelector('.assigned-input');
+
+const arrowContainer = assignedContent.querySelector('.assigned-arrow-container');
+const arrow = assignedContent.querySelector('.assigned-arrow-container');
+const arrowIcon = arrowContainer.querySelector('img');
+
+const assignedDropdown = document.getElementById('assigned-dropdown');
+const dropdown = document.getElementById("add-assigned-dropdown");
+const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
+
+const categoryContent = document.querySelector('.category-content');
+const categoryText = categoryContent.querySelector('.assigned-text');
+const categoryArrow = categoryContent.querySelector('.assigned-arrow-icon');
+const categoryDropdown = document.createElement('div');
+
+const taskInput = document.querySelector("#subtask-text");
+const checkBtn = document.querySelector("#check-btn");
+const cancelBtn = document.querySelector("#cancel-btn");
+const subtaskList = document.querySelector("#subtask-list");
+
+const modalClose = document.getElementById('modal-close');
+const cancelButton = document.getElementById('cancel-btn');
+const closeButton = document.querySelector('.close');
+
+const categories = ["Technical Task", "User Story"];
+const titleInput = document.querySelector(".title-input");
+const titleError = document.querySelector(".error-message");
+
+const dueDateInput = document.querySelector(".due-date-input");
+const dueDateIcon = document.querySelector(".due-date-icon");
+const dueDateContainer = document.querySelector(".due-date-content");
+const dueDateError = document.querySelector(".due-date-container .error-message");
+
 async function loadTasksForBoard() {
     try {
         tasks = await loadTasks(); // Nutzt die Funktion aus tasks-crud.js
@@ -21,20 +63,6 @@ async function loadTasksForBoard() {
     }
 }
 
-// Helper-Funktion um Tasks zu holen (ersetzt window.taskManager.getTasks())
-function getTasks() {
-    return tasks;
-}
-
-// Helper-Funktion um einen Task zu finden (ersetzt window.taskManager.getTask())
-function getTaskById(id) {
-    return tasks.find(task => task.id === id);
-}
-
-function getTasks() {
-    return tasks || [];
-}
-
 async function loadUsers() {
     const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
     const data = await res.json();
@@ -44,20 +72,16 @@ async function loadUsers() {
     populateDropdown();
 }
 
-const modal = document.getElementById('add-task-modal');
-const createBtn = document.querySelector('.create-btn');
-const addTaskButton = document.getElementById('add-task-btn');
-const form = document.getElementById('add-task-form');
-const svgButtons = document.querySelectorAll('.svg-button');
+loadUsers();
 
-const assignedContent = document.querySelector('.assigned-content');
-const assignedTextContainer = assignedContent.querySelector('.assigned-text-container');
-const assignedText = assignedTextContainer.querySelector('.assigned-text');
-const assignedInput = assignedContent.querySelector('.assigned-input');
-const arrowContainer = assignedContent.querySelector('.assigned-arrow-container');
-const arrowIcon = arrowContainer.querySelector('img');
-const assignedDropdown = document.getElementById('assigned-dropdown');
-const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
+// Helper-Funktion um Tasks zu holen (ersetzt window.taskManager.getTasks())
+function getTasks() {
+    return tasks;
+}
+
+function getTasks() {
+    return tasks || [];
+}
 
 function closeModal() {
     modal?.classList.add('hidden');
@@ -84,9 +108,6 @@ function closeModal() {
 
 /////////////////////DOM 1////////////////////////////////////////////////
 document.addEventListener('DOMContentLoaded', async () => {
-    const modalClose = document.getElementById('modal-close');
-    const cancelButton = document.getElementById('cancel-btn');
-    const closeButton = document.querySelector('.close');
     closeButton?.addEventListener('click', closeModal);
     addTaskButton?.addEventListener('click', openModal);
 
@@ -127,21 +148,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderBoard();
 
     async function renderAssignedDropdownModal(task) {
-        const dropdown = document.getElementById("add-assigned-dropdown");
         if (!dropdown) return;
-
         dropdown.innerHTML = "";
-        const contacts = await loadContactsFromFirebase(); // <-- gleiche Funktion wie im Edit
-
-        contacts.forEach(user => {
+        
+        // ✅ KORRIGIERT: Verwende loadUsers() statt loadContactsFromFirebase()
+        // Warte auf das Laden der Users (falls noch nicht geladen)
+        if (users.length === 0) {
+            await loadUsers();
+        }
+        
+        users.forEach(user => {
             const item = document.createElement("div");
             item.className = "dropdown-item";
             item.textContent = user.name;
+            
+            // Prüfen ob User bereits zugewiesen ist
             if (task.assignedUsersFull?.some(u => u.id === user.id)) {
                 item.classList.add("selected");
             }
+            
             item.addEventListener("click", () => {
                 if (!task.assignedUsersFull) task.assignedUsersFull = [];
+                
                 const index = task.assignedUsersFull.findIndex(u => u.id === user.id);
                 if (index !== -1) {
                     // Entfernen
@@ -152,8 +180,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     task.assignedUsersFull.push({
                         id: user.id,
                         name: user.name,
-                        initials: getInitials(user.name),
-                        color: user.color ?? "#888"
+                        initials: user.initials || getInitials(user.name), // Fallback
+                        color: user.color || "#888"
                     });
                     item.classList.add("selected");
                 }
@@ -292,8 +320,6 @@ function getColor(name) {
 
 // ---------- Populate Dropdown ----------
 function populateDropdown() {
-    const assignedDropdown = document.getElementById('assigned-dropdown');
-    const selectedAvatarsContainer = document.querySelector('.selected-avatars-container');
 
     if (!assignedDropdown) {
         console.warn('populateDropdown: #assigned-dropdown nicht gefunden.');
@@ -450,8 +476,6 @@ assignedInput.addEventListener('input', () => {
     });
 });
 
-loadUsers();
-
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
@@ -600,10 +624,6 @@ function readableStatus(status) {
     }
 }
 
-const categories = ["Technical Task", "User Story"];
-const titleInput = document.querySelector(".title-input");
-const titleError = document.querySelector(".error-message");
-
 titleInput.addEventListener("blur", () => {
     if (!titleInput.value.trim()) {
         titleInput.style.borderBottom = "1px solid #FF4D4D";
@@ -620,11 +640,6 @@ titleInput.addEventListener("input", () => {
         titleError.style.display = "none";
     }
 });
-
-const dueDateInput = document.querySelector(".due-date-input");
-const dueDateIcon = document.querySelector(".due-date-icon");
-const dueDateContainer = document.querySelector(".due-date-content");
-const dueDateError = document.querySelector(".due-date-container .error-message");
 
 // Blur-Event (Validierung)
 dueDateInput.addEventListener("blur", () => {
@@ -697,7 +712,6 @@ function populateCategoryDropdown() {
 
     container.appendChild(menu);
 
-    const arrow = container.querySelector('.assigned-arrow-container');
     arrow.addEventListener('click', (e) => {
         e.stopPropagation();
         menu.style.display = menu.style.display === 'block' ? 'none' :
@@ -712,10 +726,7 @@ function populateCategoryDropdown() {
 }
 
 // ===================== CATEGORY ===================== 
-const categoryContent = document.querySelector('.category-content');
-const categoryText = categoryContent.querySelector('.assigned-text');
-const categoryArrow = categoryContent.querySelector('.assigned-arrow-icon');
-const categoryDropdown = document.createElement('div');
+
 categoryDropdown.className = 'dropdown-menu';
 
 categories.forEach(cat => {
@@ -734,7 +745,6 @@ categories.forEach(cat => {
 categoryContent.appendChild(categoryDropdown);
 
 // Dropdown & Pfeil Toggle
-// Dropdown & Pfeil Toggle
 categoryContent.addEventListener('click', (e) => {
     e.stopPropagation();
     const isOpen = categoryDropdown.classList.contains('show');
@@ -751,13 +761,6 @@ document.addEventListener('click', (e) => {
         categoryArrow.src = '/assets/icons-addTask/arrow_drop_down.png';
     }
 });
-
-// ===================== SUBTASK DROPDOWN ===================== 
-// // ===================== SUBTASK DROPDOWN ===================== 
-const taskInput = document.querySelector("#subtask-text");
-const checkBtn = document.querySelector("#check-btn");
-const cancelBtn = document.querySelector("#cancel-btn");
-const subtaskList = document.querySelector("#subtask-list");
 
 taskInput.addEventListener("input", () => {
     if (taskInput.value.trim() !== "") {
@@ -810,42 +813,28 @@ function getTaskData() {
 
     // 3. Due Date
     const dueDateInput = document.querySelector(".due-date-input");
-    let dueDate = dueDateInput.value; // yyyy-mm-dd
-    if (dueDate) {
-        const [year, month, day] = dueDate.split("-");
-        dueDate = `${day}.${month}.${year}`;
-    }
+    const dueDate = dueDateInput.value; // Behalte yyyy-mm-dd (ISO-Format)
 
     // 4. Priority
     const priorityBtn = document.querySelector(".priority-frame.active");
-    const priority = priorityBtn ? priorityBtn.textContent.trim() : null;
-
-    // 5. Assigned to (Kürzel)
-    const assignedAvatars = document.querySelectorAll(".selected-avatars-container .assigned-text");
-    const assignedTo = Array.from(assignedAvatars).map(el => el.textContent.trim());
+    const priority = priorityBtn ? priorityBtn.textContent.trim().toLowerCase() : "medium";
 
     // 5. Assigned Users Full (Vollständige Daten)
     let assignedUsersFull = [];
-    const assignedDropdown = document.getElementById('assigned-dropdown');
-    if (assignedDropdown) {
-        assignedDropdown.querySelectorAll('.dropdown-item').forEach(div => {
-            const checkboxWrapper = div.querySelector('.checkbox-wrapper');
-            if (checkboxWrapper.classList.contains('checked')) {
-                const name = div.querySelector('span').textContent.trim();
-                const user = users.find(u => u.name === name);
-                if (user) {
-                    assignedUsersFull.push({
-                        id: user.id,
-                        name: user.name,
-                        initials: user.initials,
-                        color: user.color
-                    });
-                }
+    if (dropdown) {
+        dropdown.querySelectorAll('.dropdown-item.selected').forEach(div => {
+            const name = div.textContent.trim();
+            const user = users.find(u => u.name === name);
+            if (user) {
+                assignedUsersFull.push({
+                    id: user.id,
+                    name: user.name,
+                    initials: user.initials || getInitials(user.name), // Fallback
+                    color: user.color || "#888"
+                });
             }
         });
     }
-
-
 
     // 6. Category
     const categoryText = document.querySelector(".category-content .assigned-text");
@@ -853,15 +842,16 @@ function getTaskData() {
 
     // 7. Subtasks
     const subtaskItems = document.querySelectorAll("#subtask-list li");
-    const subtasks = Array.from(subtaskItems).map(el => el.textContent.trim());
+    const subtasks = Array.from(subtaskItems)
+        .map(el => el.textContent.trim())
+        .filter(text => text.length > 0);
 
     return {
         title,
         description,
         dueDate,
         priority,
-        assignedTo,        // Kürzel
-        assignedUsersFull, // volle User-Daten
+        assignedUsersFull,
         category,
         subtasks
     };
