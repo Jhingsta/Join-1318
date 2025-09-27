@@ -1129,18 +1129,18 @@ function renderSubtasks(task) {
 }
 
 // 🔹 Neue Subtask hinzufügen
-const addSubtask = async (taskId, title) => {
+async function addSubtask(taskId, title) {
     if (!taskId || !title) return;
 
     try {
-        // ✅ GEÄNDERT: Task aus lokaler Liste holen
+        // Task aus lokaler Liste holen
         const task = getTasks().find(t => t.id === taskId);
         if (!task) {
             console.error('Task nicht gefunden:', taskId);
             return;
         }
 
-        // ✅ GEÄNDERT: Sicherstellen dass Subtasks-Struktur existiert
+        // Sicherstellen dass Subtasks-Struktur existiert
         if (!task.subtasks) {
             task.subtasks = { items: [], total: 0, completed: 0 };
         }
@@ -1155,7 +1155,7 @@ const addSubtask = async (taskId, title) => {
         task.subtasks.total = task.subtasks.items.length;
         task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
 
-        // ✅ GEÄNDERT: Verwende updateTask() aus tasks-crud.js
+        // Verwende updateTask() aus tasks-crud.js
         await updateTask(taskId, {
             subtasks: {
                 items: task.subtasks.items,
@@ -1173,7 +1173,7 @@ const addSubtask = async (taskId, title) => {
         console.error("Fehler beim Hinzufügen der Subtask:", error);
         throw error; // Für Error-Handling im aufrufenden Code
     }
-};
+}
 
 // Checkbox-UI + Übersicht direkt aktualisieren
 function toggleCheckbox(wrapper, taskId, subtaskIndex) {
