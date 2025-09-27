@@ -1,81 +1,3 @@
-//Task in Firebase updaten
-async function updateTaskInFirebase(task) {
-    if (!task.firebaseId) {
-        console.error("Task hat keine firebaseId!");
-        return;
-    }
-
-    // Alte Felder löschen, nur assignedUsersFull nutzen
-    delete task.users;
-    delete task.usersFull;
-
-    try {
-        await fetch(
-            `https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${task.firebaseId}.json`,
-            {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title: task.title,
-                    description: task.description,
-                    dueDate: task.dueDate,
-                    priority: task.priority,
-                    assignedUsersFull: task.assignedUsersFull || [],
-                    category: task.category,
-                }),
-            }
-        );
-        console.log("✅ Task erfolgreich aktualisiert:", task.firebaseId);
-
-        // Event feuern, damit Board-Ansicht sich sofort updated
-        document.dispatchEvent(new CustomEvent("taskUpdated", { detail: task }));
-    } catch (err) {
-        console.error("❌ Fehler beim Firebase-Update:", err);
-    }
-}
-
-//Hilfsfunktion: Initialen aus Namen bilden
-function getInitials(name) {
-    if (!name) return '';
-    return name.split(' ').map(n => n[0].toUpperCase()).join('');
-}
-
-
-//Kontakte aus Firebase laden (mit stabiler id)
-async function loadContactsFromFirebase() {
-    try {
-        const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
-        const data = await res.json();
-        if (!data) return [];
-        return Object.entries(data).map(([id, user]) => ({ id, ...user }));
-    } catch (err) {
-        console.error("Fehler beim Laden der Kontakte:", err);
-        return [];
-    }
-}
-
-//Task normalisieren – assignedUsersFull anhand von Kontakten reparieren
-function normalizeTask(task, contacts = []) {
-    if (!task.assignedUsersFull) task.assignedUsersFull = [];
-
-    const contactMap = new Map(contacts.map(c => [c.id, c]));
-
-    task.assignedUsersFull = task.assignedUsersFull.map(user => {
-        const contact = contactMap.get(user.id) || contactMap.get(user.name);
-        return {
-            id: contact ? contact.id : user.id || user.name,
-            name: contact ? contact.name : user.name,
-            color: contact ? contact.color : (user.color ?? "#888"),
-            initials: user.initials || getInitials(user.name)
-        };
-    });
-
-    delete task.usersFull;
-    delete task.users;
-
-    return task;
-}
-
 //Avatare rendern
 function renderAvatars(task) {
     const avatarsContainer = document.getElementById("edit-avatars-container-overlay");
@@ -85,12 +7,12 @@ function renderAvatars(task) {
     (task.assignedUsersFull || []).forEach(user => {
         const avatarDiv = document.createElement("div");
         avatarDiv.className = "selected-avatar";
-        avatarDiv.textContent = user.initials || getInitials(user.name);
-        avatarDiv.style.backgroundColor = user.color ?? "#888";
+        avatarDiv.textContent = user.initials;
+        avatarDiv.style.backgroundColor = user.color;
 
         avatarDiv.dataset.id = user.id;
         avatarDiv.dataset.fullname = user.name;
-        avatarDiv.dataset.color = user.color ?? "#888";
+        avatarDiv.dataset.color = user.color;
         avatarDiv.dataset.initials = user.initials;
         avatarsContainer.appendChild(avatarDiv);
     });
@@ -105,8 +27,6 @@ async function renderAssignedDropdownOverlay(task) {
 
     if (!task.assignedUsersFull) task.assignedUsersFull = [];
 
-    const users = await loadContactsFromFirebase();
-
     users.forEach(user => {
         const initiallySelected = task.assignedUsersFull.some(u => u.id === user.id);
 
@@ -120,8 +40,8 @@ async function renderAssignedDropdownOverlay(task) {
 
         const avatar = document.createElement("div");
         avatar.className = "dropdown-avatar";
-        avatar.textContent = getInitials(user.name);
-        avatar.style.backgroundColor = user.color ?? "#888";
+        avatar.textContent = user.initials;
+        avatar.style.backgroundColor = user.color;
 
         const label = document.createElement("span");
         label.textContent = user.name;
@@ -161,8 +81,8 @@ async function renderAssignedDropdownOverlay(task) {
                     task.assignedUsersFull.push({
                         id: user.id,
                         name: user.name,
-                        initials: getInitials(user.name),
-                        color: user.color ?? "#888"
+                        initials: user.initials,
+                        color: user.color
                     });
                 }
                 defaultIcon.style.display = "none";
@@ -215,7 +135,7 @@ function renderEditSubtasks(task) {
         deleteIcon.alt = "Delete";
         deleteIcon.addEventListener("click", async () => {
             task.subtasks.items.splice(index, 1);
-            await updateSubtasksInFirebase(task);
+            await updateTask(task.id, { subtasks: task.subtasks });
             renderEditSubtasks(task);
         });
 
@@ -234,7 +154,7 @@ function renderEditSubtasks(task) {
 //Checkbox toggle
 async function toggleSubtaskInEdit(task, index) {
     task.subtasks.items[index].done = !task.subtasks.items[index].done;
-    await updateSubtasksInFirebase(task);
+    await updateTask(task.id, { subtasks: task.subtasks });
     renderEditSubtasks(task);
 }
 
@@ -250,7 +170,7 @@ function startEditSubtaskMode(task, li, span, index) {
     saveIcon.alt = "Save";
     saveIcon.addEventListener("click", async () => {
         task.subtasks.items[index].title = input.value.trim() || task.subtasks.items[index].title;
-        await updateSubtasksInFirebase(task);
+        await updateTask(task.id, { subtasks: task.subtasks });
         renderEditSubtasks(task);
     });
 
@@ -259,7 +179,7 @@ function startEditSubtaskMode(task, li, span, index) {
     deleteIcon.alt = "Delete";
     deleteIcon.addEventListener("click", async () => {
         task.subtasks.items.splice(index, 1);
-        await updateSubtasksInFirebase(task);
+        await updateTask(task.id, { subtasks: task.subtasks });
         renderEditSubtasks(task);
     });
 
@@ -275,24 +195,13 @@ function startEditSubtaskMode(task, li, span, index) {
     input.focus();
 }
 
- //Subtasks in Firebase speichern
-async function updateSubtasksInFirebase(task) {
-    if (!task.firebaseId) return;
-    if (!task.subtasks) task.subtasks = { items: [], total: 0, completed: 0 };
-
-    task.subtasks.total = task.subtasks.items.length;
-    task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
-
-    await fetch(`https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${task.firebaseId}/subtasks.json`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(task.subtasks)
-    });
-}
-
 //Edit-Mode öffnen
 async function openEditMode(task) {
-    const contacts = await loadContactsFromFirebase();
+    // ✅ KORRIGIERT: Verwende loadUsers() statt loadContactsFromFirebase()
+    if (users.length === 0) {
+        await loadUsers();
+    }
+        
     const view = document.getElementById("task-view");
     const edit = document.getElementById("task-edit");
     const editForm = document.getElementById("edit-form-fields");
@@ -300,13 +209,20 @@ async function openEditMode(task) {
     view.classList.add("hidden");
     edit.classList.remove("hidden");
 
+    // ✅ KORRIGIERT: Verwende neue Datum-Hilfsfunktion
     let isoDate = "";
-    if (task.dueDate && task.dueDate.includes(".")) {
-        const [day, month, year] = task.dueDate.split(".");
-        isoDate = `${year}-${month}-${day}`;
+    if (task.dueDate) {
+        if (task.dueDate.includes(".")) {
+            // Konvertiere deutsches Format zu ISO
+            const [day, month, year] = task.dueDate.split(".");
+            isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        } else {
+            // Bereits ISO-Format
+            isoDate = task.dueDate;
+        }
     }
 
-    const priority = (task.priority || "Low").trim();
+    const priority = (task.priority || "medium").trim().toLowerCase(); // Konsistent mit createTask()
 
     // HTML generieren
     editForm.innerHTML = `
@@ -434,15 +350,12 @@ async function openEditMode(task) {
         editCheckBtn.style.display = "none";
     });
 
+    // ✅ KORRIGIERT: Check-Button Event für Subtasks
     editCheckBtn.addEventListener("click", async () => {
         const text = subtaskInput.value.trim();
         if (text) {
-            // Subtask zum Task hinzufügen
-            if (!task.subtasks) task.subtasks = { items: [], total: 0, completed: 0 };
-            task.subtasks.items.push({ title: text, done: false });
-
-            // Subtasks in Firebase speichern
-            await updateSubtasksInFirebase(task);
+            // ✅ KORRIGIERT: Verwende addSubtask() Funktion
+            await addSubtask(task.id, text);
 
             // Subtasks neu rendern
             renderEditSubtasks(task);
@@ -467,8 +380,6 @@ async function openEditMode(task) {
         });
     });
 
-    // Task normalisieren
-    task = normalizeTask(task, contacts);
     currentTask = task;
 
     // Assigned Users Dropdown
@@ -482,24 +393,45 @@ async function openEditMode(task) {
     // Subtasks initial rendern
     renderEditSubtasks(task);
 
-    // Save-Button
+    // ✅ KORRIGIERT: Save-Button
     document.getElementById("save-task").onclick = async () => {
         if (!currentTask) return;
 
+        // Daten aus Form auslesen
         currentTask.title = document.getElementById("edit-title").value;
         currentTask.description = document.getElementById("edit-desc").value;
-        currentTask.priority = currentTask.priority || "Low";
+        currentTask.priority = currentTask.priority || "medium";
 
+        // ✅ KORRIGIERT: Datum im ISO-Format speichern
         const newDue = document.getElementById("edit-dueDate").value;
         if (newDue) {
-            const [y, m, d] = newDue.split("-");
-            currentTask.dueDate = `${d}.${m}.${y}`;
+            currentTask.dueDate = newDue; // Direkt ISO-Format verwenden
         }
+
         dropdown.classList.add("hidden");
 
-        await updateTaskInFirebase(currentTask);
-        openTaskDetails(currentTask);
-        renderBoard();
+        // ✅ KORRIGIERT: Verwende updateTask() aus CRUD
+        try {
+            await updateTask(currentTask.id, {
+                title: currentTask.title,
+                description: currentTask.description,
+                priority: currentTask.priority,
+                dueDate: currentTask.dueDate,
+                assignedUsersFull: currentTask.assignedUsersFull
+            });
+
+            // Task auch lokal aktualisieren
+            const localTaskIndex = tasks.findIndex(t => t.id === currentTask.id);
+            if (localTaskIndex > -1) {
+                Object.assign(tasks[localTaskIndex], currentTask);
+            }
+
+            openTaskDetails(currentTask);
+            renderBoard();
+        } catch (error) {
+            console.error('Error updating task:', error);
+            alert('Failed to update task');
+        }
     };
 }
 
@@ -512,8 +444,8 @@ function renderDetailOverlay(task) {
     (task.assignedUsersFull || []).forEach(user => {
         const avatarDiv = document.createElement("div");
         avatarDiv.className = "selected-avatar";
-        avatarDiv.textContent = user.initials || getInitials(user.name);
-        avatarDiv.style.backgroundColor = user.color ?? "#888";
+        avatarDiv.textContent = user.initials;
+        avatarDiv.style.backgroundColor = user.color;
         container.appendChild(avatarDiv);
     });
 }
