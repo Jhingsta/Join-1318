@@ -416,7 +416,6 @@ async function openEditMode(task) {
         dropdown.classList.contains("hidden") ? openDropdown() : closeDropdown();
     });
 
-
     // DOM-Elemente greifen
     const subtaskInput = document.getElementById("edit-subtask-input"); // Dein Subtask Input im Edit-Modal
     const editCancelBtn = document.getElementById("edit-cancel-btn");
@@ -454,7 +453,6 @@ async function openEditMode(task) {
             editCheckBtn.style.display = "none";
         }
     });
-
 
     // Priorität Buttons
     const priorityButtons = edit.querySelectorAll(".priority-frame");

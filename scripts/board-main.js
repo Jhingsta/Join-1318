@@ -1,27 +1,40 @@
-let currentNewTask = null;
-
-if (!window.taskManager.saveTasks) {
-    window.taskManager.saveTasks = function (tasks) {
-    };
-}
-
-function saveTask(task) {
-    const taskData = getTaskData(); // Task-Daten inkl. assignedUsersFull
-    fetch(`${FIREBASE_URL}/tasks/${task.firebaseId || ''}.json`, {
-        method: task.firebaseId ? 'PATCH' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(taskData)
-    })
-        .then(res => res.json())
-        .then(data => {
-            console.log('Task gespeichert:', data);
-        })
-        .catch(err => console.error('Fehler beim Speichern:', err));
-}
-
-// Ganz oben in board.js einfügen:
-const FIREBASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app";
+let tasks = [];
 let users = [];
+let currentNewTask = null;
+let currentTask = null; // aktuell geöffnete Task im Overlay
+
+async function loadTasksForBoard() {
+    try {
+        tasks = await loadTasks(); // Nutzt die Funktion aus tasks-crud.js
+        
+        // Stelle sicher, dass assignedUsersFull existiert
+        tasks = tasks.map(task => ({
+            ...task,
+            assignedUsersFull: task.assignedUsersFull || []
+        }));
+        
+        return tasks;
+    } catch (error) {
+        console.error("Error loading tasks for board:", error);
+        tasks = [];
+        return [];
+    }
+}
+
+// Helper-Funktion um Tasks zu holen (ersetzt window.taskManager.getTasks())
+function getTasks() {
+    return tasks;
+}
+
+// Helper-Funktion um einen Task zu finden (ersetzt window.taskManager.getTask())
+function getTaskById(id) {
+    return tasks.find(task => task.id === id);
+}
+
+function getTasks() {
+    return tasks || [];
+}
+
 async function loadUsers() {
     const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
     const data = await res.json();
@@ -110,9 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const subtaskInput = document.querySelector('#subtask-input'); // ID oder Klasse deiner Eingabe
         if (subtaskInput) subtaskInput.value = '';
     });
-    /**
- * Dropdown für Assigned Users in der Modalbox rendern
- */    await window.taskManager.loadTasks();
+    await loadTasksForBoard();
     renderBoard();
 
     async function renderAssignedDropdownModal(task) {
@@ -173,13 +184,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         createBtn.classList.add('active');
     });
 
-    if (!window.taskManager) {
-        console.error('Task manager not loaded');
+    try {
+        await loadTasksForBoard();
+        renderBoard();
+    } catch (error) {
+        console.error('Error loading tasks:', error);
         return;
     }
-
-    await window.taskManager.loadTasks();
-    renderBoard();
 
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -203,11 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             dueDate,
             priority,
             status,
-            subtasks: {
-                items: subtasksItems,                 // Array von Objekten
-                total: subtasksItems.length,
-                completed: subtasksItems.filter(st => st.done).length
-            },
+            subtasks: subtasksItems, // ✅ Direkt das Array - createTask() macht den Rest
             assignedUsersFull: currentNewTask.assignedUsersFull,
             createdAt: new Date().toISOString()
         };
@@ -219,9 +226,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 5️⃣ Task speichern und Board aktualisieren
         try {
-            await window.taskManager.createTask(payload); // Stelle sicher, dass hier push() verwendet wird
-            await window.taskManager.loadTasks();
-            renderBoard();
+            const newTask = await createTask(payload); // Statt window.taskManager.createTask()
+            tasks.push(newTask); // Task zur lokalen Liste hinzufügen
+            renderBoard(); // Board neu rendern
             closeModal();
         } catch (err) {
             console.error(err);
@@ -235,25 +242,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function renderBoard() {
-    const tasks = window.taskManager.getTasks();
+    // ✅ GEÄNDERT: getTasks() statt window.taskManager.getTasks()
+    const boardTasks = getTasks(); // Nutzt unsere neue getTasks() Funktion
+    
     const columns = {
         todo: document.getElementById('column-todo'),
         inProgress: document.getElementById('column-inProgress'),
         awaitFeedback: document.getElementById('column-awaitFeedback'),
         done: document.getElementById('column-done'),
     };
-
+    
+    // Spalten leeren
     Object.values(columns).forEach((el) => el && (el.innerHTML = ''));
-
-    tasks.forEach((task) => {
+    
+    // Tasks rendern
+    boardTasks.forEach((task) => {
         const card = createTaskCard(task);
         const column = columns[task.status] || columns.todo;
         if (column) {
             column.appendChild(card);
         }
     });
-
-    // If a column is empty, show placeholder
+    
+    // Placeholder für leere Spalten
     Object.entries(columns).forEach(([status, columnEl]) => {
         if (!columnEl) return;
         if (columnEl.children.length === 0) {
@@ -263,36 +274,6 @@ function renderBoard() {
             columnEl.appendChild(placeholder);
         }
     });
-
-    // 🔹 Listener für Task-Updates setzen (nur die geänderte Task-Karte aktualisieren)
-    document.removeEventListener("taskUpdated", handleTaskUpdated); // alten Listener entfernen
-    document.addEventListener("taskUpdated", handleTaskUpdated);
-}
-
-// Funktion zum Aktualisieren einer einzelnen Task-Karte (TEST: drag and drop)
-function handleTaskUpdated(e) {
-    const updatedTask = e.detail;
-    const card = document.getElementById(`task-${updatedTask.firebaseId}`);
-    if (!card) return;
-
-    const cardTitle = card.querySelector(".task-title");
-    const cardDesc = card.querySelector(".task-desc");
-
-    if (cardTitle) cardTitle.innerText = updatedTask.title;
-    if (cardDesc) cardDesc.innerText = updatedTask.description || "";
-
-    // Optional: Fortschritt oder andere Felder aktualisieren
-    const progressBar = card.querySelector(".progress-container div");
-    const progressText = card.querySelector(".subtasks-text");
-    if (progressBar && updatedTask.subtasks) {
-        const percent = updatedTask.subtasks.total
-            ? (updatedTask.subtasks.completed / updatedTask.subtasks.total) * 100
-            : 0;
-        progressBar.style.width = `${percent}%`;
-    }
-    if (progressText && updatedTask.subtasks) {
-        progressText.textContent = `${updatedTask.subtasks.completed}/${updatedTask.subtasks.total} Subtasks`;
-    }
 }
 
 // ---------- Helpers ----------
@@ -474,7 +455,9 @@ loadUsers();
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
-    card.id = `task-${task.firebaseId}`;
+    // ✅ Verwende task.id (von loadTasks()) statt task.firebaseId
+    card.id = `task-${task.id}`;
+    
     const type = document.createElement('div');
     type.className = 'task-type';
 
@@ -884,65 +867,23 @@ function getTaskData() {
     };
 }
 
-/**
-/**
- * Speichert einen neuen Task in Firebase
-/**
- * @param {Object} taskData - Daten des neuen Tasks
- */
-async function saveTaskToFirebase(taskData) {
+async function saveTask(taskData) {
     try {
-        // 1. Task in Firebase speichern (Firebase generiert eine ID)
-        const response = await fetch(
-            `${FIREBASE_URL}/tasks.json`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title: taskData.title,
-                    description: taskData.description,
-                    dueDate: taskData.dueDate,
-                    priority: taskData.priority,
-                    status: "inProgress",
-                    createdAt: new Date().toISOString(),
-                    subtasks: {
-                        total: taskData.subtasks.length,
-                        completed: 0,
-                        items: taskData.subtasks.map((st, i) => {
-                            if (typeof st === "string" && st.trim() !== "") {
-                                return { title: st, done: false };
-                            } else if (st && st.title && st.title.trim() !== "") {
-                                return { title: st.title, done: st.done || false };
-                            } else {
-                                return { title: `Subtask ${i + 1}`, done: false };
-                            }
-                        })
-                    },
-                    assignedUsersFull: taskData.assignedUsersFull,
-                    category: taskData.category
-                })
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error(`Fehler beim Speichern des Tasks in Firebase: ${response.status}`);
-        }
-
-        // 2. Antwort enthält die neue Firebase-ID
-        const result = await response.json();
-        const firebaseId = result.name;
-
-        // 3. Task lokal mit der ID erweitern
-        taskData.firebaseId = firebaseId;
-
-        // 4. ID auch ins Task-Objekt bei Firebase zurückpatchen (optional, aber praktisch)
-        await fetch(`${FIREBASE_URL}/tasks/${firebaseId}.json`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ firebaseId })
+        // Verwende die createTask() Funktion aus tasks-crud.js
+        const newTask = await createTask({
+            title: taskData.title,
+            description: taskData.description,
+            dueDate: taskData.dueDate,
+            priority: taskData.priority,
+            assignedUsersFull: taskData.assignedUsersFull,
+            category: taskData.category,
+            subtasks: taskData.subtasks // createTask() verarbeitet das bereits richtig
         });
-        return { ...taskData }; // Task mit firebaseId zurückgeben
-
+        
+        // Task zur lokalen Liste hinzufügen
+        tasks.push(newTask);
+        
+        return newTask; // Zurückgeben mit id statt firebaseId
     } catch (error) {
         console.error("❌ Error saving task:", error);
         throw error;
@@ -962,7 +903,7 @@ createBtn.addEventListener("click", async (event) => {
         return;
     }
     // 3. Task an Firebase senden
-    const result = await saveTaskToFirebase(taskData);
+    const result = await saveTask(taskData);
 
     if (result) {
         // Erfolgsmeldung anzeigen
@@ -1026,61 +967,61 @@ function showTaskAddedMessage(onFinished) {
     }, 800);
 }
 
-// Beispiel: Tasks aus Firebase laden und IDs zuweisen
-// 🔹 Tasks aus Firebase laden (bleibt wie gehabt)
-window.taskManager.loadTasks = async function () {
-    const res = await fetch(`${FIREBASE_URL}/tasks.json`);
-    const data = await res.json();
-    const tasks = [];
-    for (const [key, value] of Object.entries(data || {})) {
-        value.firebaseId = key;
-
-        // ✅ Nur assignedUsersFull nutzen, alte Felder ignorieren
-        value.assignedUsersFull = value.assignedUsersFull || [];
-
-        tasks.push(value);
-    }
-    window.taskManager._tasks = tasks;
-};
-
-// 🔹 Tasks lokal abrufen (bleibt wie gehabt)
-window.taskManager.getTasks = function () {
-    return window.taskManager._tasks || [];
-};
-
-// 🔹 NEU: Task in Firebase aktualisieren (diesen Block zusätzlich unten einfügen)
-window.taskManager.updateTaskInFirebase = async function (task) {
-    if (!task.firebaseId) return;
+// Ersetze window.taskManager.updateTaskInFirebase mit:
+async function updateTaskStatus(task, newStatus) {
+    if (!task.id) return;
+    
     try {
-        await fetch(`https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${task.firebaseId}.json`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: task.status })
-        });
-    } catch (err) {
-        console.error("Fehler beim Aktualisieren in Firebase:", err);
+        // Verwende updateTask() aus tasks-crud.js
+        await updateTask(task.id, { status: newStatus });
+        
+        // Task auch lokal aktualisieren
+        const localTask = tasks.find(t => t.id === task.id);
+        if (localTask) {
+            localTask.status = newStatus;
+        }
+        
+        console.log('Task status aktualisiert:', task.id, newStatus);
+    } catch (error) {
+        console.error("Fehler beim Aktualisieren in Firebase:", error);
+        throw error;
     }
+}
 
-};
+// Allgemeinere Funktion für alle Task-Updates:
+async function updateTaskData(taskId, updates) {
+    try {
+        await updateTask(taskId, updates);
+        
+        // Task auch lokal aktualisieren
+        const localTask = tasks.find(t => t.id === taskId);
+        if (localTask) {
+            Object.assign(localTask, updates);
+        }
+        
+        return localTask;
+    } catch (error) {
+        console.error("Fehler beim Aktualisieren:", error);
+        throw error;
+    }
+}
 
-let currentTask = null; // aktuell geöffnete Task im Overlay
 
 function openTaskDetails(task) {
     currentTask = task;
     const overlay = document.getElementById("task-detail-overlay");
     const view = document.getElementById("task-view");
     const edit = document.getElementById("task-edit");
-
-    // Task-ID am Overlay speichern
-    overlay.dataset.firebaseId = task.firebaseId;
-
+    
+    // ✅ GEÄNDERT: task.id statt task.firebaseId
+    overlay.dataset.taskId = task.id;
+    
     // Reset: Ansicht zeigen, Edit verstecken
     view.classList.remove("hidden");
     edit.classList.add("hidden");
-
     // Overlay sichtbar machen
     overlay.classList.remove("hidden");
-
+    
     // Kategorie-Icon
     let categoryImg = "";
     if (task.category === "User Story") {
@@ -1125,39 +1066,33 @@ function openTaskDetails(task) {
         editBtn.addEventListener("click", () => openEditMode(task));
     }
     // Delete-Button Handler
-    // Delete-Button Handler
     const deleteBtn = view.querySelector(".delete-btn");
     if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
-            if (!task.firebaseId) return;
-
-            // Task in Firebase löschen
-            await fetch(
-                `https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks/${task.firebaseId}.json`,
-                { method: "DELETE" }
-            );
-
-            // Overlay schließen
-            document.getElementById("task-detail-overlay").classList.add("hidden");
-
-            // Board sofort neu laden
-            await loadAndRenderBoard();
+            if (!task.id) return;
+            
+            try {
+                // ✅ GEÄNDERT: Verwende deleteTask() aus tasks-crud.js
+                await deleteTask(task.id);
+                
+                // ✅ GEÄNDERT: Task aus lokaler Liste entfernen
+                const taskIndex = tasks.findIndex(t => t.id === task.id);
+                if (taskIndex > -1) {
+                    tasks.splice(taskIndex, 1);
+                }
+                
+                // Overlay schließen
+                document.getElementById("task-detail-overlay").classList.add("hidden");
+                
+                // ✅ GEÄNDERT: Nur Board neu rendern, kein erneutes Laden nötig
+                renderBoard();
+                
+            } catch (error) {
+                console.error('Error deleting task:', error);
+                alert('Failed to delete task');
+            }
         });
     }
-
-}
-
-async function loadAndRenderBoard() {
-    const res = await fetch(
-        "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/tasks.json"
-    );
-    const data = await res.json() || {};
-    const tasksArray = Object.entries(data).map(([id, task]) => ({
-        firebaseId: id,
-        ...task
-    }));
-
-    renderBoard(tasksArray); // Deine bestehende Board-Renderfunktion
 }
 
 //task detail overlay close
@@ -1214,7 +1149,7 @@ function renderSubtasks(task) {
         <li class="subtask-item">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
                 <div class="subtask-row">
-                    <div class="checkbox-wrapper" onclick="toggleCheckbox(this, '${task.firebaseId}', ${index})">
+                    <div class="checkbox-wrapper" onclick="toggleCheckbox(this, '${task.id}', ${index})">
                         <input type="checkbox" class="real-checkbox" style="display:none;" ${isChecked ? 'checked' : ''}>
                         <img src="./assets/icons-addTask/Property 1=Default.svg" class="checkbox-default" style="display:${isChecked ? 'none' : 'block'}">
                         <img src="./assets/icons-addTask/Property 1=checked.svg" class="checkbox-checked" style="display:${isChecked ? 'block' : 'none'}">
@@ -1266,29 +1201,6 @@ const addSubtask = async (taskId, title) => {
     }
 };
 
-// 🔹 Checkbox UI toggle + Counter aktualisieren
-// Toggle Subtask in Firebase & lokal
-async function toggleSubtask(taskId, subtaskIndex) {
-    const res = await fetch(`${FIREBASE_URL}/tasks/${taskId}/subtasks.json`);
-    const subtasks = await res.json();
-
-    if (!subtasks?.items || !subtasks.items[subtaskIndex]) return;
-
-    // Toggle done
-    subtasks.items[subtaskIndex].done = !subtasks.items[subtaskIndex].done;
-
-    // Completed zählen
-    const completed = subtasks.items.filter(st => st.done).length;
-
-    // PATCH zurück zu Firebase
-    await fetch(`${FIREBASE_URL}/tasks/${taskId}/subtasks.json`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: subtasks.items, completed })
-    });
-    return { items: subtasks.items, completed };
-}
-
 // Checkbox-UI + Übersicht direkt aktualisieren
 function toggleCheckbox(wrapper, taskId, subtaskIndex) {
     const defaultSVG = wrapper.querySelector('.checkbox-default');
@@ -1300,8 +1212,10 @@ function toggleCheckbox(wrapper, taskId, subtaskIndex) {
     defaultSVG.style.display = isChecked ? 'block' : 'none';
 
     // 2️⃣ Lokale Daten aktualisieren
-    const task = window.taskManager.getTasks().find(t => t.firebaseId === taskId);
-    if (task) {
+    // ✅ GEÄNDERT: getTasks() statt window.taskManager.getTasks()
+    // ✅ GEÄNDERT: t.id statt t.firebaseId
+    const task = getTasks().find(t => t.id === taskId);
+    if (task && task.subtasks && task.subtasks.items) {
         task.subtasks.items[subtaskIndex].done = !task.subtasks.items[subtaskIndex].done;
         task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
     }
@@ -1310,21 +1224,50 @@ function toggleCheckbox(wrapper, taskId, subtaskIndex) {
     updateTaskCard(taskId);
 
     // 4️⃣ Firebase aktualisieren (async, ohne UI zu blockieren)
-    toggleSubtask(taskId, subtaskIndex).catch(err => console.error(err));
+    // ✅ GEÄNDERT: Verwende unsere updateTask() Funktion
+    updateSubtaskInFirebase(taskId, task).catch(err => console.error(err));
+}
+
+// ✅ NEUE HILFSFUNKTION für Firebase-Update:
+async function updateSubtaskInFirebase(taskId, task) {
+    try {
+        await updateTask(taskId, {
+            subtasks: {
+                total: task.subtasks.items.length,
+                completed: task.subtasks.completed,
+                items: task.subtasks.items
+            }
+        });
+    } catch (error) {
+        console.error('Error updating subtask in Firebase:', error);
+        // Optional: UI-Rollback bei Fehler
+    }
 }
 
 function updateTaskCard(taskId) {
-    const task = window.taskManager.getTasks().find(t => t.firebaseId === taskId);
+    // ✅ GEÄNDERT: getTasks() statt window.taskManager.getTasks()
+    // ✅ GEÄNDERT: t.id statt t.firebaseId
+    const task = getTasks().find(t => t.id === taskId);
     if (!task) return;
 
     const card = document.getElementById(`task-${taskId}`);
     if (!card) return;
 
+    // Sicherheitscheck für subtasks
+    if (!task.subtasks || !task.subtasks.items) return;
+
     // Counter updaten
     const counter = card.querySelector('.subtasks-text');
-    if (counter) counter.textContent = `${task.subtasks.completed}/${task.subtasks.total} Subtasks`;
+    if (counter) {
+        counter.textContent = `${task.subtasks.completed}/${task.subtasks.total} Subtasks`;
+    }
 
     // Fortschritt updaten
     const progressBar = card.querySelector('.progress-container div');
-    if (progressBar) progressBar.style.width = `${(task.subtasks.completed / task.subtasks.total) * 100}%`;
+    if (progressBar) {
+        const percentage = task.subtasks.total > 0 
+            ? (task.subtasks.completed / task.subtasks.total) * 100 
+            : 0;
+        progressBar.style.width = `${percentage}%`;
+    }
 }
