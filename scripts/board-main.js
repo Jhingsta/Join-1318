@@ -299,6 +299,7 @@ function renderBoard() {
             columnEl.appendChild(placeholder);
         }
     });
+    setTimeout(initializeDragAndDrop, 0);
 }
 
 // ---------- Populate Dropdown ----------
