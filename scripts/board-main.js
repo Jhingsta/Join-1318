@@ -862,8 +862,6 @@ function getTaskData() {
         });
     }
 
-
-
     // 6. Category
     const categoryText = document.querySelector(".category-content .assigned-text");
     const category = categoryText ? categoryText.textContent.trim() : null;
@@ -884,115 +882,45 @@ function getTaskData() {
     };
 }
 
-/**
-/**
- * Speichert einen neuen Task in Firebase
-/**
- * @param {Object} taskData - Daten des neuen Tasks
- */
-async function saveTaskToFirebase(taskData) {
-    try {
-        // 1. Task in Firebase speichern (Firebase generiert eine ID)
-        const response = await fetch(
-            `${FIREBASE_URL}/tasks.json`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title: taskData.title,
-                    description: taskData.description,
-                    dueDate: taskData.dueDate,
-                    priority: taskData.priority,
-                    status: "inProgress",
-                    createdAt: new Date().toISOString(),
-                    subtasks: {
-                        total: taskData.subtasks.length,
-                        completed: 0,
-                        items: taskData.subtasks.map((st, i) => {
-                            if (typeof st === "string" && st.trim() !== "") {
-                                return { title: st, done: false };
-                            } else if (st && st.title && st.title.trim() !== "") {
-                                return { title: st.title, done: st.done || false };
-                            } else {
-                                return { title: `Subtask ${i + 1}`, done: false };
-                            }
-                        })
-                    },
-                    assignedUsersFull: taskData.assignedUsersFull,
-                    category: taskData.category
-                })
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error(`Fehler beim Speichern des Tasks in Firebase: ${response.status}`);
-        }
-
-        // 2. Antwort enthält die neue Firebase-ID
-        const result = await response.json();
-        const firebaseId = result.name;
-
-        // 3. Task lokal mit der ID erweitern
-        taskData.firebaseId = firebaseId;
-
-        // 4. ID auch ins Task-Objekt bei Firebase zurückpatchen (optional, aber praktisch)
-        await fetch(`${FIREBASE_URL}/tasks/${firebaseId}.json`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ firebaseId })
-        });
-        return { ...taskData }; // Task mit firebaseId zurückgeben
-
-    } catch (error) {
-        console.error("❌ Error saving task:", error);
-        throw error;
-    }
-}
-
 //Create Task Button mit Firebase verbinden
 createBtn.addEventListener("click", async (event) => {
-    event.preventDefault(); // verhindert das Standard-Submit
-
-    // 1. Task-Daten auslesen
+    event.preventDefault();
     const taskData = getTaskData();
-
-    // 2. Pflichtfelder prüfen
     if (!taskData.title || !taskData.dueDate) {
         alert("Bitte fülle alle Pflichtfelder aus!");
         return;
     }
-    // 3. Task an Firebase senden
-    const result = await saveTaskToFirebase(taskData);
-
-    if (result) {
-        // Erfolgsmeldung anzeigen
+    try {
+        const task = await window.taskManager.createTask(taskData);
+        // Board neu laden
+        await loadAndRenderBoard();
+        // Erfolgsmeldung anzeigen + Modal schließen im Callback
         showTaskAddedMessage(() => {
-            // Callback: erst schließen, wenn Meldung weg ist
             closeModal();
         });
-
-        // Formular zurücksetzen (bleibt aber noch offen sichtbar!)
+        // Formular zurücksetzen
         document.querySelector(".title-input").value = "";
         document.querySelector(".description-input").value = "";
         document.querySelector(".due-date-input").value = "";
         document.querySelector(".selected-avatars-container").innerHTML = "";
         document.querySelector("#subtask-list").innerHTML = "";
-
         // Priority zurücksetzen auf Medium
         document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
         document.querySelector(".priority-frame:nth-child(2)").classList.add("active");
-
         // Kategorie zurücksetzen
         if (categoryText) categoryText.textContent = "Select task category";
+    } catch (err) {
+        console.error("Fehler beim Erstellen der Task:", err);
+        alert("Fehler beim Speichern der Task. Siehe Konsole.");
     }
 });
+
 
 //Meldung anzeigen, wenn Task erfolgreich erstellt wurde
 function showTaskAddedMessage(onFinished) {
     const img = document.createElement("img");
     img.src = "./assets/icons-addTask/Added to board 1.png";
     img.alt = "Task added to Board";
-
     Object.assign(img.style, {
         position: "fixed",
         top: "50%",
@@ -1004,9 +932,7 @@ function showTaskAddedMessage(onFinished) {
         opacity: "0",
         pointerEvents: "none",
     });
-
     document.body.appendChild(img);
-
     // Einblenden
     requestAnimationFrame(() => {
         img.style.opacity = "1";
@@ -1026,7 +952,103 @@ function showTaskAddedMessage(onFinished) {
     }, 800);
 }
 
+<<<<<<< HEAD:scripts/board.js
+// Drag and Drop Feature
+function getTaskIdFromCard(card) {
+    return card.dataset.taskId || card.getAttribute('data-task-id') || card.id;
+}
+
+// 1. Alle Task-Karten draggable machen, wenn das Board gerendert wurde
+function enableTaskDragAndDrop() {
+    // Alle Spalten holen
+    const columns = [
+        document.getElementById('column-todo'),
+        document.getElementById('column-inProgress'),
+        document.getElementById('column-awaitFeedback'),
+        document.getElementById('column-done')
+    ].filter(Boolean);
+
+    // Alle Karten holen
+    const cards = document.querySelectorAll('.task-card');
+    cards.forEach(card => {
+        card.setAttribute('draggable', 'true');
+        // Optional: Eindeutige ID setzen, falls nicht vorhanden
+        if (!card.dataset.taskId) {
+            // Finde die Task anhand des Titels (besser: Task-Objekt mit ID erweitern!)
+            card.dataset.taskId = card.querySelector('.title')?.textContent || '';
+        }
+
+        card.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('text/plain', card.dataset.taskId);
+            setTimeout(() => card.classList.add('dragging'), 0);
+        });
+
+        card.addEventListener('dragend', e => {
+            card.classList.remove('dragging');
+        });
+    });
+
+    // Spalten als Dropzone vorbereiten
+    columns.forEach(column => {
+        column.addEventListener('dragover', e => {
+            e.preventDefault();
+            column.classList.add('drag-over');
+        });
+
+        column.addEventListener('dragleave', e => {
+            column.classList.remove('drag-over');
+        });
+
+        column.addEventListener('drop', async e => {   // <- async hinzufügen
+            e.preventDefault();
+            column.classList.remove('drag-over');
+            const taskId = e.dataTransfer.getData('text/plain');
+            await moveTaskToColumn(taskId, column.id); // <- await, damit Firebase-Update fertig ist
+        });
+    });
+
+}
+
+// 2. Task verschieben und Board neu rendern / Karte updaten
+async function moveTaskToColumn(taskId, columnId) {
+
+    let newStatus = 'todo';
+    if (columnId.includes('inProgress')) newStatus = 'inProgress';
+    else if (columnId.includes('awaitFeedback')) newStatus = 'awaitFeedback';
+    else if (columnId.includes('done')) newStatus = 'done';
+
+    const tasks = window.taskManager.getTasks();
+    const task = tasks.find(t => (t.id || t.title) == taskId);
+
+    if (task && task.status !== newStatus) {
+        task.status = newStatus; // lokal ändern
+
+        // Firebase-Update abwarten
+        await window.taskManager.updateTaskInFirebase(task);
+        window.taskManager.saveTasks(tasks); // lokal speichern
+
+        // 🔹 Event feuern, damit nur die Karte aktualisiert wird
+        document.dispatchEvent(new CustomEvent("taskUpdated", { detail: task }));
+
+        // Optional: Board neu rendern (falls nötig)
+        renderBoard();
+        enableTaskDragAndDrop();
+    }
+}
+
+// 3. Nach jedem Render Drag & Drop aktivieren
+const origRenderBoard = renderBoard;
+renderBoard = function () {
+    origRenderBoard();
+    enableTaskDragAndDrop();
+};
+// Initial aktivieren (falls Board schon gerendert)
+enableTaskDragAndDrop();
+
+// 
+=======
 // Beispiel: Tasks aus Firebase laden und IDs zuweisen
+>>>>>>> origin/main:scripts/board-main.js
 // 🔹 Tasks aus Firebase laden (bleibt wie gehabt)
 window.taskManager.loadTasks = async function () {
     const res = await fetch(`${FIREBASE_URL}/tasks.json`);
