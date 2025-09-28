@@ -874,6 +874,9 @@ createBtn.addEventListener("click", async (event) => {
         return;
     }
 
+    // 3. Task an Firebase senden
+    const result = await saveTask(taskData);
+
     try {
         // 3. Task an Firebase senden
         const result = await saveTask(taskData);
@@ -957,7 +960,7 @@ async function updateTaskStatus(task, newStatus) {
         throw error;
     }
 }
-  
+
 // Allgemeinere Funktion für alle Task-Updates:
 async function updateTaskData(taskId, updates) {
     try {
