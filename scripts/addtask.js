@@ -19,11 +19,62 @@ titleInput.addEventListener("input", () => {
     }
 });
 
-const dueDateIcon = document.querySelector(".due-date-icon");
-const dueDateContainer = document.querySelector(".due-date-content");
-const dueDateError = document.querySelector(".due-date-container .error-message");
-const dueDateInput = document.querySelector(".due-date-input");
+// ===================== DUE DATE =====================
 
+const dueDateInput = document.querySelector(".due-date-input");
+const dueDateDisplay = document.querySelector(".due-date-display");
+const dueDateIcon = document.querySelector(".due-date-icon-container");
+const dueDateContainer = document.querySelector(".due-date-content");
+const dueDateError = document.querySelector(".error-message");
+
+// Formatierung: ISO (YYYY-MM-DD) zu dd/mm/yyyy
+function formatDateForDisplay(isoDate) {
+    if (!isoDate) return "";
+    const [year, month, day] = isoDate.split("-");
+    return `${day}/${month}/${year}`;
+}
+
+// Display aktualisieren
+function updateDisplay() {
+    const isoDate = dueDateInput.value;
+    
+    if (isoDate) {
+        dueDateDisplay.textContent = formatDateForDisplay(isoDate);
+        dueDateDisplay.classList.add("has-value");
+    } else {
+        dueDateDisplay.textContent = "dd/mm/yyyy";
+        dueDateDisplay.classList.remove("has-value");
+    }
+}
+
+// Funktion um Datepicker zu öffnen
+function openDatepicker() {
+    if (dueDateInput.showPicker) {
+        dueDateInput.showPicker(); // moderner Weg
+    } else {
+        dueDateInput.click(); // Fallback für ältere Browser
+    }
+}
+
+// Datum wurde geändert -> Display aktualisieren
+dueDateInput.addEventListener("change", updateDisplay);
+
+// Validierung beim Verlassen des Feldes
+dueDateInput.addEventListener("blur", () => {
+    if (!dueDateInput.value.trim()) {
+        dueDateContainer.style.borderBottom = "1px solid #FF4D4D";
+        dueDateError.style.display = "block";
+    } else {
+        dueDateContainer.style.borderBottom = "1px solid #D1D1D1";
+        dueDateError.style.display = "none";
+    }
+});
+
+// Klick auf Icon öffnet Datepicker
+dueDateIcon.addEventListener("click", openDatepicker);
+
+// Klick auf die gesamte Zeile öffnet Datepicker
+dueDateContainer.addEventListener("click", openDatepicker);
 
 // Blur-Event (Validierung)
 dueDateInput.addEventListener("blur", () => {
@@ -35,22 +86,6 @@ dueDateInput.addEventListener("blur", () => {
         dueDateError.style.display = "none";
     }
 });
-
-// Funktion um Datepicker zu öffnen
-function openDatepicker() {
-    if (dueDateInput.showPicker) {
-        dueDateInput.showPicker(); // moderner Weg
-    } else {
-        dueDateInput.click(); // Fallback für ältere Browser
-    }
-}
-
-// Klick auf Icon öffnet Datepicker
-dueDateIcon.addEventListener("click", openDatepicker);
-
-// Klick auf die gesamte Zeile öffnet Datepicker
-dueDateContainer.addEventListener("click", openDatepicker);
-
 
 const buttons = document.querySelectorAll(".priority-frame");
 
@@ -374,12 +409,8 @@ function getTaskData() {
     const title = document.querySelector(".title-input").value.trim();
     const description = document.querySelector(".description-input").value.trim();
 
-    const dueDateInput = document.querySelector(".due-date-input").value;
-    let formattedDate = "";
-    if (dueDateInput) {
-        const [year, month, day] = dueDateInput.split("-");
-        formattedDate = `${day}/${month}/${year}`;
-    }
+    // Datum direkt im ISO-Format für Firebase verwenden
+    const dueDate = dueDateInput.value; // bereits YYYY-MM-DD
 
     const priorityBtn = document.querySelector(".priority-frame.active");
     const priority = priorityBtn ? priorityBtn.textContent.trim() : null;
@@ -393,7 +424,7 @@ function getTaskData() {
     const subtaskItems = document.querySelectorAll("#subtask-list li");
     const subtasks = Array.from(subtaskItems).map(el => el.textContent.trim());
 
-    return { title, description, dueDate: formattedDate, priority, assignedUsersFull, category, subtasks };
+    return { title, description, dueDate, priority, assignedUsersFull, category, subtasks };
 }
 
 const resetBtn = document.querySelector(".clear-btn");

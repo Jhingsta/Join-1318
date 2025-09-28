@@ -237,6 +237,10 @@ main {
     color: #D1D1D1;
 }
 
+.due-date-display.has-value {
+    color: black;
+}
+
 .due-date-icon-container {
     width: 24px;
     height: 24px;
