@@ -308,8 +308,6 @@ input {
     flex-direction: column;
     gap: 16px;
     width: 100%;
-    padding-bottom: 20px;
-    height:250px;
 }
 
 .column-header .title-text {
@@ -1002,7 +1000,6 @@ input {
 
     .tasks {
         flex-direction: column;
-        padding-top: 0;
     }
 }
 
@@ -1048,10 +1045,10 @@ input {
     /* Tasks horizontal scrollbar */
     .tasks {
         flex-direction: row;
+        align-items: stretch; /* Cards gleiche Höhe */
         overflow-x: auto;
         overflow-y: hidden;
         gap: 16px;
-        padding-bottom: 0;
         /* scroll-behavior: smooth;
         scroll-snap-type: x mandatory; */
         /* um die horizontale Scrollbar zu verstecken */
