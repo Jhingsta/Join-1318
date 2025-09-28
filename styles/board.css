@@ -88,7 +88,7 @@ main {
 
 input {
     border: none;
-    height: 31px;
+    height: 50px;
     cursor: pointer;
     padding: 8px 16px;
     font-size: 16px;
@@ -1066,8 +1066,8 @@ input {
     /* Task-Cards müssen feste Breite haben */
     .tasks .task-card {
         flex: 0 0 252px;
+        margin: 10px;
         /* Feste Breite der Task-Karte */
-        /* scroll-snap-align: start; */
     }
 }
 
