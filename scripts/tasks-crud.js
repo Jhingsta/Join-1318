@@ -119,6 +119,7 @@ async function updateTask(taskId, updates) {
 
     // Nur die Updates zurückgeben
     return updates;
+
   } catch (error) {
     console.error("Error updating task:", error);
     throw error;
