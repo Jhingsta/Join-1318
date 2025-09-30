@@ -75,9 +75,11 @@ main {
 #subtask-list li:hover {
     background-color: #E3EEFF;
 }
+
 .subtask-list li:hover .subtask-icons {
     opacity: 1;
 }
+
 .searchbar:hover {
     border-color: #4589FF;
 }
@@ -135,10 +137,10 @@ input {
     font-size: 23px;
     cursor: pointer;
     gap: 4px;
-    font-weight: 400;
 }
 
-.close {
+.close,
+.close-btn {
     position: absolute;
     top: 24px;
     right: 24px;
@@ -147,22 +149,19 @@ input {
     color: #4589FF;
 }
 
-.close:hover {
+.close:hover,
+.close-btn:hover {
     background-color: #E3EEFF;
     border-radius: 52px;
 }
 
 .close svg path {
     stroke: #4589FF;
-    /* Standardfarbe */
-
 }
 
 .close:hover svg path {
     stroke: #005DFF;
-    /* Hover-Farbe */
 }
-
 
 .sign-up-btn.active-modal {
     background-color: #ffffff;
@@ -178,23 +177,9 @@ input {
     padding: 48px 261px 48px 40px;
 }
 
-.close-btn {
-    background: transparent;
-    border: none;
-    position: absolute;
-    top: 24px;
-    right: 24px;
-}
-
-.close-btn:hover {
-    cursor: pointer;
-    background-color: #D2E3FF;
-    border-radius: 50%;
-}
-
 .add-task-btn {
     font-size: 23px;
-    font-weight: 400;
+
     border: none;
     cursor: pointer;
     padding: 16px 10px;
@@ -202,7 +187,6 @@ input {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: "Open-Sans", sans-serif;
     gap: 10px;
     border: 1px solid #4589ff;
     border-radius: 10px;
@@ -210,7 +194,6 @@ input {
     background-color: #4589ff;
 }
 
-/* Hover bleibt bestehen */
 .add-task-btn:hover {
     background-color: #005DFF;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
@@ -243,7 +226,6 @@ input {
     animation-duration: 0ms;
 }
 
-
 .task-bar {
     display: flex;
     flex-direction: row;
@@ -253,7 +235,6 @@ input {
     padding: 0 64px 16px;
 }
 
-/* Desktop: Titel-Bar oben anzeigen */
 .task-header {
     display: flex;
     flex-direction: row;
@@ -271,7 +252,6 @@ input {
     width: 25%;
 }
 
-/* Desktop: Column-Header ausblenden */
 .column-header {
     display: none;
 }
@@ -286,10 +266,8 @@ input {
     font-size: 16px;
     font-weight: 700;
     color: #4589ff;
-
 }
 
-/* Board Layout - CSS Grid für alle Breakpoints */
 .bottom {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -324,13 +302,10 @@ input {
     opacity: 0.7;
 }
 
-/* === Add Task Modal Styles für board.html === */
 .dropdown-menu {
     display: none;
-    /* Versteckt das Dropdown standardmäßig */
     position: absolute;
     top: 100%;
-    /* Direkt unter assigned-content */
     left: 0;
     background-color: white;
     border: 1px solid #ccc;
@@ -338,7 +313,6 @@ input {
     max-width: 440px;
     z-index: 10;
 }
-
 
 .dropdown-menu.show {
     display: block;
@@ -363,13 +337,8 @@ input {
     background: #FFFFFF;
     border: none;
     border-bottom: 1px solid #D1D1D1;
-    box-sizing: border-box;
-    font-family: "Open Sans", sans-serif;
     font-weight: 600;
-    font-style: normal;
     font-size: 32px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: black;
 }
 
@@ -381,17 +350,12 @@ input {
     width: 172px;
     height: 38px;
     color: #D1D1D1;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 32px;
-    line-height: 120%;
-    letter-spacing: 0;
     opacity: 1;
 }
 
 .error-message {
-    display:none;
+    display: none;
     color: red;
     font-size: 12px;
     margin-top: 4px;
@@ -404,7 +368,7 @@ input {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    box-sizing: border-box;
+
     margin-bottom: 12px;
 }
 
@@ -417,26 +381,17 @@ input {
     gap: 4px;
     opacity: 1;
     padding: 0 4px;
-    box-sizing: border-box;
+
 }
 
 .desc-title {
-    font-family: 'Open Sans', sans-serif;
     font-weight: 700;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #42526E;
 }
 
 .desc-optional {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #42526E
 }
 
@@ -450,14 +405,11 @@ input {
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
     padding: 8px 12px;
-    box-sizing: border-box;
-    font-family: 'Open Sans', sans-serif;
+
     font-size: 19px;
-    line-height: 120%;
     color: #000000;
     position: relative;
-    font-weight: 400;
-    font-style: normal;
+
 }
 
 .due-date-container {
@@ -467,7 +419,7 @@ input {
     flex-direction: column;
     gap: 8px;
     opacity: 1;
-    box-sizing: border-box;
+
     margin-bottom: 24px;
 }
 
@@ -478,23 +430,20 @@ input {
     flex-direction: column;
     gap: 8px;
     opacity: 1;
-    box-sizing: border-box;
+
     margin-bottom: 24px;
-    border-bottom:1px solid #D1D1D1;
+    border-bottom: 1px solid #D1D1D1;
 }
+
 .due-date-container-overlay:hover {
-    border-bottom:1px solid #4589FF;
+    border-bottom: 1px solid #4589FF;
 }
 
 .due-date-header {
     height: 23px;
     opacity: 1;
-    font-family: 'Open Sans', sans-serif;
     font-weight: 700;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #42526E;
     display: flex;
     align-items: center;
@@ -511,7 +460,7 @@ input {
     padding: 12px 16px;
     background-color: #FFFFFF;
     border-bottom: 1px solid #D1D1D1;
-    box-sizing: border-box;
+
 }
 
 .due-date-content:hover {
@@ -520,7 +469,6 @@ input {
 
 .due-date-input::-webkit-calendar-picker-indicator {
     display: none;
-    /* Chrome, Safari, Edge */
 }
 
 .due-date-input::placeholder {
@@ -529,15 +477,11 @@ input {
 
 .due-date-input {
     height: 23px;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #000000;
     border-bottom: none;
     padding: 0 4px;
-    box-sizing: border-box;
+
     display: flex;
     align-items: center;
     padding: 0.5em;
@@ -576,7 +520,7 @@ input {
     flex-direction: column;
     gap: 8px;
     opacity: 1;
-    box-sizing: border-box;
+
     margin-bottom: 24px;
 }
 
@@ -590,21 +534,15 @@ input {
 
 .priority-btn.active {
     background-color: #007bff;
-    /* Blau als Beispiel */
     color: white;
     border-color: #007bff;
 }
 
-
 .priority-header {
     width: 72px;
     height: 23px;
-    font-family: 'Open Sans', sans-serif;
     font-weight: 700;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #42526E;
     opacity: 1;
 }
@@ -617,22 +555,9 @@ input {
     gap: 16px;
     padding: 2px;
     justify-content: space-between;
-    box-sizing: border-box;
+
 }
 
-.priority-content button:nth-child(1):hover {
-    border-bottom: 2px solid #FF3D00;
-}
-
-.priority-content button:nth-child(2):hover {
-    border-bottom: 2px solid #FFA800;
-}
-
-.priority-content button:nth-child(3):hover {
-    border-bottom: 2px solid #7AE229;
-}
-
-/* Standardzustand */
 .priority-frame {
     border-bottom: 2px solid transparent;
     background-color: white;
@@ -640,7 +565,6 @@ input {
     transition: all 0.2s ease;
 }
 
-/* Hover-Effekt: nur untere Linie */
 .priority-content button:nth-child(1):hover {
     border-bottom: 2px solid #FF3D00;
 }
@@ -653,33 +577,29 @@ input {
     border-bottom: 2px solid #7AE229;
 }
 
-/* Aktiver Zustand: komplette Farbe */
-.priority-frame.active:nth-child(1) {
-    background-color: #FF3D00;
+.priority-frame.active:nth-child(1),
+.priority-frame.active:nth-child(2),
+.priority-frame.active:nth-child(3) {
     color: white;
-    border-bottom: 2px solid #FF3D00;
 }
 
-.priority-frame.active:nth-child(1) img {
-    filter: brightness(0) invert(1);
+.priority-frame.active:nth-child(1) {
+    background-color: #FF3D00;
+    border-bottom: 2px solid #FF3D00;
 }
 
 .priority-frame.active:nth-child(2) {
     background-color: #FFA800;
-    color: white;
     border-bottom: 2px solid #FFA800;
-}
-
-.priority-frame.active:nth-child(2) img {
-    filter: brightness(0) invert(1);
 }
 
 .priority-frame.active:nth-child(3) {
     background-color: #7AE229;
-    color: white;
     border-bottom: 2px solid #7AE229;
 }
 
+.priority-frame.active:nth-child(1) img,
+.priority-frame.active:nth-child(2) img,
 .priority-frame.active:nth-child(3) img {
     filter: brightness(0) invert(1);
 }
@@ -698,9 +618,7 @@ input {
     gap: 10px;
     border-radius: 10px;
     box-shadow: 0px 0px 4px 0px #00000029;
-    font-family: 'Open Sans', sans-serif;
     font-size: 19px;
-    font-weight: 400;
     border-bottom: 2px solid transparent;
 }
 
@@ -711,8 +629,9 @@ input {
     flex-direction: column;
     gap: 8px;
     opacity: 1;
-    box-sizing: border-box;
-    /* margin-bottom: 24px; */
+
+    margin-bottom: 8px;
+    position: relative;
 }
 
 .category-container {
@@ -723,21 +642,8 @@ input {
     flex-direction: column;
     gap: 8px;
     opacity: 1;
-    box-sizing: border-box;
-    margin-bottom: 24px;
-}
 
-.task-container {
-    width: 100%;
-    max-width: 440px;
-    height: 79px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    opacity: 1;
-    box-sizing: border-box;
     margin-bottom: 24px;
-    border-bottom: 1px solid #D1D1D1;
 }
 
 .assigned-container {
@@ -746,45 +652,20 @@ input {
     flex-direction: column;
     gap: 8px;
     opacity: 1;
-    box-sizing: border-box;
+
     margin-bottom: 24px;
 }
 
 .assigned-header {
     width: 199px;
     height: 23px;
-    font-family: 'Open Sans', sans-serif;
     font-weight: 700;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #42526E;
     opacity: 1;
 }
 
-.assigned-header span.optional {
-    font-weight: 400;
-}
-
-.assigned-content {
-    position: relative;
-    cursor: pointer;
-    width: 100%;
-    max-width: 440px;
-    height: 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid #D1D1D1;
-    box-sizing: border-box;
-    opacity: 1;
-}
-
-.assigned-content:hover{
-    border-bottom: 1px solid #4589FF;
-}
+.assigned-content,
 .assigned-content-overlay {
     position: relative;
     cursor: pointer;
@@ -793,30 +674,25 @@ input {
     height: 48px;
     padding: 12px 16px;
     border-bottom: 1px solid #D1D1D1;
-    box-sizing: border-box;
+
     opacity: 1;
 }
+
+.assigned-content:hover,
 .assigned-content-overlay:hover {
     border-bottom: 1px solid #4589FF;
 }
 
-.assigned-content:hover{
-    border-bottom: 1px solid #4589FF;
-}
-.category-content:hover{
+.category-content:hover {
     border-bottom: 1px solid #4589FF;
 }
 
-#task-content-addtask:hover{
+#task-content-addtask:hover {
     border-bottom: 1px solid #4589FF;
 }
-
 
 .assigned-text {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
     font-size: 19px;
-    line-height: 120%;
     color: #000000;
     opacity: 1;
     background-color: white;
@@ -829,7 +705,7 @@ input {
 }
 
 #edit-title:hover {
-    border-bottom:1px solid #4589FF;
+    border-bottom: 1px solid #4589FF;
 }
 
 .assigned-input {
@@ -856,24 +732,20 @@ input {
     transition: background-color 0.2s;
 }
 
-/* Unselektiert + Hover */
 .dropdown-item:hover {
     background-color: #D2E3FF;
 }
 
-/* Selektiert (kein Hover) */
 .dropdown-item.active {
     background-color: #4589FF;
     color: white;
 }
 
-/* Selektiert + Hover */
 .dropdown-item.active:hover {
     background-color: #005DFF;
     color: white;
 }
 
-/* Selektiert + Maus weg */
 .dropdown-item.active.mouse-leave {
     background-color: #4589FF;
 }
@@ -901,22 +773,9 @@ input {
     margin-top: 8px;
 }
 
-.category-container {
-    width: 100%;
-    max-width: 440px;
-    height: 79px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    opacity: 1;
-    box-sizing: border-box;
-    margin-bottom: 24px;
-}
-
 .category-content {
     position: relative;
     cursor: pointer;
-
     width: 100%;
     max-width: 440px;
     height: 48px;
@@ -925,7 +784,7 @@ input {
     align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid #D1D1D1;
-    box-sizing: border-box;
+
     opacity: 1;
 }
 
@@ -942,7 +801,7 @@ input {
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    box-sizing: border-box;
+
     opacity: 1;
     overflow: visible;
     border-bottom: 1px solid #D1D1D1;
@@ -960,120 +819,6 @@ input {
     background-color: #1c2533;
 }
 
-
-/* TABLET - 2x2 Grid */
-@media (max-width: 1350px) {
-    .desktop-only {
-        display: none;
-    }
-
-    /* Column-Header Styling (für Tablet/Mobile) */
-    .column-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 16px;
-    }
-
-    /* Header-Bereich anpassen */
-    .search-top {
-        padding: 40px 0 32px 32px;
-        gap: 20px;
-    }
-
-    .add-task-btn {
-        font-size: 18px;
-        padding: 12px 8px;
-    }
-
-    /* Column-Header einblenden */
-    .column-header {
-        display: flex;
-    }
-
-    /* 2x2 Grid Layout */
-    .bottom {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        padding: 0 32px;
-    }
-
-    .tasks {
-        flex-direction: column;
-    }
-}
-
-/* MOBILE - 1 Spalte, horizontale Tasks */
-@media (max-width: 768px) {
-
-    /* Für die ganze Seite im Mobile-Modus die vertikale Scrollbar verstecken: */
-    html,
-    body {
-        scrollbar-width: none;
-        /* Firefox */
-        -ms-overflow-style: none;
-        /* IE/Edge */
-    }
-
-    html::-webkit-scrollbar,
-    body::-webkit-scrollbar {
-        display: none;
-    }
-
-    /* Header-Bereich Mobile */
-    .search-top {
-        flex-direction: column;
-        gap: 16px;
-        padding: 64px 1rem 32px;
-    }
-
-    .searchbar {
-        width: 100%;
-    }
-
-    .add-task-btn {
-        display: none;
-    }
-
-    /* 1 Spalte vertikal */
-    .bottom {
-        grid-template-columns: 1fr;
-        gap: 26px;
-        padding: 0 1rem;
-    }
-
-    /* Tasks horizontal scrollbar */
-    .tasks {
-        flex-direction: row;
-        align-items: stretch; /* Cards gleiche Höhe */
-        overflow-x: auto;
-        overflow-y: hidden;
-        gap: 16px;
-        /* scroll-behavior: smooth;
-        scroll-snap-type: x mandatory; */
-        /* um die horizontale Scrollbar zu verstecken */
-        scrollbar-width: none;
-        /* Firefox */
-        -ms-overflow-style: none;
-        /* IE/Edge */
-    }
-
-    /* um die horizontale Scrollbar zu verstecken */
-    .tasks::-webkit-scrollbar {
-        display: none;
-    }
-
-    /* Task-Cards müssen feste Breite haben */
-    .tasks .task-card {
-        flex: 0 0 252px;
-        margin: 10px;
-        /* Feste Breite der Task-Karte */
-    }
-}
-
-
-
-/* Modal styles */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -1085,12 +830,7 @@ input {
 }
 
 .modal-desc {
-    font-family: "Open Sans", sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     margin-bottom: 24px;
 }
 
@@ -1115,7 +855,6 @@ input {
     border: none;
     background: transparent;
     font-size: 28px;
-    line-height: 1;
     cursor: pointer;
     color: #42526e;
 }
@@ -1191,7 +930,6 @@ input {
     background-color: #e7e7e7;
     font-size: 16px;
     color: #a8a8a8;
-    font-weight: 400;
 }
 
 .task-card {
@@ -1215,16 +953,12 @@ input {
     justify-content: space-between;
 }
 
-/* Drag & Drop helpers */
 .task-card.dragging {
-
     transform: none;
-    /* Optional: kein Skalieren */
     opacity: 0.6;
     z-index: 1000;
     box-shadow: 0px 8px 25px 5px #00000025;
     pointer-events: none;
-    /* verhindert Einfluss auf Layout */
 }
 
 .tasks.drag-over {
@@ -1237,25 +971,16 @@ input {
     box-shadow: 0px 4px 15px 2px #4589ff20;
 }
 
-/* Hintergrund-Overlay */
 .modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.2);
-    /* Abdunkelung */
     display: flex;
     justify-content: flex-end;
-    /* Inhalt nach rechts */
     align-items: stretch;
     z-index: 1000;
 }
 
-/* ausgeblendet */
-.hidden {
-    display: none;
-}
-
-/* das eigentliche rechte Panel */
 .modal {
     display: flex;
     flex-direction: column;
@@ -1266,11 +991,8 @@ input {
     box-shadow: 0px 0px 4px 0px #00000029;
 }
 
-
-/* footer bleibt unten */
 .modal-footer {
     flex: 0 0 auto;
-    /* feste Höhe */
     display: flex;
     justify-content: flex-end;
     padding: 24px 40px;
@@ -1300,28 +1022,23 @@ input {
 
 .svg-button:active svg rect {
     stroke: #A8A8A8;
-    /* Hintergrund-Randfarbe beim Klicken */
 }
 
 .svg-button:active svg path {
     stroke: #A8A8A8;
-    /* Icon-Farbe beim Klicken */
 }
 
 .svg-button svg.disabled {
     opacity: 0.5;
-    /* Mache das SVG halbtransparent */
     cursor: not-allowed;
 }
 
 .svg-button svg.disabled rect {
     stroke: #A8A8A8;
-    /* Grau für den Rahmen */
 }
 
 .svg-button svg.disabled path {
     stroke: #A8A8A8;
-    /* Grau für das Icon (Innenbereich) */
 }
 
 .tasks.drag-over {
@@ -1340,22 +1057,14 @@ input {
     width: 32px;
     height: 32px;
     margin-left: -10px;
-    /* zum Überlappen */
     border: 1px solid #FFFFFF;
-    /* weißer Rand */
 }
 
 .assigned-name-full {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     vertical-align: middle;
 }
 
-/* TEST */
 .task-details-card {
     padding: 20px;
     background: white;
@@ -1410,10 +1119,6 @@ input {
     gap: 10px;
 }
 
-.hidden {
-    display: none;
-}
-
 #edit-header-btn {
     border: none;
     background-color: transparent;
@@ -1426,24 +1131,14 @@ input {
 }
 
 #edit-title {
-    font-family: "Open Sans", sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 32px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #D1D1D1;
     width: 440px;
-    /* feste Breite */
     border: none;
-    /* alle Ränder entfernen */
     border-bottom: 1px solid #D1D1D1;
-    /* nur untere Linie */
     margin-bottom: 24px;
     background: transparent;
-    /* kein Hintergrund */
     outline: none;
-    /* kein Fokus-Rahmen */
 }
 
 .delete-btn {
@@ -1504,7 +1199,6 @@ input {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     z-index: 100;
-
 }
 
 .assigned-wrapper {
@@ -1515,11 +1209,7 @@ input {
 }
 
 .assigned-wrapper span {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
     vertical-align: middle;
     height: 23px;
     display: flex;
@@ -1527,51 +1217,29 @@ input {
 }
 
 h2 {
-    font-family: 'Open Sans', sans-serif;
     font-weight: 700;
-    font-style: normal;
     font-size: 61px;
-    line-height: 120%;
-    letter-spacing: 0;
     max-width: 448px;
     margin-bottom: 24px;
 }
 
 .description-task-overlay {
-    font-family: "Open Sans", sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     margin-bottom: 24px;
 }
 
 .task-overlay-bullet {
-    font-family: "Open Sans", sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     margin-bottom: 24px;
 }
 
 .subtasks-header {
-    font-family: "Open Sans", sans-serif;
-    font-weight: 400;
-    font-style: normal;
     font-size: 19px;
-    line-height: 120%;
-    letter-spacing: 0;
     margin-bottom: 8px;
 }
 
 .task-overlay-bullet strong {
-    font-family: "Inter", sans-serif;
-    font-style: normal;
     font-size: 21px;
-    line-height: 120%;
     color: #42526E;
     margin-right: 25px;
     margin-bottom: 24px;
@@ -1603,7 +1271,6 @@ h2 {
 }
 
 .close-button-overlay {
-    /* position: absolute; */
     top: 24px;
     right: 24px;
     border: none;
@@ -1618,20 +1285,11 @@ h2 {
 
 .close-button-overlay svg path {
     stroke: #4589FF;
-    /* Standardfarbe */
-
 }
 
 .close-button-overlay:hover svg path {
     stroke: #005DFF;
-    /* Hover-Farbe */
 }
-
-/* TEST */
-/* ======================
-   Subtask Checkbox Wrapper
-   ====================== */
-/* Checkbox sichtbar */
 
 .subtask-header-distance {
     margin-top: 24px;
@@ -1649,7 +1307,6 @@ h2 {
     align-items: center;
     gap: 8px;
     margin-bottom: 6px;
-    font-family: 'Open Sans', sans-serif;
     font-size: 14px;
     color: #333;
 }
@@ -1667,7 +1324,6 @@ h2 {
     background-color: #D2E3FF;
 }
 
-/* Checkbox Wrapper */
 .checkbox-wrapper {
     position: relative;
     width: 24px;
@@ -1700,13 +1356,11 @@ h2 {
     transition: opacity 0.2s, background 0.2s;
 }
 
-/* Hover über Checkbox → Overlay sichtbar */
 .subtask-item .checkbox-wrapper:hover .hover-overlay {
     opacity: 1;
     background: #FFFFFF;
 }
 
-/* Checkbox sichtbar */
 .subtask-item .checkbox-wrapper img {
     opacity: 1;
     filter: none;
@@ -1718,55 +1372,23 @@ h2 {
 
 .subtasks-list {
     list-style: none;
-    /* entfernt die Standard-Bullets */
-    padding: 0;
-    /* optional: padding entfernen */
-    margin: 0;
-    /* optional: margin entfernen */
 }
 
 .checkbox-wrapper .hover-overlay {
     position: absolute;
-    /* schon korrekt */
     z-index: 1000;
-    /* hoch genug, damit es über Header liegt */
-}
-
-@media (max-width: 768px) {
-    .layout {
-        grid-template-columns: 1fr;
-    }
-
-    aside {
-        order: 2;
-    }
-
-    main {
-        order: 1;
-        min-height: calc(100vh - 80px);
-        margin-bottom: 80px;
-    }
 }
 
 #edit-title {
-    font-family: "Open Sans", sans-serif;
     font-weight: 600;
-    font-style: normal;
     font-size: 32px;
-    line-height: 120%;
-    letter-spacing: 0;
     color: #000000;
     width: 440px;
-    /* feste Breite */
     border: none;
-    /* alle Ränder entfernen */
     border-bottom: 1px solid #D1D1D1;
-    /* nur untere Linie */
     margin-bottom: 24px;
     background: transparent;
-    /* kein Hintergrund */
     outline: none;
-    /* kein Fokus-Rahmen */
 }
 
 .edit-actions {
@@ -1774,28 +1396,14 @@ h2 {
     justify-content: end;
 }
 
-/* Container für Assigned Users */
-.assigned-container-overlay {
-    position: relative;
-    /* damit das Dropdown absolut innerhalb dieses Containers sitzt */
-    margin-bottom: 8px;
-    gap: 8px;
-}
-
-/* Dropdown selbst */
 .dropdown-menu-overlay-edit {
     position: absolute;
     top: 100%;
-    /* direkt unter der Zeile */
     left: 0;
-    /* am linken Rand des Containers */
     width: 100%;
-    /* volle Breite der Zeile */
     z-index: 1000;
-    /* damit es über allem liegt */
 }
 
-/* Optional: Schatten und Hintergrund */
 .dropdown-menu-overlay-edit {
     background-color: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -1828,14 +1436,12 @@ h2 {
     margin-bottom: 4px;
     transition: background 0.2s;
     height: 32px;
-        border-radius: 10px;
+    border-radius: 10px;
 }
 
 #edit-subtask-list .subtask-item:hover {
     background-color: #E3EEFF;
 }
-
-
 
 .subtask-item:hover {
     display: flex;
@@ -1865,8 +1471,7 @@ h2 {
 }
 
 #edit-subtask-input:active {
-    background-color:transparent;
-    /* Input nimmt den Platz */
+    background-color: transparent;
 }
 
 .assigned-arrow-container {
@@ -1874,3 +1479,130 @@ h2 {
     align-items: center;
     gap: 6px;
 }
+
+/* TABLET - 2x2 Grid */
+@media (max-width: 1350px) {
+    .desktop-only {
+        display: none;
+    }
+
+    /* Column-Header Styling (für Tablet/Mobile) */
+    .column-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 16px;
+    }
+
+    /* Header-Bereich anpassen */
+    .search-top {
+        padding: 40px 0 32px 32px;
+        gap: 20px;
+    }
+
+    .add-task-btn {
+        font-size: 18px;
+        padding: 12px 8px;
+    }
+
+    /* Column-Header einblenden */
+    .column-header {
+        display: flex;
+    }
+
+    /* 2x2 Grid Layout */
+    .bottom {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        padding: 0 32px;
+    }
+
+    .tasks {
+        flex-direction: column;
+    }
+}
+
+/* MOBILE - 1 Spalte, horizontale Tasks */
+@media (max-width: 768px) {
+
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    aside {
+        order: 2;
+    }
+
+    main {
+        order: 1;
+        min-height: calc(100vh - 80px);
+        margin-bottom: 80px;
+    }
+
+    /* Für die ganze Seite im Mobile-Modus die vertikale Scrollbar verstecken: */
+    html,
+    body {
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE/Edge */
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Header-Bereich Mobile */
+    .search-top {
+        flex-direction: column;
+        gap: 16px;
+        padding: 64px 1rem 32px;
+    }
+
+    .searchbar {
+        width: 100%;
+    }
+
+    .add-task-btn {
+        display: none;
+    }
+
+    /* 1 Spalte vertikal */
+    .bottom {
+        grid-template-columns: 1fr;
+        gap: 26px;
+        padding: 0 1rem;
+    }
+
+    /* Tasks horizontal scrollbar */
+    .tasks {
+        flex-direction: row;
+        align-items: stretch;
+        /* Cards gleiche Höhe */
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 16px;
+        /* scroll-behavior: smooth;
+        scroll-snap-type: x mandatory; */
+        /* um die horizontale Scrollbar zu verstecken */
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE/Edge */
+    }
+
+    /* um die horizontale Scrollbar zu verstecken */
+    .tasks::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Task-Cards müssen feste Breite haben */
+    .tasks .task-card {
+        flex: 0 0 252px;
+        margin: 10px;
+    }
+
+}
+
+
