@@ -874,9 +874,6 @@ createBtn.addEventListener("click", async (event) => {
         return;
     }
 
-    // 3. Task an Firebase senden
-    const result = await saveTask(taskData);
-
     try {
         // 3. Task an Firebase senden
         const result = await saveTask(taskData);
