@@ -391,7 +391,7 @@ function updateSelectedAvatars() {
     selected.forEach(user => {
         const a = document.createElement('div');
         a.className = 'selected-avatar assigned-text';
-        a.dataset.fullname = u.name;         // NEU: vollständiger Name für Overlay
+        a.dataset.fullname = user.name;         // NEU: vollständiger Name für Overlay
         a.textContent = user.initials;
         a.style.backgroundColor = user.color;
         selectedAvatarsContainer.appendChild(a);
