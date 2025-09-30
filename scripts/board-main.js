@@ -74,34 +74,7 @@ async function loadUsers() {
 
 // Helper-Funktion um Tasks zu holen (ersetzt window.taskManager.getTasks())
 function getTasks() {
-    return tasks;
-}
-
-function getTasks() {
     return tasks || [];
-}
-
-function closeModal() {
-    modal?.classList.add('hidden');
-    form?.reset();
-
-    const priority = document.getElementById('task-priority');
-    const status = document.getElementById('task-status');
-    const done = document.getElementById('subtasks-done');
-    const total = document.getElementById('subtasks-total');
-
-    if (priority) priority.value = 'medium';
-    if (status) status.value = 'todo';
-    if (done) done.value = '0';
-    if (total) total.value = '0';
-
-    createBtn?.classList.remove('active');
-    addTaskButton?.classList.remove('active-style');
-    // Plus-Buttons wieder freischalten
-    svgButtons.forEach(btn => {
-        const svg = btn.querySelector('svg');
-        if (svg) svg.classList.remove('disabled');
-    });
 }
 
 /////////////////////DOM 1////////////////////////////////////////////////
