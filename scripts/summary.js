@@ -49,6 +49,11 @@ function getTasksCopy(tasks) {
     return tasks.slice();
 }
 
+// ---------------------------
+// Datum
+// ---------------------------
+
+
 // Zählt Tasks nach Status und Priorität
 function getTaskStatistics(tasks) {
     return {
@@ -61,14 +66,14 @@ function getTaskStatistics(tasks) {
     };
 }
 
-// Gibt die nächste Deadline zurück (oder null)
-function getUpcomingDeadline(tasks) {
-    const withDueDate = tasks
-        .filter(t => t.dueDate)  // Nur Tasks mit Datum
+// Gibt die nächste URGENT Deadline zurück (oder null)
+function getUpcomingUrgentDeadline(tasks) {
+    const urgentWithDueDate = tasks
+        .filter(t => t.priority === "urgent" && t.dueDate)  // Nur urgent Tasks mit Datum
         .map(t => ({ ...t, dueTime: new Date(t.dueDate).getTime() }))  // + Timestamp
         .filter(t => !isNaN(t.dueTime))  // Nur gültige Daten
         .sort((a, b) => a.dueTime - b.dueTime);  // Nach Datum sortieren
-    return withDueDate[0] || null; // Erste = nächste Deadline
+    return urgentWithDueDate[0] || null; // Erste = nächste Deadline
 }
 
 // Update der Summary-Counter im HTML
@@ -87,10 +92,6 @@ function updateSummaryCounters({ total, todo, inProgress, awaitFeedback, done, u
     if (awaitingEl) awaitingEl.textContent = awaitFeedback;
     if (doneEl) doneEl.textContent = done;
 }
-
-// ---------------------------
-// Datum
-// ---------------------------
 
 function initDate(deadlineDate = null, label = "Today") {
     const deadlineDateEl = document.getElementById("deadline-date");
@@ -115,38 +116,38 @@ async function initTasksSummary() {
     try {
         const tasks = await loadTasks();
         const tasksCopy = getTasksCopy(tasks);
-
+        
         // Statistiken berechnen und anzeigen
         const stats = getTaskStatistics(tasksCopy);
         updateSummaryCounters(stats);
-
-        // Nächste Deadline bestimmen
-        const nextDeadlineTask = getUpcomingDeadline(tasksCopy);
-
+        
+        // Nächste URGENT Deadline bestimmen
+        const nextUrgentDeadlineTask = getUpcomingUrgentDeadline(tasksCopy);
+        
         const deadlineDateEl = document.getElementById("deadline-date");
         const deadlineLabelEl = document.getElementById("deadline-label");
-
+        
         if (!deadlineDateEl || !deadlineLabelEl) return;
-
+        
         const today = new Date();
         today.setHours(0, 0, 0, 0); // heutiges Datum ohne Zeitanteil
-
-        if (!nextDeadlineTask) {
-            // Keine Deadline vorhanden
+        
+        if (!nextUrgentDeadlineTask) {
+            // Kein urgent Task mit Deadline vorhanden
             deadlineDateEl.textContent = today.toLocaleDateString("en-US", {
                 day: "numeric",
                 month: "long",
                 year: "numeric"
             });
-            deadlineLabelEl.textContent = "No Deadline";
+            deadlineLabelEl.textContent = "Today";
         } else {
-            const dueDate = new Date(nextDeadlineTask.dueDate);
+            const dueDate = new Date(nextUrgentDeadlineTask.dueDate);
             deadlineDateEl.textContent = dueDate.toLocaleDateString("en-US", {
                 day: "numeric",
                 month: "long",
                 year: "numeric"
             });
-
+            
             if (dueDate < today) {
                 // Deadline liegt in der Vergangenheit
                 deadlineLabelEl.textContent = "Expired Deadline";
@@ -155,7 +156,6 @@ async function initTasksSummary() {
                 deadlineLabelEl.textContent = "Upcoming Deadline";
             }
         }
-
     } catch (err) {
         console.error("Error loading tasks:", err);
     }

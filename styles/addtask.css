@@ -7,6 +7,7 @@ body {
     font-weight: 400;
     overflow: hidden;
 }
+
 .layout {
     max-width: 1440px;
     display: grid;
@@ -222,14 +223,22 @@ main {
     border: none;         
     outline: none;      
     box-shadow: none;
-}
-
-.due-date-input::placeholder {
-    color: #999;
+    position: absolute; 
+    opacity: 0; 
+    pointer-events: none;
 }
 
 .due-date-input:focus {
     outline: none;
+}
+
+.due-date-display {
+    font-size: 19px;
+    color: #D1D1D1;
+}
+
+.due-date-display.has-value {
+    color: black;
 }
 
 .due-date-icon-container {
@@ -923,6 +932,7 @@ main {
   .description-input::placeholder,
   .due-date-header,
   .due-date-input,
+  .due-date-display,
   .priority-header,
   .priority-frame,
   .assigned-header,
