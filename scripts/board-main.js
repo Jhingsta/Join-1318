@@ -217,53 +217,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error loading tasks:', error);
         return;
     }
-
-    form?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const title = document.getElementById('task-title').value.trim();
-        const description = document.getElementById('task-description').value.trim();
-        const dueDate = document.getElementById('task-dueDate').value;
-        const priority = document.getElementById('task-priority').value;
-        const status = document.getElementById('task-status').value;
-        const subtasksDone = parseInt(document.getElementById('subtasks-done').value || '0', 10);
-        const subtasksTotal = parseInt(document.getElementById('subtasks-total').value || '0', 10);
-        // Dynamische Subtasks vom User
-        const subtasksInputs = document.querySelectorAll('.subtask-input');
-        const subtasksItems = Array.from(subtasksInputs)
-            .map(input => input.value.trim())
-            .filter(title => title.length > 0)
-            .map(title => ({ title, done: false })); // ✅ wichtig
-
-        const payload = {
-            title,
-            description,
-            dueDate,
-            priority,
-            status,
-            subtasks: subtasksItems, // ✅ Direkt das Array - createTask() macht den Rest
-            assignedUsersFull: currentNewTask.assignedUsersFull,
-            createdAt: new Date().toISOString()
-        };
-        // 4️⃣ Button während Save deaktivieren
-        const submitButton = form.querySelector('button[type="submit"]');
-        const originalText = submitButton.textContent;
-        submitButton.textContent = 'Saving...';
-        submitButton.disabled = true;
-
-        // 5️⃣ Task speichern und Board aktualisieren
-        try {
-            const newTask = await createTask(payload); // Statt window.taskManager.createTask()
-            tasks.push(newTask); // Task zur lokalen Liste hinzufügen
-            renderBoard(); // Board neu rendern
-            closeModal();
-        } catch (err) {
-            console.error(err);
-            alert('Failed to save task');
-        } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = originalText;
-        }
-    });
 });
 
 function renderBoard() {
@@ -783,30 +736,29 @@ function startEditMode(li, span) {
     const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addTask/Subtask's icons (1).png";
     saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
 }
-// ----------------------------
-// Funktion: Task-Daten auslesen
-// ----------------------------
+
+// --- Task-Daten sammeln ---
 function getTaskData() {
-    // 1. Überschrift
+    // 1. Titel
     const titleInput = document.querySelector(".title-input");
     const title = titleInput.value.trim();
 
-    // 2. Description
+    // 2. Beschreibung
     const descriptionInput = document.querySelector(".description-input");
     const description = descriptionInput.value.trim();
 
     // 3. Due Date
     const dueDateInput = document.querySelector(".due-date-input");
-    const dueDate = dueDateInput.value; // Behalte yyyy-mm-dd (ISO-Format)
+    const dueDate = dueDateInput.value;
 
     // 4. Priority
     const priorityBtn = document.querySelector(".priority-frame.active");
     const priority = priorityBtn ? priorityBtn.textContent.trim().toLowerCase() : "medium";
 
-    // 5. Assigned Users Full (Vollständige Daten)
+    // 5. Assigned Users Full
     let assignedUsersFull = [];
     if (dropdown) {
-        dropdown.querySelectorAll('.dropdown-item.selected').forEach(div => {
+        dropdown.querySelectorAll(".dropdown-item.selected").forEach(div => {
             const name = div.textContent.trim();
             const user = users.find(u => u.name === name);
             if (user) {
@@ -820,15 +772,16 @@ function getTaskData() {
         });
     }
 
-    // 6. Category
+    // 6. Kategorie
     const categoryText = document.querySelector(".category-content .assigned-text");
     const category = categoryText ? categoryText.textContent.trim() : null;
 
-    // 7. Subtasks
-    const subtaskItems = document.querySelectorAll("#subtask-list li");
-    const subtasks = Array.from(subtaskItems)
-        .map(el => el.textContent.trim())
-        .filter(text => text.length > 0);
+    // 7. Subtasks (Objekte statt Strings)
+    const subtaskInputs = document.querySelectorAll(".subtask-input");
+    const subtasks = Array.from(subtaskInputs)
+        .map(input => input.value.trim())
+        .filter(title => title.length > 0)
+        .map(title => ({ title, done: false }));
 
     return {
         title,
@@ -841,9 +794,9 @@ function getTaskData() {
     };
 }
 
+// --- Speichern ---
 async function saveTask(taskData) {
     try {
-        // Verwende die createTask() Funktion aus tasks-crud.js
         const newTask = await createTask({
             title: taskData.title,
             description: taskData.description,
@@ -851,20 +804,31 @@ async function saveTask(taskData) {
             priority: taskData.priority,
             assignedUsersFull: taskData.assignedUsersFull,
             category: taskData.category,
-            subtasks: taskData.subtasks // createTask() verarbeitet das bereits richtig
+            subtasks: taskData.subtasks
         });
-        
-        // Task zur lokalen Liste hinzufügen
+
         tasks.push(newTask);
-        
-        return newTask; // Zurückgeben mit id statt firebaseId
+        return newTask;
     } catch (error) {
-        console.error("❌ Error saving task:", error);
+        console.error("❌ Fehler beim Speichern:", error);
         throw error;
     }
 }
 
-//Create Task Button mit Firebase verbinden
+// --- Formular zurücksetzen ---
+function resetForm() {
+    document.querySelector(".title-input").value = "";
+    document.querySelector(".description-input").value = "";
+    document.querySelector(".due-date-input").value = "";
+    document.querySelector(".selected-avatars-container").innerHTML = "";
+    document.querySelector("#subtask-list").innerHTML = "";
+    document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
+    document.querySelector(".priority-frame:nth-child(2)").classList.add("active"); // Medium
+    const categoryText = document.querySelector(".category-content .assigned-text");
+    if (categoryText) categoryText.textContent = "Select task category";
+}
+
+// --- Event Listener für Task erstellen ---
 createBtn.addEventListener("click", async (event) => {
     event.preventDefault();
     const taskData = getTaskData();
@@ -874,30 +838,28 @@ createBtn.addEventListener("click", async (event) => {
         return;
     }
 
+    // Button-Feedback
+    const submitButton = event.target;
+    const originalText = submitButton.textContent;
+    submitButton.textContent = "Saving...";
+    submitButton.disabled = true;
+
     try {
-        // 3. Task an Firebase senden
         const result = await saveTask(taskData);
 
         if (result) {
-            // Erfolgsmeldung anzeigen
             showTaskAddedMessage(() => {
                 closeModal();
+                renderBoard(); // Board neu rendern wie in Block 1
             });
-            // Formular zurücksetzen
-            document.querySelector(".title-input").value = "";
-            document.querySelector(".description-input").value = "";
-            document.querySelector(".due-date-input").value = "";
-            document.querySelector(".selected-avatars-container").innerHTML = "";
-            document.querySelector("#subtask-list").innerHTML = "";
-            // Priority zurücksetzen auf Medium
-            document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
-            document.querySelector(".priority-frame:nth-child(2)").classList.add("active");
-            // Kategorie zurücksetzen
-            if (categoryText) categoryText.textContent = "Select task category";
+            resetForm();
         }
     } catch (err) {
         console.error("Fehler beim Erstellen der Task:", err);
         alert("Fehler beim Speichern der Task. Siehe Konsole.");
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
     }
 });
 
