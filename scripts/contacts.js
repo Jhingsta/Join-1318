@@ -2,6 +2,9 @@ const BASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.a
 
 let users = [];
 
+/**
+ * Initializes the contacts module by loading user data.
+ */
 function init() {
   loadUsers();
 }
@@ -29,6 +32,12 @@ async function loadUsers() {
   }
 }
 
+/**
+ * Renders a list of contacts grouped alphabetically by the first letter of their names.
+ * Contacts are sorted by name before grouping.
+ *
+ * @param {Array<Object>} contacts - Array of contact objects, each with a 'name' property.
+ */
 function renderContacts(contacts) {
   let sorted = contacts.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -38,62 +47,26 @@ function renderContacts(contacts) {
     acc[letter].push(contact);
     return acc;
   }, {});
-
   let html = "";
-
   for (let letter in grouped) {
-    html += renderLetterSection(letter);
+    html += getLetterSectionTemplate(letter);
     html += renderContactList(grouped[letter]);
   }
-
   return html;
 }
 
+/**
+ * Generates an HTML string representing a list of contacts.
+ *
+ * @param {Array<Object>} users - Array of user objects to render as contacts.
+ */
 function renderContactList(users) {
-  return users.map(user => renderContact(user)).join("");
+  return users.map(user => getContactTemplate(user)).join("");
 }
 
-// Floating Contact
-
-// HTML Template Generator
-function generateContactTemplate(name, email, phone, color, initials) {
-  return `
-    <div class="floating-contact-first">
-      <span>Contact Information</span>
-      <button onclick="closeFloatingContact()" class="arrow-left"></button>
-    </div>
-
-    <div class="floating-contact-second">
-        <div class="avatar-big" style="background-color: ${color};">${initials}</div>
-        <div class="floating-contact-name">
-            <div class="floating-contact-name-big">${name}</div>
-            <div class="floating-contact-name-bottom">
-                <div class="edit-link" onclick="showEditContactOverlay({name:'${name}', email:'${email}', phone:'${phone || ''}', color:'${color}', initials:'${initials}'})">
-                    <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt="">
-                    <span>Edit</span>
-                </div>
-                <div class="delete-link" onclick="deleteContact('${email}')">
-                    <img src="./assets/icons-contacts/delete.svg" class="icon-delete" alt="">
-                    <span>Delete</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="floating-contact-third">
-        <div class="floating-contact-bottom-email">
-            <div class="floating-contact-bottom-title">Email</div>
-            <span class="floating-contact-email">${email}</span>
-        </div>
-        <div class="floating-contact-bottom-phone">
-            <div class="floating-contact-bottom-title">Phone</div>
-            <span>${phone || 'No phone number'}</span>
-        </div>
-    </div>
-  `;
-}
-
-// Desktop Container erstellen/finden
+/**
+ * Creates and returns a floating contact element within the right panel on desktop.
+ */
 function createDesktopFloatingContact() {
   let rightPanel = document.getElementById('right-panel');
   
@@ -102,54 +75,93 @@ function createDesktopFloatingContact() {
     rightPanel.innerHTML += '<div class="floating-contact" id="floating-contact"></div>';
     floatingContact = document.getElementById('floating-contact');
   }
-  
   return floatingContact;
 }
 
-// Mobile Container erstellen/finden
+/**
+ * Creates and displays a mobile floating contact overlay with contact information.
+ * 
+ * @param {string} name - The contact's full name
+ * @param {string} email - The contact's email address
+ * @param {string} phone - The contact's phone number
+ * @param {string} color - The color for the contact's avatar/badge
+ * @param {string} initials - The contact's initials for display
+ */
 function createMobileFloatingContact(name, email, phone, color, initials) {
-  let mobileOverlay = document.getElementById('mobile-floating-contact');
-  if (!mobileOverlay) {
-    document.body.innerHTML += `
-      <div id="mobile-floating-contact" class="mobile-floating-contact">
-        <button class="mobile-overlay-menu-btn" onclick="openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')" aria-label="Open contact options menu"></button>
-      </div>
-    `;
-    mobileOverlay = document.getElementById('mobile-floating-contact');
-  } else {
-    // Overlay existiert bereits - Menu-Button mit neuen Daten aktualisieren
-    let menuBtn = mobileOverlay.querySelector('.mobile-overlay-menu-btn');
-    if (menuBtn) {
-      menuBtn.setAttribute('onclick', `openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')`);
-    }
-  }
+  const mobileOverlay = getOrCreateMobileOverlay(name, email, phone, color, initials);
+  const floatingContact = ensureFloatingContactElement(mobileOverlay);
 
-  let floatingContact = mobileOverlay.querySelector('.floating-contact');
-  if (!floatingContact) {
-    mobileOverlay.innerHTML += '<div class="floating-contact"></div>';
-    floatingContact = mobileOverlay.querySelector('.floating-contact');
-  }
-  
-  // Mobile Overlay anzeigen
   mobileOverlay.classList.add('show');
-
-  // Body-Scroll deaktivieren
   document.body.classList.add('no-scroll');
   
   return floatingContact;
 }
 
-// Vereinheitlichte Animation
+/**
+ * Gets an existing mobile overlay or creates a new one with the provided contact data.
+ * 
+ * @param {string} name - The contact's full name
+ * @param {string} email - The contact's email address
+ * @param {string} phone - The contact's phone number
+ * @param {string} color - The color for the contact's avatar/badge
+ * @param {string} initials - The contact's initials for display
+ */
+function getOrCreateMobileOverlay(name, email, phone, color, initials) {
+  let mobileOverlay = document.getElementById('mobile-floating-contact');
+
+  if (!mobileOverlay) {
+    document.body.innerHTML += getMobileOverlayTemplate(name, email, phone, color, initials);
+    mobileOverlay = document.getElementById('mobile-floating-contact');
+  } else {
+    updateMobileMenuButton(mobileOverlay, name, email, phone, color, initials);
+  }
+  return mobileOverlay;
+}
+
+/**
+ * Ensures that a floating contact element exists within the given mobile overlay.
+ *
+ * @param {HTMLElement} mobileOverlay - The container element to search for or append the floating contact.
+ */
+function ensureFloatingContactElement(mobileOverlay) {
+  let floatingContact = mobileOverlay.querySelector('.floating-contact');
+  
+  if (!floatingContact) {
+    mobileOverlay.innerHTML += '<div class="floating-contact"></div>';
+    floatingContact = mobileOverlay.querySelector('.floating-contact');
+  }
+  
+  return floatingContact;
+}
+
+/**
+ * Updates the mobile menu button's onclick attribute to open the contact menu with the provided contact details.
+ *
+ * @param {HTMLElement} mobileOverlay - The overlay element containing the mobile menu button.
+ * @param {string} name - The contact's name.
+ * @param {string} email - The contact's email address.
+ * @param {string} phone - The contact's phone number (optional).
+ * @param {string} color - The color associated with the contact.
+ * @param {string} initials - The contact's initials.
+ */
+function updateMobileMenuButton(mobileOverlay, name, email, phone, color, initials) {
+  const menuBtn = mobileOverlay.querySelector('.mobile-overlay-menu-btn');
+  if (menuBtn) {
+    menuBtn.setAttribute('onclick', `openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')`);
+  }
+}
+
+/**
+ * Animates a floating contact element by sliding it in from the right and fading it in.
+ *
+ * @param {HTMLElement} floatingContactElement - The DOM element representing the floating contact to animate.
+ */
 function slideInFloatingContact(floatingContactElement) {
-  // Element erst komplett ausblenden und Transition temporär deaktivieren
   floatingContactElement.style.transition = 'none';
   floatingContactElement.style.transform = 'translateX(100%)';
   floatingContactElement.style.opacity = '0';
-  
-  // Sicherstellen dass das Element sichtbar ist
   floatingContactElement.classList.add('show');
   
-  // Kurz warten, dann Animation starten
   setTimeout(() => {
     floatingContactElement.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
     floatingContactElement.style.transform = 'translateX(0)';
@@ -157,66 +169,66 @@ function slideInFloatingContact(floatingContactElement) {
   }, 10);
 }
 
-// Hauptfunktion
+/**
+ * Displays a floating contact card for the selected contact.
+ *
+ * @param {string} name - The name of the contact.
+ * @param {string} email - The email address of the contact.
+ * @param {string} phone - The phone number of the contact.
+ * @param {string} color - The color associated with the contact.
+ * @param {string} initials - The initials of the contact.
+ * @param {number|string} contactId - The unique identifier of the contact.
+ */
 function showFloatingContact(name, email, phone, color, initials, contactId) {
-  // Alle anderen Kontakte deaktivieren
   let allContacts = document.querySelectorAll('.contact');
   allContacts.forEach(contact => contact.classList.remove('active'));
-  
-  // Aktuellen Kontakt aktivieren
   let currentContact = document.getElementById(`contact-${contactId}`);
   if (currentContact) {
     currentContact.classList.add('active');
   }
-
-  // HTML Template generieren
-  let floatingContactHtml = generateContactTemplate(name, email, phone, color, initials);
-
-  // Container je nach Bildschirmgröße erstellen
+  let floatingContactHtml = getFloatingContactTemplate(name, email, phone, color, initials);
   let floatingContact = window.innerWidth <= 768 ? createMobileFloatingContact(name, email, phone, color, initials) : createDesktopFloatingContact();
-
-  // Inhalt setzen
   floatingContact.innerHTML = floatingContactHtml;
   
-  // Animation starten
   slideInFloatingContact(floatingContact);
 }
 
-// Desktop Schließen-Funktion
+/**
+ * Closes the floating contact element on desktop view by removing the 'show' class
+ * from the element with ID 'floating-contact', and removes the 'active' class from all contact elements.
+ */
 function closeDesktopFloatingContact() {
   let floatingContact = document.getElementById('floating-contact');
   if (floatingContact) {
     floatingContact.classList.remove('show');
   }
   
-  // Alle aktiven Kontakte deselektieren
   let allContacts = document.querySelectorAll('.contact');
   allContacts.forEach(contact => contact.classList.remove('active'));
 }
 
-// Mobile Schließen-Funktion
+/**
+ * Closes the mobile floating contact overlay by removing relevant CSS classes.
+ */
 function closeMobileFloatingContact() {
   let mobileOverlay = document.getElementById('mobile-floating-contact');
   if (mobileOverlay) {
     mobileOverlay.classList.remove('show');
-
-    // Body-Scroll wieder aktivieren
     document.body.classList.remove('no-scroll');
     
-    // Das floating-contact Element im Mobile-Overlay auch verstecken:
     let mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
     if (mobileFloatingContact) {
       mobileFloatingContact.classList.remove('show');
     }
   }
-  
   let allContacts = document.querySelectorAll('.contact');
   allContacts.forEach(contact => contact.classList.remove('active'));
 }
 
-// Universelle Schließen-Funktion
+/**
+ * Closes the floating contact panel based on the current window width.
+ */
 function closeFloatingContact() {
-  // Je nach Bildschirmgröße entsprechende Funktion aufrufen
   if (window.innerWidth <= 768) {
     closeMobileFloatingContact();
   } else {
@@ -224,54 +236,63 @@ function closeFloatingContact() {
   }
 }
 
-// Mobile Contact Menu öffnen/schließen
+/**
+ * Opens the mobile contact options menu for a specific contact.
+ * 
+ * @param {string} name - The name of the contact.
+ * @param {string} email - The email address of the contact.
+ * @param {string} phone - The phone number of the contact.
+ * @param {string} color - The color associated with the contact (e.g., for avatar background).
+ * @param {string} initials - The initials of the contact to display in the avatar.
+ */
 function openMobileContactMenu(name, email, phone, color, initials) {
-  let mobileOverlay = document.getElementById('mobile-floating-contact');
-  
-  // Prüfen ob Menu bereits existiert
+  const mobileOverlay = document.getElementById('mobile-floating-contact');
   let contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
-  
+
   if (!contactMenu) {
-    // Menu erstellen falls nicht vorhanden
-    mobileOverlay.innerHTML += `
-    <div class="mobile-contact-options">
-        <div class="mobile-edit-link" onclick="showEditContactOverlay({name:'${name}', email:'${email}', phone:'${(phone || '')}', color:'${color}', initials:'${initials}'})">
-            <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt="">
-            <span>Edit</span>
-        </div>
-        <div class="mobile-delete-link" onclick="deleteContact('${email}')">
-            <img src="./assets/icons-contacts/delete.svg" class="icon-delete" alt="">
-            <span>Delete</span>
-        </div>
-    </div>
-    `;
-    contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
-    
-    // Slide-in Animation starten
-    setTimeout(() => {
-      contactMenu.classList.add('show');
-    }, 10);
-    
-    // Click außerhalb des Menus schließt es
-    setTimeout(() => {
-      document.addEventListener('click', closeMobileMenuOnOutsideClick);
-    }, 100);
+    createMobileContactMenu(mobileOverlay, name, email, phone, color, initials);
   } else {
-    // Menu existiert bereits - mit neuen Daten aktualisieren
-    // Edit-Link aktualisieren
-    let editLink = contactMenu.querySelector('.mobile-edit-link');
-    if (editLink) {
-      editLink.setAttribute('onclick', `showEditContactOverlay({name:'${name}', email:'${email}', phone:'${(phone || '')}', color:'${color}', initials:'${initials}'})`);
-    }
-    
-    // Delete-Link aktualisieren
-    let deleteLink = contactMenu.querySelector('.mobile-delete-link');
-    if (deleteLink) {
-      deleteLink.setAttribute('onclick', `deleteContact('${email}')`);
-    }
-    
-    // Menu schließen falls bereits offen
+    updateMobileContactMenu(contactMenu, name, email, phone, color, initials);
     closeMobileContactMenu();
+  }
+}
+
+/**
+ * Creates and displays a mobile contact menu overlay with the provided contact details.
+ *
+ * @param {HTMLElement} mobileOverlay - The overlay element where the contact menu will be rendered.
+ * @param {string} name - The name of the contact.
+ * @param {string} email - The email address of the contact.
+ * @param {string} phone - The phone number of the contact.
+ * @param {string} color - The color associated with the contact (e.g., for avatar background).
+ * @param {string} initials - The initials of the contact to display in the avatar.
+ */
+function createMobileContactMenu(mobileOverlay, name, email, phone, color, initials) {
+  mobileOverlay.innerHTML += getMobileContactMenuTemplate(name, email, phone, color, initials);
+  const contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
+
+  setTimeout(() => contactMenu.classList.add('show'), 10);
+  setTimeout(() => document.addEventListener('click', closeMobileMenuOnOutsideClick), 100);
+}
+
+/**
+ * Updates the mobile contact menu with edit and delete actions for a contact.
+ *
+ * @param {HTMLElement} contactMenu - The DOM element representing the contact menu.
+ * @param {string} name - The contact's name.
+ * @param {string} email - The contact's email address.
+ * @param {string} phone - The contact's phone number.
+ * @param {string} color - The color associated with the contact.
+ * @param {string} initials - The contact's initials.
+ */
+function updateMobileContactMenu(contactMenu, name, email, phone, color, initials) {
+  const editLink = contactMenu.querySelector('.mobile-edit-link');
+  if (editLink) {
+    editLink.setAttribute('onclick', `showEditContactOverlay({name:'${name}', email:'${email}', phone:'${phone || ''}', color:'${color}', initials:'${initials}'})`);
+  }
+  const deleteLink = contactMenu.querySelector('.mobile-delete-link');
+  if (deleteLink) {
+    deleteLink.setAttribute('onclick', `deleteContact('${email}')`);
   }
 }
 
