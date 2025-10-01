@@ -2,7 +2,6 @@ const BASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.a
 
 /**
  * Loads all tasks from the Firebase database.
- * @returns {Promise<Array>} An array of task objects.
  */
 async function loadTasks() {
   try {
@@ -18,10 +17,32 @@ async function loadTasks() {
 /**
  * Creates a new task in the Firebase database.
  * @param {Object} taskData - The data for the new task.
- * @returns {Promise<Object>} The newly created task object.
  */
 async function createTask(taskData) {
-  let defaultTask = {
+  const payload = prepareTaskPayload(taskData);
+
+  try {
+    const response = await fetch(`${BASE_URL}tasks.json`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+    const result = await response.json();
+    return { id: result.name, ...payload };
+  } catch (error) {
+    console.error("Error creating task:", error);
+    throw error;
+  }
+}
+
+/**
+ * Prepares the task payload by merging default values and processing subtasks.
+ * @param {Object} taskData - The data for the new task.
+ */
+function prepareTaskPayload(taskData) {
+  const defaultTask = {
     title: "",
     description: "",
     status: "todo",
@@ -33,41 +54,20 @@ async function createTask(taskData) {
     subtasks: { total: 0, completed: 0, items: [] },
   };
 
-  let processedSubtasks = processSubtasks(taskData.subtasks);
-  let payload = { ...defaultTask, ...taskData, subtasks: processedSubtasks };
-
-  try {
-    let response = await fetch(`${BASE_URL}tasks.json`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
-    let result = await response.json();
-    return { id: result.name, ...payload };
-  } catch (error) {
-    console.error("Error creating task:", error);
-    throw error;
-  }
+  const processedSubtasks = processSubtasks(taskData.subtasks);
+  return { ...defaultTask, ...taskData, subtasks: processedSubtasks };
 }
 
 /**
  * Updates an existing task in the Firebase database.
  * @param {string} taskId - The ID of the task to update.
  * @param {Object} updates - The updates to apply to the task.
- * @returns {Promise<Object>} The updated task object.
  */
 async function updateTask(taskId, updates) {
   try {
-    let currentTask = await fetchTask(taskId);
-    let updatedTask = { ...currentTask, ...updates };
+    const updatedTask = prepareUpdatedTask(taskId, updates);
 
-    if (updates.subtasks) {
-      updatedTask.subtasks = processSubtasks(updates.subtasks);
-    }
-
-    let response = await fetch(`${BASE_URL}tasks/${taskId}.json`, {
+    const response = await fetch(`${BASE_URL}tasks/${taskId}.json`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedTask),
@@ -82,9 +82,24 @@ async function updateTask(taskId, updates) {
 }
 
 /**
+ * Prepares the updated task by merging current task data and updates.
+ * @param {string} taskId - The ID of the task to update.
+ * @param {Object} updates - The updates to apply to the task.
+ */
+async function prepareUpdatedTask(taskId, updates) {
+  const currentTask = await fetchTask(taskId);
+  const updatedTask = { ...currentTask, ...updates };
+
+  if (updates.subtasks) {
+    updatedTask.subtasks = processSubtasks(updates.subtasks);
+  }
+
+  return updatedTask;
+}
+
+/**
  * Deletes a task from the Firebase database.
  * @param {string} taskId - The ID of the task to delete.
- * @returns {Promise<boolean>} `true` if the task was successfully deleted.
  */
 async function deleteTask(taskId) {
   try {
@@ -100,7 +115,6 @@ async function deleteTask(taskId) {
 /**
  * Processes subtasks to ensure consistent formatting.
  * @param {Array} subtasks - The subtasks to process.
- * @returns {Object} Processed subtasks with total and completed counts.
  */
 function processSubtasks(subtasks = []) {
   let items = subtasks.map((st, i) => {
@@ -122,7 +136,6 @@ function processSubtasks(subtasks = []) {
 /**
  * Fetches a task by its ID from the Firebase database.
  * @param {string} taskId - The ID of the task to fetch.
- * @returns {Promise<Object>} The task object.
  */
 async function fetchTask(taskId) {
   let response = await fetch(`${BASE_URL}tasks/${taskId}.json`);
