@@ -6,7 +6,6 @@ let currentTask = null; // aktuell geöffnete Task im Overlay
 const modal = document.getElementById('add-task-modal');
 const createBtn = document.querySelector('.create-btn');
 const addTaskButton = document.getElementById('add-task-btn');
-const form = document.getElementById('add-task-form');
 const svgButtons = document.querySelectorAll('.svg-button');
 
 const assignedContent = document.querySelector('.assigned-content');
