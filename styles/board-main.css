@@ -1,0 +1,484 @@
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.btn-secondary {
+    font-size: 16px;
+    border: 1px solid #4589ff;
+    color: #4589ff;
+    background: transparent;
+    border-radius: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+}
+
+h2 {
+    font-weight: 700;
+    font-size: 61px;
+    max-width: 448px;
+    margin-bottom: 24px;
+}
+
+.search-top {
+    display: flex;
+    flex-direction: row;
+    gap: 35px;
+    padding: 72px 0 48px 65px;
+}
+
+.searchbar {
+    width: 312px;
+    border: 1px solid #A8A8A8;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.searchbar:hover {
+    border-color: #4589FF;
+}
+
+.searchbar:focus-within {
+    border-color: #005DFF;
+}
+
+.searchbar-icon {
+    width: 32px;
+    height: 32px;
+    margin: 0 10px;
+    color: #42526E;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.layout {
+    max-width: 1440px;
+    display: grid;
+    grid-template-columns: 232px 1fr;
+    position: relative;
+    width: 100%;
+}
+
+main {
+    min-height: calc(100vh - 100px);
+}
+
+.top {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 13px;
+}
+
+.bottom {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 0 64px;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #4589ff;
+}
+
+.subtask-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.subtask-text {
+    font-size: 14px;
+    color: #333;
+}
+
+
+.task-column {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.task-info {
+    color: #a8a8a8;
+}
+
+.task-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dotted #a8a8a8;
+    border-radius: 10px;
+    height: 48px;
+    width: 100%;
+    background-color: #e7e7e7;
+    font-size: 16px;
+    color: #a8a8a8;
+}
+
+.delete-btn {
+    all: unset;
+    gap: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 8px;
+    border-right: 1px solid #D1D1D1;
+}
+
+#task-detail-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 101;
+}
+
+.task-detail-actions {
+    display: flex;
+    justify-content: end;
+}
+
+#task-detail-card {
+    background-color: white;
+    width: 528px;
+    display: flex;
+    justify-content: center;
+    border-radius: 30px;
+    padding-top: 48px;
+    padding-bottom: 48px;
+}
+
+.task-details-card {
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    max-width: 500px;
+    margin: auto;
+}
+
+.task-subtasks ul {
+    list-style: none;
+    padding: 0;
+}
+
+.task-footer {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.column-header {
+    display: none;
+}
+
+.column-header .title-text {
+    font-size: 23px;
+    font-weight: 700;
+    color: #42526e;
+}
+
+.column-header .svg-button {
+    cursor: pointer;
+}
+
+.column-header .svg-button:hover svg {
+    opacity: 0.7;
+}
+
+.task-container {
+    margin-bottom: 16px;
+}
+
+#task-content-addtask {
+    position: relative;
+    cursor: pointer;
+    width: 440px;
+    height: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    opacity: 1;
+    overflow: visible;
+    border-bottom: 1px solid #D1D1D1;
+}
+
+.task-dropdown {
+    margin-top: 8px;
+}
+
+.task-card {
+    padding: 16px;
+    gap: 24px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 24px;
+    box-shadow: 0px 0px 10px 3px #00000014;
+    width: 252px;
+}
+
+.task-card.dragging {
+    transform: none;
+    opacity: 0.6;
+    z-index: 1000;
+    box-shadow: 0px 8px 25px 5px #00000025;
+    pointer-events: none;
+}
+
+
+.tasks.drag-over {
+    background: #f0f6ff;
+    outline: 2px dashed #4589ff;
+    outline-offset: 4px;
+    border-radius: 12px;
+    transition: background 0.2s ease, outline 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    transform: scale(1.02);
+    box-shadow: 0px 4px 15px 2px #4589ff20;
+}
+
+.tasks.drag-over {
+    background: #e3f2fd;
+}
+
+.task-card.dragging {
+    transform: rotate(5deg) scale(1.05);
+    opacity: 0.6;
+    cursor: grabbing;
+    z-index: 1000;
+    box-shadow: 0px 8px 25px 5px #00000025;
+}
+
+.task-category {
+    background: orange;
+    color: white;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.task-description {
+    margin: 0 0 20px;
+}
+
+.task-info p {
+    margin: 5px 0;
+}
+
+.task-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 64px 16px;
+}
+
+.task-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 24px;
+}
+
+.task-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+    width: 25%;
+}
+
+.task-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.task-overlay-bullet {
+    font-size: 19px;
+    margin-bottom: 24px;
+}
+
+.task-overlay-bullet strong {
+    font-size: 21px;
+    color: #42526E;
+    margin-right: 25px;
+    margin-bottom: 24px;
+}
+
+.avatars {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    background: #ccc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.overlay-value {
+    padding-left: 18px;
+}
+
+.assigned-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.assigned-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 10px;
+}
+
+.assigned-avatar {
+    width: 32px;
+    height: 32px;
+    margin-left: -10px;
+    border: 1px solid #FFFFFF;
+}
+
+.assigned-name-full {
+    font-size: 19px;
+    vertical-align: middle;
+}
+
+.add-task-btn {
+    font-size: 23px;
+    border: none;
+    cursor: pointer;
+    padding: 16px 10px;
+    height: 51px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid #4589ff;
+    border-radius: 10px;
+    color: white;
+    background-color: #4589ff;
+}
+
+.add-task-btn:hover {
+    background-color: #005DFF;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    transform: scale(0.97);
+}
+
+.add-task-btn.active-modal {
+    background-color: #091931;
+    border: 1px solid #4589FF;
+    transform: scale(0.97);
+}
+
+.add-task-btn img {
+    width: 25px;
+    height: 25px;
+    filter: invert(100%);
+}
+
+.add-task-btn.active-style {
+    height: 51px;
+    transform: rotate(0deg);
+    opacity: 1;
+    border-radius: 10px;
+    border-width: 1px;
+    gap: 10px;
+    padding: 16px 10px;
+    background: #091931;
+    border: 1px solid #4589FF;
+    animation-delay: 1ms;
+    animation-duration: 0ms;
+}
+
+.create-btn {
+    display: flex;
+    height: 60px;
+    background-color: #4589FF;
+    color: white;
+    border: none;
+    padding: 16px 10px;
+    border-radius: 10px;
+    font-size: 23px;
+    cursor: pointer;
+    gap: 4px;
+}
+
+.create-btn:hover {
+    background-color: #1c2533;
+}
+
+.close,
+.close-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    border: none;
+    background: none;
+    color: #4589FF;
+}
+
+.close:hover,
+.close-btn:hover {
+    background-color: #E3EEFF;
+    border-radius: 52px;
+}
+
+.close svg path {
+    stroke: #4589FF;
+}
+
+.close:hover svg path {
+    stroke: #005DFF;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Animation hereinschieben */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
