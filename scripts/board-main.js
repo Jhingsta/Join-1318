@@ -1,10 +1,13 @@
 let tasks = [];
 let users = [];
 let currentNewTask = null;
-let currentTask = null; // aktuell geöffnete Task im Overlay
+let currentTask = null;
+
+document.body.insertAdjacentHTML("beforeend", addTaskModal());
+document.body.insertAdjacentHTML('beforeend', taskDetailModal());
 
 const modal = document.getElementById('add-task-modal');
-const createBtn = document.querySelector('.create-btn');
+const createBtn = document.getElementById('create-btn');
 const addTaskButton = document.getElementById('add-task-btn');
 const svgButtons = document.querySelectorAll('.svg-button');
 
@@ -46,9 +49,8 @@ const dueDateError = document.querySelector(".due-date-container .error-message"
 
 async function loadTasksForBoard() {
     try {
-        tasks = await loadTasks(); // Nutzt die Funktion aus tasks-crud.js
-        
-        // Stelle sicher, dass assignedUsersFull existiert
+        tasks = await loadTasks();
+
         tasks = tasks.map(task => ({
             ...task,
             assignedUsersFull: task.assignedUsersFull || []
@@ -71,7 +73,6 @@ async function loadUsers() {
     populateDropdown();
 }
 
-// Helper-Funktion um Tasks zu holen (ersetzt window.taskManager.getTasks())
 function getTasks() {
     return tasks || [];
 }
@@ -91,49 +92,43 @@ function closeModal() {
 
     createBtn?.classList.remove('active');
     addTaskButton?.classList.remove('active-style');
-    // Plus-Buttons wieder freischalten
     svgButtons.forEach(btn => {
         const svg = btn.querySelector('svg');
         if (svg) svg.classList.remove('disabled');
     });
 }
 
-/////////////////////DOM 1////////////////////////////////////////////////
 document.addEventListener('DOMContentLoaded', async () => {
     closeButton?.addEventListener('click', closeModal);
     addTaskButton?.addEventListener('click', openModal);
 
     function openModal() {
         modal?.classList.remove('hidden');
-        addTaskButton?.classList.add('active-style'); // Button aktiv stylen
-        // Neues Task-Objekt für die Auswahl
+        addTaskButton?.classList.add('active-style');
         currentNewTask = { assignedUsersFull: [] };
         renderAssignedDropdownModal(currentNewTask);
 
-        // Plus-Buttons ausgrauen
         svgButtons.forEach(btn => {
             const svg = btn.querySelector('svg');
             if (svg) svg.classList.add('disabled');
         });
     }
 
-    // jedem Button einen eigenen Klick-Handler geben
     svgButtons.forEach(button => {
         button.addEventListener('click', () => {
             openModal(button);
         });
     });
 
-    // Eventlistener
     closeButton?.addEventListener('click', closeModal);
     modalClose?.addEventListener('click', closeModal);
 
     modal?.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
     });
-    // Nur Eingabe in Subtask-Leiste leeren
+
     cancelButton?.addEventListener('click', () => {
-        const subtaskInput = document.querySelector('#subtask-input'); // ID oder Klasse deiner Eingabe
+        const subtaskInput = document.querySelector('#subtask-input');
         if (subtaskInput) subtaskInput.value = '';
     });
     await loadTasksForBoard();
@@ -142,9 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function renderAssignedDropdownModal(task) {
         if (!dropdown) return;
         dropdown.innerHTML = "";
-        
-        // ✅ KORRIGIERT: Verwende loadUsers() statt loadContactsFromFirebase()
-        // Warte auf das Laden der Users (falls noch nicht geladen)
+
         if (users.length === 0) {
             await loadUsers();
         }
@@ -154,21 +147,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             item.className = "dropdown-item";
             item.textContent = user.name;
             
-            // Prüfen ob User bereits zugewiesen ist
             if (task.assignedUsersFull?.some(u => u.id === user.id)) {
                 item.classList.add("selected");
             }
             
             item.addEventListener("click", () => {
                 if (!task.assignedUsersFull) task.assignedUsersFull = [];
-                
+            
                 const index = task.assignedUsersFull.findIndex(u => u.id === user.id);
                 if (index !== -1) {
-                    // Entfernen
                     task.assignedUsersFull.splice(index, 1);
                     item.classList.remove("selected");
                 } else {
-                    // Hinzufügen
                     task.assignedUsersFull.push({
                         id: user.id,
                         name: user.name,
@@ -177,7 +167,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                     item.classList.add("selected");
                 }
-                renderAvatarsModal(task); // Avatare live aktualisieren
+                renderAvatarsModal(task);
             });
             dropdown.appendChild(item);
         });
@@ -199,11 +189,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             avatarsContainer.appendChild(avatarDiv);
         });
     }
-    // Save Button beim Klick aktiv machen
-    createBtn?.addEventListener('click', () => {
-        createBtn.classList.add('active');
-    });
-
     try {
         await loadTasksForBoard();
         renderBoard();
@@ -214,8 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function renderBoard() {
-    // ✅ GEÄNDERT: getTasks() statt window.taskManager.getTasks()
-    const boardTasks = getTasks(); // Nutzt unsere neue getTasks() Funktion
+    const boardTasks = getTasks();
     
     const columns = {
         todo: document.getElementById('column-todo'),
@@ -224,10 +208,8 @@ function renderBoard() {
         done: document.getElementById('column-done'),
     };
     
-    // Spalten leeren
     Object.values(columns).forEach((el) => el && (el.innerHTML = ''));
     
-    // Tasks rendern
     boardTasks.forEach((task) => {
         const card = createTaskCard(task);
         const column = columns[task.status] || columns.todo;
@@ -235,8 +217,7 @@ function renderBoard() {
             column.appendChild(card);
         }
     });
-    
-    // Placeholder für leere Spalten
+
     Object.entries(columns).forEach(([status, columnEl]) => {
         if (!columnEl) return;
         if (columnEl.children.length === 0) {
@@ -249,7 +230,6 @@ function renderBoard() {
     setTimeout(initializeDragAndDrop, 0);
 }
 
-// ---------- Populate Dropdown ----------
 function populateDropdown() {
 
     if (!assignedDropdown) {
@@ -282,13 +262,11 @@ function populateDropdown() {
         wrapper.appendChild(avatar);
         wrapper.appendChild(span);
 
-        // Checkbox
         const checkboxWrapper = document.createElement('div');
         checkboxWrapper.className = 'checkbox-wrapper';
         const checkbox = document.createElement('img');
         checkbox.src = "./assets/icons-addTask/Property 1=Default.png";
 
-        // Hover-Kreis
         const hoverOverlay = document.createElement('div');
         hoverOverlay.className = 'hover-overlay';
         checkboxWrapper.appendChild(hoverOverlay);
@@ -298,13 +276,11 @@ function populateDropdown() {
         div.appendChild(checkboxWrapper);
         assignedDropdown.appendChild(div);
 
-        // ---------- Klick auf Zeile → nur Highlight ----------
         div.addEventListener('click', (e) => {
             if (e.target === checkbox || e.target === hoverOverlay) return;
-            div.classList.toggle('active'); // nur Highlight beim Zeilen-Klick
+            div.classList.toggle('active');
         });
 
-        // ---------- Klick auf Checkbox ----------
         checkboxWrapper.addEventListener('click', (e) => {
             e.stopPropagation();
 
@@ -315,13 +291,11 @@ function populateDropdown() {
                 ? "./assets/icons-addTask/Property 1=Default.png"
                 : "./assets/icons-addTask/Property 1=checked.svg";
 
-            // nur aufrufen, wenn Funktion existiert
             if (typeof updateSelectedAvatars === 'function') {
                 updateSelectedAvatars();
             }
         });
     });
-    // initial update (falls updateSelectedAvatars schon existiert)
     if (typeof updateSelectedAvatars === 'function') {
         updateSelectedAvatars();
     }
@@ -338,7 +312,7 @@ function updateSelectedAvatars() {
     selected.forEach(user => {
         const a = document.createElement('div');
         a.className = 'selected-avatar assigned-text';
-        a.dataset.fullname = user.name;         // NEU: vollständiger Name für Overlay
+        a.dataset.fullname = user.name
         a.textContent = user.initials;
         a.style.backgroundColor = user.color;
         selectedAvatarsContainer.appendChild(a);
@@ -346,7 +320,6 @@ function updateSelectedAvatars() {
     selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
 }
 
-// ---------- Dropdown toggle ----------
 function toggleDropdown(e) {
     e.stopPropagation();
     const isOpen = assignedDropdown.classList.contains('open');
@@ -358,7 +331,6 @@ function toggleDropdown(e) {
         arrowIcon.src = '/assets/icons-addTask/arrow_drop_down_up.png';
         assignedInput.focus();
 
-        // ✅ FIX: Checkboxen beim Öffnen zurücksetzen
         Array.from(assignedDropdown.children).forEach(div => {
             div.querySelector('.checkbox-wrapper').style.display = 'flex';
         });
@@ -375,7 +347,6 @@ function toggleDropdown(e) {
 assignedTextContainer.addEventListener('click', toggleDropdown);
 arrowContainer.addEventListener('click', toggleDropdown);
 
-// ---------- Klick außerhalb schließt Dropdown ----------
 document.addEventListener('click', e => {
     if (!assignedTextContainer.contains(e.target) && !arrowContainer.contains(e.target)) {
         assignedDropdown.classList.remove('open');
@@ -384,11 +355,9 @@ document.addEventListener('click', e => {
         assignedText.style.display = 'block';
         arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
 
-        // Checkboxen beibehalten, wenn gesetzt
         Array.from(assignedDropdown.children).forEach(div => {
             const checkboxWrapper = div.querySelector('.checkbox-wrapper');
-            const checkbox = checkboxWrapper.querySelector('img');
-
+            const checkbox = checkboxWrapper.querySelector('img')
             if (checkbox.src.includes('checked')) {
                 checkboxWrapper.style.display = 'flex'; // bleibt sichtbar
             } else {
@@ -410,7 +379,6 @@ assignedInput.addEventListener('input', () => {
 function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
-    // ✅ Verwende task.id (von loadTasks()) statt task.firebaseId
     card.id = `task-${task.id}`;
     
     const type = document.createElement('div');
@@ -454,6 +422,7 @@ function createTaskCard(task) {
 
         const completed = task.subtasks?.completed || 0;
         const total = task.subtasks?.total || 0;
+
         const progressFill = document.createElement('div');
         progressFill.className = 'progress-fill';
         const percentage = total > 0 ? (completed / total) * 100 : 0;
@@ -462,9 +431,7 @@ function createTaskCard(task) {
         progressFill.style.backgroundColor = '#4589FF';
         progressFill.style.transition = 'width 0.3s ease';
         progressFill.style.borderRadius = '16px';
-
         progressContainer.appendChild(progressFill);
-
         const progressText = document.createElement('span');
         progressText.className = 'subtasks-text';
         progressText.textContent = `${completed}/${total} Subtasks`;
@@ -477,10 +444,6 @@ function createTaskCard(task) {
 
     const assignedTo = document.createElement('div');
     assignedTo.className = 'assigned-to';
-    assignedTo.style.display = 'flex';
-    assignedTo.style.alignItems = 'center';
-    assignedTo.style.gap = '8px';
-
     const avatarsContainer = document.createElement('div');
     avatarsContainer.style.display = 'flex';
     avatarsContainer.style.gap = '4px';
@@ -491,17 +454,6 @@ function createTaskCard(task) {
             avatarDiv.className = 'assigned-avatar';
             avatarDiv.textContent = user.initials;
             avatarDiv.style.backgroundColor = user.color;
-            avatarDiv.style.width = '28px';
-            avatarDiv.style.height = '28px';
-            avatarDiv.style.borderRadius = '50%';
-            avatarDiv.style.display = 'flex';
-            avatarDiv.style.alignItems = 'center';
-            avatarDiv.style.justifyContent = 'center';
-            avatarDiv.style.fontFamily = 'Inter';
-            avatarDiv.style.fontWeight = '400';
-            avatarDiv.style.fontSize = '12px';
-            avatarDiv.style.color = '#FFFFFF';
-
             avatarsContainer.appendChild(avatarDiv);
         });
     }
@@ -519,11 +471,9 @@ function createTaskCard(task) {
     card.appendChild(subtasks);
     card.appendChild(assignedTo);
 
-    // 🆕 Klick auf Karte → Overlay öffnen
     card.addEventListener("click", () => {
         openTaskDetails(task);
     });
-
     return card;
 }
 
@@ -570,9 +520,8 @@ titleInput.addEventListener("input", () => {
         titleInput.style.borderBottom = "1px solid #005DFF";
         titleError.style.display = "none";
     }
-});
+})
 
-// Blur-Event (Validierung)
 dueDateInput.addEventListener("blur", () => {
     if (!dueDateInput.value.trim()) {
         dueDateInput.style.borderBottom = "1px solid #FF4D4D";
@@ -583,19 +532,15 @@ dueDateInput.addEventListener("blur", () => {
     }
 });
 
-// Funktion um Datepicker zu öffnen
 function openDatepicker() {
     if (dueDateInput.showPicker) {
-        dueDateInput.showPicker(); // moderner Weg
+        dueDateInput.showPicker();
     } else {
-        dueDateInput.click(); // Fallback für ältere Browser
+        dueDateInput.click();
     }
 }
 
-// Klick auf Icon öffnet Datepicker
 dueDateIcon.addEventListener("click", openDatepicker);
-
-// Klick auf die gesamte Zeile öffnet Datepicker
 dueDateContainer.addEventListener("click", openDatepicker);
 const buttons = document.querySelectorAll(".priority-frame");
 
@@ -605,8 +550,6 @@ buttons.forEach((btn) => {
         btn.classList.add("active");
     });
 });
-
-//Öffnen und schliessen des assigned to dropdowns
 
 arrowContainer.addEventListener('click', (event) => {
     event.stopPropagation();
@@ -627,28 +570,22 @@ function populateCategoryDropdown() {
 
     const menu = document.createElement('div');
     menu.className = 'dropdown-menu';
-
     categories.forEach(cat => {
         const item = document.createElement('div');
         item.className = 'dropdown-item';
         item.textContent = cat;
-
         item.addEventListener('click', () => {
             container.querySelector('.assigned-text').textContent = cat;
             menu.style.display = 'none';
         });
-
         menu.appendChild(item);
     });
-
     container.appendChild(menu);
-
     arrow.addEventListener('click', (e) => {
         e.stopPropagation();
         menu.style.display = menu.style.display === 'block' ? 'none' :
             'block';
     });
-
     document.addEventListener('click', (e) => {
         if (!container.contains(e.target)) {
             menu.style.display = 'none';
@@ -657,9 +594,7 @@ function populateCategoryDropdown() {
 }
 
 // ===================== CATEGORY ===================== 
-
 categoryDropdown.className = 'dropdown-menu';
-
 categories.forEach(cat => {
     const div = document.createElement('div');
     div.className = 'dropdown-item';
@@ -672,7 +607,6 @@ categories.forEach(cat => {
     });
     categoryDropdown.appendChild(div);
 });
-
 categoryContent.appendChild(categoryDropdown);
 
 // Dropdown & Pfeil Toggle
@@ -692,14 +626,12 @@ document.addEventListener('click', (e) => {
         categoryArrow.src = '/assets/icons-addTask/arrow_drop_down.png';
     }
 });
-
 taskInput.addEventListener("input", () => {
     if (taskInput.value.trim() !== "") {
         checkBtn.style.display = "inline";
         cancelBtn.style.display = "inline";
     } else { resetInput(); }
 });
-
 checkBtn.addEventListener("click", () => {
     const currentTask = taskInput.value.trim();
     if (!currentTask)
@@ -736,19 +668,15 @@ function getTaskData() {
     // 1. Titel
     const titleInput = document.querySelector(".title-input");
     const title = titleInput.value.trim();
-
     // 2. Beschreibung
     const descriptionInput = document.querySelector(".description-input");
     const description = descriptionInput.value.trim();
-
     // 3. Due Date
     const dueDateInput = document.querySelector(".due-date-input");
     const dueDate = dueDateInput.value;
-
     // 4. Priority
     const priorityBtn = document.querySelector(".priority-frame.active");
     const priority = priorityBtn ? priorityBtn.textContent.trim().toLowerCase() : "medium";
-
     // 5. Assigned Users Full
     let assignedUsersFull = [];
     if (dropdown) {
@@ -765,18 +693,15 @@ function getTaskData() {
             }
         });
     }
-
     // 6. Kategorie
     const categoryText = document.querySelector(".category-content .assigned-text");
     const category = categoryText ? categoryText.textContent.trim() : null;
-
     // 7. Subtasks (Objekte statt Strings)
     const subtaskInputs = document.querySelectorAll(".subtask-input");
     const subtasks = Array.from(subtaskInputs)
         .map(input => input.value.trim())
         .filter(title => title.length > 0)
         .map(title => ({ title, done: false }));
-
     return {
         title,
         description,
@@ -788,7 +713,6 @@ function getTaskData() {
     };
 }
 
-// --- Speichern ---
 async function saveTask(taskData) {
     try {
         const newTask = await createTask({
@@ -800,7 +724,6 @@ async function saveTask(taskData) {
             category: taskData.category,
             subtasks: taskData.subtasks
         });
-
         tasks.push(newTask);
         return newTask;
     } catch (error) {
@@ -809,7 +732,6 @@ async function saveTask(taskData) {
     }
 }
 
-// --- Formular zurücksetzen ---
 function resetForm() {
     document.querySelector(".title-input").value = "";
     document.querySelector(".description-input").value = "";
@@ -822,29 +744,23 @@ function resetForm() {
     if (categoryText) categoryText.textContent = "Select task category";
 }
 
-// --- Event Listener für Task erstellen ---
 createBtn.addEventListener("click", async (event) => {
     event.preventDefault();
+    createBtn.classList.add('active');
     const taskData = getTaskData();
-
     if (!taskData.title || !taskData.dueDate) {
         alert("Bitte fülle alle Pflichtfelder aus!");
         return;
     }
-
-    // Button-Feedback
-    const submitButton = event.target;
-    const originalText = submitButton.textContent;
-    submitButton.textContent = "Saving...";
-    submitButton.disabled = true;
-
+    const originalText = createBtn.textContent;
+    createBtn.textContent = "Saving...";
+    createBtn.disabled = true;
     try {
-        const result = await saveTask(taskData);
-
-        if (result) {
+        const newTask = await saveTask(taskData);
+        if (newTask) {
             showTaskAddedMessage(() => {
                 closeModal();
-                renderBoard(); // Board neu rendern wie in Block 1
+                renderBoard();
             });
             resetForm();
         }
@@ -852,12 +768,12 @@ createBtn.addEventListener("click", async (event) => {
         console.error("Fehler beim Erstellen der Task:", err);
         alert("Fehler beim Speichern der Task. Siehe Konsole.");
     } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = originalText;
+        createBtn.disabled = false;
+        createBtn.textContent = originalText;
+        createBtn.classList.remove('active');
     }
 });
 
-//Meldung anzeigen, wenn Task erfolgreich erstellt wurde
 function showTaskAddedMessage(onFinished) {
     const img = document.createElement("img");
     img.src = "./assets/icons-addTask/Added to board 1.png";
@@ -874,39 +790,31 @@ function showTaskAddedMessage(onFinished) {
         pointerEvents: "none",
     });
     document.body.appendChild(img);
-    // Einblenden
     requestAnimationFrame(() => {
         img.style.opacity = "1";
         img.style.transform = "translate(-50%, -50%)";
     });
-
-    // Nach 800ms Slide-out links in 150ms
     setTimeout(() => {
         img.style.transform = "translate(-150%, -50%)";
         img.style.opacity = "0";
         img.addEventListener("transitionend", () => {
             img.remove();
             if (typeof onFinished === "function") {
-                onFinished(); // Modal schließen
+                onFinished();
             }
         });
     }, 800);
 }
 
-// Ersetze window.taskManager.updateTaskInFirebase mit:
 async function updateTaskStatus(task, newStatus) {
     if (!task.id) return;
     
     try {
-        // Verwende updateTask() aus tasks-crud.js
         await updateTask(task.id, { status: newStatus });
-        
-        // Task auch lokal aktualisieren
         const localTask = tasks.find(t => t.id === task.id);
         if (localTask) {
             localTask.status = newStatus;
         }
-        
         console.log('Task status aktualisiert:', task.id, newStatus);
     } catch (error) {
         console.error("Fehler beim Aktualisieren in Firebase:", error);
@@ -914,17 +822,13 @@ async function updateTaskStatus(task, newStatus) {
     }
 }
 
-// Allgemeinere Funktion für alle Task-Updates:
 async function updateTaskData(taskId, updates) {
     try {
         await updateTask(taskId, updates);
-        
-        // Task auch lokal aktualisieren
         const localTask = tasks.find(t => t.id === taskId);
         if (localTask) {
             Object.assign(localTask, updates);
         }
-        
         return localTask;
     } catch (error) {
         console.error("Fehler beim Aktualisieren:", error);
@@ -937,17 +841,11 @@ function openTaskDetails(task) {
     const overlay = document.getElementById("task-detail-overlay");
     const view = document.getElementById("task-view");
     const edit = document.getElementById("task-edit");
-    
-    // ✅ GEÄNDERT: task.id statt task.firebaseId
     overlay.dataset.taskId = task.id;
-    
-    // Reset: Ansicht zeigen, Edit verstecken
     view.classList.remove("hidden");
     edit.classList.add("hidden");
-    // Overlay sichtbar machen
     overlay.classList.remove("hidden");
-    
-    // Kategorie-Icon
+
     let categoryImg = "";
     if (task.category === "User Story") {
         categoryImg = './assets/icons-board/user-story-tag-overlay.svg';
@@ -955,7 +853,6 @@ function openTaskDetails(task) {
         categoryImg = './assets/icons-board/technical-task-tag-overlay.svg';
     }
 
-    // Inhalt rendern
     view.innerHTML = `
         <div class="top-bar">
             <img src="${categoryImg}" alt="${task.category || "Category"}" class="category-image">
@@ -985,31 +882,22 @@ function openTaskDetails(task) {
         </div>
     `;
 
-    // // Edit-Button
     const editBtn = document.getElementById("edit-header-btn");
     if (editBtn) {
         editBtn.addEventListener("click", () => openEditMode(task));
     }
-    // Delete-Button Handler
     const deleteBtn = view.querySelector(".delete-btn");
     if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
             if (!task.id) return;
             
             try {
-                // ✅ GEÄNDERT: Verwende deleteTask() aus tasks-crud.js
                 await deleteTask(task.id);
-                
-                // ✅ GEÄNDERT: Task aus lokaler Liste entfernen
                 const taskIndex = tasks.findIndex(t => t.id === task.id);
                 if (taskIndex > -1) {
                     tasks.splice(taskIndex, 1);
                 }
-                
-                // Overlay schließen
                 document.getElementById("task-detail-overlay").classList.add("hidden");
-                
-                // ✅ GEÄNDERT: Nur Board neu rendern, kein erneutes Laden nötig
                 renderBoard();
                 
             } catch (error) {
@@ -1020,7 +908,6 @@ function openTaskDetails(task) {
     }
 }
 
-//task detail overlay close
 function closeTaskDetails() {
     const overlay = document.getElementById("task-detail-overlay");
     overlay?.classList.add("hidden");
@@ -1053,46 +940,30 @@ function renderAssignedUsers(users) {
     `).join("");
 }
 
-// Subtasks rendern mit Checkbox, Text + Edit & Delete Buttons darunter
 function renderSubtasks(task) {
     if (!task.subtasks || !task.subtasks.items || task.subtasks.items.length === 0) {
         return `<li>Keine Subtasks</li>`;
     }
-
     return task.subtasks.items.map((subtask, index) => {
-        const title = subtask.title || `Subtask ${index + 1}`;
-        const isChecked = subtask.done === true;
-
-        return `
-        <li class="subtask-item">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                <div class="subtask-row">
-                    <div class="checkbox-wrapper" onclick="toggleCheckbox(this, '${task.id}', ${index})">
-                        <input type="checkbox" class="real-checkbox" style="display:none;" ${isChecked ? 'checked' : ''}>
-                        <img src="./assets/icons-addTask/Property 1=Default.svg" class="checkbox-default" style="display:${isChecked ? 'none' : 'block'}">
-                        <img src="./assets/icons-addTask/Property 1=checked.svg" class="checkbox-checked" style="display:${isChecked ? 'block' : 'none'}">
-                    </div>
-                    <span class="subtask-text" style="font-size:16px; font-family:'Open Sans', sans-serif;">${title}</span>
-                </div>
-            </div>
-        </li>
-        `;
+        return subtaskHTML({
+            title: subtask.title || `Subtask ${index + 1}`,
+            isChecked: subtask.done === true,
+            taskId: task.id,
+            index: index
+        });
     }).join("");
 }
 
-// 🔹 Neue Subtask hinzufügen
 async function addSubtask(taskId, title) {
     if (!taskId || !title) return;
 
     try {
-        // Task aus lokaler Liste holen
         const task = getTasks().find(t => t.id === taskId);
         if (!task) {
             console.error('Task nicht gefunden:', taskId);
             return;
         }
 
-        // Sicherstellen dass Subtasks-Struktur existiert
         if (!task.subtasks) {
             task.subtasks = { items: [], total: 0, completed: 0 };
         }
@@ -1100,14 +971,11 @@ async function addSubtask(taskId, title) {
             task.subtasks.items = [];
         }
 
-        // Neue Subtask hinzufügen
         task.subtasks.items.push({ title, done: false });
-        
-        // Zähler aktualisieren
+
         task.subtasks.total = task.subtasks.items.length;
         task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
 
-        // Verwende updateTask() aus tasks-crud.js
         await updateTask(taskId, {
             subtasks: {
                 items: task.subtasks.items,
@@ -1115,46 +983,30 @@ async function addSubtask(taskId, title) {
                 completed: task.subtasks.completed
             }
         });
-
-        // DOM aktualisieren
         renderBoard();
-
         console.log('Subtask hinzugefügt:', title);
-
     } catch (error) {
         console.error("Fehler beim Hinzufügen der Subtask:", error);
-        throw error; // Für Error-Handling im aufrufenden Code
+        throw error;
     }
 }
 
-// Checkbox-UI + Übersicht direkt aktualisieren
 function toggleCheckbox(wrapper, taskId, subtaskIndex) {
     const defaultSVG = wrapper.querySelector('.checkbox-default');
     const checkedSVG = wrapper.querySelector('.checkbox-checked');
     const isChecked = checkedSVG.style.display === 'block';
-
-    // 1️⃣ UI sofort umschalten
     checkedSVG.style.display = isChecked ? 'none' : 'block';
     defaultSVG.style.display = isChecked ? 'block' : 'none';
 
-    // 2️⃣ Lokale Daten aktualisieren
-    // ✅ GEÄNDERT: getTasks() statt window.taskManager.getTasks()
-    // ✅ GEÄNDERT: t.id statt t.firebaseId
     const task = getTasks().find(t => t.id === taskId);
     if (task && task.subtasks && task.subtasks.items) {
         task.subtasks.items[subtaskIndex].done = !task.subtasks.items[subtaskIndex].done;
         task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
     }
-
-    // 3️⃣ Counter & Fortschritt sofort updaten
     updateTaskCard(taskId);
-
-    // 4️⃣ Firebase aktualisieren (async, ohne UI zu blockieren)
-    // ✅ GEÄNDERT: Verwende unsere updateTask() Funktion
     updateSubtaskInFirebase(taskId, task).catch(err => console.error(err));
 }
 
-// ✅ NEUE HILFSFUNKTION für Firebase-Update:
 async function updateSubtaskInFirebase(taskId, task) {
     try {
         await updateTask(taskId, {
@@ -1166,29 +1018,22 @@ async function updateSubtaskInFirebase(taskId, task) {
         });
     } catch (error) {
         console.error('Error updating subtask in Firebase:', error);
-        // Optional: UI-Rollback bei Fehler
     }
 }
 
 function updateTaskCard(taskId) {
-    // ✅ GEÄNDERT: getTasks() statt window.taskManager.getTasks()
-    // ✅ GEÄNDERT: t.id statt t.firebaseId
     const task = getTasks().find(t => t.id === taskId);
     if (!task) return;
 
     const card = document.getElementById(`task-${taskId}`);
     if (!card) return;
 
-    // Sicherheitscheck für subtasks
     if (!task.subtasks || !task.subtasks.items) return;
 
-    // Counter updaten
     const counter = card.querySelector('.subtasks-text');
     if (counter) {
         counter.textContent = `${task.subtasks.completed}/${task.subtasks.total} Subtasks`;
     }
-
-    // Fortschritt updaten
     const progressBar = card.querySelector('.progress-container div');
     if (progressBar) {
         const percentage = task.subtasks.total > 0 
