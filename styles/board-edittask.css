@@ -1,0 +1,348 @@
+#edit-title {
+    font-weight: 600;
+    font-size: 32px;
+    color: #000000;
+    width: 440px;
+    border: none;
+    border-bottom: 1px solid #D1D1D1;
+    margin-bottom: 24px;
+    background: transparent;
+    outline: none;
+}
+
+#edit-assigned-dropdown-overlay {
+    width: 440px;
+    max-height: 280px;
+    overflow-y: auto;
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    z-index: 100;
+}
+
+
+#edit-header-btn {
+    border: none;
+    background-color: transparent;
+    margin-left: 8px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+#edit-title {
+    font-size: 32px;
+    color: #D1D1D1;
+    width: 440px;
+    border: none;
+    border-bottom: 1px solid #D1D1D1;
+    margin-bottom: 24px;
+    background: transparent;
+    outline: none;
+}
+
+.edit-actions {
+    display: flex;
+    justify-content: end;
+}
+
+.dropdown-menu-overlay-edit {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.dropdown-menu-overlay-edit {
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+}
+
+.checkbox-wrapper .hover-overlay {
+    position: absolute;
+    z-index: 1000;
+}
+
+#edit-avatars-container-overlay {
+    margin-bottom: 24px;
+}
+
+#edit-subtask-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+#edit-subtask-buttons img {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+}
+
+#edit-subtask-list .subtask-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    transition: background 0.2s;
+    height: 32px;
+    border-radius: 10px;
+}
+
+#edit-subtask-list .subtask-item:hover {
+    background-color: #E3EEFF;
+}
+
+.subtask-item:hover {
+    display: flex;
+}
+
+.subtask-icons {
+    display: flex;
+    opacity: 0;
+}
+
+.subtask-icons:hover {
+    opacity: 1;
+}
+
+.subtask-item:hover .subtask-icons {
+    opacity: 1;
+}
+
+.task-content-addtask {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#edit-subtask-input {
+    flex: 1;
+}
+
+#edit-subtask-input:active {
+    background-color: transparent;
+}
+
+.description-task-overlay {
+    font-size: 19px;
+    margin-bottom: 24px;
+}
+
+.subtasks-header {
+    font-size: 19px;
+    margin-bottom: 8px;
+}
+
+.top-bar {
+    width: 448px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.close-button-overlay {
+    top: 24px;
+    right: 24px;
+    border: none;
+    background: none;
+    color: #4589FF;
+}
+
+.close-button-overlay:hover {
+    background-color: #E3EEFF;
+    border-radius: 52px;
+}
+
+.close-button-overlay svg path {
+    stroke: #4589FF;
+}
+
+.close-button-overlay:hover svg path {
+    stroke: #005DFF;
+}
+
+#header-container {
+    height: 156px;
+}
+
+#header-content {
+    font-size: 48px;
+    padding: 48px 261px 48px 40px;
+}
+
+#task-content-addtask:hover {
+    border-bottom: 1px solid #4589FF;
+}
+
+#edit-title:hover {
+    border-bottom: 1px solid #4589FF;
+}
+
+#edit-avatars-container-overlay {
+    display: flex;
+}
+
+#subtask-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 16px;
+    border-radius: 10px;
+    height: 32px;
+    width: 440px;
+    transition: background 0.2s ease;
+}
+
+#subtask-list li:hover {
+    background-color: #E3EEFF;
+}
+
+.subtask-list li:hover .subtask-icons {
+    opacity: 1;
+}
+
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-wrapper:hover .searchbar-icon {
+    color: #4589FF;
+    background-color: #E3EEFF;
+}
+
+.icon-wrapper:active .searchbar-icon {
+    color: #005DFF;
+    background-color: none;
+}
+
+.sign-up-btn.active-modal {
+    background-color: #ffffff;
+    color: #4589FF;
+}
+
+.end-spacer {
+    height: 16px;
+}
+
+.subtask-header-distance {
+    margin-top: 24px;
+    margin-bottom: 8px;
+}
+
+.subtasks-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.subtask-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #333;
+}
+
+.subtask-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.subtask-row:hover {
+    background-color: #D2E3FF;
+}
+
+.checkbox-wrapper {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.subtask-item .checkbox-wrapper img {
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.2s, filter 0.2s;
+    z-index: 1;
+}
+
+.subtask-item .checkbox-wrapper .hover-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.2s, background 0.2s;
+}
+
+.subtask-item .checkbox-wrapper:hover .hover-overlay {
+    opacity: 1;
+    background: #FFFFFF;
+}
+
+.subtask-item .checkbox-wrapper img {
+    opacity: 1;
+    filter: none;
+}
+
+.subtask-header-distance {
+    margin-top: 24px;
+}
+
+.subtasks-list {
+    list-style: none;
+}
+
+.svg-button:hover svg rect {
+    stroke: #005DFF;
+}
+
+.svg-button:hover svg path {
+    stroke: #005DFF;
+}
+
+.svg-button:active svg rect {
+    stroke: #A8A8A8;
+}
+
+.svg-button:active svg path {
+    stroke: #A8A8A8;
+}
+
+.svg-button svg.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.svg-button svg.disabled rect {
+    stroke: #A8A8A8;
+}
+
+.svg-button svg.disabled path {
+    stroke: #A8A8A8;
+}

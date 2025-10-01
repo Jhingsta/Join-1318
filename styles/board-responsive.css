@@ -1,0 +1,126 @@
+/* TABLET - 2x2 Grid */
+@media (max-width: 1350px) {
+    .desktop-only {
+        display: none;
+    }
+
+    /* Column-Header Styling (für Tablet/Mobile) */
+    .column-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 16px;
+    }
+
+    /* Header-Bereich anpassen */
+    .search-top {
+        padding: 40px 0 32px 32px;
+        gap: 20px;
+    }
+
+    .add-task-btn {
+        font-size: 18px;
+        padding: 12px 8px;
+    }
+
+    /* Column-Header einblenden */
+    .column-header {
+        display: flex;
+    }
+
+    /* 2x2 Grid Layout */
+    .bottom {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        padding: 0 32px;
+    }
+
+    .tasks {
+        flex-direction: column;
+    }
+}
+
+/* MOBILE - 1 Spalte, horizontale Tasks */
+@media (max-width: 768px) {
+
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    aside {
+        order: 2;
+    }
+
+    main {
+        order: 1;
+        min-height: calc(100vh - 80px);
+        margin-bottom: 80px;
+    }
+
+    /* Für die ganze Seite im Mobile-Modus die vertikale Scrollbar verstecken: */
+    html,
+    body {
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE/Edge */
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Header-Bereich Mobile */
+    .search-top {
+        flex-direction: column;
+        gap: 16px;
+        padding: 64px 1rem 32px;
+    }
+
+    .searchbar {
+        width: 100%;
+    }
+
+    .add-task-btn {
+        display: none;
+    }
+
+    /* 1 Spalte vertikal */
+    .bottom {
+        grid-template-columns: 1fr;
+        gap: 26px;
+        padding: 0 1rem;
+    }
+
+    /* Tasks horizontal scrollbar */
+    .tasks {
+        flex-direction: row;
+        align-items: stretch;
+        /* Cards gleiche Höhe */
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 16px;
+        /* scroll-behavior: smooth;
+        scroll-snap-type: x mandatory; */
+        /* um die horizontale Scrollbar zu verstecken */
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE/Edge */
+    }
+
+    /* um die horizontale Scrollbar zu verstecken */
+    .tasks::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Task-Cards müssen feste Breite haben */
+    .tasks .task-card {
+        flex: 0 0 252px;
+        margin: 10px;
+    }
+
+}
+
+
