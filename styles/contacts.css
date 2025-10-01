@@ -172,7 +172,6 @@ main {
   cursor: default;
 }
 
-/* Rechter Bereich */
 .right-panel {
   background-color: white;
   flex: 1;
@@ -181,7 +180,6 @@ main {
   margin-left: 10px;
 }
 
-/* Scrollbar-Styling für bessere Optik */
 .content::-webkit-scrollbar-track {
   background: white;
   border-radius: 3px;

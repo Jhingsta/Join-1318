@@ -6,20 +6,19 @@ function init() {
   loadUsers();
 }
 
+/**
+ * Asynchronously loads user data from a JSON file and renders the contacts list.
+ * Fetches user data from the specified BASE_URL, parses it, and updates the DOM.
+ */
 async function loadUsers() {
   try {
-    const response = await fetch(`${BASE_URL}users.json`);
-    const data = await response.json();
+    let response = await fetch(`${BASE_URL}users.json`);
+    let data = await response.json();
 
     if (data) {
-      // Da Firebase-RTDB Objekte liefert, in ein Array umwandeln:
       users = Object.values(data);
-      console.log("Users loaded successfully:", users);
-
-      // Kontakte rendern
-      const html = renderContacts(users);
+      let html = renderContacts(users);
       document.getElementById("contacts-list").innerHTML = html;
-
     } else {
       console.log("No users found in database");
       users = [];
@@ -31,46 +30,27 @@ async function loadUsers() {
 }
 
 function renderContacts(contacts) {
-  // alphabetisch sortieren
-  const sorted = contacts.sort((a, b) => a.name.localeCompare(b.name));
+  let sorted = contacts.sort((a, b) => a.name.localeCompare(b.name));
 
-  // nach Buchstaben gruppieren
-  const grouped = sorted.reduce((acc, contact) => {
-    const letter = contact.name[0].toUpperCase();
+  let grouped = sorted.reduce((acc, contact) => {
+    let letter = contact.name[0].toUpperCase();
     if (!acc[letter]) acc[letter] = [];
     acc[letter].push(contact);
     return acc;
   }, {});
 
-  // HTML zusammenbauen mit for-Schleifen
   let html = "";
 
-  for (const letter in grouped) {
-    html += `
-      <div class="letter-section">
-        <div class="letter">${letter}</div>
-        <div class="hl"></div>
-      </div>
-    `;
-
-    const users = grouped[letter];
-    for (let i = 0; i < users.length; i++) {
-      const user = users[i];
-      // Eindeutige ID für jeden Kontakt basierend auf Email (da diese einzigartig sein sollte)
-      const contactId = user.email.replace(/[^a-zA-Z0-9]/g, '');
-      html += `
-        <div class="contact" id="contact-${contactId}" onclick="showFloatingContact('${user.name}', '${user.email}', '${user.phone || ''}', '${user.color}', '${user.initials}', '${contactId}')">
-          <div class="avatar" style="background-color:${user.color};">${user.initials}</div>
-          <div class="contact-info">
-            <div class="name">${user.name}</div>
-            <div class="email">${user.email}</div>
-          </div>
-        </div>
-      `;
-    }
+  for (let letter in grouped) {
+    html += renderLetterSection(letter);
+    html += renderContactList(grouped[letter]);
   }
 
   return html;
+}
+
+function renderContactList(users) {
+  return users.map(user => renderContact(user)).join("");
 }
 
 // Floating Contact
@@ -115,7 +95,7 @@ function generateContactTemplate(name, email, phone, color, initials) {
 
 // Desktop Container erstellen/finden
 function createDesktopFloatingContact() {
-  const rightPanel = document.getElementById('right-panel');
+  let rightPanel = document.getElementById('right-panel');
   
   let floatingContact = document.getElementById('floating-contact');
   if (!floatingContact) {
@@ -138,7 +118,7 @@ function createMobileFloatingContact(name, email, phone, color, initials) {
     mobileOverlay = document.getElementById('mobile-floating-contact');
   } else {
     // Overlay existiert bereits - Menu-Button mit neuen Daten aktualisieren
-    const menuBtn = mobileOverlay.querySelector('.mobile-overlay-menu-btn');
+    let menuBtn = mobileOverlay.querySelector('.mobile-overlay-menu-btn');
     if (menuBtn) {
       menuBtn.setAttribute('onclick', `openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')`);
     }
@@ -180,20 +160,20 @@ function slideInFloatingContact(floatingContactElement) {
 // Hauptfunktion
 function showFloatingContact(name, email, phone, color, initials, contactId) {
   // Alle anderen Kontakte deaktivieren
-  const allContacts = document.querySelectorAll('.contact');
+  let allContacts = document.querySelectorAll('.contact');
   allContacts.forEach(contact => contact.classList.remove('active'));
   
   // Aktuellen Kontakt aktivieren
-  const currentContact = document.getElementById(`contact-${contactId}`);
+  let currentContact = document.getElementById(`contact-${contactId}`);
   if (currentContact) {
     currentContact.classList.add('active');
   }
 
   // HTML Template generieren
-  const floatingContactHtml = generateContactTemplate(name, email, phone, color, initials);
+  let floatingContactHtml = generateContactTemplate(name, email, phone, color, initials);
 
   // Container je nach Bildschirmgröße erstellen
-  const floatingContact = window.innerWidth <= 768 ? createMobileFloatingContact(name, email, phone, color, initials) : createDesktopFloatingContact();
+  let floatingContact = window.innerWidth <= 768 ? createMobileFloatingContact(name, email, phone, color, initials) : createDesktopFloatingContact();
 
   // Inhalt setzen
   floatingContact.innerHTML = floatingContactHtml;
@@ -204,19 +184,19 @@ function showFloatingContact(name, email, phone, color, initials, contactId) {
 
 // Desktop Schließen-Funktion
 function closeDesktopFloatingContact() {
-  const floatingContact = document.getElementById('floating-contact');
+  let floatingContact = document.getElementById('floating-contact');
   if (floatingContact) {
     floatingContact.classList.remove('show');
   }
   
   // Alle aktiven Kontakte deselektieren
-  const allContacts = document.querySelectorAll('.contact');
+  let allContacts = document.querySelectorAll('.contact');
   allContacts.forEach(contact => contact.classList.remove('active'));
 }
 
 // Mobile Schließen-Funktion
 function closeMobileFloatingContact() {
-  const mobileOverlay = document.getElementById('mobile-floating-contact');
+  let mobileOverlay = document.getElementById('mobile-floating-contact');
   if (mobileOverlay) {
     mobileOverlay.classList.remove('show');
 
@@ -224,13 +204,13 @@ function closeMobileFloatingContact() {
     document.body.classList.remove('no-scroll');
     
     // Das floating-contact Element im Mobile-Overlay auch verstecken:
-    const mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
+    let mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
     if (mobileFloatingContact) {
       mobileFloatingContact.classList.remove('show');
     }
   }
   
-  const allContacts = document.querySelectorAll('.contact');
+  let allContacts = document.querySelectorAll('.contact');
   allContacts.forEach(contact => contact.classList.remove('active'));
 }
 
@@ -246,7 +226,7 @@ function closeFloatingContact() {
 
 // Mobile Contact Menu öffnen/schließen
 function openMobileContactMenu(name, email, phone, color, initials) {
-  const mobileOverlay = document.getElementById('mobile-floating-contact');
+  let mobileOverlay = document.getElementById('mobile-floating-contact');
   
   // Prüfen ob Menu bereits existiert
   let contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
@@ -279,13 +259,13 @@ function openMobileContactMenu(name, email, phone, color, initials) {
   } else {
     // Menu existiert bereits - mit neuen Daten aktualisieren
     // Edit-Link aktualisieren
-    const editLink = contactMenu.querySelector('.mobile-edit-link');
+    let editLink = contactMenu.querySelector('.mobile-edit-link');
     if (editLink) {
       editLink.setAttribute('onclick', `showEditContactOverlay({name:'${name}', email:'${email}', phone:'${(phone || '')}', color:'${color}', initials:'${initials}'})`);
     }
     
     // Delete-Link aktualisieren
-    const deleteLink = contactMenu.querySelector('.mobile-delete-link');
+    let deleteLink = contactMenu.querySelector('.mobile-delete-link');
     if (deleteLink) {
       deleteLink.setAttribute('onclick', `deleteContact('${email}')`);
     }
@@ -297,7 +277,7 @@ function openMobileContactMenu(name, email, phone, color, initials) {
 
 // Mobile Contact Menu schließen
 function closeMobileContactMenu() {
-  const contactMenu = document.querySelector('.mobile-contact-options');
+  let contactMenu = document.querySelector('.mobile-contact-options');
   if (contactMenu) {
     contactMenu.classList.remove('show');
     
@@ -312,8 +292,8 @@ function closeMobileContactMenu() {
 }
 
 function closeMobileMenuOnOutsideClick(event) {
-  const contactMenu = document.querySelector('.mobile-contact-options');
-  const menuBtn = document.querySelector('.mobile-overlay-menu-btn');
+  let contactMenu = document.querySelector('.mobile-contact-options');
+  let menuBtn = document.querySelector('.mobile-overlay-menu-btn');
   
   // Prüft ob Klick weder auf Menu noch auf Button war
   if (contactMenu && 
@@ -333,13 +313,13 @@ function deleteContact() {
 
 // Window resize listener
 window.addEventListener('resize', function() {
-  const mobileOverlay = document.getElementById('mobile-floating-contact');
-  const desktopFloatingContact = document.getElementById('floating-contact'); // im right-panel
+  let mobileOverlay = document.getElementById('mobile-floating-contact');
+  let desktopFloatingContact = document.getElementById('floating-contact'); // im right-panel
   
   if (window.innerWidth > 768) {
     // Zu Desktop gewechselt
     if (mobileOverlay) {
-      const mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
+      let mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
       if (mobileFloatingContact && mobileFloatingContact.classList.contains('show')) {
         closeMobileFloatingContact();
       }
@@ -356,13 +336,13 @@ window.addEventListener('resize', function() {
 async function deleteContact(email) {
   try {
     // Alle User laden um den richtigen Schlüssel zu finden
-    const response = await fetch(`${BASE_URL}users.json`);
-    const data = await response.json();
+    let response = await fetch(`${BASE_URL}users.json`);
+    let data = await response.json();
     
     let userKey = null;
     if (data) {
       // Finde den Firebase-Key des Users mit der entsprechenden Email
-      for (const [key, user] of Object.entries(data)) {
+      for (let [key, user] of Object.entries(data)) {
         if (user.email === email) {
           userKey = key;
           break;
@@ -372,7 +352,7 @@ async function deleteContact(email) {
     
     if (userKey) {
       // User mit dem gefundenen Key löschen
-      const deleteResponse = await fetch(`${BASE_URL}users/${userKey}.json`, {
+      let deleteResponse = await fetch(`${BASE_URL}users/${userKey}.json`, {
         method: 'DELETE'
       });
       
@@ -401,13 +381,13 @@ async function deleteContact(email) {
 async function removeUserFromAllTasks(userKey) {
   try {
     // Alle Tasks laden
-    const tasks = await loadTasks();
+    let tasks = await loadTasks();
     
     // Durch alle Tasks gehen und prüfen, ob der User zugewiesen ist
-    for (const task of tasks) {
+    for (let task of tasks) {
       if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
         // Prüfen, ob der zu löschende User in dieser Task ist
-        const originalLength = task.assignedUsersFull.length;
+        let originalLength = task.assignedUsersFull.length;
         
         // User aus assignedUsersFull Array entfernen
         task.assignedUsersFull = task.assignedUsersFull.filter(user => user.id !== userKey);
@@ -578,8 +558,8 @@ function showEditContactOverlay(userData) {
 
 function closeContactOverlay() {
   // Prüfen welches Overlay aktiv ist und entsprechend schließen
-  const addOverlay = document.getElementById('overlay-add-contact');
-  const editOverlay = document.getElementById('overlay-edit-contact');
+  let addOverlay = document.getElementById('overlay-add-contact');
+  let editOverlay = document.getElementById('overlay-edit-contact');
   
   if (addOverlay && addOverlay.classList.contains('show')) {
     addOverlay.classList.remove('show');
@@ -604,21 +584,21 @@ function closeContactOverlay() {
 
 async function handleContactValidation(isEdit = false, originalEmail = null) {
   // Form data sammeln basierend auf Edit/Add Modus
-  const nameId = isEdit ? 'overlay-edit-name' : 'overlay-add-name';
-  const emailId = isEdit ? 'overlay-edit-email' : 'overlay-add-email';
-  const phoneId = isEdit ? 'overlay-edit-phone' : 'overlay-add-phone';
+  let nameId = isEdit ? 'overlay-edit-name' : 'overlay-add-name';
+  let emailId = isEdit ? 'overlay-edit-email' : 'overlay-add-email';
+  let phoneId = isEdit ? 'overlay-edit-phone' : 'overlay-add-phone';
   
-  const formData = {
+  let formData = {
     name: document.getElementById(nameId).value.trim(),
     email: document.getElementById(emailId).value.trim(),
     phone: document.getElementById(phoneId).value.trim()
   };
 
   // Form groups für error styling
-  const nameGroup = document.getElementById(nameId).closest('.form-group');
-  const emailGroup = document.getElementById(emailId).closest('.form-group');
-  const phoneGroup = document.getElementById(phoneId).closest('.form-group');
-  const errorMessage = document.querySelector('.error-message');
+  let nameGroup = document.getElementById(nameId).closest('.form-group');
+  let emailGroup = document.getElementById(emailId).closest('.form-group');
+  let phoneGroup = document.getElementById(phoneId).closest('.form-group');
+  let errorMessage = document.querySelector('.error-message');
 
   // Reset previous errors
   [nameGroup, emailGroup, phoneGroup].forEach(group => {
@@ -628,7 +608,7 @@ async function handleContactValidation(isEdit = false, originalEmail = null) {
   errorMessage.textContent = "";
 
   // Basic form validation
-  const validation = validateContactForm(formData);
+  let validation = validateContactForm(formData);
   if (!validation.success) {
     errorMessage.textContent = validation.errors[0]; // Erste Fehlermeldung anzeigen
     errorMessage.classList.add("show");
@@ -648,7 +628,7 @@ async function handleContactValidation(isEdit = false, originalEmail = null) {
 
   // Check if email already exists (außer bei Edit mit unveränderter Email)
   if (!isEdit || (isEdit && formData.email !== originalEmail)) {
-    const emailExists = await checkUserExists(formData.email);
+    let emailExists = await checkUserExists(formData.email);
     if (emailExists) {
       errorMessage.textContent = "A user with this email address already exists.";
       errorMessage.classList.add("show");
@@ -662,18 +642,18 @@ async function handleContactValidation(isEdit = false, originalEmail = null) {
 
 async function createContact() {
   // Validation durchführen
-  const validatedData = await handleContactValidation(false);
+  let validatedData = await handleContactValidation(false);
   if (!validatedData) {
     return; // Validation failed, stop here
   }
 
   try {
     // Generate additional contact info automatically
-    const userInitials = getInitials(validatedData.name);
-    const userColor = getColorFromName(validatedData.name);
+    let userInitials = getInitials(validatedData.name);
+    let userColor = getColorFromName(validatedData.name);
     
     // Create contact data object
-    const userData = {
+    let userData = {
       name: validatedData.name,
       email: validatedData.email,
       phone: validatedData.phone,
@@ -683,7 +663,7 @@ async function createContact() {
     };
     
     // Create contact in Firebase
-    const result = await createUser(userData);
+    let result = await createUser(userData);
     
     if (result.success) {
       // Kontakte neu laden und Overlay schließen
@@ -694,13 +674,13 @@ async function createContact() {
       showCreateSuccessMessage();
     } else {
       // Server-Fehler anzeigen
-      const errorMessage = document.querySelector('.error-message');
+      let errorMessage = document.querySelector('.error-message');
       errorMessage.textContent = "Failed to create contact. Please try again.";
       errorMessage.classList.add("show");
     }
   } catch (error) {
     console.error('Create contact error:', error);
-    const errorMessage = document.querySelector('.error-message');
+    let errorMessage = document.querySelector('.error-message');
     errorMessage.textContent = "An unexpected error occurred. Please try again.";
     errorMessage.classList.add("show");
   }
@@ -710,7 +690,7 @@ async function createUser(userData) {
   try {
     console.log("Creating new user:", userData);
     
-    const response = await fetch(`${BASE_URL}users.json`, {
+    let response = await fetch(`${BASE_URL}users.json`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -719,11 +699,11 @@ async function createUser(userData) {
     });
     
     if (response.ok) {
-      const result = await response.json();
+      let result = await response.json();
       console.log("User created successfully:", result);
       return { success: true, userId: result.name };
     } else {
-      const errorText = await response.text();
+      let errorText = await response.text();
       console.error("Failed to create user:", response.status, errorText);
       return { success: false, error: `HTTP ${response.status}: ${errorText}` };
     }
@@ -740,7 +720,7 @@ async function createUser(userData) {
  */
 function getInitials(name) {
     if (!name) return "";
-    const parts = name.trim().split(" ");
+    let parts = name.trim().split(" ");
     return parts.map(p => p[0].toUpperCase()).slice(0, 2).join("");
 }
 
@@ -754,7 +734,7 @@ function getColorFromName(name) {
     for (let i = 0; i < name.length; i++) {
         hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
-    const hue = Math.abs(hash) % 360;
+    let hue = Math.abs(hash) % 360;
     return `hsl(${hue}, 70%, 50%)`;
 }
 
@@ -763,21 +743,21 @@ function isValidPhone(phone) {
   
   // Erlaubt: Zahlen, Leerzeichen, Bindestriche, Plus
   // Mindestens 6, höchstens 15 Ziffern
-  const phoneRegex = /^[\+\-\s\d]+$/;
-  const digitsOnly = phone.replace(/[\+\-\s]/g, '');
+  let phoneRegex = /^[\+\-\s\d]+$/;
+  let digitsOnly = phone.replace(/[\+\-\s]/g, '');
   
   return phoneRegex.test(phone) && digitsOnly.length >= 6 && digitsOnly.length <= 15;
 }
 
 function isValidEmailBrowser(email) {
-  const input = document.createElement('input');
+  let input = document.createElement('input');
   input.type = 'email';
   input.value = email;
   return input.validity.valid;
 }
 
 function validateContactForm(formData) {
-  const errors = [];
+  let errors = [];
   
   // Name validation
   if (!formData.name.trim()) {
@@ -804,11 +784,11 @@ function validateContactForm(formData) {
 
 async function checkUserExists(email) {
   try {
-    const response = await fetch(`${BASE_URL}users.json`);
-    const users = await response.json();
+    let response = await fetch(`${BASE_URL}users.json`);
+    let users = await response.json();
     
     if (users) {
-      for (const key in users) {
+      for (let key in users) {
         if (users[key].email === email) {
           return true;
         }
@@ -823,20 +803,20 @@ async function checkUserExists(email) {
 
 async function updateContact(originalEmail, originalColor) {
   // Validation durchführen
-  const validatedData = await handleContactValidation(true, originalEmail);
+  let validatedData = await handleContactValidation(true, originalEmail);
   if (!validatedData) {
     return; // Validation failed, stop here
   }
 
   try {
     // Alle User laden um den richtigen Firebase-Key zu finden
-    const response = await fetch(`${BASE_URL}users.json`);
-    const data = await response.json();
+    let response = await fetch(`${BASE_URL}users.json`);
+    let data = await response.json();
     
     let userKey = null;
     if (data) {
       // Finde den Firebase-Key des Users mit der ursprünglichen Email
-      for (const [key, user] of Object.entries(data)) {
+      for (let [key, user] of Object.entries(data)) {
         if (user.email === originalEmail) {
           userKey = key;
           break;
@@ -846,10 +826,10 @@ async function updateContact(originalEmail, originalColor) {
     
     if (userKey) {
       // Neue Initialen generieren falls Name geändert wurde
-      const userInitials = getInitials(validatedData.name);
+      let userInitials = getInitials(validatedData.name);
       
       // Update-Daten zusammenstellen
-      const updateData = {
+      let updateData = {
         name: validatedData.name,
         email: validatedData.email,
         phone: validatedData.phone,
@@ -858,7 +838,7 @@ async function updateContact(originalEmail, originalColor) {
       };
       
       // User mit PUT aktualisieren
-      const updateResponse = await fetch(`${BASE_URL}users/${userKey}.json`, {
+      let updateResponse = await fetch(`${BASE_URL}users/${userKey}.json`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -874,18 +854,18 @@ async function updateContact(originalEmail, originalColor) {
         closeContactOverlay();
       } else {
         // Server-Fehler anzeigen
-        const errorMessage = document.querySelector('.error-message');
+        let errorMessage = document.querySelector('.error-message');
         errorMessage.textContent = "Failed to update contact. Please try again.";
         errorMessage.classList.add("show");
       }
     } else {
-      const errorMessage = document.querySelector('.error-message');
+      let errorMessage = document.querySelector('.error-message');
       errorMessage.textContent = "Contact not found. Please try again.";
       errorMessage.classList.add("show");
     }
   } catch (error) {
     console.error('Update contact error:', error);
-    const errorMessage = document.querySelector('.error-message');
+    let errorMessage = document.querySelector('.error-message');
     errorMessage.textContent = "An unexpected error occurred. Please try again.";
     errorMessage.classList.add("show");
   }
@@ -893,7 +873,7 @@ async function updateContact(originalEmail, originalColor) {
 
 // Erfolgsmeldung-Funktion
 function showCreateSuccessMessage() {
-  const messageHtml = `
+  let messageHtml = `
     <div style="
       color: #FFFFFF; 
       font-size: 23px; 
@@ -922,7 +902,7 @@ function showCreateSuccessMessage() {
     </div>
   `;
   
-  const container = document.getElementById('success-message-container');
+  let container = document.getElementById('success-message-container');
   
   // Nach 200ms delay: Von unten in die Mitte sliden
   setTimeout(() => {
