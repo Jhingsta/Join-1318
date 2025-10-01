@@ -144,8 +144,7 @@ filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99
   color: #005DFF;
 }
 
-/* vollbild-Overlay */
-
+/* Full Screen Overlay */
 .overlay-contacts {
   position: fixed;
   top: 0;
@@ -164,8 +163,7 @@ filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99
   visibility: visible;
 }
 
-/* Contact Container */
-
+/* Contacts Overlay Container */
 .overlay-add-contact {
   position: fixed;
   top: 0;
@@ -331,12 +329,10 @@ input::placeholder {
   font-size: 19px;
 }
 
-/* Error-Zustand für Input-Felder */
 .form-group.input-error input {
   border-bottom-color: #E60026 !important;
 }
 
-/* Error-Message Container */
 .error-message {
   display: block;
   color: #E60026; 
@@ -485,7 +481,6 @@ input::placeholder {
 }
 
 /* Visually Hidden */
-
 .visually-hidden {
   position: absolute;
   width: 1px;
