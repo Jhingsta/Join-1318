@@ -1,23 +1,30 @@
-const BASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/";
+let BASE_URL = "https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/";
 
+/**
+ * Loads all tasks from the Firebase database.
+ * @returns {Promise<Array>} An array of task objects.
+ */
 async function loadTasks() {
   try {
-      const response = await fetch(`${BASE_URL}tasks.json`);
-      const data = await response.json();
-      // Umwandlung in Array mit id-Feld
-      const tasks = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-      return tasks;
+    let response = await fetch(`${BASE_URL}tasks.json`);
+    let data = await response.json();
+    return data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
   } catch (error) {
-      console.error("Error loading tasks:", error);
-      return [];
+    console.error("Error loading tasks:", error);
+    return [];
   }
 }
 
+/**
+ * Creates a new task in the Firebase database.
+ * @param {Object} taskData - The data for the new task.
+ * @returns {Promise<Object>} The newly created task object.
+ */
 async function createTask(taskData) {
-  const defaultTask = {
+  let defaultTask = {
     title: "",
     description: "",
-    status: "todo", // Standardstatus
+    status: "todo",
     priority: "medium",
     dueDate: "",
     category: null,
@@ -26,120 +33,101 @@ async function createTask(taskData) {
     subtasks: { total: 0, completed: 0, items: [] },
   };
 
-  // Robuste Subtask-Verarbeitung (Strings oder Objekte erlaubt)
-  const processedSubtasks = Array.isArray(taskData.subtasks)
-    ? taskData.subtasks.map((st, i) => {
-        if (typeof st === "string" && st.trim() !== "") {
-          return { title: st.trim(), done: false };
-        } else if (st && st.title && st.title.trim() !== "") {
-          return { title: st.title.trim(), done: st.done || false };
-        } else {
-          return { title: `Subtask ${i + 1}`, done: false };
-        }
-      })
-    : [];
-
-  const payload = {
-    ...defaultTask,
-    ...taskData,
-    subtasks: {
-      total: processedSubtasks.length,
-      completed: processedSubtasks.filter(st => st.done).length,
-      items: processedSubtasks,
-    },
-  };
+  let processedSubtasks = processSubtasks(taskData.subtasks);
+  let payload = { ...defaultTask, ...taskData, subtasks: processedSubtasks };
 
   try {
-    const response = await fetch(`${BASE_URL}tasks.json`, {
+    let response = await fetch(`${BASE_URL}tasks.json`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-
-    const result = await response.json();
-    const newTask = { id: result.name, ...payload };
-    return newTask; // Fertiges Objekt mit ID zurückgeben
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+    let result = await response.json();
+    return { id: result.name, ...payload };
   } catch (error) {
     console.error("Error creating task:", error);
     throw error;
   }
 }
 
+/**
+ * Updates an existing task in the Firebase database.
+ * @param {string} taskId - The ID of the task to update.
+ * @param {Object} updates - The updates to apply to the task.
+ * @returns {Promise<Object>} The updated task object.
+ */
 async function updateTask(taskId, updates) {
   try {
-    // 1. Zuerst die aktuelle Task laden
-    const response = await fetch(`${BASE_URL}tasks/${taskId}.json`);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: Failed to load task`);
+    let currentTask = await fetchTask(taskId);
+    let updatedTask = { ...currentTask, ...updates };
+
+    if (updates.subtasks) {
+      updatedTask.subtasks = processSubtasks(updates.subtasks);
     }
-    
-    const currentTask = await response.json();
-    if (!currentTask) {
-      throw new Error('Task not found');
-    }
-    
-    // 2. Updates auf die aktuelle Task anwenden
-    const updatedTask = { ...currentTask, ...updates };
-    
-    // 3. Spezielle Behandlung für Subtasks falls nötig
-    if (updates.subtasks && Array.isArray(updates.subtasks)) {
-      const processedSubtasks = updates.subtasks.map((st, i) => {
-        if (typeof st === "string" && st.trim() !== "") {
-          return { title: st.trim(), done: false };
-        } else if (st && st.title && st.title.trim() !== "") {
-          return { title: st.title.trim(), done: st.done || false };
-        } else {
-          return { title: `Subtask ${i + 1}`, done: false };
-        }
-      });
-      
-      updatedTask.subtasks = {
-        total: processedSubtasks.length,
-        completed: processedSubtasks.filter(st => st.done).length,
-        items: processedSubtasks,
-      };
-    }
-    
-    // 4. PUT statt PATCH verwenden
-    const updateResponse = await fetch(`${BASE_URL}tasks/${taskId}.json`, {
-      method: "PUT", // ✅ PUT statt PATCH
+
+    let response = await fetch(`${BASE_URL}tasks/${taskId}.json`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedTask), // Komplette Task senden
+      body: JSON.stringify(updatedTask),
     });
 
-    if (!updateResponse.ok) {
-      const errorText = await updateResponse.text();
-      throw new Error(`HTTP ${updateResponse.status}: ${errorText}`);
-    }
-
-    // Nur die Updates zurückgeben
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
     return updates;
-
   } catch (error) {
     console.error("Error updating task:", error);
     throw error;
   }
 }
 
+/**
+ * Deletes a task from the Firebase database.
+ * @param {string} taskId - The ID of the task to delete.
+ * @returns {Promise<boolean>} `true` if the task was successfully deleted.
+ */
 async function deleteTask(taskId) {
   try {
-    const response = await fetch(`${BASE_URL}tasks/${taskId}.json`, {
-      method: "DELETE",
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-
-    return true; // Aufrufer entfernt Task selbst aus seiner Liste
+    let response = await fetch(`${BASE_URL}tasks/${taskId}.json`, { method: "DELETE" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+    return true;
   } catch (error) {
     console.error("Error deleting task:", error);
     throw error;
   }
+}
+
+/**
+ * Processes subtasks to ensure consistent formatting.
+ * @param {Array} subtasks - The subtasks to process.
+ * @returns {Object} Processed subtasks with total and completed counts.
+ */
+function processSubtasks(subtasks = []) {
+  let items = subtasks.map((st, i) => {
+    if (typeof st === "string" && st.trim() !== "") {
+      return { title: st.trim(), done: false };
+    } else if (st?.title?.trim()) {
+      return { title: st.title.trim(), done: st.done || false };
+    }
+    return { title: `Subtask ${i + 1}`, done: false };
+  });
+
+  return {
+    total: items.length,
+    completed: items.filter(st => st.done).length,
+    items,
+  };
+}
+
+/**
+ * Fetches a task by its ID from the Firebase database.
+ * @param {string} taskId - The ID of the task to fetch.
+ * @returns {Promise<Object>} The task object.
+ */
+async function fetchTask(taskId) {
+  let response = await fetch(`${BASE_URL}tasks/${taskId}.json`);
+  if (!response.ok) throw new Error(`HTTP ${response.status}: Failed to load task`);
+  let task = await response.json();
+  if (!task) throw new Error("Task not found");
+  return task;
 }
