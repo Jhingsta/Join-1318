@@ -12,13 +12,12 @@ async function loadUsers() {
   try {
     let response = await fetch(`${BASE_URL}users.json`);
     let data = await response.json();
-
+    
     if (data) {
       users = Object.values(data);
       let html = renderContacts(users);
       document.getElementById("contacts-list").innerHTML = html;
     } else {
-      console.log("No users found in database");
       users = [];
     }
   } catch (error) {
