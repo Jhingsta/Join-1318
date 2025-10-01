@@ -194,6 +194,31 @@ main {
   background: #a8a8a8;
 }
 
+/* Success Message */
+.success-message-container {
+  position: fixed;
+  top: 110%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  transition: top 400ms ease-out;
+}
+
+.success-message-container.show {
+  top: 50%;
+}
+
+.success-message {
+  color: #FFFFFF;
+  font-size: 23px;
+  font-weight: 400;
+  text-align: center;
+  padding: 23px 17px;
+  background-color: #4589FF;
+  border-radius: 20px;
+  box-shadow: 0px 0px 4px 0px #0000001A;
+}
+
 @media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr;
