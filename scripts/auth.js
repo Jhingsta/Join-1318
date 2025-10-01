@@ -14,7 +14,6 @@
 
 /**
  * Retrieves the current user from local storage.
- * @returns {Object|null} The current user object or `null` if no user exists.
  */
 function getCurrentUser() {
   let userJson = localStorage.getItem("currentUser");
@@ -23,7 +22,6 @@ function getCurrentUser() {
 
 /**
  * Checks if the current user is a guest.
- * @returns {boolean} `true` if the user is a guest, otherwise `false`.
  */
 function isGuest() {
   let user = getCurrentUser();
@@ -31,38 +29,41 @@ function isGuest() {
 }
 
 /**
- * Sets the active navigation status based on the current page.
- * Works for both sidebar and footer navigation.
+ * Sets the active navigation and footer items based on the current page.
  */
 function setActiveNavigation() {
-  let currentPage = window.location.pathname.split('/').pop();
-  let navItems = document.querySelectorAll('.nav-item');
-  navItems.forEach(link => {
-    link.classList.remove('active');
+  const currentPage = getCurrentPage();
+  activateNavItems('.nav-item', 'active', currentPage);
+  activateNavItems('.footer-item', 'footer-active', currentPage);
+}
 
-    let href = link.getAttribute('href');
-    if (href) {
-      let hrefPage = href.split('?')[0].replace('./', '');
-      let normalizedCurrentPage = currentPage.replace('./', '');
+/**
+ * Gets the current page filename from the URL.
+ */
+function getCurrentPage() {
+  return window.location.pathname.split('/').pop().replace('./', '');
+}
 
-      if (hrefPage === normalizedCurrentPage) {
-        link.classList.add('active');
-      }
-    }
-  });
+/**
+ * Adds the active class to navigation or footer items that match the current page.
+ *
+ * @param {string} selector - CSS selector for the navigation/footer items.
+ * @param {string} activeClass - The CSS class to add for the active item.
+ * @param {string} currentPage - The current page filename.
+ */
+function activateNavItems(selector, activeClass, currentPage) {
+  const items = document.querySelectorAll(selector);
+  items.forEach(link => {
+    link.classList.remove(activeClass);
 
-  let footerItems = document.querySelectorAll('.footer-item');
-  footerItems.forEach(link => {
-    link.classList.remove('footer-active');
+    const href = link.getAttribute('href');
+    if (!href) return;
 
-    let href = link.getAttribute('href');
-    if (href) {
-      let hrefPage = href.split('?')[0].replace('./', '');
-      let normalizedCurrentPage = currentPage.replace('./', '');
-
-      if (hrefPage === normalizedCurrentPage) {
-        link.classList.add('footer-active');
-      }
+    const hrefPage = href.split('?')[0].replace('./', '');
+    if (hrefPage === currentPage) {
+      link.classList.add(activeClass);
     }
   });
 }
+
+enforceAuthentication();
