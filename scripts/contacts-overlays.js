@@ -287,11 +287,9 @@ async function removeUserFromAllTasks(userKey) {
           await updateTask(task.id, {
             assignedUsersFull: task.assignedUsersFull
           });
-          console.log(`User removed from task: ${task.title || task.id}`);
         }
       }
     }
-    console.log("User removed from all tasks successfully");
   } catch (error) {
     console.error("Error removing user from tasks:", error);
   }
