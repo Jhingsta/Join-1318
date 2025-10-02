@@ -21,7 +21,7 @@ const arrow = assignedContent.querySelector('.assigned-arrow-container');
 const arrowIcon = arrowContainer.querySelector('img');
 
 const assignedDropdown = document.getElementById('assigned-dropdown');
-const dropdown = document.getElementById("add-assigned-dropdown");//falsche ID, korrekt ist assigned-dropdown
+// const dropdown = document.getElementById("add-assigned-dropdown"); falsche ID, korrekt ist assigned-dropdown
 const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
 
 const categoryContent = document.querySelector('.category-content');
@@ -42,9 +42,10 @@ const titleInput = document.querySelector(".title-input");
 const titleError = document.querySelector(".error-message");
 
 const dueDateInput = document.querySelector(".due-date-input");
+const dueDateDisplay = document.querySelector(".due-date-display");
 const dueDateIcon = document.querySelector(".due-date-icon");
 const dueDateContainer = document.querySelector(".due-date-content");
-const dueDateError = document.querySelector(".due-date-container .error-message");
+const dueDateError = document.querySelector(".error-message");
 
 async function loadTasksForBoard() {
     try {
@@ -118,8 +119,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderBoard();
 
     async function renderAssignedDropdownModal(task) {
-        if (!dropdown) return;
-        dropdown.innerHTML = "";
+        if (!assignedDropdown) return;
+        assignedDropdown.innerHTML = "";
 
         if (users.length === 0) {
             await loadUsers();
@@ -152,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 renderAvatarsModal(task);
             });
-            dropdown.appendChild(item);
+            assignedDropdown.appendChild(item);
         });
         renderAvatarsModal(task);
     }
@@ -466,6 +467,26 @@ titleInput.addEventListener("input", () => {
     }
 })
 
+// Formatierung: ISO (YYYY-MM-DD) zu dd/mm/yyyy
+function formatDateForDisplay(isoDate) {
+    if (!isoDate) return "";
+    const [year, month, day] = isoDate.split("-");
+    return `${day}/${month}/${year}`;
+}
+
+// Display aktualisieren
+function updateDisplay() {
+    const isoDate = dueDateInput.value;
+    
+    if (isoDate) {
+        dueDateDisplay.textContent = formatDateForDisplay(isoDate);
+        dueDateDisplay.classList.add("has-value");
+    } else {
+        dueDateDisplay.textContent = "dd/mm/yyyy";
+        dueDateDisplay.classList.remove("has-value");
+    }
+}
+
 dueDateInput.addEventListener("blur", () => {
     if (!dueDateInput.value.trim()) {
         dueDateInput.style.borderBottom = "1px solid #FF4D4D";
@@ -484,8 +505,12 @@ function openDatepicker() {
     }
 }
 
+// Datum wurde geändert -> Display aktualisieren
+dueDateInput.addEventListener("change", updateDisplay);
+
 dueDateIcon.addEventListener("click", openDatepicker);
 dueDateContainer.addEventListener("click", openDatepicker);
+
 const buttons = document.querySelectorAll(".priority-frame");
 
 buttons.forEach((btn) => {
@@ -623,8 +648,8 @@ function getTaskData() {
     const priority = priorityBtn ? priorityBtn.textContent.trim().toLowerCase() : "medium";
     // 5. Assigned Users Full
     let assignedUsersFull = [];
-    if (dropdown) {
-        dropdown.querySelectorAll(".dropdown-item.selected").forEach(div => {
+    if (assignedDropdown) {
+        assignedDropdown.querySelectorAll(".dropdown-item.selected").forEach(div => {
             const name = div.textContent.trim();
             const user = users.find(u => u.name === name);
             if (user) {

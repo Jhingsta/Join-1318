@@ -227,13 +227,13 @@ async function openEditMode(task) {
     // HTML generieren
     editForm.innerHTML = taskEditTemplate(task, isoDate);
 
-    const dueDateInput = document.getElementById("edit-dueDate");
+    const editDueDateInput = document.getElementById("edit-dueDate");
     const dueDateContainer = document.querySelector(".due-date-container-overlay");
 
     dueDateContainer.addEventListener("click", (e) => {
-        if (e.target === dueDateInput) return; // Klick direkt auf Input ignorieren
-        dueDateInput.focus(); // Fokus setzen
-        dueDateInput.click(); // Versuch den Datepicker zu öffnen
+        if (e.target === editDueDateInput) return; // Klick direkt auf Input ignorieren
+        editDueDateInput.focus(); // Fokus setzen
+        editDueDateInput.click(); // Versuch den Datepicker zu öffnen
     });
     const placeholder = document.getElementById("edit-assigned-placeholder");
     const input = document.getElementById("edit-assigned-input");
