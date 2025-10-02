@@ -21,7 +21,7 @@ const arrow = assignedContent.querySelector('.assigned-arrow-container');
 const arrowIcon = arrowContainer.querySelector('img');
 
 const assignedDropdown = document.getElementById('assigned-dropdown');
-const dropdown = document.getElementById("add-assigned-dropdown");
+const dropdown = document.getElementById("add-assigned-dropdown");//falsche ID, korrekt ist assigned-dropdown
 const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
 
 const categoryContent = document.querySelector('.category-content');
@@ -35,7 +35,6 @@ const cancelBtn = document.querySelector("#cancel-btn");
 const subtaskList = document.querySelector("#subtask-list");
 
 const modalClose = document.getElementById('modal-close');
-const cancelButton = document.getElementById('cancel-btn');
 const closeButton = document.querySelector('.close');
 
 const categories = ["Technical Task", "User Story"];
@@ -79,17 +78,6 @@ function getTasks() {
 
 function closeModal() {
     modal?.classList.add('hidden');
-
-    const priority = document.getElementById('task-priority');
-    const status = document.getElementById('task-status');
-    const done = document.getElementById('subtasks-done');
-    const total = document.getElementById('subtasks-total');
-
-    if (priority) priority.value = 'medium';
-    if (status) status.value = 'todo';
-    if (done) done.value = '0';
-    if (total) total.value = '0';
-
     createBtn?.classList.remove('active');
     addTaskButton?.classList.remove('active-style');
     svgButtons.forEach(btn => {
@@ -125,11 +113,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     modal?.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
-    });
-
-    cancelButton?.addEventListener('click', () => {
-        const subtaskInput = document.querySelector('#subtask-input');
-        if (subtaskInput) subtaskInput.value = '';
     });
     await loadTasksForBoard();
     renderBoard();
@@ -172,29 +155,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             dropdown.appendChild(item);
         });
         renderAvatarsModal(task);
-    }
-    /**
-     * Avatare in der Modalbox rendern
-     */
-    function renderAvatarsModal(task) {
-        const avatarsContainer = document.getElementById("add-avatars-container");
-        if (!avatarsContainer) return;
-        avatarsContainer.innerHTML = "";
-
-        (task.assignedUsersFull || []).forEach(user => {
-            const avatarDiv = document.createElement("div");
-            avatarDiv.className = "assigned-avatar";
-            avatarDiv.textContent = user.initials; 
-            avatarDiv.style.backgroundColor = user.color; 
-            avatarsContainer.appendChild(avatarDiv);
-        });
-    }
-    try {
-        await loadTasksForBoard();
-        renderBoard();
-    } catch (error) {
-        console.error('Error loading tasks:', error);
-        return;
     }
 });
 
@@ -407,18 +367,10 @@ function createTaskCard(task) {
 
     const subtasks = document.createElement('div');
     subtasks.className = 'subtasks';
-    subtasks.style.display = 'flex';
-    subtasks.style.alignItems = 'center';
-    subtasks.style.gap = '8px';
 
     if (task.subtasks && (task.subtasks.total || task.subtasks.completed)) {
         const progressContainer = document.createElement('div');
         progressContainer.className = 'progress-container';
-        progressContainer.style.width = '128px';
-        progressContainer.style.height = '8px';
-        progressContainer.style.backgroundColor = '#E0E0E0';
-        progressContainer.style.borderRadius = '16px';
-        progressContainer.style.overflow = 'hidden';
 
         const completed = task.subtasks?.completed || 0;
         const total = task.subtasks?.total || 0;
@@ -427,17 +379,10 @@ function createTaskCard(task) {
         progressFill.className = 'progress-fill';
         const percentage = total > 0 ? (completed / total) * 100 : 0;
         progressFill.style.width = `${percentage}%`;
-        progressFill.style.height = '100%';
-        progressFill.style.backgroundColor = '#4589FF';
-        progressFill.style.transition = 'width 0.3s ease';
-        progressFill.style.borderRadius = '16px';
         progressContainer.appendChild(progressFill);
         const progressText = document.createElement('span');
         progressText.className = 'subtasks-text';
         progressText.textContent = `${completed}/${total} Subtasks`;
-        progressText.style.fontSize = '13px';
-        progressText.style.color = '#000000';
-
         subtasks.appendChild(progressContainer);
         subtasks.appendChild(progressText);
     }
@@ -445,8 +390,7 @@ function createTaskCard(task) {
     const assignedTo = document.createElement('div');
     assignedTo.className = 'assigned-to';
     const avatarsContainer = document.createElement('div');
-    avatarsContainer.style.display = 'flex';
-    avatarsContainer.style.gap = '4px';
+    avatarsContainer.className = 'avatars-container'
 
     if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
         task.assignedUsersFull.slice(0, 3).forEach(user => {
@@ -815,7 +759,6 @@ async function updateTaskStatus(task, newStatus) {
         if (localTask) {
             localTask.status = newStatus;
         }
-        console.log('Task status aktualisiert:', task.id, newStatus);
     } catch (error) {
         console.error("Fehler beim Aktualisieren in Firebase:", error);
         throw error;
@@ -853,35 +796,10 @@ function openTaskDetails(task) {
         categoryImg = './assets/icons-board/technical-task-tag-overlay.svg';
     }
 
-    view.innerHTML = `
-        <div class="top-bar">
-            <img src="${categoryImg}" alt="${task.category || "Category"}" class="category-image">
-            <button class="close-button-overlay" onclick="document.getElementById('task-detail-overlay').classList.add('hidden')"><img src="./assets/icons-board/close.svg" alt="Schließen" class="close-icon"></button>
-        </div>
+    // nur ausgelagerter Return
+    view.innerHTML = taskDetailTemplate(task, categoryImg);
 
-        <h2 class="modal-title">${task.title}</h2>
-        <p class="modal-desc">${task.description || ""}</p>
-        <p class="task-overlay-bullet"><strong>Due date:</strong> <span>${task.dueDate || "-"}</span></p>
-        <p class="task-overlay-bullet">
-        <strong>Priority:</strong> 
-        <span class="priority_value">
-            ${task.priority || ""}
-            <img src="${priorityIcon(task.priority)}" alt="${task.priority || "Priority"}" class="priority-icon-overlay">
-        </span>
-    </p>
-
-        <p class="task-overlay-bullet"><strong>Assigned To:</strong></p>
-        <div class="assigned-list">${renderAssignedUsers(task.assignedUsersFull)}</div>
-
-        <p class="task-overlay-bullet subtask-header-distance"><strong>Subtasks:</strong></p>
-        <ul class="subtasks-list">${renderSubtasks(task)}</ul>
-
-        <div class="task-detail-actions">
-            <button class="delete-btn"><img src="./assets/icons-board/Property 1=delete.png" alt="Delete Icon" class="action-icon">Delete</button>
-            <button id="edit-header-btn"><img src="./assets/icons-board/Property 1=edit.png" alt="Edit Icon" class="action-icon"> Edit</button>
-        </div>
-    `;
-
+    // Events
     const editBtn = document.getElementById("edit-header-btn");
     if (editBtn) {
         editBtn.addEventListener("click", () => openEditMode(task));
@@ -890,16 +808,12 @@ function openTaskDetails(task) {
     if (deleteBtn) {
         deleteBtn.addEventListener("click", async () => {
             if (!task.id) return;
-            
             try {
                 await deleteTask(task.id);
                 const taskIndex = tasks.findIndex(t => t.id === task.id);
-                if (taskIndex > -1) {
-                    tasks.splice(taskIndex, 1);
-                }
-                document.getElementById("task-detail-overlay").classList.add("hidden");
+                if (taskIndex > -1) tasks.splice(taskIndex, 1);
+                overlay.classList.add("hidden");
                 renderBoard();
-                
             } catch (error) {
                 console.error('Error deleting task:', error);
                 alert('Failed to delete task');
@@ -907,6 +821,7 @@ function openTaskDetails(task) {
         });
     }
 }
+
 
 function closeTaskDetails() {
     const overlay = document.getElementById("task-detail-overlay");
@@ -921,18 +836,8 @@ document.addEventListener("DOMContentLoaded", () => {
 function renderAssignedUsers(users) {
     return users.map(user =>  `
         <div class="assigned-item">
-            <div class="assigned-avatar" style="
-                background-color: ${user.color};
-                width:42px;
-                height:42px;
-                border-radius:50%;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                font-weight:400;
-                font-size:12px;
-                color:#fff;
-            ">
+            <div class="assigned-avatar-detail-view" style="
+                background-color: ${user.color};">
                 ${user.initials}
             </div>
             <span class="assigned-name-full">${user.name}</span>
@@ -970,9 +875,7 @@ async function addSubtask(taskId, title) {
         if (!Array.isArray(task.subtasks.items)) {
             task.subtasks.items = [];
         }
-
         task.subtasks.items.push({ title, done: false });
-
         task.subtasks.total = task.subtasks.items.length;
         task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
 
@@ -984,7 +887,6 @@ async function addSubtask(taskId, title) {
             }
         });
         renderBoard();
-        console.log('Subtask hinzugefügt:', title);
     } catch (error) {
         console.error("Fehler beim Hinzufügen der Subtask:", error);
         throw error;
