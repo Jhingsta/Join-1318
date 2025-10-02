@@ -209,7 +209,8 @@ async function openEditMode(task) {
     view.classList.add("hidden");
     edit.classList.remove("hidden");
 
-    // ✅ KORRIGIERT: Verwende neue Datum-Hilfsfunktion
+    let isoDate = task.dueDate || "";
+
     // let isoDate = "";
     // if (task.dueDate) {
     //     if (task.dueDate.includes(".")) {
