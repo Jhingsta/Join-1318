@@ -847,7 +847,6 @@ function openTaskDetails(task) {
     }
 }
 
-
 function closeTaskDetails() {
     const overlay = document.getElementById("task-detail-overlay");
     overlay?.classList.add("hidden");

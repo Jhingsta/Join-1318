@@ -210,17 +210,17 @@ async function openEditMode(task) {
     edit.classList.remove("hidden");
 
     // ✅ KORRIGIERT: Verwende neue Datum-Hilfsfunktion
-    let isoDate = "";
-    if (task.dueDate) {
-        if (task.dueDate.includes(".")) {
-            // Konvertiere deutsches Format zu ISO
-            const [day, month, year] = task.dueDate.split(".");
-            isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        } else {
-            // Bereits ISO-Format
-            isoDate = task.dueDate;
-        }
-    }
+    // let isoDate = "";
+    // if (task.dueDate) {
+    //     if (task.dueDate.includes(".")) {
+    //         // Konvertiere deutsches Format zu ISO
+    //         const [day, month, year] = task.dueDate.split(".");
+    //         isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    //     } else {
+    //         // Bereits ISO-Format
+    //         isoDate = task.dueDate;
+    //     }
+    // }
 
     const priority = (task.priority || "medium").trim().toLowerCase(); // Konsistent mit createTask()
 
@@ -384,7 +384,6 @@ async function openEditMode(task) {
             renderBoard();
         } catch (error) {
             console.error('Error updating task:', error);
-            alert('Failed to update task');
         }
     };
 }

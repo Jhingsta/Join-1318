@@ -162,7 +162,7 @@ function taskDetailTemplate(task, categoryImg) {
 
         <h2 class="modal-title">${task.title}</h2>
         <p class="modal-desc">${task.description || ""}</p>
-        <p class="task-overlay-bullet"><strong>Due date:</strong> <span>${task.dueDate || "-"}</span></p>
+        <p class="task-overlay-bullet"><strong>Due date:</strong> <span>${formatDateForDisplay(task.dueDate) || "-"}</span></p>
         <p class="task-overlay-bullet">
             <strong>Priority:</strong> 
             <span class="priority_value">
@@ -237,4 +237,3 @@ function taskEditTemplate(task, isoDate) {
         <div id="edit-subtask-list"></div>
     `;
 }
-
