@@ -225,53 +225,7 @@ async function openEditMode(task) {
     const priority = (task.priority || "medium").trim().toLowerCase(); // Konsistent mit createTask()
 
     // HTML generieren
-    editForm.innerHTML = `
-        <input class="input-title" type="text" id="edit-title" value="${task.title || ""}">
-
-        <div class="description-container">
-            <label class="desc-title" for="edit-desc">Description</label>
-            <textarea class="description-input" id="edit-desc">${task.description || ""}</textarea>
-        </div>
-
-        <div class="due-date-container-overlay">
-            <label class="due-date-header" for="edit-dueDate">Due Date</label>
-            <input type="date" id="edit-dueDate" value="${isoDate}">
-        </div>
-
-        <div id="edit-priority" class="priority-container">
-            <label class="priority-header">Priority</label>
-            <div class="priority-content">
-            <button class="priority-frame" data-priority="Urgent"><img src="./assets/icons-addTask/Prio alta.svg" alt>Urgent</button>
-            <button class="priority-frame" data-priority="Medium"><img src="./assets/icons-addTask/Capa 2.svg" alt>Medium</button>
-            <button class="priority-frame" data-priority="Low"><img src="./assets/icons-addTask/Prio baja.svg" alt>Low</button> 
-            </div>
-        </div>
-
-<div class="assigned-container-overlay"> 
-    <div class="assigned-header"> Assigned to <span class="optional">(optional)</span> </div> 
-    <div class="assigned-content-overlay"> 
-        <div class="assigned-text-container"> 
-            <div class="assigned-text" id="edit-assigned-placeholder">Select contacts to assign</div> 
-            <input type="text" id="edit-assigned-input" class="assigned-input" style="display:none;">
-            <img id="edit-assigned-arrow" src="./assets/icons-addTask/arrow_drop_down.png" class="assigned-arrow-icon">
-            <div id="edit-assigned-dropdown-overlay" class="dropdown-menu-overlay-edit hidden"></div> 
-        </div> 
-    </div> 
-</div> 
-<div id="edit-avatars-container-overlay" class="avatars-container-overlay"></div>
-
-        <label class="assigned-header">Subtasks</label>
-        <div id="task-content-addtask">
-            <input type="text" id="edit-subtask-input" placeholder="Add new subtask">
-            <div id="assigned-arrow-container">
-
-<img id="edit-cancel-btn" class="assigned-arrow-icon" style="display:none;" src="/assets/icons-addTask/Subtask cancel.png" alt="Cancel subtask">
-<img id="edit-check-btn" class="assigned-arrow-icon" style="display:none;" src="/assets/icons-addTask/Subtask's icons (1).png" alt="Confirm subtask">
-
-            </div>
-        </div>
-        <div id="edit-subtask-list"></div>
-    `;
+    editForm.innerHTML = taskEditTemplate(task, isoDate);
 
     const dueDateInput = document.getElementById("edit-dueDate");
     const dueDateContainer = document.querySelector(".due-date-container-overlay");
@@ -435,7 +389,7 @@ async function openEditMode(task) {
     };
 }
 
-//Detail-Overlay rendern
+//Detail-Overlay rendering
 function renderDetailOverlay(task) {
     const container = document.getElementById("detail-avatars-container");
     if (!container) return;
