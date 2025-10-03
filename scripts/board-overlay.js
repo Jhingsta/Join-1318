@@ -209,31 +209,20 @@ async function openEditMode(task) {
     view.classList.add("hidden");
     edit.classList.remove("hidden");
 
-    // ✅ KORRIGIERT: Verwende neue Datum-Hilfsfunktion
-    let isoDate = "";
-    if (task.dueDate) {
-        if (task.dueDate.includes(".")) {
-            // Konvertiere deutsches Format zu ISO
-            const [day, month, year] = task.dueDate.split(".");
-            isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        } else {
-            // Bereits ISO-Format
-            isoDate = task.dueDate;
-        }
-    }
+    let isoDate = task.dueDate || "";
 
     const priority = (task.priority || "medium").trim().toLowerCase(); // Konsistent mit createTask()
 
     // HTML generieren
     editForm.innerHTML = taskEditTemplate(task, isoDate);
 
-    const dueDateInput = document.getElementById("edit-dueDate");
+    const editDueDateInput = document.getElementById("edit-dueDate");
     const dueDateContainer = document.querySelector(".due-date-container-overlay");
 
     dueDateContainer.addEventListener("click", (e) => {
-        if (e.target === dueDateInput) return; // Klick direkt auf Input ignorieren
-        dueDateInput.focus(); // Fokus setzen
-        dueDateInput.click(); // Versuch den Datepicker zu öffnen
+        if (e.target === editDueDateInput) return; // Klick direkt auf Input ignorieren
+        editDueDateInput.focus(); // Fokus setzen
+        editDueDateInput.click(); // Versuch den Datepicker zu öffnen
     });
     const placeholder = document.getElementById("edit-assigned-placeholder");
     const input = document.getElementById("edit-assigned-input");
@@ -384,7 +373,6 @@ async function openEditMode(task) {
             renderBoard();
         } catch (error) {
             console.error('Error updating task:', error);
-            alert('Failed to update task');
         }
     };
 }
