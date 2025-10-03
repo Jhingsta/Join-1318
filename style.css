@@ -89,8 +89,6 @@ form {
 
 input {
   border: none;
-  /* border-bottom: 1px solid #ccc; */
-  /* padding: 12px 0; */
   outline: none;
   background: transparent;
   width: 100%;
@@ -113,17 +111,17 @@ input {
 
 .input-container-password input {
   width: 100%;
-  padding-right: 40px; /* Platz für Icon rechts */
+  padding-right: 40px; 
 }
 
 .input-container-password:focus-within,
 .input-container-mail:focus-within {
-  border-bottom: 1px solid #4589FF; /* Blau bei Fokus */
+  border-bottom: 1px solid #4589FF;
 }
 
 /* Fehlerzustand */
 .input-error {
-  border-bottom-color: #E60026 !important; /* Rot wie Fehlermeldung */
+  border-bottom-color: #E60026 !important;
 }
 
 input::placeholder {
