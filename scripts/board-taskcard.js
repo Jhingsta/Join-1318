@@ -2,9 +2,6 @@
 // HELPER FUNCTIONS
 // ============================================
 
-/**
- * Gibt den Icon-Pfad basierend auf der Task-Kategorie zurück (Board-Icons)
- */
 function getCategoryIcon(category) {
     const icons = {
         "User Story": {
@@ -19,23 +16,14 @@ function getCategoryIcon(category) {
     return icons[category] || { src: '', alt: '' };
 }
 
-/**
- * Berechnet den Fortschritt in Prozent
- */
 function calculateProgress(completed, total) {
     return total > 0 ? (completed / total) * 100 : 0;
 }
 
-/**
- * Prüft ob Subtasks angezeigt werden sollen
- */
 function hasSubtasks(task) {
     return task.subtasks && (task.subtasks.total || task.subtasks.completed);
 }
 
-/**
- * Gibt maximal 3 User zurück für die Avatar-Anzeige
- */
 function getDisplayUsers(users) {
     return users ? users.slice(0, 3) : [];
 }
@@ -44,9 +32,6 @@ function getDisplayUsers(users) {
 // POPULATION FUNCTIONS
 // ============================================
 
-/**
- * Befüllt den Task-Type Bereich
- */
 function populateTaskType(element, task) {
     const img = element.querySelector('img');
     const icon = getCategoryIcon(task.category);
@@ -54,9 +39,6 @@ function populateTaskType(element, task) {
     img.alt = icon.alt;
 }
 
-/**
- * Befüllt den Content Bereich
- */
 function populateTaskContent(element, task) {
     const title = element.querySelector('.task-card-title');
     const info = element.querySelector('.task-card-info');
@@ -65,9 +47,6 @@ function populateTaskContent(element, task) {
     info.textContent = task.description || '';
 }
 
-/**
- * Befüllt den Subtasks Bereich
- */
 function populateSubtasks(element, task) {
     if (!hasSubtasks(task)) {
         element.dataset.hidden = 'true';
@@ -86,9 +65,6 @@ function populateSubtasks(element, task) {
     progressText.textContent = `${completed}/${total} Subtasks`;
 }
 
-/**
- * Erstellt einen einzelnen Avatar
- */
 function createAvatar(user) {
     const avatar = document.createElement('div');
     avatar.className = 'task-card-assigned-avatar';
@@ -97,32 +73,40 @@ function createAvatar(user) {
     return avatar;
 }
 
-/**
- * Befüllt den Assigned-To Bereich
- */
 function populateAssignedTo(element, task) {
     const avatarsContainer = element.querySelector('.task-card-avatars-container');
     const priorityIconImg = element.querySelector('.priority-icon');
     
-    // Avatare erstellen (maximal 3)
     avatarsContainer.innerHTML = '';
-    const displayUsers = getDisplayUsers(task.assignedUsersFull);
-    displayUsers.forEach(user => {
-        avatarsContainer.appendChild(createAvatar(user));
-    });
     
-    // Priority Icon setzen (nutzt externe priorityIcon() Funktion)
-    priorityIconImg.src = priorityIcon(task.priority);}
+    if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
+        const totalUsers = task.assignedUsersFull.length;
+        
+        if (totalUsers <= 2) {
+            task.assignedUsersFull.forEach(user => {
+                avatarsContainer.appendChild(createAvatar(user));
+            });
+        } else {
+            task.assignedUsersFull.slice(0, 2).forEach(user => {
+                avatarsContainer.appendChild(createAvatar(user));
+            });
+            
+            const plusAvatar = document.createElement('div');
+            plusAvatar.className = 'assigned-avatar';
+            plusAvatar.textContent = `+${totalUsers - 2}`;
+            plusAvatar.style.backgroundColor = '#4589FF';
+            plusAvatar.style.color = '#FFFFFF';
+            avatarsContainer.appendChild(plusAvatar);
+        }
+    }
+    
+    priorityIconImg.src = priorityIcon(task.priority);
+}
 
 // ============================================
 // MAIN FUNCTION
 // ============================================
 
-/**
- * Erstellt eine Task Card aus dem Template
- * @param {Object} task - Task-Objekt mit allen relevanten Daten
- * @returns {HTMLElement} - Die fertig befüllte Task Card
- */
 function createTaskCard(task) {
     // Template als String holen und in DOM umwandeln
     const template = document.createElement('div');

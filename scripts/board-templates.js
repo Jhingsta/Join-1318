@@ -244,6 +244,10 @@ function getTaskCardTemplate(taskId) {
             <div class="task-card-type">
                 <img src="" alt="">
             </div>
+
+            <button class="mobile-move-task-btn" onclick="openMoveToOverlay('${taskId}')">
+                <img src="./assets/icons-board/mobile-arrow-btn.svg" alt="Open move to overlay">
+            </button>
             
             <div class="task-card-content">
                 <div class="task-card-title"></div>
