@@ -241,24 +241,24 @@ function taskEditTemplate(task, isoDate) {
 function getTaskCardTemplate(taskId) {
     return `
         <div class="task-card" id="task-${taskId}">
-            <div class="task-type">
+            <div class="task-card-type">
                 <img src="" alt="">
             </div>
             
-            <div class="task-content">
-                <div class="title"></div>
-                <div class="task-info"></div>
+            <div class="task-card-content">
+                <div class="task-card-title"></div>
+                <div class="task-card-info"></div>
             </div>
             
-            <div class="subtasks" data-hidden="true">
+            <div class="task-card-subtasks" data-hidden="true">
                 <div class="progress-container">
                     <div class="progress-fill"></div>
                 </div>
-                <span class="subtasks-text"></span>
+                <span class="task-card-subtasks-text"></span>
             </div>
             
-            <div class="assigned-to">
-                <div class="avatars-container"></div>
+            <div class="task-card-assigned-to">
+                <div class="task-card-avatars-container"></div>
                 <img class="priority-icon" src="" alt="Priority">
             </div>
         </div>

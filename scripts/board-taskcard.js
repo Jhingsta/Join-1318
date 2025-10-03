@@ -58,8 +58,8 @@ function populateTaskType(element, task) {
  * Befüllt den Content Bereich
  */
 function populateTaskContent(element, task) {
-    const title = element.querySelector('.title');
-    const info = element.querySelector('.task-info');
+    const title = element.querySelector('.task-card-title');
+    const info = element.querySelector('.task-card-info');
     
     title.textContent = task.title || 'Untitled';
     info.textContent = task.description || '';
@@ -80,7 +80,7 @@ function populateSubtasks(element, task) {
     const total = task.subtasks?.total || 0;
     
     const progressFill = element.querySelector('.progress-fill');
-    const progressText = element.querySelector('.subtasks-text');
+    const progressText = element.querySelector('.task-card-subtasks-text');
     
     progressFill.style.width = `${calculateProgress(completed, total)}%`;
     progressText.textContent = `${completed}/${total} Subtasks`;
@@ -91,7 +91,7 @@ function populateSubtasks(element, task) {
  */
 function createAvatar(user) {
     const avatar = document.createElement('div');
-    avatar.className = 'assigned-avatar';
+    avatar.className = 'task-card-assigned-avatar';
     avatar.textContent = user.initials;
     avatar.style.backgroundColor = user.color;
     return avatar;
@@ -101,7 +101,7 @@ function createAvatar(user) {
  * Befüllt den Assigned-To Bereich
  */
 function populateAssignedTo(element, task) {
-    const avatarsContainer = element.querySelector('.avatars-container');
+    const avatarsContainer = element.querySelector('.task-card-avatars-container');
     const priorityIconImg = element.querySelector('.priority-icon');
     
     // Avatare erstellen (maximal 3)
@@ -127,13 +127,13 @@ function createTaskCard(task) {
     // Template als String holen und in DOM umwandeln
     const template = document.createElement('div');
     template.innerHTML = getTaskCardTemplate(task.id);
-    const card = template.firstElementChild;
+    const card = template.firstElementChild;    
     
     // Bereiche befüllen
-    populateTaskType(card.querySelector('.task-type'), task);
-    populateTaskContent(card.querySelector('.task-content'), task);
-    populateSubtasks(card.querySelector('.subtasks'), task);
-    populateAssignedTo(card.querySelector('.assigned-to'), task);
+    populateTaskType(card.querySelector('.task-card-type'), task);
+    populateTaskContent(card.querySelector('.task-card-content'), task);
+    populateSubtasks(card.querySelector('.task-card-subtasks'), task);
+    populateAssignedTo(card.querySelector('.task-card-assigned-to'), task);
     
     // Event Listener (nutzt externe openTaskDetails() Funktion)
     card.addEventListener('click', () => {

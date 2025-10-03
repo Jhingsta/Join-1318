@@ -83,21 +83,15 @@ main {
     padding: 0 64px;
 }
 
-.title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #4589ff;
-}
-
-.subtasks {
+.task-header-title {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    flex: 1;
+    width: 25%;
 }
 
-.subtasks[data-hidden="true"] {
-    visibility: hidden;
-}
+
 
 .subtask-list {
     list-style: none;
@@ -110,10 +104,6 @@ main {
     color: #333;
 }
 
-.subtasks-text {
-    font-size: 13px;
-    color: #000000;
-}
 
 .task-column {
     display: flex;
@@ -128,9 +118,7 @@ main {
     width: 100%;
 }
 
-.task-info {
-    color: #a8a8a8;
-}
+
 
 .task-placeholder {
     display: flex;
@@ -245,31 +233,7 @@ main {
     margin-top: 8px;
 }
 
-.task-card {
-    padding: 16px;
-    gap: 24px;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    border-radius: 24px;
-    box-shadow: 0px 0px 10px 3px #00000014;
-    width: 252px;
-}
 
-.progress-container {
-    width: 128px;
-    height: 8px;
-    background-color: #E0E0E0;
-    border-radius: 16px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    background-color: #4589FF;
-    transition: width 0.3s ease;
-    border-radius: 16px;
-}
 
 .task-card.dragging {
     transform: none;
@@ -316,9 +280,6 @@ main {
     margin: 0 0 20px;
 }
 
-.task-info p {
-    margin: 5px 0;
-}
 
 .task-bar {
     display: flex;
@@ -336,20 +297,6 @@ main {
     align-items: center;
     width: 100%;
     gap: 24px;
-}
-
-.task-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex: 1;
-    width: 25%;
-}
-
-.task-content {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
 }
 
 .task-overlay-bullet {
@@ -370,10 +317,7 @@ main {
     align-items: center;
 }
 
-.avatars-container {
-    display: flex;
-    gap: 4px;
-}
+
 
 .avatar {
     width: 32px;
@@ -404,19 +348,7 @@ main {
     margin-left: 10px;
 }
 
-.assigned-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 400;
-    font-size: 12px;
-    color: #FFFFFF;
-    margin-left: -10px;
-    border: 1px solid #FFFFFF;
-}
+
 
 .assigned-avatar-detail-view {
     width: 42px;
@@ -435,11 +367,7 @@ main {
     vertical-align: middle;
 }
 
-.assigned-to {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+
 
 .add-task-btn {
     font-size: 23px;
@@ -529,6 +457,94 @@ main {
 .close:hover svg path {
     stroke: #005DFF;
 }
+
+/* Task Card */
+.task-card {
+    padding: 16px;
+    gap: 24px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 24px;
+    box-shadow: 0px 0px 10px 3px #00000014;
+    width: 252px;
+}
+
+.task-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.task-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #4589ff;
+}
+
+.task-card-info {
+    color: #A8A8A8;
+}
+
+.task-card-info p {
+    margin: 5px 0;
+}
+
+.task-card-subtasks {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.task-card-subtasks-text {
+    font-size: 13px;
+    color: #000000;
+}
+
+.task-card-subtasks[data-hidden="true"] {
+    visibility: hidden;
+}
+
+.progress-container {
+    width: 128px;
+    height: 8px;
+    background-color: #E0E0E0;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #4589FF;
+    transition: width 0.3s ease;
+    border-radius: 16px;
+}
+
+.task-card-assigned-to {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.task-card-avatars-container {
+    display: flex;
+    gap: 4px;
+}
+
+.task-card-assigned-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 400;
+    font-size: 12px;
+    color: #FFFFFF;
+    margin-left: -10px;
+    border: 1px solid #FFFFFF;
+}
+/* Task Card End */
 
 .hidden {
     display: none !important;
