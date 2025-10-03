@@ -53,7 +53,6 @@ header {
 }
 
 .user-logo-svg:hover .bg {
-  /* fill: rgba(181, 219, 255, 0.9);  #B5DBFF mit 20% Deckkraft */
   fill: #EDF2FA;
 }
 
@@ -61,7 +60,6 @@ header {
   outline: none;
 }
 
-/* Eigenen Focus-Style hinzufügen */
 .user-logo-svg:focus-visible,
 .header-right-text:focus-visible, 
 .help-icon:focus-visible {
@@ -69,10 +67,9 @@ header {
   outline-offset: 2px;
 }
 
-/* Dropdown-Menu */
 .header-dropdown-menu {
   position: absolute;
-  top: calc(100%); /* direkt unterhalb */
+  top: calc(100%); 
   right: 20px;
   background-color: white;
   border-radius: 20px 0 20px 20px;

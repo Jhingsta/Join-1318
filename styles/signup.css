@@ -183,7 +183,6 @@ input::placeholder {
   gap: 10px;
 }
 
-/* native checkbox unsichtbar, aber zugänglich */
 input[type="checkbox"] {
   position: absolute;
   opacity: 0;
@@ -196,7 +195,6 @@ input[type="checkbox"] {
   overflow: hidden;
 }
 
-/* Label & SVG */
 .checkbox-label {
   display: inline-flex;
   align-items: center;
@@ -214,7 +212,6 @@ input[type="checkbox"] {
   margin-bottom: 3px;  
 }
 
-/* Standardfarben (alle SVG-Pfade bekommen dieselbe Stroke-Farbe) */
 .custom-checkbox .box-default,
 .custom-checkbox .box-checked,
 .custom-checkbox .check {
@@ -222,18 +219,15 @@ input[type="checkbox"] {
   transition: opacity .12s ease, fill .12s ease;
 }
 
-/* Default: show rect, hide checked-outline + check */
 .custom-checkbox .box-default { opacity: 1; }
 .custom-checkbox .box-checked { opacity: 0; }
 .custom-checkbox .check { opacity: 0; }
 
-/* Hover über das Label -> nur Hintergrundfarbe der sichtbaren Box ändern */
 .checkbox-label:hover .custom-checkbox .box-default,
 .checkbox-label:hover .custom-checkbox .box-checked {
   fill: #EDF2FA;
 }
 
-/* Checked: show checked-outline + check, hide default rect */
 input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .box-default {
   opacity: 0;
 }
@@ -313,19 +307,18 @@ nav a:hover {
   color: #005DFF;
 }
 
-/* Signup Success Message */
 .signup-success-container {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, 100vh); /* Startet unterhalb */
+  transform: translate(-50%, 100vh);
   z-index: 9999;
   opacity: 1;
   transition: transform 400ms ease-out;
 }
 
 .signup-success-container.slide-in {
-  transform: translate(-50%, -50%); /* Mitte */
+  transform: translate(-50%, -50%);
 }
 
 .signup-success-container.fade-out {
