@@ -104,22 +104,99 @@ function populateAssignedTo(element, task) {
 }
 
 // ============================================
+// MOBILE MOVE OVERLAY
+// ============================================
+
+function mobileMoveToOverlay(currentStatus) {
+    const statuses = [
+        { value: 'todo', label: 'To do' },
+        { value: 'inProgress', label: 'In progress' },
+        { value: 'awaitFeedback', label: 'Review' },
+        { value: 'done', label: 'Done' }
+    ];
+    
+    const statusItems = statuses.map(status => {
+        const isCurrentStatus = status.value === currentStatus;
+        const bgColor = isCurrentStatus ? '#005DFF' : '';
+        const cursorStyle = isCurrentStatus ? 'default' : 'pointer';
+        const dataAttr = isCurrentStatus ? '' : `data-status="${status.value}"`;
+        
+        return getMoveToContainerItemTemplate(status.label, bgColor, cursorStyle, dataAttr);
+    }).join('');
+    
+    return getMoveToOverlayBackdropTemplate(statusItems);
+}
+
+function openMobileMoveToOverlay(taskId) {
+    const existingOverlay = document.querySelector('.mobile-move-overlay-backdrop');
+    if (existingOverlay) {
+        existingOverlay.remove();
+    }
+    
+    const task = getTasks().find(t => t.id === taskId);
+    if (!task) {
+        console.error('Task not found:', taskId);
+        return;
+    }
+    
+    const overlayHTML = mobileMoveToOverlay(task.status);
+    document.body.insertAdjacentHTML('beforeend', overlayHTML);
+    document.body.classList.add('no-scroll');
+    
+    const overlay = document.querySelector('.mobile-move-overlay-backdrop');
+    overlay.classList.remove('hidden');
+    
+    overlay.addEventListener('click', (e) => {
+        if (e.target.classList.contains('mobile-move-overlay-backdrop')) {
+            closeMobileMoveToOverlay();
+        }
+    });
+    
+    const moveToContainers = overlay.querySelectorAll('.move-to-container[data-status]');
+    moveToContainers.forEach(container => {
+        container.addEventListener('click', () => {
+            const newStatus = container.dataset.status;
+            handleMobileMoveToClick(taskId, newStatus);
+        });
+    });
+}
+
+function closeMobileMoveToOverlay() {
+    const overlay = document.querySelector('.mobile-move-overlay-backdrop');
+    if (overlay) {
+        overlay.remove();
+    }
+    document.body.classList.remove('no-scroll');
+}
+
+async function handleMobileMoveToClick(taskId, newStatus) {
+    closeMobileMoveToOverlay();
+    const columnId = `column-${newStatus}`;
+    await moveTaskToColumn(taskId, columnId);
+}
+
+// ============================================
 // MAIN FUNCTION
 // ============================================
 
 function createTaskCard(task) {
-    // Template als String holen und in DOM umwandeln
     const template = document.createElement('div');
     template.innerHTML = getTaskCardTemplate(task.id);
-    const card = template.firstElementChild;    
+    const card = template.firstElementChild;
     
-    // Bereiche befüllen
     populateTaskType(card.querySelector('.task-card-type'), task);
     populateTaskContent(card.querySelector('.task-card-content'), task);
     populateSubtasks(card.querySelector('.task-card-subtasks'), task);
     populateAssignedTo(card.querySelector('.task-card-assigned-to'), task);
     
-    // Event Listener (nutzt externe openTaskDetails() Funktion)
+    const mobileBtn = card.querySelector('.mobile-move-task-btn');
+    if (mobileBtn) {
+        mobileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openMobileMoveToOverlay(task.id);
+        });
+    }
+    
     card.addEventListener('click', () => {
         openTaskDetails(task);
     });

@@ -245,7 +245,7 @@ function getTaskCardTemplate(taskId) {
                 <img src="" alt="">
             </div>
 
-            <button class="mobile-move-task-btn" onclick="openMoveToOverlay('${taskId}')">
+            <button class="mobile-move-task-btn">
                 <img src="./assets/icons-board/mobile-arrow-btn.svg" alt="Open move to overlay">
             </button>
             
@@ -264,6 +264,29 @@ function getTaskCardTemplate(taskId) {
             <div class="task-card-assigned-to">
                 <div class="task-card-avatars-container"></div>
                 <img class="priority-icon" src="" alt="Priority">
+            </div>
+        </div>
+    `;
+}
+
+function getMoveToContainerItemTemplate(statusLabel, bgColor, cursorStyle, dataAttr) {
+    return `
+        <div class="move-to-container" 
+             style="background-color: ${bgColor}; cursor: ${cursorStyle};"
+             ${dataAttr}>
+            <span>${statusLabel}</span>
+        </div>
+    `;
+}
+
+function getMoveToOverlayBackdropTemplate(overlayContent) {
+    return `
+        <div class="mobile-move-overlay-backdrop hidden">
+            <div class="mobile-view-column-overlay">
+                <div class="mobile-view-column-overlay-title">Move to</div>
+                <div class="move-to">
+                    ${overlayContent}
+                </div>
             </div>
         </div>
     `;
