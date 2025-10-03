@@ -95,6 +95,10 @@ main {
     gap: 8px;
 }
 
+.subtasks[data-hidden="true"] {
+    visibility: hidden;
+}
+
 .subtask-list {
     list-style: none;
     padding: 0;
