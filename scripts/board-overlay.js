@@ -211,18 +211,6 @@ async function openEditMode(task) {
 
     let isoDate = task.dueDate || "";
 
-    // let isoDate = "";
-    // if (task.dueDate) {
-    //     if (task.dueDate.includes(".")) {
-    //         // Konvertiere deutsches Format zu ISO
-    //         const [day, month, year] = task.dueDate.split(".");
-    //         isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    //     } else {
-    //         // Bereits ISO-Format
-    //         isoDate = task.dueDate;
-    //     }
-    // }
-
     const priority = (task.priority || "medium").trim().toLowerCase(); // Konsistent mit createTask()
 
     // HTML generieren

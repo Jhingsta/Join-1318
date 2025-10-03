@@ -151,11 +151,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                     item.classList.add("selected");
                 }
-                renderAvatarsModal(task);
             });
             assignedDropdown.appendChild(item);
         });
-        renderAvatarsModal(task);
     }
 });
 
