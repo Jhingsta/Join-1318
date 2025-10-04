@@ -29,11 +29,13 @@ header {
 }
 
 .header-right-text {
+  background: none;
+  border: none;
   font-size: 19px;
-  font-weight: 400;
   margin-right: 26px;
   padding: 5px;
   cursor: pointer;
+  color: #fff;
 }
 
 .help-icon {
@@ -48,21 +50,22 @@ header {
   transform: scale(1.2);
 }
 
-.user-logo-svg {
+.user-logo-btn {
+  border: none;
+  background: none;
+  outline: none;
   cursor: pointer;
 }
 
-.user-logo-svg:hover .bg {
-  /* fill: rgba(181, 219, 255, 0.9);  #B5DBFF mit 20% Deckkraft */
+.user-logo-btn:hover .bg {
   fill: #EDF2FA;
 }
 
-.user-logo-svg:focus {
+.user-logo-btn:focus {
   outline: none;
 }
 
-/* Eigenen Focus-Style hinzufügen */
-.user-logo-svg:focus-visible,
+.user-logo-btn:focus-visible,
 .header-right-text:focus-visible, 
 .help-icon:focus-visible {
   outline: 4px solid #005DFF;
@@ -72,7 +75,7 @@ header {
 /* Dropdown-Menu */
 .header-dropdown-menu {
   position: absolute;
-  top: calc(100%); /* direkt unterhalb */
+  top: calc(100%);
   right: 20px;
   background-color: white;
   border-radius: 20px 0 20px 20px;
@@ -96,7 +99,6 @@ header {
   color: #42526E;
   border-radius: 12px;
   font-size: 19px;
-  font-weight: 400;
   border: none;
   text-align: right;
   cursor: pointer;
@@ -138,7 +140,7 @@ header {
   .header-left {
     width: 32px;
   }
-  .user-logo-svg {
+  .user-logo-btn {
     width: 40px;
     height: 40px;
   }

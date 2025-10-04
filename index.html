@@ -16,9 +16,9 @@
 <body>
 
   <!-- Splash Screen -->
-  <div id="splash">
+  <div id="splash" aria-hidden="true">
     <div id="logo-wrapper">
-      <svg id="logo" viewBox="0 0 265 324" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+      <svg id="logo" aria-hidden="true" viewBox="0 0 265 324" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
         <path d="M189.866 0H131.168V67.5315H189.866V0Z" />
         <path
           d="M131.168 122.455H189.866V217.697C190.135 240.615 183.612 263.096 171.128 282.281C158.801 300.921 135.006 323.099 90.9823 323.099C43.0303 323.099 15.0809 300.422 0 287.995L37.0251 242.324C51.7448 254.343 65.9227 264.23 91.2081 264.23C110.353 264.23 117.983 256.429 122.454 249.626C128.531 240.177 131.674 229.126 131.484 217.879L131.168 122.455Z" />
@@ -32,24 +32,27 @@
     </div>
   </div>
 
-  <main id="main-content">
+  <main>
 
       <img src="./assets/icons-login/Capa 2.svg" alt="Join Logo" class="logo">
 
-      <!-- Login Bereich -->
       <section class="login-box">
         <h1>Log in</h1>
         <form id="login-form">
           <div class="input-container">
             <div class="input-container-mail">
-              <input type="text" name="email" placeholder="Email">
+              <label for="email" class="visually-hidden">Email</label>
+              <input id="email" type="text" name="email" placeholder="Email">
               <img src="./assets/icons-signup/mail.svg" alt="">
             </div>
               <div class="input-container-password">
-                <input type="password" name="password" placeholder="Password">
-                <img src="./assets/icons-signup/lock.svg" alt="toggle password" class="toggle-password">
+                <label for="password" class="visually-hidden">Password</label>
+                <input id="password" type="password" name="password" placeholder="Password">
+                <button type="button" class="toggle-password" aria-label="Show or hide password">
+                  <img src="./assets/icons-signup/lock.svg" alt="">
+                </button>
               </div>
-              <div class="error-message"></div>
+              <div class="error-message" aria-live="polite"></div>
           </div>
           <div class="btn-group">
               <button type="submit" class="login-btn">Log in</button>
@@ -60,10 +63,10 @@
 
       <div class="signup-box">
         <span>Not a Join user?</span>
-        <button class="sign-up-btn" onclick="location.href='./signup.html'">Sign up</button>
+        <a href="./signup.html" class="sign-up-btn">Sign up</a>
       </div>
 
-      <footer class="footer-links">
+      <footer class="footer-links" role="contentinfo">
         <a href="privacypolicy.html?from=visitor">Privacy Policy</a>
         <a href="legalnotice.html?from=visitor">Legal Notice</a>
       </footer>
