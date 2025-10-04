@@ -120,7 +120,9 @@
         flex: 0 0 252px;
         margin: 10px;
     }
-
+    .mobile-move-task-btn {
+        display: block;
+    }
 }
 
 

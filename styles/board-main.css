@@ -639,12 +639,6 @@ main {
     background-color: #E3EEFF;
     color: #4589FF;
 }
-
-@media (max-width: 768px) {
-    .mobile-move-task-btn {
-        display: block;
-    }
-}
 /* Task Card End */
 
 /* Animation hereinschieben */
