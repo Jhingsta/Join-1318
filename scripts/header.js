@@ -60,7 +60,7 @@ function updateUserLogo() {
 function logout() {
   try {
     localStorage.removeItem("currentUser");
-    closeDropdown(); // Ensure dropdown is closed
+    closeDropdown();
     window.location.href = "index.html";
   } catch (error) {
     console.error("Logout error:", error);
