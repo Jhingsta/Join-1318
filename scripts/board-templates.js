@@ -237,3 +237,57 @@ function taskEditTemplate(task, isoDate) {
         <div id="edit-subtask-list"></div>
     `;
 }
+
+function getTaskCardTemplate(taskId) {
+    return `
+        <div class="task-card" id="task-${taskId}">
+            <div class="task-card-type">
+                <img src="" alt="">
+            </div>
+
+            <button class="mobile-move-task-btn">
+                <img src="./assets/icons-board/mobile-arrow-btn.svg" alt="Open move to overlay">
+            </button>
+            
+            <div class="task-card-content">
+                <div class="task-card-title"></div>
+                <div class="task-card-info"></div>
+            </div>
+            
+            <div class="task-card-subtasks" data-hidden="true">
+                <div class="progress-container">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="task-card-subtasks-text"></span>
+            </div>
+            
+            <div class="task-card-assigned-to">
+                <div class="task-card-avatars-container"></div>
+                <img class="priority-icon" src="" alt="Priority">
+            </div>
+        </div>
+    `;
+}
+
+function getMoveToContainerItemTemplate(statusLabel, bgColor, cursorStyle, dataAttr) {
+    return `
+        <div class="move-to-container" 
+             style="background-color: ${bgColor}; cursor: ${cursorStyle};"
+             ${dataAttr}>
+            <span>${statusLabel}</span>
+        </div>
+    `;
+}
+
+function getMoveToOverlayBackdropTemplate(overlayContent) {
+    return `
+        <div class="mobile-move-overlay-backdrop hidden">
+            <div class="mobile-view-column-overlay">
+                <div class="mobile-view-column-overlay-title">Move to</div>
+                <div class="move-to">
+                    ${overlayContent}
+                </div>
+            </div>
+        </div>
+    `;
+}
