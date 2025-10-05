@@ -55,6 +55,8 @@ header {
   background: none;
   outline: none;
   cursor: pointer;
+  width: 56px;
+  height: 56px;
 }
 
 .user-logo-btn:hover .bg {
