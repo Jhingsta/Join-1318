@@ -1,8 +1,7 @@
-/* Summary Animation Styles - Mobile Only */
+/* Summary Greeting Animation Styles - Mobile Only */
 
 @media (max-width: 768px) {
   
-  /* Animation Overlay - überdeckt den gesamten main-Bereich */
   .animation-overlay {
     position: absolute;
     top: 0;
@@ -11,32 +10,25 @@
     height: 100%;
     background-color: white;
     z-index: 10;
-    
-    /* Zentriertes Greeting */
     display: flex;
     align-items: center;
     justify-content: center;
-    transform: translateY(-100px); /* Verschiebt Text nach oben */
-    
-    /* Initial versteckt */
+    transform: translateY(-100px);
     opacity: 0;
     pointer-events: none;
   }
   
-  /* Greeting Animation Text Container */
   .greeting-animation {
     display: flex;
     flex-direction: column;
     text-align: center;
   }
   
-  /* Initial States für Content */
   .main-content-wrapper {
     opacity: 0;
     transform: translateY(100%);
   }
   
-  /* Animation Trigger Klassen */
   .animation-overlay.show {
     opacity: 1;
     pointer-events: auto;
@@ -50,7 +42,6 @@
     animation: fadeOut 0.3s ease-out forwards;
   }
   
-  /* Keyframe Animationen */
   @keyframes slideInFromBottom {
     to {
       opacity: 1;
