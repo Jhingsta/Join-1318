@@ -103,6 +103,20 @@ function populateAssignedTo(element, task) {
     priorityIconImg.src = priorityIcon(task.priority);
 }
 
+function updateTaskCard(taskId) {
+    const task = getTasks().find(t => t.id === taskId);
+    if (!task) return;
+    
+    const card = document.getElementById(`task-${taskId}`);
+    if (!card) return;
+    
+    // Subtasks-Bereich komplett neu populieren
+    const subtasksContainer = card.querySelector('.task-card-subtasks');
+    if (subtasksContainer) {
+        populateSubtasks(subtasksContainer, task);
+    }
+}
+
 // ============================================
 // MOBILE MOVE OVERLAY
 // ============================================
