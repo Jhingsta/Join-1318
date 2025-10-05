@@ -1,4 +1,5 @@
 /* Mobile-First - Desktop View below */
+
 .sidebar {
   background: #fff;
   display: flex;
@@ -105,6 +106,7 @@
 }
 
 /* Desktop-View */
+
 @media (min-width: 769px) {
   aside {
     display: flex; 

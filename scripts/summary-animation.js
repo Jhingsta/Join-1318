@@ -31,26 +31,45 @@ function showContentDirectly() {
 }
 
 /**
- * Initializes and starts the welcome animation sequence.
- *
- * Checks if all required elements exist in the DOM. If not, 
- * the content is displayed directly. Otherwise, the greeting 
- * is updated and the animation sequence begins.
+ * Initializes and starts the welcome animation sequence (mobile only)
+ * with ARIA attributes for screen reader accessibility.
  */
 function startWelcomeAnimation() {
-    const overlay = document.getElementById('animation-overlay');
-    const greetingText = document.getElementById('greeting-animation-text');
-    const contentWrapper = document.querySelector('.main-content-wrapper');
-    
+    let overlay = document.getElementById('animation-overlay');
+    let greetingText = document.getElementById('greeting-animation-text');
+    let contentWrapper = document.querySelector('.main-content-wrapper');
+
     if (!overlay || !greetingText || !contentWrapper) {
         console.warn('Animation elements not found, showing content directly');
         showContentDirectly();
         return;
     }
-    
+    overlay.setAttribute('aria-hidden', 'false');
+    greetingText.setAttribute('aria-live', 'polite');
+    greetingText.setAttribute('aria-atomic', 'true');
+
     updateAnimationGreeting(greetingText);
     overlay.classList.add('show');
-    runAnimationSequence(overlay, contentWrapper);
+    runAnimationSequenceWithAria(overlay, contentWrapper);
+}
+
+/**
+ * Handles the animation sequence and updates ARIA attributes accordingly.
+ *
+ * @param {HTMLElement} overlay
+ * @param {HTMLElement} contentWrapper
+ */
+function runAnimationSequenceWithAria(overlay, contentWrapper) {
+    setTimeout(() => {
+        overlay.classList.add('fade-out');
+        contentWrapper.classList.add('slide-in');
+
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            // ARIA: Overlay für Screenreader ausblenden nach Animation
+            overlay.setAttribute('aria-hidden', 'true');
+        }, 300);
+    }, 1500);
 }
 
 /**
