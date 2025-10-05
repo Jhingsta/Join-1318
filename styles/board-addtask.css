@@ -161,7 +161,6 @@ input {
     display: none;
     color: red;
     font-size: 12px;
-    margin-top: 4px;
 }
 
 .description-container {
@@ -467,7 +466,6 @@ input {
 }
 
 .assigned-header {
-    width: 199px;
     height: 23px;
     font-weight: 700;
     font-size: 19px;
@@ -496,6 +494,8 @@ input {
     padding: 12px 16px;
     border-bottom: 1px solid #D1D1D1;
     opacity: 1;
+    display: flex;
+    justify-content: space-between;
 }
 
 .assigned-content:hover,

@@ -21,7 +21,7 @@ const arrow = assignedContent.querySelector('.assigned-arrow-container');
 const arrowIcon = arrowContainer.querySelector('img');
 
 const assignedDropdown = document.getElementById('assigned-dropdown');
-const dropdown = document.getElementById("add-assigned-dropdown");//falsche ID, korrekt ist assigned-dropdown
+// const dropdown = document.getElementById("assigned-dropdown");//falsche ID, korrekt ist assigned-dropdown
 const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
 
 const categoryContent = document.querySelector('.category-content');
@@ -54,7 +54,7 @@ async function loadTasksForBoard() {
             ...task,
             assignedUsersFull: task.assignedUsersFull || []
         }));
-        
+
         return tasks;
     } catch (error) {
         console.error("Error loading tasks for board:", error);
@@ -89,12 +89,13 @@ function closeModal() {
 document.addEventListener('DOMContentLoaded', async () => {
     closeButton?.addEventListener('click', closeModal);
     addTaskButton?.addEventListener('click', openModal);
+    loadUsers();
 
     function openModal() {
         modal?.classList.remove('hidden');
         addTaskButton?.classList.add('active-style');
         currentNewTask = { assignedUsersFull: [] };
-        renderAssignedDropdownModal(currentNewTask);
+        // renderAssignedDropdownModal(currentNewTask);
 
         svgButtons.forEach(btn => {
             const svg = btn.querySelector('svg');
@@ -116,60 +117,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     await loadTasksForBoard();
     renderBoard();
-
-    async function renderAssignedDropdownModal(task) {
-        if (!dropdown) return;
-        dropdown.innerHTML = "";
-
-        if (users.length === 0) {
-            await loadUsers();
-        }
-        
-        users.forEach(user => {
-            const item = document.createElement("div");
-            item.className = "dropdown-item";
-            item.textContent = user.name;
-            
-            if (task.assignedUsersFull?.some(u => u.id === user.id)) {
-                item.classList.add("selected");
-            }
-            
-            item.addEventListener("click", () => {
-                if (!task.assignedUsersFull) task.assignedUsersFull = [];
-            
-                const index = task.assignedUsersFull.findIndex(u => u.id === user.id);
-                if (index !== -1) {
-                    task.assignedUsersFull.splice(index, 1);
-                    item.classList.remove("selected");
-                } else {
-                    task.assignedUsersFull.push({
-                        id: user.id,
-                        name: user.name,
-                        initials: user.initials,
-                        color: user.color
-                    });
-                    item.classList.add("selected");
-                }
-                renderAvatarsModal(task);
-            });
-            dropdown.appendChild(item);
-        });
-        renderAvatarsModal(task);
-    }
 });
 
 function renderBoard() {
     const boardTasks = getTasks();
-    
+
     const columns = {
         todo: document.getElementById('column-todo'),
         inProgress: document.getElementById('column-inProgress'),
         awaitFeedback: document.getElementById('column-awaitFeedback'),
         done: document.getElementById('column-done'),
     };
-    
+
     Object.values(columns).forEach((el) => el && (el.innerHTML = ''));
-    
+
     boardTasks.forEach((task) => {
         const card = createTaskCard(task);
         const column = columns[task.status] || columns.todo;
@@ -315,9 +276,14 @@ document.addEventListener('click', e => {
         assignedText.style.display = 'block';
         arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
 
+        // Hier prüfen
         Array.from(assignedDropdown.children).forEach(div => {
             const checkboxWrapper = div.querySelector('.checkbox-wrapper');
-            const checkbox = checkboxWrapper.querySelector('img')
+            if (!checkboxWrapper) return; // <- überspringen, falls nicht vorhanden
+
+            const checkbox = checkboxWrapper.querySelector('img');
+            if (!checkbox) return; // <- optional, Sicherheit
+
             if (checkbox.src.includes('checked')) {
                 checkboxWrapper.style.display = 'flex'; // bleibt sichtbar
             } else {
@@ -326,6 +292,7 @@ document.addEventListener('click', e => {
         });
     }
 });
+
 
 // ---------- Filter input ----------
 assignedInput.addEventListener('input', () => {
@@ -340,7 +307,7 @@ function createTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
     card.id = `task-${task.id}`;
-    
+
     const type = document.createElement('div');
     type.className = 'task-type';
 
@@ -497,7 +464,7 @@ buttons.forEach((btn) => {
 
 arrowContainer.addEventListener('click', (event) => {
     event.stopPropagation();
-    assignedDropdown.classList.toggle('show');
+    // assignedDropdown.classList.toggle('show');
 });
 
 document.addEventListener('click', (event) => {
@@ -623,8 +590,8 @@ function getTaskData() {
     const priority = priorityBtn ? priorityBtn.textContent.trim().toLowerCase() : "medium";
     // 5. Assigned Users Full
     let assignedUsersFull = [];
-    if (dropdown) {
-        dropdown.querySelectorAll(".dropdown-item.selected").forEach(div => {
+    if (assignedDropdown) {
+        assignedDropdown.querySelectorAll(".dropdown-item.selected").forEach(div => {
             const name = div.textContent.trim();
             const user = users.find(u => u.name === name);
             if (user) {
@@ -692,10 +659,46 @@ createBtn.addEventListener("click", async (event) => {
     event.preventDefault();
     createBtn.classList.add('active');
     const taskData = getTaskData();
-    if (!taskData.title || !taskData.dueDate) {
-        alert("Bitte fülle alle Pflichtfelder aus!");
-        return;
+    let hasError = false;
+
+    // --- TITLE ---
+    const titleInput = document.querySelector(".title-input");
+    if (!taskData.title) {
+        titleInput.style.borderBottom = "1px solid #FF4D4D";
+        titleError.style.display = "block";
+        hasError = true;
+    } else {
+        titleInput.style.borderBottom = "1px solid #D1D1D1";
+        titleError.style.display = "none";
     }
+
+    // --- DUE DATE ---
+    const dueDateContainer = document.querySelector(".due-date-content");
+    const dueDateError = document.querySelector(".due-date-container .error-message");
+    const dueDateValue = taskData.dueDate;
+    if (!dueDateValue) {
+        dueDateContainer.style.borderBottom = "1px solid #FF4D4D";
+        dueDateError.style.display = "block";
+        hasError = true;
+    } else {
+        dueDateContainer.style.borderBottom = "1px solid #D1D1D1";
+        dueDateError.style.display = "none";
+    }
+
+    // --- CATEGORY ---
+    const categoryError = document.querySelector(".category-container .error-message");
+    const categoryText = taskData.category;
+    if (!categoryText || categoryText === "Select task category") {
+        categoryContent.style.borderBottom = "1px solid #FF4D4D";
+        categoryError.style.display = "block";
+        hasError = true;
+    } else {
+        categoryContent.style.borderBottom = "1px solid #D1D1D1";
+        categoryError.style.display = "none";
+    }
+
+    // Stoppen, wenn Fehler
+    if (hasError) return;
     const originalText = createBtn.textContent;
     createBtn.textContent = "Saving...";
     createBtn.disabled = true;
@@ -710,7 +713,6 @@ createBtn.addEventListener("click", async (event) => {
         }
     } catch (err) {
         console.error("Fehler beim Erstellen der Task:", err);
-        alert("Fehler beim Speichern der Task. Siehe Konsole.");
     } finally {
         createBtn.disabled = false;
         createBtn.textContent = originalText;
@@ -752,7 +754,7 @@ function showTaskAddedMessage(onFinished) {
 
 async function updateTaskStatus(task, newStatus) {
     if (!task.id) return;
-    
+
     try {
         await updateTask(task.id, { status: newStatus });
         const localTask = tasks.find(t => t.id === task.id);
@@ -834,7 +836,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function renderAssignedUsers(users) {
-    return users.map(user =>  `
+    return users.map(user => `
         <div class="assigned-item">
             <div class="assigned-avatar-detail-view" style="
                 background-color: ${user.color};">
@@ -938,8 +940,8 @@ function updateTaskCard(taskId) {
     }
     const progressBar = card.querySelector('.progress-container div');
     if (progressBar) {
-        const percentage = task.subtasks.total > 0 
-            ? (task.subtasks.completed / task.subtasks.total) * 100 
+        const percentage = task.subtasks.total > 0
+            ? (task.subtasks.completed / task.subtasks.total) * 100
             : 0;
         progressBar.style.width = `${percentage}%`;
     }

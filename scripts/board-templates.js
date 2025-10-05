@@ -71,6 +71,7 @@ function addTaskModal() {
                             <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts" class="assigned-arrow-icon">
                         </div>
                     </div>
+                     <span class="error-message">This field is required</span>
                 </div>
 
                 <div class="task-container">
@@ -141,7 +142,7 @@ function subtaskHTML({ title, isChecked, taskId, index }) {
                     <img src="./assets/icons-addTask/Property 1=Default.svg" class="checkbox-default" style="display:${isChecked ? 'none' : 'block'}">
                     <img src="./assets/icons-addTask/Property 1=checked.svg" class="checkbox-checked" style="display:${isChecked ? 'block' : 'none'}">
                 </div>
-                <span class="subtask-text" style="font-size:16px; font-family:'Open Sans', sans-serif;">${title}</span>
+                <span class="subtask-text">${title}</span>
             </div>
         </div>
     </li>
