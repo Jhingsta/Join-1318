@@ -585,11 +585,11 @@ async function saveTask(taskData) {
 function resetForm() {
     document.querySelector(".title-input").value = "";
     document.querySelector(".description-input").value = "";
-    document.querySelector(".due-date-input").value = "";
+    document.querySelector(".due-date-display").value = "";
     document.querySelector(".selected-avatars-container").innerHTML = "";
     document.querySelector("#subtask-list").innerHTML = "";
     document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
-    document.querySelector(".priority-frame:nth-child(2)").classList.add("active"); // Medium
+    document.querySelector(".priority-frame:nth-child(2)").classList.add("active");
     const categoryText = document.querySelector(".category-content .assigned-text");
     if (categoryText) categoryText.textContent = "Select task category";
 }

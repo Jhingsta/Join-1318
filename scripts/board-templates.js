@@ -11,6 +11,7 @@ function addTaskModal() {
                         </svg>
                     </button>
                 </div>
+
                 <div class="main-container-modal">
                     <div class="title-container">
                         <input type="text" class="title-input" placeholder="Enter a title" required>
@@ -74,9 +75,8 @@ function addTaskModal() {
                                 <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts" class="assigned-arrow-icon">
                             </div>
                         </div>
+                        <span class="error-message">This field is required</span>
                     </div>
-                     <span class="error-message">This field is required</span>
-                </div>
 
                     <div class="task-container">
                         <div class="assigned-header">
@@ -92,9 +92,8 @@ function addTaskModal() {
                         <ul id="subtask-list" class="subtask-list"></ul>
                         <div id="task-dropdown" class="task-dropdown" style="display:none;"></div>
                     </div>
-
-                    <div class="end-spacer"></div>
                 </div>
+
                 <div class="modal-footer">
                     <button class="create-btn" id="create-btn">
                         Create Task <img src="./assets/icons-addTask/check (1).png" alt="">
