@@ -1,4 +1,7 @@
-.arrow-btn-svg {
+.mobile-move-task-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
     width: 30px;
     height: 30px;
     background-color: #F4F4F4;
@@ -6,19 +9,25 @@
     padding: 2px 3px;
     box-shadow: 1px 1px 2px 0px #00000026;
     cursor: pointer;
+    /* display: none; */
 }
 
-.arrow-btn-svg:active {
+.mobile-move-task-btn:active {
     filter: invert(10%);
 }
 
-.mobile-btn-overlay {
+.mobile-move-task-btn img {
+    width: 100%;
+    height: 100%;
+}
+
+.mobile-view-column-overlay {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 106px;
-    height: 113px;
+    width: 90px;
+    height: auto;
     gap: 16px;
     border-radius: 0 20px 20px 20px;
     background-color: #4589FF;
@@ -26,11 +35,13 @@
     padding: 6px 8px 16px;
 }
 
-.btn-overlay-title {
+.mobile-view-column-overlay-title {
+    display: flex;
+    justify-content: start;
     font-size: 16px;
     font-weight: 700;
-    width: 88px;
     padding-top: 7px;
+    width: 100%;
 }
 
 .move-to {
@@ -44,13 +55,13 @@
 }
 
 .move-to-container {
-    width: 90px;
+    width: 100%;
     border-radius: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 5px 4px 2px;
+    padding: 6px 8px;
 }
 
 .move-to-container:active {
@@ -58,12 +69,8 @@
     color: #4589FF;
 }
 
-.mobile-icon {
-  width: 20px;
-  height: 20px;
-  color: white;
-}
-
-.move-to-container:active .mobile-icon {
-  color: #4589FF;
+@media (max-width: 768px) {
+    .mobile-move-task-btn {
+        display: block;
+    }
 }
