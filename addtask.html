@@ -52,9 +52,11 @@
                         <!-- Sichtbare, formatierte Anzeige -->
                         <span class="due-date-display" placeholder="dd/mm/yyyy">dd/mm/yyyy</span>
                         
+                        
                         <div class="due-date-icon-container">
                             <div class="due-date-icon"></div>
                         </div>
+                        
                     </div>
                     <span class="error-message">This field is required</span>
                 </div>
@@ -87,7 +89,7 @@
 
                         <!-- Pfeil jetzt in separatem Container -->
                         <div class="assigned-arrow-container">
-                            <img src="/assets/icons-addtask/arrow_drop_down.png" alt="Select contacts"
+                            <img id="assigned-arrow-icon" src="/assets/icons-addtask/arrow_drop_down.png" alt="Select contacts"
                                 class="arrow-dropdown">
                         </div>
 
@@ -105,10 +107,11 @@
                     <div class="category-content">
                         <div class="assigned-text">Select task category</div>
                         <div class="assigned-arrow-container">
-                            <img src="/assets/icons-addtask/arrow_drop_down.png" alt="Select contacts"
+                            <img id="assigned-arrow-icon" src="/assets/icons-addtask/arrow_drop_down.png" alt="Select contacts"
                                 class="arrow-dropdown">
                         </div>
                     </div>
+                    <span class="error-message">This field is required</span>
                 </div>
 
                 <div class="subtask-container">
@@ -137,7 +140,7 @@
 
     <div class="button-container">
         <button class="clear-btn">Clear <img src="./assets/icons-addtask/iconoir_cancel (1).png" alt=""></button>
-        <button class="create-btn">Create Task <img src="./assets/icons-addtask/check (1).png" alt=""></button>
+        <button class="create-btn" id="create-btn">Create Task <img src="./assets/icons-addtask/check (1).png" alt=""></button>
     </div>        
 
     <script src="./scripts/auth.js"></script>
@@ -148,8 +151,9 @@
             setActiveNavigation();
             });
     </script>
-    <script src="./scripts/addtask.js"></script>
     <script src="./scripts/tasks-crud.js"></script>
+    <script src="./scripts/addtask.js"></script>
+    
 
 </body>
 </html>
