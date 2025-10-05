@@ -32,7 +32,7 @@ function isGuest() {
  * Sets the active navigation and footer items based on the current page.
  */
 function setActiveNavigation() {
-  const currentPage = getCurrentPage();
+  let currentPage = getCurrentPage();
   activateNavItems('.nav-item', 'active', currentPage);
   activateNavItems('.footer-item', 'footer-active', currentPage);
 }
@@ -45,23 +45,25 @@ function getCurrentPage() {
 }
 
 /**
- * Adds the active class to navigation or footer items that match the current page.
+ * Adds the active class and ARIA attribute to navigation or footer items that match the current page.
  *
  * @param {string} selector - CSS selector for the navigation/footer items.
  * @param {string} activeClass - The CSS class to add for the active item.
  * @param {string} currentPage - The current page filename.
  */
 function activateNavItems(selector, activeClass, currentPage) {
-  const items = document.querySelectorAll(selector);
+  let items = document.querySelectorAll(selector);
   items.forEach(link => {
     link.classList.remove(activeClass);
+    link.removeAttribute('aria-current');
 
-    const href = link.getAttribute('href');
+    let href = link.getAttribute('href');
     if (!href) return;
 
-    const hrefPage = href.split('?')[0].replace('./', '');
+    let hrefPage = href.split('?')[0].replace('./', '');
     if (hrefPage === currentPage) {
       link.classList.add(activeClass);
+      link.setAttribute('aria-current', 'page');
     }
   });
 }
