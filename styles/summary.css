@@ -64,7 +64,6 @@ main {
   color: #4589ff;
 }
 
-/* Karte selbst */
 .urgent-card {
   grid-area: urgent;
   cursor: pointer;
@@ -77,7 +76,6 @@ main {
   justify-content: center;
 }
 
-/* Inhalt der Karte */
 .urgent-card .middle-row-left {
   display: flex;
   align-items: center;
@@ -87,7 +85,6 @@ main {
   border-radius: 30px;
 }
 
-/* Hover-Effekt auf Karte */
 .urgent-card:hover {
   background-color: #ffffff;
   box-shadow: 0px 0px 4px 0px #00000029;
@@ -95,7 +92,6 @@ main {
   border-radius: 0px 30px 30px 30px;
 }
 
-/* Text & Icons bei Hover */
 .urgent-card:hover .middle-row-left-left-top span,
 .urgent-card:hover .middle-row-left-left-bottom span,
 .urgent-card:hover .middle-row-left-right-top,
@@ -103,7 +99,6 @@ main {
   color: #4589ff;
 }
 
-/* Mittlere Trennlinie bei Hover */
 .urgent-card .middle-row-left-middle {
   width: 3px;
   height: 145px;
@@ -361,6 +356,18 @@ main {
 .bottom-row-type-2:hover img{
   border-radius: 50%;
   border: 3px solid white;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (max-width: 768px) {

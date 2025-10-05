@@ -66,4 +66,5 @@ function activateNavItems(selector, activeClass, currentPage) {
   });
 }
 
+// Execute immediately after page load
 enforceAuthentication();
