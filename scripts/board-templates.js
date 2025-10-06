@@ -1,6 +1,6 @@
 function addTaskModal() {
     return `
-        <div id="add-task-modal" class="modal-overlay hidden">
+            <div id="add-task-modal" class="modal-overlay hidden">
             <div class="modal">
                 <div id="header-container">
                     <div id="header-content">Add Task</div>
@@ -75,8 +75,6 @@ function addTaskModal() {
                             </div>
                         </div>
                     </div>
-                     <span class="error-message">This field is required</span>
-                </div>
 
                     <div class="task-container">
                         <div class="assigned-header">
@@ -92,13 +90,14 @@ function addTaskModal() {
                         <ul id="subtask-list" class="subtask-list"></ul>
                         <div id="task-dropdown" class="task-dropdown" style="display:none;"></div>
                     </div>
-
-                    <div class="end-spacer"></div>
-                </div>
-                <div class="modal-footer">
+                    <div class="modal-footer">
                     <button class="create-btn" id="create-btn">
                         Create Task <img src="./assets/icons-addTask/check (1).png" alt="">
                     </button>
+                </div>
+
+                     <span class="error-message">This field is required</span>
+                </div>
                 </div>
             </div>
         </div>

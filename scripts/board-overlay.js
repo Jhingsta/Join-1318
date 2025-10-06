@@ -108,16 +108,14 @@ function renderEditSubtasks(task) {
     if (!list) return;
 
     list.innerHTML = "";
-
-    // Fallback, falls noch keine Subtasks existieren
-    if (!task.subtasks) {
-        task.subtasks = { items: [], total: 0, completed: 0 };
+    if (!task.subtasks || !Array.isArray(task.subtasks)) {
+        task.subtasks = [];
     }
     if (!task.subtasks.items) {
         task.subtasks.items = [];
     }
 
-    task.subtasks.items.forEach((st, index) => {
+    (task.subtasks || []).forEach((st, index) => {
         const li = document.createElement("li");
         li.className = "subtask-item";
 
@@ -201,7 +199,7 @@ async function openEditMode(task) {
     if (users.length === 0) {
         await loadUsers();
     }
-        
+
     const view = document.getElementById("task-view");
     const edit = document.getElementById("task-edit");
     const editForm = document.getElementById("edit-form-fields");
@@ -276,6 +274,7 @@ async function openEditMode(task) {
     });
 
     // DOM-Elemente greifen
+    editForm.innerHTML = taskEditTemplate(task, isoDate);
     const subtaskInput = document.getElementById("edit-subtask-input"); // Dein Subtask Input im Edit-Modal
     const editCancelBtn = document.getElementById("edit-cancel-btn");
     const editCheckBtn = document.getElementById("edit-check-btn");
@@ -297,7 +296,6 @@ async function openEditMode(task) {
     editCheckBtn.addEventListener("click", async () => {
         const text = subtaskInput.value.trim();
         if (text) {
-            // ✅ KORRIGIERT: Verwende addSubtask() Funktion
             await addSubtask(task.id, text);
 
             // Subtasks neu rendern
