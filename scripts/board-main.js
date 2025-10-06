@@ -41,9 +41,10 @@ const titleInput = document.querySelector(".title-input");
 const titleError = document.querySelector(".error-message");
 
 const dueDateInput = document.querySelector(".due-date-input");
+const dueDateDisplay = document.querySelector(".due-date-display");
 const dueDateIcon = document.querySelector(".due-date-icon");
 const dueDateContainer = document.querySelector(".due-date-content");
-const dueDateError = document.querySelector(".due-date-container .error-message");
+const dueDateError = document.querySelector(".error-message");
 
 async function loadTasksForBoard() {
     try {
@@ -313,90 +314,90 @@ assignedInput.addEventListener('input', () => {
     });
 });
 
-function createTaskCard(task) {
-    const card = document.createElement('div');
-    card.className = 'task-card';
-    card.id = `task-${task.id}`;
+// function createTaskCard(task) {
+//     const card = document.createElement('div');
+//     card.className = 'task-card';
+//     card.id = `task-${task.id}`;
+    
+//     const type = document.createElement('div');
+//     type.className = 'task-type';
 
-    const type = document.createElement('div');
-    type.className = 'task-type';
+//     const typeImg = document.createElement('img');
+//     if (task.category === "User Story") {
+//         typeImg.src = './assets/icons-board/user-story-tag.svg';
+//         typeImg.alt = 'User Story';
+//     } else if (task.category === "Technical Task") {
+//         typeImg.src = './assets/icons-board/technical-task-tag.svg';
+//         typeImg.alt = 'Technical Task';
+//     }
+//     type.appendChild(typeImg);
 
-    const typeImg = document.createElement('img');
-    if (task.category === "User Story") {
-        typeImg.src = './assets/icons-board/user-story-tag.svg';
-        typeImg.alt = 'User Story';
-    } else if (task.category === "Technical Task") {
-        typeImg.src = './assets/icons-board/technical-task-tag.svg';
-        typeImg.alt = 'Technical Task';
-    }
-    type.appendChild(typeImg);
+//     const content = document.createElement('div');
+//     content.className = 'task-content';
+//     const title = document.createElement('div');
+//     title.className = 'title';
+//     title.textContent = task.title || 'Untitled';
+//     const info = document.createElement('div');
+//     info.className = 'task-info';
+//     info.textContent = task.description || '';
+//     content.appendChild(title);
+//     content.appendChild(info);
 
-    const content = document.createElement('div');
-    content.className = 'task-content';
-    const title = document.createElement('div');
-    title.className = 'title';
-    title.textContent = task.title || 'Untitled';
-    const info = document.createElement('div');
-    info.className = 'task-info';
-    info.textContent = task.description || '';
-    content.appendChild(title);
-    content.appendChild(info);
+//     const subtasks = document.createElement('div');
+//     subtasks.className = 'subtasks';
 
-    const subtasks = document.createElement('div');
-    subtasks.className = 'subtasks';
+//     if (task.subtasks && (task.subtasks.total || task.subtasks.completed)) {
+//         const progressContainer = document.createElement('div');
+//         progressContainer.className = 'progress-container';
 
-    if (task.subtasks && (task.subtasks.total || task.subtasks.completed)) {
-        const progressContainer = document.createElement('div');
-        progressContainer.className = 'progress-container';
+//         const completed = task.subtasks?.completed || 0;
+//         const total = task.subtasks?.total || 0;
 
-        const completed = task.subtasks?.completed || 0;
-        const total = task.subtasks?.total || 0;
+//         const progressFill = document.createElement('div');
+//         progressFill.className = 'progress-fill';
+//         const percentage = total > 0 ? (completed / total) * 100 : 0;
+//         progressFill.style.width = `${percentage}%`;
+//         progressContainer.appendChild(progressFill);
+//         const progressText = document.createElement('span');
+//         progressText.className = 'subtasks-text';
+//         progressText.textContent = `${completed}/${total} Subtasks`;
+//         subtasks.appendChild(progressContainer);
+//         subtasks.appendChild(progressText);
+//     }
 
-        const progressFill = document.createElement('div');
-        progressFill.className = 'progress-fill';
-        const percentage = total > 0 ? (completed / total) * 100 : 0;
-        progressFill.style.width = `${percentage}%`;
-        progressContainer.appendChild(progressFill);
-        const progressText = document.createElement('span');
-        progressText.className = 'subtasks-text';
-        progressText.textContent = `${completed}/${total} Subtasks`;
-        subtasks.appendChild(progressContainer);
-        subtasks.appendChild(progressText);
-    }
+//     const assignedTo = document.createElement('div');
+//     assignedTo.className = 'assigned-to';
+//     const avatarsContainer = document.createElement('div');
+//     avatarsContainer.className = 'avatars-container'
 
-    const assignedTo = document.createElement('div');
-    assignedTo.className = 'assigned-to';
-    const avatarsContainer = document.createElement('div');
-    avatarsContainer.className = 'avatars-container'
+//     if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
+//         task.assignedUsersFull.slice(0, 3).forEach(user => {
+//             const avatarDiv = document.createElement('div');
+//             avatarDiv.className = 'assigned-avatar';
+//             avatarDiv.textContent = user.initials;
+//             avatarDiv.style.backgroundColor = user.color;
+//             avatarsContainer.appendChild(avatarDiv);
+//         });
+//     }
 
-    if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
-        task.assignedUsersFull.slice(0, 3).forEach(user => {
-            const avatarDiv = document.createElement('div');
-            avatarDiv.className = 'assigned-avatar';
-            avatarDiv.textContent = user.initials;
-            avatarDiv.style.backgroundColor = user.color;
-            avatarsContainer.appendChild(avatarDiv);
-        });
-    }
+//     const prioImg = document.createElement('img');
+//     prioImg.alt = 'Priority';
+//     prioImg.src = priorityIcon(task.priority);
+//     prioImg.style.marginLeft = 'auto';
 
-    const prioImg = document.createElement('img');
-    prioImg.alt = 'Priority';
-    prioImg.src = priorityIcon(task.priority);
-    prioImg.style.marginLeft = 'auto';
+//     assignedTo.appendChild(avatarsContainer);
+//     assignedTo.appendChild(prioImg);
 
-    assignedTo.appendChild(avatarsContainer);
-    assignedTo.appendChild(prioImg);
+//     card.appendChild(type);
+//     card.appendChild(content);
+//     card.appendChild(subtasks);
+//     card.appendChild(assignedTo);
 
-    card.appendChild(type);
-    card.appendChild(content);
-    card.appendChild(subtasks);
-    card.appendChild(assignedTo);
-
-    card.addEventListener("click", () => {
-        openTaskDetails(task);
-    });
-    return card;
-}
+//     card.addEventListener("click", () => {
+//         openTaskDetails(task);
+//     });
+//     return card;
+// }
 
 function priorityIcon(priority) {
     switch ((priority || 'medium').toLowerCase()) {
@@ -443,6 +444,26 @@ titleInput.addEventListener("input", () => {
     }
 })
 
+// Formatierung: ISO (YYYY-MM-DD) zu dd/mm/yyyy
+function formatDateForDisplay(isoDate) {
+    if (!isoDate) return "";
+    const [year, month, day] = isoDate.split("-");
+    return `${day}/${month}/${year}`;
+}
+
+// Display aktualisieren
+function updateDisplay() {
+    const isoDate = dueDateInput.value;
+    
+    if (isoDate) {
+        dueDateDisplay.textContent = formatDateForDisplay(isoDate);
+        dueDateDisplay.classList.add("has-value");
+    } else {
+        dueDateDisplay.textContent = "dd/mm/yyyy";
+        dueDateDisplay.classList.remove("has-value");
+    }
+}
+
 dueDateInput.addEventListener("blur", () => {
     if (!dueDateInput.value.trim()) {
         dueDateInput.style.borderBottom = "1px solid #FF4D4D";
@@ -461,8 +482,12 @@ function openDatepicker() {
     }
 }
 
+// Datum wurde geändert -> Display aktualisieren
+dueDateInput.addEventListener("change", updateDisplay);
+
 dueDateIcon.addEventListener("click", openDatepicker);
 dueDateContainer.addEventListener("click", openDatepicker);
+
 const buttons = document.querySelectorAll(".priority-frame");
 
 buttons.forEach((btn) => {
@@ -833,7 +858,6 @@ function openTaskDetails(task) {
         });
     }
 }
-
 
 function closeTaskDetails() {
     const overlay = document.getElementById("task-detail-overlay");
