@@ -1,66 +1,108 @@
-// Zeigt Welcome Animation nur nach frischem Login (Mobile Only)
+/**
+ * Initializes the summary welcome animation for mobile devices.
+ * 
+ * Displays the welcome animation only after a fresh login
+ * and only on mobile screens (≤768px width). If the animation
+ * has already been shown or the user is on desktop, the main
+ * content is shown immediately.
+ */
 function initSummaryAnimation() {
-    // Prüfen ob Animation gezeigt werden soll
-    const shouldAnimate = sessionStorage.getItem('showSummaryAnimation');
-    const isMobile = window.innerWidth <= 768;
+    let shouldAnimate = sessionStorage.getItem('showSummaryAnimation');
+    let isMobile = window.innerWidth <= 768;
     
     if (!shouldAnimate || !isMobile) {
-        // Keine Animation - Content normal anzeigen
         showContentDirectly();
         return;
     }
     
-    // Animation starten
     startWelcomeAnimation();
-    
-    // Flag entfernen damit Animation nicht nochmal läuft
     sessionStorage.removeItem('showSummaryAnimation');
 }
 
+/**
+ * Displays the main content immediately, bypassing any animation.
+ */
 function showContentDirectly() {
-    const contentWrapper = document.querySelector('.main-content-wrapper');
+    let contentWrapper = document.querySelector('.main-content-wrapper');
     if (contentWrapper) {
         contentWrapper.style.opacity = '1';
         contentWrapper.style.transform = 'translateY(0)';
     }
 }
 
+/**
+ * Initializes and starts the welcome animation sequence (mobile only)
+ * with ARIA attributes for screen reader accessibility.
+ */
 function startWelcomeAnimation() {
-    const overlay = document.getElementById('animation-overlay');
-    const greetingText = document.getElementById('greeting-animation-text');
-    const contentWrapper = document.querySelector('.main-content-wrapper');
-    
+    let overlay = document.getElementById('animation-overlay');
+    let greetingText = document.getElementById('greeting-animation-text');
+    let contentWrapper = document.querySelector('.main-content-wrapper');
+
     if (!overlay || !greetingText || !contentWrapper) {
         console.warn('Animation elements not found, showing content directly');
         showContentDirectly();
         return;
     }
-    
-    // Greeting Text setzen (gleiche Logik wie in summary.js)
+    overlay.setAttribute('aria-hidden', 'false');
+    greetingText.setAttribute('aria-live', 'polite');
+    greetingText.setAttribute('aria-atomic', 'true');
+
     updateAnimationGreeting(greetingText);
-    
-    // Overlay anzeigen
     overlay.classList.add('show');
-    
-    // Nach 1.5 Sekunden: Overlay ausblenden und Content einblenden
-    setTimeout(() => {
-        // Overlay fade-out starten
-        overlay.classList.add('fade-out');
-        
-        // Content slide-in starten
-        contentWrapper.classList.add('slide-in');
-        
-        // Nach fade-out Animation: Overlay komplett verstecken
-        setTimeout(() => {
-            overlay.style.display = 'none';
-        }, 300); // 0.3s = fadeOut animation duration
-        
-    }, 1500); // 1.5 Sekunden Greeting anzeigen
+    runAnimationSequenceWithAria(overlay, contentWrapper);
 }
 
+/**
+ * Handles the animation sequence and updates ARIA attributes accordingly.
+ *
+ * @param {HTMLElement} overlay
+ * @param {HTMLElement} contentWrapper
+ */
+function runAnimationSequenceWithAria(overlay, contentWrapper) {
+    setTimeout(() => {
+        overlay.classList.add('fade-out');
+        contentWrapper.classList.add('slide-in');
+
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            // ARIA: Overlay für Screenreader ausblenden nach Animation
+            overlay.setAttribute('aria-hidden', 'true');
+        }, 300);
+    }, 1500);
+}
+
+/**
+ * Handles the timed animation sequence for the welcome overlay.
+ *
+ * Fades out the overlay after 1.5 seconds, slides in the main content,
+ * and completely hides the overlay after the fade-out transition ends.
+ *
+ * @param {HTMLElement} overlay
+ * @param {HTMLElement} contentWrapper
+ */
+function runAnimationSequence(overlay, contentWrapper) {
+    setTimeout(() => {
+        overlay.classList.add('fade-out');
+        contentWrapper.classList.add('slide-in');
+        
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 300);
+    }, 1500);
+}
+
+/**
+ * Updates the greeting text displayed during the welcome animation.
+ *
+ * Chooses the greeting message based on the current time and user name.
+ * If the user is a guest, only a generic greeting is shown.
+ *
+ * @param {HTMLElement} greetingElement - The DOM element where the greeting will be displayed.
+ */
 function updateAnimationGreeting(greetingElement) {
-    const greeting = getGreetingByTime();
-    const userName = getCurrentUserName();
+    let greeting = getGreetingByTime();
+    let userName = getCurrentUserName();
     
     if (userName === 'Guest') {
         greetingElement.className = 'greeting-time-guest';
@@ -74,5 +116,5 @@ function updateAnimationGreeting(greetingElement) {
     }
 }
 
-// Kein EventListener - direkt ausführen
+// Execute immediately after page load
 initSummaryAnimation();

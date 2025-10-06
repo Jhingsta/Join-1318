@@ -558,6 +558,7 @@ input {
 
 .dropdown-menu {
     display: none;
+    overflow-y: auto;
     position: absolute;
     top: 100%;
     left: 0;
@@ -566,6 +567,7 @@ input {
     width: 100%;
     max-width: 440px;
     z-index: 10;
+    max-height: 280px;
 }
 
 .dropdown-menu.show {
