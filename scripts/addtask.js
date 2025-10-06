@@ -3,6 +3,7 @@ const titleInput = document.querySelector(".title-input");
 const titleError = document.querySelector(".error-message");
 titleInput.addEventListener("input", handleTitleValidation);
 titleInput.addEventListener("blur", handleTitleValidation);
+let users = [];
 
 function handleTitleValidation() {
     const isEmpty = !titleInput.value.trim();
@@ -73,13 +74,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     const arrowIcon = arrowContainer.querySelector('img');
     const assignedDropdown = document.getElementById('assigned-dropdown');
     const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
-    let users = [];
+
 
     async function loadUsers() {
         try {
             const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
             const data = await res.json();
-            users = data ? Object.values(data) : [];
+
+            // IDs aus den Keys beibehalten
+            users = data
+                ? Object.entries(data).map(([id, user]) => ({
+                    id,
+                    ...user
+                }))
+                : [];
+
             populateDropdown();
         } catch (e) {
             console.error("Fehler beim Laden der Users", e);
@@ -106,10 +115,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     function populateDropdown() {
         assignedDropdown.innerHTML = "";
 
-        users.forEach((user, i) => {
+        users.forEach(user => {
             const div = document.createElement('div');
             div.className = 'dropdown-item';
-            div.dataset.clicked = "false";
+            div.dataset.userId = user.id;
 
             const wrapper = document.createElement('div');
             wrapper.className = 'assigned-wrapper';
@@ -139,17 +148,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             div.appendChild(checkboxWrapper);
             assignedDropdown.appendChild(div);
 
-            div.addEventListener('click', (e) => {
-                if (e.target === checkbox || e.target === hoverOverlay) return;
-                div.classList.toggle('active');
-            });
-
+            // Click-Handler für Checkbox
             checkboxWrapper.addEventListener('click', (e) => {
                 e.stopPropagation();
-
                 const isChecked = checkboxWrapper.classList.contains('checked');
                 checkboxWrapper.classList.toggle('checked', !isChecked);
-
                 checkbox.src = isChecked
                     ? "./assets/icons-addtask/Property 1=Default.png"
                     : "./assets/icons-addtask/Property 1=checked.svg";
@@ -157,6 +160,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         });
     }
+
 
     function toggleDropdown(e) {
         e.stopPropagation();
@@ -298,7 +302,6 @@ function startEditMode(li, span) {
 // Funktion: Task-Daten auslesen
 // ----------------------------
 function getTaskData() {
-
     const titleInput = document.querySelector(".title-input");
     const title = titleInput.value.trim();
 
@@ -311,11 +314,13 @@ function getTaskData() {
     const priorityBtn = document.querySelector(".priority-frame.active");
     const priority = priorityBtn ? priorityBtn.textContent.trim().toLowerCase() : "medium";
 
+    // 🔹 Assigned Users Full
     let assignedUsersFull = [];
     if (assignedDropdown) {
-        assignedDropdown.querySelectorAll(".dropdown-item.selected").forEach(div => {
-            const name = div.textContent.trim();
-            const user = users.find(u => u.name === name);
+        assignedDropdown.querySelectorAll(".checkbox-wrapper.checked").forEach(wrapper => {
+            const div = wrapper.closest(".dropdown-item");
+            const userId = div.dataset.userId;
+            const user = users.find(u => u.id === userId);
             if (user) {
                 assignedUsersFull.push({
                     id: user.id,
@@ -335,6 +340,7 @@ function getTaskData() {
         .map(input => input.value.trim())
         .filter(title => title.length > 0)
         .map(title => ({ title, done: false }));
+
     return {
         title,
         description,
@@ -345,6 +351,7 @@ function getTaskData() {
         subtasks
     };
 }
+
 
 const dueDateContent = document.querySelector(".due-date-content");
 dueDateContent.addEventListener("input", () => {
