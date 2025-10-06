@@ -515,6 +515,7 @@ input {
 .assigned-text-container {
     display: flex;
     justify-content: space-between;
+    width:100%;
 }
 
 .assigned-input {
