@@ -1,6 +1,6 @@
-// ===================== HAUPTFUNKTION - EDIT MODE ÖFFNEN =====================
-
+//Edit-Mode öffnen
 async function openEditMode(task) {
+    // ✅ KORRIGIERT: Verwende loadUsers() statt loadContactsFromFirebase()
     if (users.length === 0) {
         await loadUsers();
     }
@@ -9,42 +9,27 @@ async function openEditMode(task) {
     const edit = document.getElementById("task-edit");
     const editForm = document.getElementById("edit-form-fields");
 
-    if (!view || !edit || !editForm) {
-        console.error('Edit modal elements not found');
-        return;
-    }
-
     view.classList.add("hidden");
     edit.classList.remove("hidden");
 
     let isoDate = task.dueDate || "";
-    const priority = (task.priority || "medium").trim().toLowerCase();
 
-    // Template einfügen
+    const priority = (task.priority || "medium").trim().toLowerCase(); // Konsistent mit createTask()
+
+    // HTML generieren
     editForm.innerHTML = taskEditTemplate(task, isoDate);
 
-    // ===================== DUE DATE HANDLING =====================
-    const editDueDateInput = document.getElementById("edit-due-date-input");
-    const dueDateContainer = document.getElementById("edit-due-date-container");
+    const editDueDateInput = document.getElementById("edit-dueDate");
+    const dueDateContainer = document.querySelector(".due-date-container-overlay");
 
-    if (dueDateContainer && editDueDateInput) {
-        dueDateContainer.addEventListener("click", (e) => {
-            if (e.target === editDueDateInput) return;
-            editDueDateInput.focus();
-            editDueDateInput.click();
-        });
-    }
-
-    // ===================== ASSIGNED USERS DROPDOWN =====================
+    dueDateContainer.addEventListener("click", (e) => {
+        if (e.target === editDueDateInput) return; // Klick direkt auf Input ignorieren
+        editDueDateInput.focus(); // Fokus setzen
+        editDueDateInput.click(); // Versuch den Datepicker zu öffnen
+    });
     const placeholder = document.getElementById("edit-assigned-placeholder");
     const input = document.getElementById("edit-assigned-input");
     const arrow = document.getElementById("edit-assigned-arrow");
-    const dropdown = document.getElementById("edit-assigned-dropdown");
-
-    if (!dropdown) {
-        console.error('Edit assigned dropdown not found');
-        return;
-    }
 
     function openDropdown() {
         dropdown.classList.remove("hidden");
@@ -62,19 +47,14 @@ async function openEditMode(task) {
         input.value = "";
     }
 
-    if (placeholder) {
-        placeholder.addEventListener("click", (e) => {
-            e.stopPropagation();
-            openDropdown();
-        });
-    }
-
-    if (arrow) {
-        arrow.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dropdown.classList.contains("hidden") ? openDropdown() : closeDropdown();
-        });
-    }
+    placeholder.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openDropdown();
+    });
+    arrow.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.contains("hidden") ? openDropdown() : closeDropdown();
+    });
 
     // Klick außerhalb schließt Dropdown
     document.addEventListener("click", (e) => {
@@ -83,57 +63,58 @@ async function openEditMode(task) {
         }
     });
 
-    // Live-Suche im Dropdown
-    if (input) {
-        input.addEventListener("input", () => {
-            const filter = input.value.toLowerCase();
-            Array.from(dropdown.children).forEach(div => {
-                const nameEl = div.querySelector("span");
-                if (nameEl) {
-                    const name = nameEl.textContent.toLowerCase();
-                    div.style.display = name.includes(filter) ? "flex" : "none";
-                }
-            });
+    // Live-Suche
+    input.addEventListener("input", () => {
+        const filter = input.value.toLowerCase();
+        Array.from(dropdown.children).forEach(div => {
+            const name = div.querySelector("span").textContent.toLowerCase();
+            div.style.display = name.includes(filter) ? "flex" : "none";
         });
+    });
 
-        input.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dropdown.classList.contains("hidden") ? openDropdown() : closeDropdown();
-        });
-    }
+    // Input-Feld klick → Dropdown öffnen/schließen
+    input.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.contains("hidden") ? openDropdown() : closeDropdown();
+    });
 
-    // ===================== SUBTASK HANDLING =====================
-    const subtaskInput = document.getElementById("edit-subtask-input");
-    const editCancelBtn = document.getElementById("edit-subtask-cancel");
-    const editCheckBtn = document.getElementById("edit-subtask-check");
+    // DOM-Elemente greifen
+    editForm.innerHTML = taskEditTemplate(task, isoDate);
+    const subtaskInput = document.getElementById("edit-subtask-input"); // Dein Subtask Input im Edit-Modal
+    const editCancelBtn = document.getElementById("edit-cancel-btn");
+    const editCheckBtn = document.getElementById("edit-check-btn");
 
-    if (subtaskInput && editCancelBtn && editCheckBtn) {
-        subtaskInput.addEventListener("input", () => {
-            const hasText = subtaskInput.value.trim().length > 0;
-            editCancelBtn.style.display = hasText ? "inline-block" : "none";
-            editCheckBtn.style.display = hasText ? "inline-block" : "none";
-        });
+    subtaskInput.addEventListener("input", () => {
+        const hasText = subtaskInput.value.trim().length > 0;
+        editCancelBtn.style.display = hasText ? "inline-block" : "none";
+        editCheckBtn.style.display = hasText ? "inline-block" : "none";
+    });
 
-        editCancelBtn.addEventListener("click", () => {
+    // Cancel Button
+    editCancelBtn.addEventListener("click", () => {
+        subtaskInput.value = "";
+        editCancelBtn.style.display = "none";
+        editCheckBtn.style.display = "none";
+    });
+
+    // ✅ KORRIGIERT: Check-Button Event für Subtasks
+    editCheckBtn.addEventListener("click", async () => {
+        const text = subtaskInput.value.trim();
+        if (text) {
+            await addSubtask(task.id, text);
+
+            // Subtasks neu rendern
+            renderEditSubtasks(task);
+
+            // Input und Buttons zurücksetzen
             subtaskInput.value = "";
             editCancelBtn.style.display = "none";
             editCheckBtn.style.display = "none";
-        });
+        }
+    });
 
-        editCheckBtn.addEventListener("click", async () => {
-            const text = subtaskInput.value.trim();
-            if (text) {
-                await addSubtask(task.id, text);
-                renderEditSubtasks(task);
-                subtaskInput.value = "";
-                editCancelBtn.style.display = "none";
-                editCheckBtn.style.display = "none";
-            }
-        });
-    }
-
-    // ===================== PRIORITY BUTTONS =====================
-    const priorityButtons = document.querySelectorAll("#edit-priority-buttons .priority-frame");
+    // Priorität Buttons
+    const priorityButtons = edit.querySelectorAll(".priority-frame");
     priorityButtons.forEach((btn) => {
         if (btn.dataset.priority.toLowerCase() === priority.toLowerCase()) {
             btn.classList.add("active");
@@ -145,67 +126,71 @@ async function openEditMode(task) {
         });
     });
 
-    // ===================== TASK AKTUALISIEREN =====================
     currentTask = task;
 
+    // Assigned Users Dropdown
     await renderAssignedDropdownOverlay(task);
+    const dropdownBtn = document.getElementById("edit-assigned-dropdown-btn");
+    const dropdown = document.getElementById("edit-assigned-dropdown-overlay");
+    if (dropdownBtn && dropdown) {
+        dropdownBtn.onclick = () => dropdown.classList.toggle("hidden");
+    }
+
+    // Subtasks initial rendern
     renderEditSubtasks(task);
 
-    // ===================== SAVE BUTTON =====================
-    const saveBtn = document.getElementById("save-task");
-    if (saveBtn) {
-        saveBtn.onclick = async () => {
-            if (!currentTask) return;
+    // ✅ KORRIGIERT: Save-Button
+    document.getElementById("save-task").onclick = async () => {
+        if (!currentTask) return;
 
-            const titleInput = document.getElementById("edit-title-input");
-            const descInput = document.getElementById("edit-description-input");
-            const dueDateInput = document.getElementById("edit-due-date-input");
+        // Daten aus Form auslesen
+        currentTask.title = document.getElementById("edit-title").value;
+        currentTask.description = document.getElementById("edit-desc").value;
+        currentTask.priority = currentTask.priority || "medium";
 
-            if (titleInput) currentTask.title = titleInput.value;
-            if (descInput) currentTask.description = descInput.value;
-            currentTask.priority = currentTask.priority || "medium";
+        // ✅ KORRIGIERT: Datum im ISO-Format speichern
+        const newDue = document.getElementById("edit-dueDate").value;
+        if (newDue) {
+            currentTask.dueDate = newDue; // Direkt ISO-Format verwenden
+        }
 
-            if (dueDateInput && dueDateInput.value) {
-                currentTask.dueDate = dueDateInput.value;
+        dropdown.classList.add("hidden");
+
+        // ✅ KORRIGIERT: Verwende updateTask() aus CRUD
+        try {
+            await updateTask(currentTask.id, {
+                title: currentTask.title,
+                description: currentTask.description,
+                priority: currentTask.priority,
+                dueDate: currentTask.dueDate,
+                assignedUsersFull: currentTask.assignedUsersFull
+            });
+
+            // Task auch lokal aktualisieren
+            const localTaskIndex = tasks.findIndex(t => t.id === currentTask.id);
+            if (localTaskIndex > -1) {
+                Object.assign(tasks[localTaskIndex], currentTask);
             }
 
-            dropdown.classList.add("hidden");
-
-            try {
-                await updateTask(currentTask.id, {
-                    title: currentTask.title,
-                    description: currentTask.description,
-                    priority: currentTask.priority,
-                    dueDate: currentTask.dueDate,
-                    assignedUsersFull: currentTask.assignedUsersFull
-                });
-
-                const localTaskIndex = tasks.findIndex(t => t.id === currentTask.id);
-                if (localTaskIndex > -1) {
-                    Object.assign(tasks[localTaskIndex], currentTask);
-                }
-
-                openTaskDetails(currentTask);
-                renderBoard();
-            } catch (error) {
-                console.error('Error updating task:', error);
-            }
-        };
-    }
+            openTaskDetails(currentTask);
+            renderBoard();
+        } catch (error) {
+            console.error('Error updating task:', error);
+        }
+    };
 }
 
-// ===================== SUBTASK RENDERING =====================
-
+//Subtasks rendern
 function renderEditSubtasks(task) {
     const list = document.getElementById("edit-subtask-list");
     if (!list) return;
 
-    list.innerHTML = "";
-
+    // ✅ Sicherstellen, dass Struktur existiert
     if (!task.subtasks || !task.subtasks.items || !Array.isArray(task.subtasks.items)) {
         task.subtasks = { items: [], completed: 0, total: 0 };
     }
 
+    // ✅ Über .items iterieren
     task.subtasks.items.forEach((st, index) => {
         const li = document.createElement("li");
         li.className = "subtask-item";
@@ -240,6 +225,7 @@ function renderEditSubtasks(task) {
     });
 }
 
+//Subtask edit mode
 function startEditSubtaskMode(task, li, span, index) {
     const input = document.createElement("input");
     input.type = "text";
@@ -250,25 +236,24 @@ function startEditSubtaskMode(task, li, span, index) {
     saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
     saveIcon.alt = "Save";
     saveIcon.addEventListener("click", async () => {
-        const newText = input.value.trim();
-        if (newText) {
-            task.subtasks.items[index].title = newText;
-            await updateTask(task.id, { subtasks: task.subtasks });
-            renderEditSubtasks(task);
-        }
-    });
-
-    const cancelIcon = document.createElement("img");
-    cancelIcon.src = "./assets/icons-addtask/Subtask cancel.png";
-    cancelIcon.alt = "Cancel";
-    cancelIcon.addEventListener("click", () => {
+        task.subtasks.items[index].title = input.value.trim() || task.subtasks.items[index].title;
+        await updateTask(task.id, { subtasks: task.subtasks });
         renderEditSubtasks(task);
     });
+
+    // const deleteIcon = document.createElement("img");
+    // deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
+    // deleteIcon.alt = "Delete";
+    // deleteIcon.addEventListener("click", async () => {
+    //     task.subtasks.items.splice(index, 1);
+    //     await updateTask(task.id, { subtasks: task.subtasks });
+    //     renderEditSubtasks(task);
+    // });
 
     const iconsDiv = document.createElement("div");
     iconsDiv.className = "subtask-icons";
     iconsDiv.appendChild(saveIcon);
-    iconsDiv.appendChild(cancelIcon);
+    iconsDiv.appendChild(deleteIcon);
 
     li.innerHTML = "";
     li.appendChild(input);
@@ -277,10 +262,9 @@ function startEditSubtaskMode(task, li, span, index) {
     input.focus();
 }
 
-// ===================== ASSIGNED USERS DROPDOWN =====================
-
+//Dropdown für Assigned Users rendern
 async function renderAssignedDropdownOverlay(task) {
-    const dropdown = document.getElementById("edit-assigned-dropdown");
+    const dropdown = document.getElementById("edit-assigned-dropdown-overlay");
     if (!dropdown) return;
 
     dropdown.innerHTML = "";
@@ -294,6 +278,7 @@ async function renderAssignedDropdownOverlay(task) {
         item.className = "dropdown-item";
         if (initiallySelected) item.classList.add("selected");
 
+        // Avatar + Name
         const wrapper = document.createElement("div");
         wrapper.className = "assigned-wrapper";
 
@@ -308,6 +293,7 @@ async function renderAssignedDropdownOverlay(task) {
         wrapper.appendChild(avatar);
         wrapper.appendChild(label);
 
+        // Checkbox
         const checkboxWrapper = document.createElement("div");
         checkboxWrapper.className = "checkbox-wrapper";
 
@@ -360,8 +346,6 @@ async function renderAssignedDropdownOverlay(task) {
     renderAvatars(task);
 }
 
-// ===================== ADD SUBTASK =====================
-
 async function addSubtask(taskId, title) {
     if (!taskId || !title) return;
 
@@ -378,7 +362,6 @@ async function addSubtask(taskId, title) {
         if (!Array.isArray(task.subtasks.items)) {
             task.subtasks.items = [];
         }
-
         task.subtasks.items.push({ title, done: false });
         task.subtasks.total = task.subtasks.items.length;
         task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
@@ -390,7 +373,6 @@ async function addSubtask(taskId, title) {
                 completed: task.subtasks.completed
             }
         });
-
         renderBoard();
     } catch (error) {
         console.error("Fehler beim Hinzufügen der Subtask:", error);
@@ -398,12 +380,9 @@ async function addSubtask(taskId, title) {
     }
 }
 
-// ===================== AVATARS RENDERING =====================
-
 function renderAvatars(task) {
-    const avatarsContainer = document.getElementById("edit-avatars-container");
+    const avatarsContainer = document.getElementById("edit-avatars-container-overlay");
     if (!avatarsContainer) return;
-
     avatarsContainer.innerHTML = "";
 
     (task.assignedUsersFull || []).forEach(user => {
@@ -411,11 +390,11 @@ function renderAvatars(task) {
         avatarDiv.className = "selected-avatar";
         avatarDiv.textContent = user.initials;
         avatarDiv.style.backgroundColor = user.color;
+
         avatarDiv.dataset.id = user.id;
         avatarDiv.dataset.fullname = user.name;
         avatarDiv.dataset.color = user.color;
         avatarDiv.dataset.initials = user.initials;
-
         avatarsContainer.appendChild(avatarDiv);
     });
 }

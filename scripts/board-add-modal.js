@@ -2,11 +2,53 @@ const assignedTextContainer = assignedContent.querySelector('.assigned-text-cont
 const assignedText = assignedTextContainer.querySelector('.assigned-text');
 const assignedInput = assignedContent.querySelector('.assigned-input');
 const assignedDropdown = document.getElementById('assigned-dropdown');
-const assignedContent = document.querySelector('.assigned-content');
 
 const categoryContent = document.querySelector('.category-content');
 const categoryText = categoryContent.querySelector('.assigned-text');
 const categoryArrow = categoryContent.querySelector('.assigned-arrow-icon');
+
+const taskInput = document.querySelector("#subtask-text");
+const checkBtn = document.querySelector("#check-btn");
+const cancelBtn = document.querySelector("#cancel-btn");
+const subtaskList = document.querySelector("#subtask-list");
+
+const addTaskModal = document.getElementById('add-task-modal');
+const createBtn = document.getElementById('create-btn');
+const addtaskButton = document.getElementById('add-task-btn');
+const svgButtons = document.querySelectorAll('.svg-button');
+
+const modalClose = document.getElementById('modal-close');
+const closeButton = document.querySelector('.close');
+const priorityButtons = document.querySelectorAll(".priority-frame");
+
+const titleInput = document.querySelector(".title-input");
+const titleError = document.querySelector(".error-message");
+
+// Add-Modal spezifisch
+function openModal() {
+    addTaskModal?.classList.remove('hidden');
+    addtaskButton?.classList.add('active-style');
+    currentNewTask = { assignedUsersFull: [] };
+    
+    svgButtons.forEach(btn => {
+        const svg = btn.querySelector('svg');
+        if (svg) svg.classList.add('disabled');
+    });
+}
+
+closeButton?.addEventListener('click', closeModal);
+addtaskButton?.addEventListener('click', openModal);
+modalClose?.addEventListener('click', closeModal);
+
+svgButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        openModal(button);
+    });
+});
+
+addTaskModal?.addEventListener('click', (e) => {
+    if (e.target === addTaskModal) closeModal();
+});
 
 createBtn.addEventListener("click", async (event) => {
     event.preventDefault();
@@ -277,4 +319,92 @@ document.addEventListener('click', e => {
             }
         });
     }
+});
+
+taskInput.addEventListener("input", () => {
+    if (taskInput.value.trim() !== "") {
+        checkBtn.style.display = "inline";
+        cancelBtn.style.display = "inline";
+    } else { resetInput(); }
+});
+
+function startEditMode(li, span) {
+    const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
+    saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
+}
+
+function resetInput() { 
+    taskInput.value = ""; 
+    checkBtn.style.display = "none"; 
+    cancelBtn.style.display = "none"; 
+}
+
+checkBtn.addEventListener("click", () => {
+    const currentTask = taskInput.value.trim();
+    if (!currentTask)
+        return;
+    const li = document.createElement("li");
+    const span = document.createElement("span");
+    span.textContent = currentTask;
+    li.appendChild(span);
+    const icons = document.createElement("div");
+    icons.classList.add("subtask-icons");
+    const editIcon = document.createElement("img");
+    editIcon.src = "./assets/icons-addtask/Property 1=edit.png";
+    editIcon.alt = "Edit";
+    editIcon.addEventListener("click", () => { startEditMode(li, span); });
+    const deleteIcon = document.createElement("img");
+    deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
+    deleteIcon.alt = "Delete";
+    deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); });
+    icons.appendChild(editIcon);
+    icons.appendChild(deleteIcon);
+    li.appendChild(icons);
+    subtaskList.appendChild(li);
+    resetInput();
+});
+
+cancelBtn.addEventListener("click", resetInput);
+
+function closeModal() {
+    addTaskModal?.classList.add('hidden');
+    createBtn?.classList.remove('active');
+    addtaskButton?.classList.remove('active-style');
+    svgButtons.forEach(btn => {
+        const svg = btn.querySelector('svg');
+        if (svg) svg.classList.remove('disabled');
+    });
+}
+
+assignedInput.addEventListener('input', () => {
+    const filter = assignedInput.value.toLowerCase();
+    Array.from(assignedDropdown.children).forEach(div => {
+        const name = div.querySelector('span').textContent.toLowerCase();
+        div.style.display = name.includes(filter) ? 'flex' : 'none';
+    });
+});
+
+titleInput.addEventListener("blur", () => {
+    if (!titleInput.value.trim()) {
+        titleInput.style.borderBottom = "1px solid #FF4D4D";
+        titleError.style.display = "block";
+    } else {
+        titleInput.style.borderBottom = "1px solid #D1D1D1";
+        titleError.style.display = "none";
+    }
+});
+
+titleInput.addEventListener("input", () => {
+    if (titleInput.value.trim()) {
+        titleInput.style.borderBottom = "1px solid #005DFF";
+        titleError.style.display = "none";
+    }
+})
+
+// Priority Buttons
+priorityButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+        priorityButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+    });
 });

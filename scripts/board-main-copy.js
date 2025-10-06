@@ -1,15 +1,24 @@
-// ===================== GLOBALE VARIABLEN =====================
 let tasks = [];
 let users = [];
 let currentNewTask = null;
 let currentTask = null;
 
-// ===================== TEMPLATE INJECTION =====================
 document.body.insertAdjacentHTML("beforeend", addtaskModal());
 document.body.insertAdjacentHTML('beforeend', taskDetailModal());
 
-// ===================== DOM ELEMENTE (Shared) =====================
+// const arrowContainer = assignedContent.querySelector('.assigned-arrow-container');
+const arrow = assignedContent.querySelector('.assigned-arrow-container');
+const arrowIcon = arrowContainer.querySelector('img');
+const assignedContent = document.querySelector('.assigned-content');
+
+const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
 const categories = ["Technical Task", "User Story"];
+
+const dueDateInput = document.querySelector(".due-date-input");
+const dueDateDisplay = document.querySelector(".due-date-display");
+const dueDateIcon = document.querySelector(".due-date-icon");
+const dueDateContainer = document.querySelector(".due-date-content");
+const dueDateError = document.querySelector(".error-message");
 
 async function loadTasksForBoard() {
     try {
@@ -103,15 +112,12 @@ function readableStatus(status) {
 }
 
 function populateDropdown() {
-    const assignedDropdown = document.getElementById('add-assigned-dropdown');
-    const selectedAvatarsContainer = document.getElementById('add-selected-avatars-container');
-    
     if (!assignedDropdown) {
-        console.warn('populateDropdown: #add-assigned-dropdown nicht gefunden.');
+        console.warn('populateDropdown: #assigned-dropdown nicht gefunden.');
         return;
     }
     if (!selectedAvatarsContainer) {
-        console.warn('populateDropdown: #add-selected-avatars-container nicht gefunden.');
+        console.warn('populateDropdown: .selected-avatars-container nicht gefunden.');
         return;
     }
 
@@ -182,34 +188,26 @@ function populateDropdown() {
             if (typeof updateSelectedAvatars === "function") {
                 updateSelectedAvatars();
             }
+            console.log("Checked:", isChecked, "→ Active Items:", document.querySelectorAll(".dropdown-item.active").length);
         });
     });
 }
 
 function updateSelectedAvatars() {
-    const assignedDropdown = document.getElementById('add-assigned-dropdown');
-    const selectedAvatarsContainer = document.getElementById('add-selected-avatars-container');
-    
-    if (!assignedDropdown || !selectedAvatarsContainer) return;
-    
     selectedAvatarsContainer.innerHTML = "";
-    
     const selected = users.filter((u, i) => {
-        const dropdownItem = assignedDropdown.children[i];
-        if (!dropdownItem) return false;
-        const img = dropdownItem.querySelector('img');
-        return img && img.src.includes("checked");
+        const img = assignedDropdown.children[i].querySelector('img');
+        return img.src.includes("checked");
     }).slice(0, 3);
 
     selected.forEach(user => {
         const a = document.createElement('div');
         a.className = 'selected-avatar assigned-text';
-        a.dataset.fullname = user.name;
+        a.dataset.fullname = user.name
         a.textContent = user.initials;
         a.style.backgroundColor = user.color;
         selectedAvatarsContainer.appendChild(a);
     });
-    
     selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
 }
 
@@ -226,20 +224,19 @@ function priorityIcon(priority) {
     }
 }
 
-// ===================== DATE UTILITY FUNCTIONS =====================
+// ---------------------------
+// Date Functions
+// ---------------------------
 
+// Formatierung: ISO (YYYY-MM-DD) zu dd/mm/yyyy
 function formatDateForDisplay(isoDate) {
     if (!isoDate) return "";
     const [year, month, day] = isoDate.split("-");
     return `${day}/${month}/${year}`;
 }
 
+// Display aktualisieren
 function updateDisplay() {
-    const dueDateInput = document.getElementById('add-due-date-input');
-    const dueDateDisplay = document.getElementById('add-due-date-display');
-    
-    if (!dueDateInput || !dueDateDisplay) return;
-    
     const isoDate = dueDateInput.value;
     
     if (isoDate) {
@@ -251,10 +248,17 @@ function updateDisplay() {
     }
 }
 
+dueDateInput.addEventListener("blur", () => {
+    if (!dueDateInput.value.trim()) {
+        dueDateInput.style.borderBottom = "1px solid #FF4D4D";
+        dueDateError.style.display = "block";
+    } else {
+        dueDateInput.style.borderBottom = "1px solid #D1D1D1";
+        dueDateError.style.display = "none";
+    }
+});
+
 function openDatepicker() {
-    const dueDateInput = document.getElementById('add-due-date-input');
-    if (!dueDateInput) return;
-    
     if (dueDateInput.showPicker) {
         dueDateInput.showPicker();
     } else {
@@ -262,12 +266,18 @@ function openDatepicker() {
     }
 }
 
-// ===================== INITIALISIERUNG =====================
+// Datum wurde geändert -> Display aktualisieren
+dueDateInput.addEventListener("change", updateDisplay);
+
+dueDateContainer.addEventListener("click", openDatepicker);
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadUsers();
     await loadTasksForBoard();
     renderBoard();
+    
+    // Modal-Init aufrufen
+    initAddModal(); // Diese Funktion rufst du aus board-add-modal.js auf
 });
 
 
