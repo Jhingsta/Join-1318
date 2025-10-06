@@ -65,7 +65,7 @@ function prepareTaskPayload(taskData) {
  */
 async function updateTask(taskId, updates) {
   try {
-    const updatedTask = prepareUpdatedTask(taskId, updates);
+    const updatedTask = await prepareUpdatedTask(taskId, updates);
 
     const response = await fetch(`${BASE_URL}tasks/${taskId}.json`, {
       method: "PUT",

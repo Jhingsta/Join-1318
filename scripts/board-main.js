@@ -21,7 +21,6 @@ const arrow = assignedContent.querySelector('.assigned-arrow-container');
 const arrowIcon = arrowContainer.querySelector('img');
 
 const assignedDropdown = document.getElementById('assigned-dropdown');
-// const dropdown = document.getElementById("assigned-dropdown");//falsche ID, korrekt ist assigned-dropdown
 const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
 
 const categoryContent = document.querySelector('.category-content');
@@ -152,7 +151,6 @@ function renderBoard() {
 }
 
 function populateDropdown() {
-
     if (!assignedDropdown) {
         console.warn('populateDropdown: #assigned-dropdown nicht gefunden.');
         return;
@@ -164,10 +162,10 @@ function populateDropdown() {
 
     assignedDropdown.innerHTML = "";
 
-    (users || []).forEach((user, i) => {
+    (users || []).forEach((user) => {
         const div = document.createElement('div');
         div.className = 'dropdown-item';
-        div.dataset.clicked = "false";
+        div.dataset.userId = user.id;
 
         const wrapper = document.createElement('div');
         wrapper.className = 'assigned-wrapper';
@@ -185,13 +183,16 @@ function populateDropdown() {
 
         const checkboxWrapper = document.createElement('div');
         checkboxWrapper.className = 'checkbox-wrapper';
+
         const checkbox = document.createElement('img');
         checkbox.src = "./assets/icons-addTask/Property 1=Default.png";
+        checkbox.alt = "Check user";
 
         const hoverOverlay = document.createElement('div');
         hoverOverlay.className = 'hover-overlay';
-        checkboxWrapper.appendChild(hoverOverlay);
+
         checkboxWrapper.appendChild(checkbox);
+        checkboxWrapper.appendChild(hoverOverlay);
 
         div.appendChild(wrapper);
         div.appendChild(checkboxWrapper);
@@ -199,27 +200,36 @@ function populateDropdown() {
 
         div.addEventListener('click', (e) => {
             if (e.target === checkbox || e.target === hoverOverlay) return;
-            div.classList.toggle('active');
-        });
+            const isActive = div.classList.toggle('active');
+            checkboxWrapper.classList.toggle('checked', isActive);
+            checkbox.src = isActive
+                ? "./assets/icons-addTask/Property 1=checked.svg"
+                : "./assets/icons-addTask/Property 1=Default.png";
 
-        checkboxWrapper.addEventListener('click', (e) => {
-            e.stopPropagation();
-
-            const isChecked = checkboxWrapper.classList.contains('checked');
-            checkboxWrapper.classList.toggle('checked', !isChecked);
-
-            checkbox.src = isChecked
-                ? "./assets/icons-addTask/Property 1=Default.png"
-                : "./assets/icons-addTask/Property 1=checked.svg";
-
-            if (typeof updateSelectedAvatars === 'function') {
+            if (typeof updateSelectedAvatars === "function") {
                 updateSelectedAvatars();
             }
         });
+
+        checkboxWrapper.addEventListener("click", (e) => {
+            e.stopPropagation();
+
+            const isChecked = checkboxWrapper.classList.toggle("checked");
+            checkbox.src = isChecked
+                ? "./assets/icons-addTask/Property 1=checked.svg"
+                : "./assets/icons-addTask/Property 1=Default.png";
+
+            const parentItem = e.currentTarget.closest(".dropdown-item");
+            if (parentItem) {
+                parentItem.classList.toggle("active", isChecked);
+            }
+
+            if (typeof updateSelectedAvatars === "function") {
+                updateSelectedAvatars();
+            }
+            console.log("Checked:", isChecked, "→ Active Items:", document.querySelectorAll(".dropdown-item.active").length);
+        });
     });
-    if (typeof updateSelectedAvatars === 'function') {
-        updateSelectedAvatars();
-    }
 }
 
 // ---------- Update Selected Avatars ----------
@@ -524,7 +534,7 @@ categoryContent.appendChild(categoryDropdown);
 categoryContent.addEventListener('click', (e) => {
     e.stopPropagation();
     const isOpen = categoryDropdown.classList.contains('show');
-    categoryDropdown.classList.toggle('show', !isOpen); // ✅ Toggle über Klasse
+    categoryDropdown.classList.toggle('show', !isOpen);
     categoryArrow.src = !isOpen
         ? '/assets/icons-addTask/arrow_drop_down_up.png'
         : '/assets/icons-addTask/arrow_drop_down.png';
@@ -533,7 +543,7 @@ categoryContent.addEventListener('click', (e) => {
 // Klick außerhalb schließt Dropdown
 document.addEventListener('click', (e) => {
     if (!categoryContent.contains(e.target)) {
-        categoryDropdown.classList.remove('show'); // ✅ nur über Klasse
+        categoryDropdown.classList.remove('show');
         categoryArrow.src = '/assets/icons-addTask/arrow_drop_down.png';
     }
 });
@@ -591,9 +601,9 @@ function getTaskData() {
     // 5. Assigned Users Full
     let assignedUsersFull = [];
     if (assignedDropdown) {
-        assignedDropdown.querySelectorAll(".dropdown-item.selected").forEach(div => {
-            const name = div.textContent.trim();
-            const user = users.find(u => u.name === name);
+        assignedDropdown.querySelectorAll(".dropdown-item.active").forEach(div => {
+            const userId = div.dataset.userId;
+            const user = users.find(u => u.id === userId);
             if (user) {
                 assignedUsersFull.push({
                     id: user.id,

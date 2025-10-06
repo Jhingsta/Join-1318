@@ -3,6 +3,7 @@ const titleInput = document.querySelector(".title-input");
 const titleError = document.querySelector(".error-message");
 titleInput.addEventListener("input", handleTitleValidation);
 titleInput.addEventListener("blur", handleTitleValidation);
+    let users = [];
 
 function handleTitleValidation() {
     const isEmpty = !titleInput.value.trim();
@@ -73,7 +74,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const arrowIcon = arrowContainer.querySelector('img');
     const assignedDropdown = document.getElementById('assigned-dropdown');
     const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
-    let users = [];
+
 
     async function loadUsers() {
         try {
@@ -313,16 +314,18 @@ function getTaskData() {
 
     let assignedUsersFull = [];
     if (assignedDropdown) {
-        assignedDropdown.querySelectorAll(".dropdown-item.selected").forEach(div => {
-            const name = div.textContent.trim();
-            const user = users.find(u => u.name === name);
-            if (user) {
-                assignedUsersFull.push({
-                    id: user.id,
-                    name: user.name,
-                    initials: user.initials,
-                    color: user.color
-                });
+        assignedDropdown.querySelectorAll(".dropdown-item").forEach((div, i) => {
+            const checkboxWrapper = div.querySelector(".checkbox-wrapper");
+            if (checkboxWrapper.classList.contains("checked")) {
+                const user = users[i];
+                if (user) {
+                    assignedUsersFull.push({
+                        id: user.id,
+                        name: user.name,
+                        initials: user.initials,
+                        color: user.color
+                    });
+                }
             }
         });
     }
