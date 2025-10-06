@@ -1,4 +1,4 @@
-function addTaskModal() {
+function addtaskModal() {
     return `
             <div id="add-task-modal" class="modal-overlay hidden">
             <div class="modal">
@@ -43,9 +43,9 @@ function addTaskModal() {
                     <div class="priority-container">
                         <div class="priority-header">Priority</div>
                         <div class="priority-content">
-                            <button type="button" class="priority-frame">Urgent <img src="./assets/icons-addTask/Prio alta.svg" alt=""></button>
-                            <button type="button" class="priority-frame active">Medium <img src="./assets/icons-addTask/Capa 2.svg" alt=""></button>
-                            <button type="button" class="priority-frame">Low <img src="./assets/icons-addTask/Prio baja.svg" alt=""></button>
+                            <button type="button" class="priority-frame">Urgent <img src="./assets/icons-addtask/Prio alta.svg" alt=""></button>
+                            <button type="button" class="priority-frame active">Medium <img src="./assets/icons-addtask/Capa 2.svg" alt=""></button>
+                            <button type="button" class="priority-frame">Low <img src="./assets/icons-addtask/Prio baja.svg" alt=""></button>
                         </div>
                     </div>
 
@@ -60,7 +60,7 @@ function addTaskModal() {
                             </div>
                             <input type="text" class="assigned-input" placeholder="" style="display:none;">
                             <div class="assigned-arrow-container">
-                                <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts" class="assigned-arrow-icon">
+                                <img src="/assets/icons-addtask/arrow_drop_down.png" alt="Select contacts" class="assigned-arrow-icon">
                             </div>
                             <div class="dropdown-menu" id="assigned-dropdown"></div>
                         </div>
@@ -72,7 +72,7 @@ function addTaskModal() {
                         <div class="category-content">
                             <div class="assigned-text">Select task category</div>
                             <div class="assigned-arrow-container">
-                                <img src="/assets/icons-addTask/arrow_drop_down.png" alt="Select contacts" class="assigned-arrow-icon">
+                                <img src="/assets/icons-addtask/arrow_drop_down.png" alt="Select contacts" class="assigned-arrow-icon">
                             </div>
                         </div>
                         <span class="error-message">This field is required</span>
@@ -85,8 +85,8 @@ function addTaskModal() {
                         <div id="task-content-addtask">
                             <input type="text" id="subtask-text" placeholder="Add new subtask">
                             <div class="assigned-arrow-container">
-                                <img id="cancel-btn" src="/assets/icons-addTask/Subtask cancel.png" alt="Cancel subtask" class="assigned-arrow-icon" style="display:none;">
-                                <img id="check-btn" src="/assets/icons-addTask/Subtask's icons (1).png" alt="Confirm subtask" class="assigned-arrow-icon" style="display:none;">
+                                <img id="cancel-btn" src="/assets/icons-addtask/Subtask cancel.png" alt="Cancel subtask" class="assigned-arrow-icon" style="display:none;">
+                                <img id="check-btn" src="/assets/icons-addtask/Subtask's icons (1).png" alt="Confirm subtask" class="assigned-arrow-icon" style="display:none;">
                             </div>
                         </div>
                         <ul id="subtask-list" class="subtask-list"></ul>
@@ -94,7 +94,7 @@ function addTaskModal() {
                     </div>
                     <div class="modal-footer">
                     <button class="create-btn" id="create-btn">
-                        Create Task <img src="./assets/icons-addTask/check (1).png" alt="">
+                        Create Task <img src="./assets/icons-addtask/check (1).png" alt="">
                     </button>
                 </div>
                      <span class="error-message">This field is required</span>
@@ -124,7 +124,7 @@ function taskDetailModal() {
                         <!-- Actions -->
                         <div class="edit-actions">
                             <button class="create-btn" id="save-task">Ok
-                                <img src="./assets/icons-addTask/check (1).png" alt="">
+                                <img src="./assets/icons-addtask/check (1).png" alt="">
                             </button>
                         </div>
 
@@ -143,8 +143,8 @@ function subtaskHTML({ title, isChecked, taskId, index }) {
             <div class="subtask-row">
                 <div class="checkbox-wrapper" onclick="toggleCheckbox(this, '${taskId}', ${index})">
                     <input type="checkbox" class="real-checkbox" style="display:none;" ${isChecked ? 'checked' : ''}>
-                    <img src="./assets/icons-addTask/Property 1=Default.svg" class="checkbox-default" style="display:${isChecked ? 'none' : 'block'}">
-                    <img src="./assets/icons-addTask/Property 1=checked.svg" class="checkbox-checked" style="display:${isChecked ? 'block' : 'none'}">
+                    <img src="./assets/icons-addtask/Property 1=Default.svg" class="checkbox-default" style="display:${isChecked ? 'none' : 'block'}">
+                    <img src="./assets/icons-addtask/Property 1=checked.svg" class="checkbox-checked" style="display:${isChecked ? 'block' : 'none'}">
                 </div>
                 <span class="subtask-text">${title}</span>
             </div>
@@ -209,9 +209,9 @@ function taskEditTemplate(task, isoDate) {
         <div id="edit-priority" class="priority-container">
             <label class="priority-header">Priority</label>
             <div class="priority-content">
-                <button class="priority-frame" data-priority="Urgent"><img src="./assets/icons-addTask/Prio alta.svg" alt>Urgent</button>
-                <button class="priority-frame" data-priority="Medium"><img src="./assets/icons-addTask/Capa 2.svg" alt>Medium</button>
-                <button class="priority-frame" data-priority="Low"><img src="./assets/icons-addTask/Prio baja.svg" alt>Low</button> 
+                <button class="priority-frame" data-priority="Urgent"><img src="./assets/icons-addtask/Prio alta.svg" alt>Urgent</button>
+                <button class="priority-frame" data-priority="Medium"><img src="./assets/icons-addtask/Capa 2.svg" alt>Medium</button>
+                <button class="priority-frame" data-priority="Low"><img src="./assets/icons-addtask/Prio baja.svg" alt>Low</button> 
             </div>
         </div>
 
@@ -221,7 +221,7 @@ function taskEditTemplate(task, isoDate) {
                 <div class="assigned-text-container"> 
                     <div class="assigned-text" id="edit-assigned-placeholder">Select contacts to assign</div> 
                     <input type="text" id="edit-assigned-input" class="assigned-input" style="display:none;">
-                    <img id="edit-assigned-arrow" src="./assets/icons-addTask/arrow_drop_down.png" class="assigned-arrow-icon">
+                    <img id="edit-assigned-arrow" src="./assets/icons-addtask/arrow_drop_down.png" class="assigned-arrow-icon">
                     <div id="edit-assigned-dropdown-overlay" class="dropdown-menu-overlay-edit hidden"></div> 
                 </div> 
             </div> 
@@ -232,8 +232,8 @@ function taskEditTemplate(task, isoDate) {
         <div id="task-content-addtask">
             <input type="text" id="edit-subtask-input" placeholder="Add new subtask">
             <div id="assigned-arrow-container">
-                <img id="edit-cancel-btn" class="assigned-arrow-icon" style="display:none;" src="/assets/icons-addTask/Subtask cancel.png" alt="Cancel subtask">
-                <img id="edit-check-btn" class="assigned-arrow-icon" style="display:none;" src="/assets/icons-addTask/Subtask's icons (1).png" alt="Confirm subtask">
+                <img id="edit-cancel-btn" class="assigned-arrow-icon" style="display:none;" src="/assets/icons-addtask/Subtask cancel.png" alt="Cancel subtask">
+                <img id="edit-check-btn" class="assigned-arrow-icon" style="display:none;" src="/assets/icons-addtask/Subtask's icons (1).png" alt="Confirm subtask">
             </div>
         </div>
         <div id="edit-subtask-list"></div>

@@ -55,12 +55,12 @@ async function renderAssignedDropdownOverlay(task) {
 
         const defaultIcon = document.createElement("img");
         defaultIcon.className = "checkbox-default";
-        defaultIcon.src = "./assets/icons-addTask/Property 1=Default.png";
+        defaultIcon.src = "./assets/icons-addtask/Property 1=Default.png";
         defaultIcon.alt = "unchecked";
 
         const checkedIcon = document.createElement("img");
         checkedIcon.className = "checkbox-checked";
-        checkedIcon.src = "./assets/icons-addTask/Property 1=checked.svg";
+        checkedIcon.src = "./assets/icons-addtask/Property 1=checked.svg";
         checkedIcon.alt = "checked";
 
         defaultIcon.style.display = initiallySelected ? "none" : "block";
@@ -124,12 +124,12 @@ function renderEditSubtasks(task) {
         span.className = "subtask-text";
 
         const editIcon = document.createElement("img");
-        editIcon.src = "./assets/icons-addTask/Property 1=edit.png";
+        editIcon.src = "./assets/icons-addtask/Property 1=edit.png";
         editIcon.alt = "Edit";
         editIcon.addEventListener("click", () => startEditSubtaskMode(task, li, span, index));
 
         const deleteIcon = document.createElement("img");
-        deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png";
+        deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
         deleteIcon.alt = "Delete";
         deleteIcon.addEventListener("click", async () => {
             task.subtasks.items.splice(index, 1);
@@ -164,7 +164,7 @@ function startEditSubtaskMode(task, li, span, index) {
     input.className = "subtask-edit-input";
 
     const saveIcon = document.createElement("img");
-    saveIcon.src = "./assets/icons-addTask/Subtask's icons (1).png";
+    saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
     saveIcon.alt = "Save";
     saveIcon.addEventListener("click", async () => {
         task.subtasks.items[index].title = input.value.trim() || task.subtasks.items[index].title;
@@ -173,7 +173,7 @@ function startEditSubtaskMode(task, li, span, index) {
     });
 
     const deleteIcon = document.createElement("img");
-    deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png";
+    deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
     deleteIcon.alt = "Delete";
     deleteIcon.addEventListener("click", async () => {
         task.subtasks.items.splice(index, 1);
@@ -230,7 +230,7 @@ async function openEditMode(task) {
         dropdown.classList.remove("hidden");
         input.style.display = "inline";
         placeholder.style.display = "none";
-        arrow.src = "./assets/icons-addTask/arrow_drop_down_up.png";
+        arrow.src = "./assets/icons-addtask/arrow_drop_down_up.png";
         input.focus();
     }
 
@@ -238,7 +238,7 @@ async function openEditMode(task) {
         dropdown.classList.add("hidden");
         input.style.display = "none";
         placeholder.style.display = "block";
-        arrow.src = "./assets/icons-addTask/arrow_drop_down.png";
+        arrow.src = "./assets/icons-addtask/arrow_drop_down.png";
         input.value = "";
     }
 
@@ -388,4 +388,20 @@ function renderDetailOverlay(task) {
         avatarDiv.style.backgroundColor = user.color;
         container.appendChild(avatarDiv);
     });
+}
+
+function toggleCheckbox(wrapper, taskId, subtaskIndex) {
+    const defaultSVG = wrapper.querySelector('.checkbox-default');
+    const checkedSVG = wrapper.querySelector('.checkbox-checked');
+    const isChecked = checkedSVG.style.display === 'block';
+    checkedSVG.style.display = isChecked ? 'none' : 'block';
+    defaultSVG.style.display = isChecked ? 'block' : 'none';
+
+    const task = getTasks().find(t => t.id === taskId);
+    if (task && task.subtasks && task.subtasks.items) {
+        task.subtasks.items[subtaskIndex].done = !task.subtasks.items[subtaskIndex].done;
+        task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
+    }
+    updateTaskCard(taskId);
+    updateSubtaskInFirebase(taskId, task).catch(err => console.error(err));
 }

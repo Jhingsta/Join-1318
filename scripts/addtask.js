@@ -452,6 +452,8 @@ function resetForm() {
     document.querySelector(".title-input").value = "";
     document.querySelector(".description-input").value = "";
     document.querySelector(".due-date-input").value = "";
+    dueDateDisplay.textContent = "dd/mm/yyyy";
+    dueDateDisplay.classList.remove("has-value");
     document.querySelector(".selected-avatars-container").innerHTML = "";
     document.querySelector("#subtask-list").innerHTML = "";
     document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));

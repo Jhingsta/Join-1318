@@ -87,20 +87,36 @@ function populateAssignedTo(element, task) {
                 avatarsContainer.appendChild(createAvatar(user));
             });
         } else {
+            // show first two avatars
             task.assignedUsersFull.slice(0, 2).forEach(user => {
                 avatarsContainer.appendChild(createAvatar(user));
             });
             
+            // add "+X" circular avatar
             const plusAvatar = document.createElement('div');
-            plusAvatar.className = 'assigned-avatar';
+            plusAvatar.className = 'task-card-assigned-avatar task-card-avatar-plus';
             plusAvatar.textContent = `+${totalUsers - 2}`;
-            plusAvatar.style.backgroundColor = '#4589FF';
-            plusAvatar.style.color = '#FFFFFF';
             avatarsContainer.appendChild(plusAvatar);
         }
     }
     
-    priorityIconImg.src = priorityIcon(task.priority);
+    if (priorityIconImg) {
+        priorityIconImg.src = priorityIcon(task.priority);
+    }
+}
+
+function updateTaskCard(taskId) {
+    const task = getTasks().find(t => t.id === taskId);
+    if (!task) return;
+    
+    const card = document.getElementById(`task-${taskId}`);
+    if (!card) return;
+    
+    // Subtasks-Bereich komplett neu populieren
+    const subtasksContainer = card.querySelector('.task-card-subtasks');
+    if (subtasksContainer) {
+        populateSubtasks(subtasksContainer, task);
+    }
 }
 
 // ============================================

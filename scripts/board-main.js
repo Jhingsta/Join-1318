@@ -3,12 +3,12 @@ let users = [];
 let currentNewTask = null;
 let currentTask = null;
 
-document.body.insertAdjacentHTML("beforeend", addTaskModal());
+document.body.insertAdjacentHTML("beforeend", addtaskModal());
 document.body.insertAdjacentHTML('beforeend', taskDetailModal());
 
 const modal = document.getElementById('add-task-modal');
 const createBtn = document.getElementById('create-btn');
-const addTaskButton = document.getElementById('add-task-btn');
+const addtaskButton = document.getElementById('add-task-btn');
 const svgButtons = document.querySelectorAll('.svg-button');
 
 const assignedContent = document.querySelector('.assigned-content');
@@ -79,7 +79,7 @@ function getTasks() {
 function closeModal() {
     modal?.classList.add('hidden');
     createBtn?.classList.remove('active');
-    addTaskButton?.classList.remove('active-style');
+    addtaskButton?.classList.remove('active-style');
     svgButtons.forEach(btn => {
         const svg = btn.querySelector('svg');
         if (svg) svg.classList.remove('disabled');
@@ -88,12 +88,12 @@ function closeModal() {
 
 document.addEventListener('DOMContentLoaded', async () => {
     closeButton?.addEventListener('click', closeModal);
-    addTaskButton?.addEventListener('click', openModal);
+    addtaskButton?.addEventListener('click', openModal);
     loadUsers();
 
     function openModal() {
         modal?.classList.remove('hidden');
-        addTaskButton?.classList.add('active-style');
+        addtaskButton?.classList.add('active-style');
         currentNewTask = { assignedUsersFull: [] };
         // renderAssignedDropdownModal(currentNewTask);
 
@@ -260,7 +260,7 @@ function toggleDropdown(e) {
         assignedDropdown.style.display = 'block';
         assignedInput.style.display = 'inline';
         assignedText.style.display = 'none';
-        arrowIcon.src = '/assets/icons-addTask/arrow_drop_down_up.png';
+        arrowIcon.src = '/assets/icons-addtask/arrow_drop_down_up.png';
         assignedInput.focus();
 
         Array.from(assignedDropdown.children).forEach(div => {
@@ -271,7 +271,7 @@ function toggleDropdown(e) {
         assignedDropdown.style.display = 'none';
         assignedInput.style.display = 'none';
         assignedText.style.display = 'block';
-        arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
+        arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
         assignedInput.value = '';
     }
 }
@@ -285,7 +285,7 @@ document.addEventListener('click', e => {
         assignedDropdown.style.display = 'none';
         assignedInput.style.display = 'none';
         assignedText.style.display = 'block';
-        arrowIcon.src = '/assets/icons-addTask/arrow_drop_down.png';
+        arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
 
         // Hier prüfen
         Array.from(assignedDropdown.children).forEach(div => {
@@ -359,6 +359,8 @@ titleInput.addEventListener("input", () => {
     }
 })
 
+// Date 
+
 // Formatierung: ISO (YYYY-MM-DD) zu dd/mm/yyyy
 function formatDateForDisplay(isoDate) {
     if (!isoDate) return "";
@@ -400,7 +402,6 @@ function openDatepicker() {
 // Datum wurde geändert -> Display aktualisieren
 dueDateInput.addEventListener("change", updateDisplay);
 
-dueDateIcon.addEventListener("click", openDatepicker);
 dueDateContainer.addEventListener("click", openDatepicker);
 
 const buttons = document.querySelectorAll(".priority-frame");
@@ -476,8 +477,8 @@ categoryContent.addEventListener('click', (e) => {
     const isOpen = categoryDropdown.classList.contains('show');
     categoryDropdown.classList.toggle('show', !isOpen);
     categoryArrow.src = !isOpen
-        ? '/assets/icons-addTask/arrow_drop_down_up.png'
-        : '/assets/icons-addTask/arrow_drop_down.png';
+        ? '/assets/icons-addtask/arrow_drop_down_up.png'
+        : '/assets/icons-addtask/arrow_drop_down.png';
 });
 
 // Klick außerhalb schließt Dropdown
@@ -504,11 +505,11 @@ checkBtn.addEventListener("click", () => {
     const icons = document.createElement("div");
     icons.classList.add("subtask-icons");
     const editIcon = document.createElement("img");
-    editIcon.src = "./assets/icons-addTask/Property 1=edit.png";
+    editIcon.src = "./assets/icons-addtask/Property 1=edit.png";
     editIcon.alt = "Edit";
     editIcon.addEventListener("click", () => { startEditMode(li, span); });
     const deleteIcon = document.createElement("img");
-    deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png";
+    deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
     deleteIcon.alt = "Delete";
     deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); });
     icons.appendChild(editIcon);
@@ -520,8 +521,8 @@ checkBtn.addEventListener("click", () => {
 cancelBtn.addEventListener("click", resetInput);
 function resetInput() { taskInput.value = ""; checkBtn.style.display = "none"; cancelBtn.style.display = "none"; }
 function startEditMode(li, span) {
-    const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addTask/Subtask's icons (1).png";
-    saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addTask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
+    const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
+    saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
 }
 
 // --- Task-Daten sammeln ---
@@ -596,7 +597,9 @@ async function saveTask(taskData) {
 function resetForm() {
     document.querySelector(".title-input").value = "";
     document.querySelector(".description-input").value = "";
-    document.querySelector(".due-date-display").value = "";
+    document.querySelector(".due-date-input").value = "";
+    dueDateDisplay.textContent = "dd/mm/yyyy";
+    dueDateDisplay.classList.remove("has-value");
     document.querySelector(".selected-avatars-container").innerHTML = "";
     document.querySelector("#subtask-list").innerHTML = "";
     document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
@@ -672,7 +675,7 @@ createBtn.addEventListener("click", async (event) => {
 
 function showTaskAddedMessage(onFinished) {
     const img = document.createElement("img");
-    img.src = "./assets/icons-addTask/Added to board 1.png";
+    img.src = "./assets/icons-addtask/Added to board 1.png";
     img.alt = "Task added to Board";
     Object.assign(img.style, {
         position: "fixed",
@@ -844,22 +847,6 @@ async function addSubtask(taskId, title) {
     }
 }
 
-function toggleCheckbox(wrapper, taskId, subtaskIndex) {
-    const defaultSVG = wrapper.querySelector('.checkbox-default');
-    const checkedSVG = wrapper.querySelector('.checkbox-checked');
-    const isChecked = checkedSVG.style.display === 'block';
-    checkedSVG.style.display = isChecked ? 'none' : 'block';
-    defaultSVG.style.display = isChecked ? 'block' : 'none';
-
-    const task = getTasks().find(t => t.id === taskId);
-    if (task && task.subtasks && task.subtasks.items) {
-        task.subtasks.items[subtaskIndex].done = !task.subtasks.items[subtaskIndex].done;
-        task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
-    }
-    updateTaskCard(taskId);
-    updateSubtaskInFirebase(taskId, task).catch(err => console.error(err));
-}
-
 async function updateSubtaskInFirebase(taskId, task) {
     try {
         await updateTask(taskId, {
@@ -871,27 +858,5 @@ async function updateSubtaskInFirebase(taskId, task) {
         });
     } catch (error) {
         console.error('Error updating subtask in Firebase:', error);
-    }
-}
-
-function updateTaskCard(taskId) {
-    const task = getTasks().find(t => t.id === taskId);
-    if (!task) return;
-
-    const card = document.getElementById(`task-${taskId}`);
-    if (!card) return;
-
-    if (!task.subtasks || !task.subtasks.items) return;
-
-    const counter = card.querySelector('.subtasks-text');
-    if (counter) {
-        counter.textContent = `${task.subtasks.completed}/${task.subtasks.total} Subtasks`;
-    }
-    const progressBar = card.querySelector('.progress-container div');
-    if (progressBar) {
-        const percentage = task.subtasks.total > 0
-            ? (task.subtasks.completed / task.subtasks.total) * 100
-            : 0;
-        progressBar.style.width = `${percentage}%`;
     }
 }
