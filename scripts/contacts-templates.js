@@ -1,16 +1,17 @@
 function getLetterSectionTemplate(letter) {
   return `
     <div class="letter-section">
-      <div class="letter">${letter}</div>
-      <div class="hl"></div>
+      <div class="letter" role="heading" aria-level="2">${letter}</div>
+      <div class="hl" aria-hidden="true"></div>
     </div>
   `;
 }
 
 function getContactTemplate(user) {
   return `
-    <div class="contact" role="listitem" id="contact-${user.email.replace(/[^a-zA-Z0-9]/g, '')}" 
-         onclick="showFloatingContact('${user.name}', '${user.email}', '${user.phone || ''}', '${user.color}', '${user.initials}', '${user.email.replace(/[^a-zA-Z0-9]/g, '')}')">
+    <div class="contact" role="button" tabindex="0" id="contact-${user.id}"
+        onclick='showFloatingContact(${JSON.stringify(user)})'
+        onkeydown="if(event.key==='Enter'||event.key===' ') showFloatingContact(${JSON.stringify(user)})">
       <div class="avatar" style="background-color:${user.color};">
         ${user.initials}
       </div>
@@ -22,7 +23,7 @@ function getContactTemplate(user) {
   `;
 }
 
-function getFloatingContactTemplate(name, email, phone, color, initials) {
+function getFloatingContactTemplate(user) {
   return `
     <div class="floating-contact-first">
       <span>Contact Information</span>
@@ -30,15 +31,15 @@ function getFloatingContactTemplate(name, email, phone, color, initials) {
     </div>
 
     <div class="floating-contact-second">
-        <div class="avatar-big" style="background-color: ${color};">${initials}</div>
+        <div class="avatar-big" style="background-color: ${user.color};">${user.initials}</div>
         <div class="floating-contact-name">
-            <div class="floating-contact-name-big">${name}</div>
+            <div class="floating-contact-name-big">${user.name}</div>
             <div class="floating-contact-name-bottom">
-                <div class="edit-link" onclick="showEditContactOverlay({name:'${name}', email:'${email}', phone:'${phone || ''}', color:'${color}', initials:'${initials}'})">
+                <div class="edit-link" onclick='showEditContactOverlay(${JSON.stringify(user)})'>
                     <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt="">
                     <span>Edit</span>
                 </div>
-                <div class="delete-link" onclick="deleteContact('${email}')">
+                <div class="delete-link" onclick="deleteContact('${user.email}')">
                     <img src="./assets/icons-contacts/delete.svg" class="icon-delete" alt="">
                     <span>Delete</span>
                 </div>
@@ -49,41 +50,41 @@ function getFloatingContactTemplate(name, email, phone, color, initials) {
     <div class="floating-contact-third">
         <div class="floating-contact-bottom-email">
             <div class="floating-contact-bottom-title">Email</div>
-            <span class="floating-contact-email">${email}</span>
+            <span class="floating-contact-email">${user.email}</span>
         </div>
         <div class="floating-contact-bottom-phone">
             <div class="floating-contact-bottom-title">Phone</div>
-            <span>${phone || 'No phone number'}</span>
+            <span>${user.phone || 'No phone number'}</span>
         </div>
     </div>
   `;
 }
 
-function getMobileOverlayTemplate(name, email, phone, color, initials) {
+function getMobileOverlayTemplate(user) {
   return `
     <div id="mobile-floating-contact" class="mobile-floating-contact">
-      ${getMobileMenuButtonTemplate(name, email, phone, color, initials)}
+      ${getMobileMenuButtonTemplate(user)}
     </div>
   `;
 }
 
-function getMobileMenuButtonTemplate(name, email, phone, color, initials) {
+function getMobileMenuButtonTemplate(user) {
   return `
     <button class="mobile-overlay-menu-btn" 
-            onclick="openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')" 
+            onclick='openMobileContactMenu(${JSON.stringify(user)})' 
             aria-label="Open contact options menu">
     </button>
   `;
 }
 
-function getMobileContactMenuTemplate(name, email, phone, color, initials) {
+function getMobileContactMenuTemplate(user) {
   return `
     <div class="mobile-contact-options">
-      <div class="mobile-edit-link" onclick="showEditContactOverlay({name:'${name}', email:'${email}', phone:'${phone || ''}', color:'${color}', initials:'${initials}'})">
+      <div class="mobile-edit-link" onclick='showEditContactOverlay(${JSON.stringify(user)})'>
         <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt="">
         <span>Edit</span>
       </div>
-      <div class="mobile-delete-link" onclick="deleteContact('${email}')">
+      <div class="mobile-delete-link" onclick="deleteContact('${user.id}')">
         <img src="./assets/icons-contacts/delete.svg" class="icon-delete" alt="">
         <span>Delete</span>
       </div>
@@ -103,7 +104,7 @@ function getAddContactOverlayTemplate() {
 
           <div class="overlay-contact-top-box">
             <img src="./assets/icons-header/logo-all-white.svg" alt="" class="icon-logo">
-            <div class="overlay-contact-top-box-title">Add contact</div>
+            <div class="overlay-contact-top-box-title" id="overlay-add-contact-title">Add contact</div>
             <div class="overlay-add-contact-top-box-subtitle">Tasks are better with a team!</div>
           </div>
         </div>

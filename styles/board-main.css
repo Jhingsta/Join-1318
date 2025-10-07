@@ -555,6 +555,10 @@ main {
     border: 1px solid #FFFFFF;
 }
 
+.task-card-assigned-avatar:first-child {
+  margin-left: 0;
+}
+
 .task-card-avatar-plus {
   background-color: #4589FF;
   color: #FFFFFF;
