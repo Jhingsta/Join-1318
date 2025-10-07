@@ -147,17 +147,6 @@ function showDuplicateEmailError(emailGroup, errorMessage) {
 }
 
 /**
- * Displays an error message in the element with the class 'error-message'.
- *
- * @param {string} message - The error message to display.
- */
-function showCreationError(message) {
-  let errorMessage = document.querySelector('.error-message');
-  errorMessage.textContent = message;
-  errorMessage.classList.add("show");
-}
-
-/**
  * Validates a phone number string.
  * The phone number can contain digits, spaces, plus (+), and minus (-) signs.
  * The number of digits (excluding spaces, plus, and minus signs) must be between 6 and 15.
@@ -220,6 +209,17 @@ function validateContactForm(formData) {
  * @param {string} message - The error message to display.
  */
 function showUpdateError(message) {
+  let errorMessage = document.querySelector('.error-message');
+  errorMessage.textContent = message;
+  errorMessage.classList.add("show");
+}
+
+/**
+ * Displays an error message in the element with the class 'error-message'.
+ *
+ * @param {string} message - The error message to display.
+ */
+function showCreationError(message) {
   let errorMessage = document.querySelector('.error-message');
   errorMessage.textContent = message;
   errorMessage.classList.add("show");
