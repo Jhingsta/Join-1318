@@ -91,11 +91,11 @@ async function createContact() {
     if (result.success) {
       await handleSuccessfulCreation();
     } else {
-      showCreationError("Failed to create contact. Please try again.");
+      showUpdateError("Failed to create contact. Please try again.");
     }
   } catch (error) {
     console.error('Create contact error:', error);
-    showCreationError("An unexpected error occurred. Please try again.");
+    showUpdateError("An unexpected error occurred. Please try again.");
   }
 }
 
@@ -129,19 +129,33 @@ async function handleSuccessfulCreation() {
 }
 
 /**
+ * Sends a new user object to the server (Firebase) via a POST request.
+ *
+ * @param {Object} userData - The user data to send.
+ * @param {string} userData.name - The user's full name.
+ * @param {string} userData.email - The user's email address.
+ * @param {string} userData.phone - The user's phone number.
+ * @param {string} [userData.password] - Optional password (can be empty).
+ * @param {string} userData.initials - The user's initials.
+ * @param {string} userData.color - The user's assigned color (e.g., for avatar).
+ */
+async function sendUserToServer(userData) {
+  return fetch(`${BASE_URL}users.json`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData)
+  });
+}
+
+/**
  * Creates a new user by sending user data to the server.
  *
  * @param {Object} userData - The data of the user to create.
  */
 async function createUser(userData) {
   try {
-    let response = await fetch(`${BASE_URL}users.json`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData)
-    });
+    let response = await sendUserToServer(userData);
+
     if (response.ok) {
       let result = await response.json();
       return { success: true, userId: result.name };

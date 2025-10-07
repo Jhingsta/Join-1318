@@ -13,15 +13,14 @@ function init() {
  */
 async function loadUsers() {
   try {
-    const response = await fetch(`${BASE_URL}users.json`);
-    const data = await response.json();
+    let response = await fetch(`${BASE_URL}users.json`);
+    let data = await response.json();
     
     if (data) {
       users = Object.values(data).map(u => ({
         ...u,
         id: u.email.replace(/[^a-zA-Z0-9]/g, '')
       }));
-
       document.getElementById("contacts-list").innerHTML = renderContacts(users);
     } else {
       users = [];
@@ -42,17 +41,15 @@ async function loadUsers() {
  * @returns {string} HTML string of grouped contacts.
  */
 function renderContacts(contacts) {
-  const sorted = contacts.sort((a, b) => a.name.localeCompare(b.name));
-
-  const grouped = sorted.reduce((acc, contact) => {
-    const letter = contact.name[0].toUpperCase();
+  let sorted = contacts.sort((a, b) => a.name.localeCompare(b.name));
+  let grouped = sorted.reduce((acc, contact) => {
+    let letter = contact.name[0].toUpperCase();
     if (!acc[letter]) acc[letter] = [];
     acc[letter].push(contact);
     return acc;
   }, {});
-
   let html = "";
-  for (const letter in grouped) {
+  for (let letter in grouped) {
     html += getLetterSectionTemplate(letter);
     html += renderContactList(grouped[letter]);
   }
@@ -281,7 +278,6 @@ function updateMobileContactMenu(contactMenu, user) {
       `showEditContactOverlay(${JSON.stringify(user)})`
     );
   }
-
   let deleteLink = contactMenu.querySelector('.mobile-delete-link');
   if (deleteLink) {
     deleteLink.setAttribute('onclick', `deleteContact('${user.id}')`);
@@ -354,18 +350,60 @@ function handleWindowResize() {
 }
 
 /**
- * Displays the overlay for adding a new contact.
- * Renders the add contact overlay template, shows the overlay,
- * disables body scrolling, and animates the overlay appearance.
+ * Opens the "Add Contact" overlay by rendering its content, showing the background,
+ * setting focus on the first input, and initializing keyboard support.
  */
-function showAddContactOverlay() {
-  document.getElementById('overlay-add-contact-container').innerHTML = getAddContactOverlayTemplate();
-  document.getElementById('overlay-contacts').classList.add('show');
-  document.body.classList.add('no-scroll');
-  
-  setTimeout(() => {
-      document.getElementById('overlay-add-contact').classList.add('show');
-  }, 10);
+function openAddContactOverlay() {
+    const overlayContainer = document.getElementById('overlay-add-contact-container');
+    const overlayBackground = document.getElementById('overlay-contacts');
+    const triggerButton = document.querySelector('.add-contact-btn');
+
+    renderAddContactOverlay(overlayContainer);
+    showOverlayBackground(overlayBackground);
+    showOverlayWithFocus(overlayContainer);
+    setupOverlayKeyboard(overlayContainer, triggerButton, overlayBackground);
+}
+
+/**
+ * Renders the "Add Contact" overlay HTML inside the given container
+ * and sets ARIA attributes for accessibility.
+ * 
+ * @param {HTMLElement} container - The container element where the overlay HTML will be injected.
+ */
+function renderAddContactOverlay(container) {
+    container.innerHTML = getAddContactOverlayTemplate();
+    container.setAttribute('role', 'dialog');
+    container.setAttribute('aria-modal', 'true');
+    container.setAttribute('aria-labelledby', 'overlay-add-contact-title');
+    container.setAttribute('aria-hidden', 'false');
+}
+
+/**
+ * Shows the overlay background, marks it as visible to assistive technologies,
+ * and prevents page scrolling while the overlay is open.
+ * 
+ * @param {HTMLElement} background - The background overlay element.
+ */
+function showOverlayBackground(background) {
+    background.classList.add('show');
+    background.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('no-scroll');
+}
+
+/**
+ * Displays the overlay with a short delay for animations and sets focus
+ * to the first focusable element within the overlay.
+ * 
+ * @param {HTMLElement} container - The container element of the overlay.
+ */
+function showOverlayWithFocus(container) {
+    setTimeout(() => {
+        const overlay = container.querySelector('.overlay-add-contact');
+        overlay.classList.add('show');
+
+        const firstInput = overlay.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
+        if (firstInput) firstInput.focus();
+    }, 10);
 }
 
 /**

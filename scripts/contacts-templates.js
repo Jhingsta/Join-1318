@@ -1,16 +1,17 @@
 function getLetterSectionTemplate(letter) {
   return `
     <div class="letter-section">
-      <div class="letter">${letter}</div>
-      <div class="hl"></div>
+      <div class="letter" role="heading" aria-level="2">${letter}</div>
+      <div class="hl" aria-hidden="true"></div>
     </div>
   `;
 }
 
 function getContactTemplate(user) {
   return `
-    <div class="contact" role="listitem" id="contact-${user.id}" 
-         onclick='showFloatingContact(${JSON.stringify(user)})'>
+    <div class="contact" role="button" tabindex="0" id="contact-${user.id}"
+        onclick='showFloatingContact(${JSON.stringify(user)})'
+        onkeydown="if(event.key==='Enter'||event.key===' ') showFloatingContact(${JSON.stringify(user)})">
       <div class="avatar" style="background-color:${user.color};">
         ${user.initials}
       </div>
@@ -103,7 +104,7 @@ function getAddContactOverlayTemplate() {
 
           <div class="overlay-contact-top-box">
             <img src="./assets/icons-header/logo-all-white.svg" alt="" class="icon-logo">
-            <div class="overlay-contact-top-box-title">Add contact</div>
+            <div class="overlay-contact-top-box-title" id="overlay-add-contact-title">Add contact</div>
             <div class="overlay-add-contact-top-box-subtitle">Tasks are better with a team!</div>
           </div>
         </div>
