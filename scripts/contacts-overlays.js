@@ -308,3 +308,86 @@ async function removeUserFromAllTasks(userKey) {
     console.error("Error removing user from tasks:", error);
   }
 }
+
+/**
+ * Main function to open the floating contact panel.
+ * Handles rendering, focus management, and accessibility attributes.
+ * 
+ * @param {Object} user - The contact object containing name, email, etc.
+ */
+function openFloatingContact(user) {
+    deactivateAllContacts();
+    highlightCurrentContact(user.id);
+
+    const floatingContact =
+        window.innerWidth <= 768
+            ? createMobileFloatingContact(user)
+            : createDesktopFloatingContact();
+
+    renderFloatingContact(floatingContact, user);
+    showFloatingContactPanel(floatingContact);
+    focusFloatingContact(floatingContact);
+}
+
+/**
+ * Render floating contact HTML and set accessibility attributes.
+ * 
+ * @param {HTMLElement} container - The floating contact container element.
+ * @param {Object} user - Contact data.
+ */
+function renderFloatingContact(container, user) {
+    container.innerHTML = getFloatingContactTemplate(user);
+    container.setAttribute('role', 'dialog');
+    container.setAttribute('aria-modal', 'false');
+    container.setAttribute('aria-labelledby', 'floating-contact-title');
+    container.setAttribute('aria-hidden', 'false');
+}
+
+/**
+ * Visually show and activate the floating contact panel.
+ * Triggers the slide-in animation and sets ARIA attributes for screenreader.
+ * 
+ * @param {HTMLElement} container - The floating contact container element.
+ */
+function showFloatingContactPanel(container) {
+    container.classList.add('show');
+
+    // 🔹 Originale Slide-in Animation
+    slideInFloatingContact(container);
+
+    // 🔹 Screenreader ARIA adjustments
+    const content = container.querySelectorAll('.floating-contact-second, .floating-contact-third');
+    content.forEach(el => el.setAttribute('aria-live', 'polite'));
+    container.setAttribute('aria-hidden', 'false');
+}
+
+/**
+ * Focus the first interactive element (e.g., close button) after rendering.
+ * 
+ * @param {HTMLElement} container - The floating contact container element.
+ */
+function focusFloatingContact(container) {
+    setTimeout(() => {
+        const firstFocusable = container.querySelector('button, [href], input, [tabindex]:not([tabindex="-1"])');
+        if (firstFocusable) firstFocusable.focus();
+    }, 10);
+}
+
+/**
+ * Utility: Remove active state from all contacts.
+ */
+function deactivateAllContacts() {
+    document.querySelectorAll('.contact').forEach(contact =>
+        contact.classList.remove('active')
+    );
+}
+
+/**
+ * Utility: Highlight the selected contact.
+ * 
+ * @param {string} userId - The ID of the selected contact.
+ */
+function highlightCurrentContact(userId) {
+    const currentContact = document.getElementById(`contact-${userId}`);
+    if (currentContact) currentContact.classList.add('active');
+}

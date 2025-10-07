@@ -150,7 +150,7 @@ function updateMobileMenuButton(mobileOverlay, user) {
 }
 
 /**
- * Animates a floating contact element by sliding it in from the right and fading it in.
+ * Animates a floating contact element by sliding it in from the right + minimal ARIA adjustments.
  *
  * @param {HTMLElement} floatingContactElement - The DOM element representing the floating contact to animate.
  */
@@ -165,29 +165,10 @@ function slideInFloatingContact(floatingContactElement) {
     floatingContactElement.style.transform = 'translateX(0)';
     floatingContactElement.style.opacity = '1';
   }, 10);
-}
 
-/**
- * Displays a floating contact card for the selected contact.
- *
- * @param {Object} user - The contact object.
- */
-function showFloatingContact(user) {
-  let allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
-
-  let currentContact = document.getElementById(`contact-${user.id}`);
-  if (currentContact) {
-    currentContact.classList.add('active');
-  }
-  let floatingContactHtml = getFloatingContactTemplate(user);
-  let floatingContact =
-    window.innerWidth <= 768
-      ? createMobileFloatingContact(user)
-      : createDesktopFloatingContact();
-
-  floatingContact.innerHTML = floatingContactHtml;
-  slideInFloatingContact(floatingContact);
+  const content = floatingContactElement.querySelectorAll('.floating-contact-second, .floating-contact-third');
+  content.forEach(el => el.setAttribute('aria-live', 'polite'));
+  floatingContactElement.setAttribute('aria-hidden', 'false');
 }
 
 /**
@@ -195,32 +176,40 @@ function showFloatingContact(user) {
  * from the element with ID 'floating-contact', and removes the 'active' class from all contact elements.
  */
 function closeDesktopFloatingContact() {
-  let floatingContact = document.getElementById('floating-contact');
+  const triggerButton = document.querySelector('.add-contact-btn');
+  const floatingContact = document.getElementById('floating-contact');
+
   if (floatingContact) {
     floatingContact.classList.remove('show');
+    floatingContact.setAttribute('aria-hidden', 'true');
   }
-  
-  let allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
+  document.querySelectorAll('.contact').forEach(contact => contact.classList.remove('active'));
+  if (triggerButton) triggerButton.focus();
 }
+
 
 /**
  * Closes the mobile floating contact overlay by removing relevant CSS classes.
  */
 function closeMobileFloatingContact() {
+  const triggerButton = document.querySelector('.add-contact-btn-mobile');
   let mobileOverlay = document.getElementById('mobile-floating-contact');
+
   if (mobileOverlay) {
     mobileOverlay.classList.remove('show');
     document.body.classList.remove('no-scroll');
-    
-    let mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
+
+    const mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
     if (mobileFloatingContact) {
       mobileFloatingContact.classList.remove('show');
+      mobileFloatingContact.setAttribute('aria-hidden', 'true');
     }
+    mobileOverlay.setAttribute('aria-hidden', 'true');
   }
-  let allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
+  document.querySelectorAll('.contact').forEach(contact => contact.classList.remove('active'));
+  if (triggerButton) triggerButton.focus();
 }
+
 
 /**
  * Closes the floating contact panel based on the current window width.
@@ -356,12 +345,10 @@ function handleWindowResize() {
 function openAddContactOverlay() {
     const overlayContainer = document.getElementById('overlay-add-contact-container');
     const overlayBackground = document.getElementById('overlay-contacts');
-    const triggerButton = document.querySelector('.add-contact-btn');
 
     renderAddContactOverlay(overlayContainer);
     showOverlayBackground(overlayBackground);
     showOverlayWithFocus(overlayContainer);
-    setupOverlayKeyboard(overlayContainer, triggerButton, overlayBackground);
 }
 
 /**

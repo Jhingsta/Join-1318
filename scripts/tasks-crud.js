@@ -7,6 +7,7 @@ async function loadTasks() {
   try {
     let response = await fetch(`${BASE_URL}tasks.json`);
     let data = await response.json();
+
     return data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
   } catch (error) {
     console.error("Error loading tasks:", error);
@@ -49,7 +50,9 @@ function prepareTaskPayload(taskData) {
     priority: "medium",
     dueDate: "",
     category: null,
-    assignedUsersFull: [],
+    assignedUsersFull: Array.isArray(taskData.assignedUsersFull) 
+      ? taskData.assignedUsersFull 
+      : [],
     createdAt: new Date().toISOString(),
     subtasks: { total: 0, completed: 0, items: [] },
   };
@@ -81,6 +84,11 @@ async function updateTask(taskId, updates) {
   }
 }
 
+/**
+ * Prepares the updated task by merging current task data and updates.
+ * @param {string} taskId - The ID of the task to update.
+ * @param {Object} updates - The updates to apply to the task.
+ */
 /**
  * Prepares the updated task by merging current task data and updates.
  * @param {string} taskId - The ID of the task to update.

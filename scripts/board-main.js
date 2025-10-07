@@ -14,6 +14,8 @@ const categories = ["Technical Task", "User Story"];
 async function loadTasksForBoard() {
     try {
         tasks = await loadTasks();
+                console.log("✅ Tasks loaded from Firebase:", tasks); // ← HIER
+
 
         tasks = tasks.map(task => ({
             ...task,
