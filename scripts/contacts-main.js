@@ -7,6 +7,9 @@ function init() {
 /**
  * Asynchronously loads user data from a JSON file and renders the contacts list.
  * Fetches user data from the specified BASE_URL, parses it, and updates the DOM.
+ * 
+ * Each user object will have a computed `id` property derived from the email
+ * (special characters removed), which is used for DOM element IDs and actions.
  */
 async function loadUsers() {
   try {
@@ -14,15 +17,19 @@ async function loadUsers() {
     let data = await response.json();
     
     if (data) {
-      users = Object.values(data);
-      let html = renderContacts(users);
-      document.getElementById("contacts-list").innerHTML = html;
+      users = Object.values(data).map(u => ({
+        ...u,
+        id: u.email.replace(/[^a-zA-Z0-9]/g, '')
+      }));
+      document.getElementById("contacts-list").innerHTML = renderContacts(users);
     } else {
       users = [];
+      document.getElementById("contacts-list").innerHTML = "";
     }
   } catch (error) {
     console.error("Error loading users:", error);
     users = [];
+    document.getElementById("contacts-list").innerHTML = "";
   }
 }
 
@@ -30,11 +37,11 @@ async function loadUsers() {
  * Renders a list of contacts grouped alphabetically by the first letter of their names.
  * Contacts are sorted by name before grouping.
  *
- * @param {Array<Object>} contacts - Array of contact objects, each with a 'name' property.
+ * @param {Array<Object>} contacts - Array of contact objects, each with at least a 'name' property.
+ * @returns {string} HTML string of grouped contacts.
  */
 function renderContacts(contacts) {
   let sorted = contacts.sort((a, b) => a.name.localeCompare(b.name));
-
   let grouped = sorted.reduce((acc, contact) => {
     let letter = contact.name[0].toUpperCase();
     if (!acc[letter]) acc[letter] = [];
@@ -75,14 +82,15 @@ function createDesktopFloatingContact() {
 /**
  * Creates and displays a mobile floating contact overlay with contact information.
  * 
- * @param {string} name - The contact's full name
- * @param {string} email - The contact's email address
- * @param {string} phone - The contact's phone number
- * @param {string} color - The color for the contact's avatar/badge
- * @param {string} initials - The contact's initials for display
+ * @param {Object} user - The contact object.
+ * @param {string} user.name - The contact's full name.
+ * @param {string} user.email - The contact's email address.
+ * @param {string} [user.phone] - The contact's phone number.
+ * @param {string} user.color - The color for the contact's avatar/badge.
+ * @param {string} user.initials - The contact's initials.
  */
-function createMobileFloatingContact(name, email, phone, color, initials) {
-  let mobileOverlay = getOrCreateMobileOverlay(name, email, phone, color, initials);
+function createMobileFloatingContact(user) {
+  let mobileOverlay = getOrCreateMobileOverlay(user);
   let floatingContact = ensureFloatingContactElement(mobileOverlay);
 
   mobileOverlay.classList.add('show');
@@ -94,21 +102,18 @@ function createMobileFloatingContact(name, email, phone, color, initials) {
 /**
  * Gets an existing mobile overlay or creates a new one with the provided contact data.
  * 
- * @param {string} name - The contact's full name
- * @param {string} email - The contact's email address
- * @param {string} phone - The contact's phone number
- * @param {string} color - The color for the contact's avatar/badge
- * @param {string} initials - The contact's initials for display
+ * @param {Object} user - The contact object.
  */
-function getOrCreateMobileOverlay(name, email, phone, color, initials) {
+function getOrCreateMobileOverlay(user) {
   let mobileOverlay = document.getElementById('mobile-floating-contact');
 
   if (!mobileOverlay) {
-    document.body.innerHTML += getMobileOverlayTemplate(name, email, phone, color, initials);
+    document.body.innerHTML += getMobileOverlayTemplate(user);
     mobileOverlay = document.getElementById('mobile-floating-contact');
   } else {
-    updateMobileMenuButton(mobileOverlay, name, email, phone, color, initials);
+    updateMobileMenuButton(mobileOverlay, user);
   }
+
   return mobileOverlay;
 }
 
@@ -132,16 +137,15 @@ function ensureFloatingContactElement(mobileOverlay) {
  * Updates the mobile menu button's onclick attribute to open the contact menu with the provided contact details.
  *
  * @param {HTMLElement} mobileOverlay - The overlay element containing the mobile menu button.
- * @param {string} name - The contact's name.
- * @param {string} email - The contact's email address.
- * @param {string} phone - The contact's phone number (optional).
- * @param {string} color - The color associated with the contact.
- * @param {string} initials - The contact's initials.
+ * @param {Object} user - The contact object.
  */
-function updateMobileMenuButton(mobileOverlay, name, email, phone, color, initials) {
+function updateMobileMenuButton(mobileOverlay, user) {
   let menuBtn = mobileOverlay.querySelector('.mobile-overlay-menu-btn');
   if (menuBtn) {
-    menuBtn.setAttribute('onclick', `openMobileContactMenu('${name}', '${email}', '${phone || ''}', '${color}', '${initials}')`);
+    menuBtn.setAttribute(
+      'onclick',
+      `openMobileContactMenu('${user.name}', '${user.email}', '${user.phone || ''}', '${user.color}', '${user.initials}')`
+    );
   }
 }
 
@@ -166,24 +170,23 @@ function slideInFloatingContact(floatingContactElement) {
 /**
  * Displays a floating contact card for the selected contact.
  *
- * @param {string} name - The name of the contact.
- * @param {string} email - The email address of the contact.
- * @param {string} phone - The phone number of the contact.
- * @param {string} color - The color associated with the contact.
- * @param {string} initials - The initials of the contact.
- * @param {number|string} contactId - The unique identifier of the contact.
+ * @param {Object} user - The contact object.
  */
-function showFloatingContact(name, email, phone, color, initials, contactId) {
+function showFloatingContact(user) {
   let allContacts = document.querySelectorAll('.contact');
   allContacts.forEach(contact => contact.classList.remove('active'));
-  let currentContact = document.getElementById(`contact-${contactId}`);
+
+  let currentContact = document.getElementById(`contact-${user.id}`);
   if (currentContact) {
     currentContact.classList.add('active');
   }
-  let floatingContactHtml = getFloatingContactTemplate(name, email, phone, color, initials);
-  let floatingContact = window.innerWidth <= 768 ? createMobileFloatingContact(name, email, phone, color, initials) : createDesktopFloatingContact();
+  let floatingContactHtml = getFloatingContactTemplate(user);
+  let floatingContact =
+    window.innerWidth <= 768
+      ? createMobileFloatingContact(user)
+      : createDesktopFloatingContact();
+
   floatingContact.innerHTML = floatingContactHtml;
-  
   slideInFloatingContact(floatingContact);
 }
 
@@ -233,20 +236,16 @@ function closeFloatingContact() {
 /**
  * Opens the mobile contact options menu for a specific contact.
  * 
- * @param {string} name - The name of the contact.
- * @param {string} email - The email address of the contact.
- * @param {string} phone - The phone number of the contact.
- * @param {string} color - The color associated with the contact (e.g., for avatar background).
- * @param {string} initials - The initials of the contact to display in the avatar.
+ * @param {Object} user - The contact object.
  */
-function openMobileContactMenu(name, email, phone, color, initials) {
+function openMobileContactMenu(user) {
   let mobileOverlay = document.getElementById('mobile-floating-contact');
   let contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
 
   if (!contactMenu) {
-    createMobileContactMenu(mobileOverlay, name, email, phone, color, initials);
+    createMobileContactMenu(mobileOverlay, user);
   } else {
-    updateMobileContactMenu(contactMenu, name, email, phone, color, initials);
+    updateMobileContactMenu(contactMenu, user);
     closeMobileContactMenu();
   }
 }
@@ -255,14 +254,10 @@ function openMobileContactMenu(name, email, phone, color, initials) {
  * Creates and displays a mobile contact menu overlay with the provided contact details.
  *
  * @param {HTMLElement} mobileOverlay - The overlay element where the contact menu will be rendered.
- * @param {string} name - The name of the contact.
- * @param {string} email - The email address of the contact.
- * @param {string} phone - The phone number of the contact.
- * @param {string} color - The color associated with the contact (e.g., for avatar background).
- * @param {string} initials - The initials of the contact to display in the avatar.
+ * @param {Object} user - The contact object.
  */
-function createMobileContactMenu(mobileOverlay, name, email, phone, color, initials) {
-  mobileOverlay.innerHTML += getMobileContactMenuTemplate(name, email, phone, color, initials);
+function createMobileContactMenu(mobileOverlay, user) {
+  mobileOverlay.innerHTML += getMobileContactMenuTemplate(user);
   let contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
 
   setTimeout(() => contactMenu.classList.add('show'), 10);
@@ -273,20 +268,19 @@ function createMobileContactMenu(mobileOverlay, name, email, phone, color, initi
  * Updates the mobile contact menu with edit and delete actions for a contact.
  *
  * @param {HTMLElement} contactMenu - The DOM element representing the contact menu.
- * @param {string} name - The contact's name.
- * @param {string} email - The contact's email address.
- * @param {string} phone - The contact's phone number.
- * @param {string} color - The color associated with the contact.
- * @param {string} initials - The contact's initials.
+ * @param {Object} user - The contact object.
  */
-function updateMobileContactMenu(contactMenu, name, email, phone, color, initials) {
+function updateMobileContactMenu(contactMenu, user) {
   let editLink = contactMenu.querySelector('.mobile-edit-link');
   if (editLink) {
-    editLink.setAttribute('onclick', `showEditContactOverlay({name:'${name}', email:'${email}', phone:'${phone || ''}', color:'${color}', initials:'${initials}'})`);
+    editLink.setAttribute(
+      'onclick',
+      `showEditContactOverlay(${JSON.stringify(user)})`
+    );
   }
   let deleteLink = contactMenu.querySelector('.mobile-delete-link');
   if (deleteLink) {
-    deleteLink.setAttribute('onclick', `deleteContact('${email}')`);
+    deleteLink.setAttribute('onclick', `deleteContact('${user.id}')`);
   }
 }
 
@@ -356,18 +350,60 @@ function handleWindowResize() {
 }
 
 /**
- * Displays the overlay for adding a new contact.
- * Renders the add contact overlay template, shows the overlay,
- * disables body scrolling, and animates the overlay appearance.
+ * Opens the "Add Contact" overlay by rendering its content, showing the background,
+ * setting focus on the first input, and initializing keyboard support.
  */
-function showAddContactOverlay() {
-  document.getElementById('overlay-add-contact-container').innerHTML = getAddContactOverlayTemplate();
-  document.getElementById('overlay-contacts').classList.add('show');
-  document.body.classList.add('no-scroll');
-  
-  setTimeout(() => {
-      document.getElementById('overlay-add-contact').classList.add('show');
-  }, 10);
+function openAddContactOverlay() {
+    const overlayContainer = document.getElementById('overlay-add-contact-container');
+    const overlayBackground = document.getElementById('overlay-contacts');
+    const triggerButton = document.querySelector('.add-contact-btn');
+
+    renderAddContactOverlay(overlayContainer);
+    showOverlayBackground(overlayBackground);
+    showOverlayWithFocus(overlayContainer);
+    setupOverlayKeyboard(overlayContainer, triggerButton, overlayBackground);
+}
+
+/**
+ * Renders the "Add Contact" overlay HTML inside the given container
+ * and sets ARIA attributes for accessibility.
+ * 
+ * @param {HTMLElement} container - The container element where the overlay HTML will be injected.
+ */
+function renderAddContactOverlay(container) {
+    container.innerHTML = getAddContactOverlayTemplate();
+    container.setAttribute('role', 'dialog');
+    container.setAttribute('aria-modal', 'true');
+    container.setAttribute('aria-labelledby', 'overlay-add-contact-title');
+    container.setAttribute('aria-hidden', 'false');
+}
+
+/**
+ * Shows the overlay background, marks it as visible to assistive technologies,
+ * and prevents page scrolling while the overlay is open.
+ * 
+ * @param {HTMLElement} background - The background overlay element.
+ */
+function showOverlayBackground(background) {
+    background.classList.add('show');
+    background.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('no-scroll');
+}
+
+/**
+ * Displays the overlay with a short delay for animations and sets focus
+ * to the first focusable element within the overlay.
+ * 
+ * @param {HTMLElement} container - The container element of the overlay.
+ */
+function showOverlayWithFocus(container) {
+    setTimeout(() => {
+        const overlay = container.querySelector('.overlay-add-contact');
+        overlay.classList.add('show');
+
+        const firstInput = overlay.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
+        if (firstInput) firstInput.focus();
+    }, 10);
 }
 
 /**

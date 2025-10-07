@@ -115,7 +115,7 @@ function addtaskModal() {
 }
 
 function taskDetailModal() {
-  return `
+    return `
     <div id="task-detail-overlay" class="hidden">
         <div id="task-detail-card">
             <div id="task-detail-body">
@@ -146,7 +146,7 @@ function taskDetailModal() {
 }
 
 function subtaskHTML({ title, isChecked, taskId, index }) {
-  return `
+    return `
     <li class="subtask-item">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
             <div class="subtask-row">
