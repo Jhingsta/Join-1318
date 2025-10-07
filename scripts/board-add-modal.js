@@ -1,30 +1,40 @@
-const assignedTextContainer = assignedContent.querySelector('.assigned-text-container');
-const assignedText = assignedTextContainer.querySelector('.assigned-text');
-const assignedInput = assignedContent.querySelector('.assigned-input');
-const assignedDropdown = document.getElementById('assigned-dropdown');
+// ===================== DOM ELEMENTE =====================
+// Werden bei DOMContentLoaded initialisiert
+let assignedContent;
+let assignedTextContainer;
+let assignedText;
+let assignedInput;
+let assignedDropdown;
+let arrowContainer;
+let arrowIcon;
 
-const categoryContent = document.querySelector('.category-content');
-const categoryText = categoryContent.querySelector('.assigned-text');
-const categoryArrow = categoryContent.querySelector('.assigned-arrow-icon');
+let categoryContent;
+let categoryText;
+let categoryArrow;
+let categoryDropdown;
 
-const taskInput = document.querySelector("#subtask-text");
-const checkBtn = document.querySelector("#check-btn");
-const cancelBtn = document.querySelector("#cancel-btn");
-const subtaskList = document.querySelector("#subtask-list");
+let taskInput;
+let checkBtn;
+let cancelBtn;
+let subtaskList;
 
-const addTaskModal = document.getElementById('add-task-modal');
-const createBtn = document.getElementById('create-btn');
-const addtaskButton = document.getElementById('add-task-btn');
-const svgButtons = document.querySelectorAll('.svg-button');
+let addTaskModal;
+let createBtn;
+let addtaskButton;
+let svgButtons;
+let modalClose;
+let closeButton;
+let priorityButtons;
 
-const modalClose = document.getElementById('modal-close');
-const closeButton = document.querySelector('.close');
-const priorityButtons = document.querySelectorAll(".priority-frame");
+let titleInput;
+let titleError;
 
-const titleInput = document.querySelector(".title-input");
-const titleError = document.querySelector(".error-message");
+let dueDateInput;
+let dueDateDisplay;
+let dueDateContainer;
 
-// Add-Modal spezifisch
+// ===================== MODAL ÖFFNEN/SCHLIEßEN =====================
+
 function openModal() {
     addTaskModal?.classList.remove('hidden');
     addtaskButton?.classList.add('active-style');
@@ -36,139 +46,55 @@ function openModal() {
     });
 }
 
-closeButton?.addEventListener('click', closeModal);
-addtaskButton?.addEventListener('click', openModal);
-modalClose?.addEventListener('click', closeModal);
-
-svgButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        openModal(button);
+function closeModal() {
+    addTaskModal?.classList.add('hidden');
+    createBtn?.classList.remove('active');
+    addtaskButton?.classList.remove('active-style');
+    svgButtons.forEach(btn => {
+        const svg = btn.querySelector('svg');
+        if (svg) svg.classList.remove('disabled');
     });
-});
+}
 
-addTaskModal?.addEventListener('click', (e) => {
-    if (e.target === addTaskModal) closeModal();
-});
+// ===================== DROPDOWN TOGGLE (ASSIGNED USERS) =====================
 
-createBtn.addEventListener("click", async (event) => {
-    event.preventDefault();
-    createBtn.classList.add('active');
-    const taskData = getTaskData();
-    let hasError = false;
-
-    // --- TITLE ---
-    const titleInput = document.querySelector(".title-input");
-    if (!taskData.title) {
-        titleInput.style.borderBottom = "1px solid #FF4D4D";
-        titleError.style.display = "block";
-        hasError = true;
-    } else {
-        titleInput.style.borderBottom = "1px solid #D1D1D1";
-        titleError.style.display = "none";
-    }
-
-    // --- DUE DATE ---
-    const dueDateContainer = document.querySelector(".due-date-content");
-    const dueDateError = document.querySelector(".due-date-container .error-message");
-    const dueDateValue = taskData.dueDate;
-    if (!dueDateValue) {
-        dueDateContainer.style.borderBottom = "1px solid #FF4D4D";
-        dueDateError.style.display = "block";
-        hasError = true;
-    } else {
-        dueDateContainer.style.borderBottom = "1px solid #D1D1D1";
-        dueDateError.style.display = "none";
-    }
-
-    // --- CATEGORY ---
-    const categoryError = document.querySelector(".error-message");
-    const categoryText = taskData.category;
-    if (!categoryText || categoryText === "Select task category") {
-        categoryContent.style.borderBottom = "1px solid #FF4D4D";
-        categoryError.style.display = "block";
-        hasError = true;
-    } else {
-        categoryContent.style.borderBottom = "1px solid #D1D1D1";
-        categoryError.style.display = "none";
-    }
-
-    // Stoppen, wenn Fehler
-    if (hasError) return;
-    const originalText = createBtn.textContent;
-    createBtn.textContent = "Saving...";
-    createBtn.disabled = true;
-    try {
-        const newTask = await saveTask(taskData);
-        if (newTask) {
-            showTaskAddedMessage(() => {
-                closeModal();
-                renderBoard();
-            });
-            resetForm();
-        }
-    } catch (err) {
-        console.error("Fehler beim Erstellen der Task:", err);
-    } finally {
-        createBtn.disabled = false;
-        createBtn.textContent = originalText;
-        createBtn.classList.remove('active');
-    }
-});
-
-// ===================== CATEGORY DROPDOWN =====================
-const categoryDropdown = document.createElement('div');
-categoryDropdown.className = 'dropdown-menu';
-
-categories.forEach(cat => {
-    const div = document.createElement('div');
-    div.className = 'dropdown-item';
-    div.textContent = cat;
-    
-    div.addEventListener('click', (e) => {
-        e.stopPropagation();
-        categoryText.textContent = cat;
-        categoryDropdown.classList.remove('show');
-        categoryArrow.src = '/assets/icons-addtask/arrow_drop_down.png';
-    });
-    
-    categoryDropdown.appendChild(div);
-});
-
-categoryContent.appendChild(categoryDropdown);
-
-// Dropdown & Pfeil Toggle
-categoryContent.addEventListener('click', (e) => {
+function toggleDropdown(e) {
     e.stopPropagation();
-    const isOpen = categoryDropdown.classList.contains('show');
-    categoryDropdown.classList.toggle('show', !isOpen);
-    categoryArrow.src = !isOpen
-        ? '/assets/icons-addtask/arrow_drop_down_up.png'
-        : '/assets/icons-addtask/arrow_drop_down.png';
-});
+    const isOpen = assignedDropdown.classList.contains('open');
+    
+    if (!isOpen) {
+        assignedDropdown.classList.add('open');
+        assignedDropdown.style.display = 'block';
+        assignedInput.style.display = 'inline';
+        assignedText.style.display = 'none';
+        arrowIcon.src = '/assets/icons-addtask/arrow_drop_down_up.png';
+        assignedInput.focus();
 
-// Klick außerhalb schließt Dropdown
-document.addEventListener('click', (e) => {
-    if (!categoryContent.contains(e.target)) {
-        categoryDropdown.classList.remove('show');
-        categoryArrow.src = '/assets/icons-addtask/arrow_drop_down.png';
+        Array.from(assignedDropdown.children).forEach(div => {
+            const checkboxWrapper = div.querySelector('.checkbox-wrapper');
+            if (checkboxWrapper) checkboxWrapper.style.display = 'flex';
+        });
+    } else {
+        assignedDropdown.classList.remove('open');
+        assignedDropdown.style.display = 'none';
+        assignedInput.style.display = 'none';
+        assignedText.style.display = 'block';
+        arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
+        assignedInput.value = '';
     }
-});
+}
 
-// --- Task-Daten sammeln ---
+// ===================== TASK DATA & SAVE =====================
+
 function getTaskData() {
-    // 1. Titel
-    const titleInput = document.querySelector(".title-input");
     const title = titleInput.value.trim();
-    // 2. Beschreibung
-    const descriptionInput = document.querySelector(".description-input");
-    const description = descriptionInput.value.trim();
-    // 3. Due Date
-    const dueDateInput = document.querySelector(".due-date-input");
+    const descriptionInput = document.getElementById('add-description-input');
+    const description = descriptionInput ? descriptionInput.value.trim() : '';
     const dueDate = dueDateInput.value;
-    // 4. Priority
-    const priorityBtn = document.querySelector(".priority-frame.active");
-    const priority = priorityBtn ? priorityBtn.textContent.trim().toLowerCase() : "medium";
-    // 5. Assigned Users Full
+    
+    const priorityBtn = document.querySelector("#add-priority-buttons .priority-frame.active");
+    const priority = priorityBtn ? priorityBtn.dataset.priority : "medium";
+    
     let assignedUsersFull = [];
     if (assignedDropdown) {
         assignedDropdown.querySelectorAll(".dropdown-item.active").forEach(div => {
@@ -184,15 +110,16 @@ function getTaskData() {
             }
         });
     }
-    // 6. Kategorie
-    const categoryText = document.querySelector(".category-content .assigned-text");
-    const category = categoryText ? categoryText.textContent.trim() : null;
-    // 7. Subtasks (Objekte statt Strings)
-    const subtaskInputs = document.querySelectorAll(".subtask-input");
-    const subtasks = Array.from(subtaskInputs)
-        .map(input => input.value.trim())
+    
+    const categoryTextEl = document.getElementById('add-category-text');
+    const category = categoryTextEl ? categoryTextEl.textContent.trim() : null;
+    
+    const subtaskItems = subtaskList.querySelectorAll("li span.subtask-text");
+    const subtasks = Array.from(subtaskItems)
+        .map(span => span.textContent.trim())
         .filter(title => title.length > 0)
         .map(title => ({ title, done: false }));
+    
     return {
         title,
         description,
@@ -223,19 +150,45 @@ async function saveTask(taskData) {
     }
 }
 
+// ===================== FORM RESET =====================
+
 function resetForm() {
-    document.querySelector(".title-input").value = "";
-    document.querySelector(".description-input").value = "";
-    document.querySelector(".due-date-input").value = "";
+    titleInput.value = "";
+    const descInput = document.getElementById('add-description-input');
+    if (descInput) descInput.value = "";
+    dueDateInput.value = "";
     dueDateDisplay.textContent = "dd/mm/yyyy";
     dueDateDisplay.classList.remove("has-value");
-    document.querySelector(".selected-avatars-container").innerHTML = "";
-    document.querySelector("#subtask-list").innerHTML = "";
-    document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
-    document.querySelector(".priority-frame:nth-child(2)").classList.add("active");
-    const categoryText = document.querySelector(".category-content .assigned-text");
-    if (categoryText) categoryText.textContent = "Select task category";
+    
+    const avatarsContainer = document.getElementById('add-selected-avatars-container');
+    if (avatarsContainer) avatarsContainer.innerHTML = "";
+    
+    subtaskList.innerHTML = "";
+    
+    priorityButtons.forEach(btn => btn.classList.remove("active"));
+    const mediumBtn = document.querySelector("#add-priority-buttons .priority-frame[data-priority='medium']");
+    if (mediumBtn) mediumBtn.classList.add("active");
+    
+    const categoryTextEl = document.getElementById('add-category-text');
+    if (categoryTextEl) categoryTextEl.textContent = "Select task category";
+    
+    // Assigned dropdown zurücksetzen
+    if (assignedDropdown) {
+        assignedDropdown.querySelectorAll('.dropdown-item').forEach(item => {
+            item.classList.remove('active');
+            const checkboxWrapper = item.querySelector('.checkbox-wrapper');
+            if (checkboxWrapper) {
+                checkboxWrapper.classList.remove('checked');
+                const checkbox = item.querySelector('img');
+                if (checkbox) {
+                    checkbox.src = "./assets/icons-addTask/Property 1=Default.png";
+                }
+            }
+        });
+    }
 }
+
+// ===================== SUCCESS MESSAGE =====================
 
 function showTaskAddedMessage(onFinished) {
     const img = document.createElement("img");
@@ -269,69 +222,7 @@ function showTaskAddedMessage(onFinished) {
     }, 800);
 }
 
-function toggleDropdown(e) {
-    e.stopPropagation();
-    const isOpen = assignedDropdown.classList.contains('open');
-    if (!isOpen) {
-        assignedDropdown.classList.add('open');
-        assignedDropdown.style.display = 'block';
-        assignedInput.style.display = 'inline';
-        assignedText.style.display = 'none';
-        arrowIcon.src = '/assets/icons-addtask/arrow_drop_down_up.png';
-        assignedInput.focus();
-
-        Array.from(assignedDropdown.children).forEach(div => {
-            div.querySelector('.checkbox-wrapper').style.display = 'flex';
-        });
-    } else {
-        assignedDropdown.classList.remove('open');
-        assignedDropdown.style.display = 'none';
-        assignedInput.style.display = 'none';
-        assignedText.style.display = 'block';
-        arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
-        assignedInput.value = '';
-    }
-}
-
-assignedTextContainer.addEventListener('click', toggleDropdown);
-arrowContainer.addEventListener('click', toggleDropdown);
-
-document.addEventListener('click', e => {
-    if (!assignedTextContainer.contains(e.target) && !arrowContainer.contains(e.target)) {
-        assignedDropdown.classList.remove('open');
-        assignedDropdown.style.display = 'none';
-        assignedInput.style.display = 'none';
-        assignedText.style.display = 'block';
-        arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
-
-        // Hier prüfen
-        Array.from(assignedDropdown.children).forEach(div => {
-            const checkboxWrapper = div.querySelector('.checkbox-wrapper');
-            if (!checkboxWrapper) return; // <- überspringen, falls nicht vorhanden
-
-            const checkbox = checkboxWrapper.querySelector('img');
-            if (!checkbox) return; // <- optional, Sicherheit
-
-            if (checkbox.src.includes('checked')) {
-                checkboxWrapper.style.display = 'flex'; // bleibt sichtbar
-            } else {
-                checkboxWrapper.style.display = 'none'; // ungesetzte Checkbox ausblenden
-            }
-        });
-    }
-});
-
-taskInput.addEventListener("input", () => {
-    if (taskInput.value.trim() !== "") {
-        checkBtn.style.display = "inline";
-        cancelBtn.style.display = "inline";
-    } else { resetInput(); }
-});
-
-function startEditMode(li, span) {
-    const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
-    saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
-}
+// ===================== SUBTASK FUNKTIONEN =====================
 
 function resetInput() { 
     taskInput.value = ""; 
@@ -339,72 +230,332 @@ function resetInput() {
     cancelBtn.style.display = "none"; 
 }
 
-checkBtn.addEventListener("click", () => {
-    const currentTask = taskInput.value.trim();
-    if (!currentTask)
-        return;
-    const li = document.createElement("li");
-    const span = document.createElement("span");
-    span.textContent = currentTask;
-    li.appendChild(span);
-    const icons = document.createElement("div");
-    icons.classList.add("subtask-icons");
-    const editIcon = document.createElement("img");
-    editIcon.src = "./assets/icons-addtask/Property 1=edit.png";
-    editIcon.alt = "Edit";
-    editIcon.addEventListener("click", () => { startEditMode(li, span); });
-    const deleteIcon = document.createElement("img");
-    deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
-    deleteIcon.alt = "Delete";
-    deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); });
-    icons.appendChild(editIcon);
-    icons.appendChild(deleteIcon);
-    li.appendChild(icons);
-    subtaskList.appendChild(li);
-    resetInput();
-});
-
-cancelBtn.addEventListener("click", resetInput);
-
-function closeModal() {
-    addTaskModal?.classList.add('hidden');
-    createBtn?.classList.remove('active');
-    addtaskButton?.classList.remove('active-style');
-    svgButtons.forEach(btn => {
-        const svg = btn.querySelector('svg');
-        if (svg) svg.classList.remove('disabled');
+function startEditMode(li, span) {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = span.textContent;
+    input.classList.add("subtask-edit-input");
+    
+    const saveIcon = document.createElement("img");
+    saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
+    saveIcon.alt = "Save";
+    
+    const cancelIcon = document.createElement("img");
+    cancelIcon.src = "./assets/icons-addtask/Subtask cancel.png";
+    cancelIcon.alt = "Cancel";
+    
+    const actionIcons = document.createElement("div");
+    actionIcons.classList.add("subtask-icons");
+    actionIcons.appendChild(saveIcon);
+    actionIcons.appendChild(cancelIcon);
+    
+    const defaultIcons = li.querySelector(".subtask-icons");
+    
+    saveIcon.addEventListener("click", () => {
+        const newText = input.value.trim();
+        if (newText) {
+            span.textContent = newText;
+        }
+        li.replaceChild(span, input);
+        li.replaceChild(defaultIcons, actionIcons);
     });
+    
+    cancelIcon.addEventListener("click", () => {
+        li.replaceChild(span, input);
+        li.replaceChild(defaultIcons, actionIcons);
+    });
+    
+    li.replaceChild(input, span);
+    li.replaceChild(actionIcons, defaultIcons);
+    input.focus();
 }
 
-assignedInput.addEventListener('input', () => {
-    const filter = assignedInput.value.toLowerCase();
-    Array.from(assignedDropdown.children).forEach(div => {
-        const name = div.querySelector('span').textContent.toLowerCase();
-        div.style.display = name.includes(filter) ? 'flex' : 'none';
+// ===================== INITIALISIERUNG =====================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // DOM-Elemente initialisieren
+    assignedContent = document.getElementById('add-assigned-dropdown-container');
+    assignedTextContainer = document.getElementById('add-assigned-text-container');
+    assignedText = document.getElementById('add-assigned-text');
+    assignedInput = document.getElementById('add-assigned-input');
+    assignedDropdown = document.getElementById('add-assigned-dropdown');
+    arrowContainer = document.getElementById('add-assigned-arrow-container');
+    arrowIcon = document.getElementById('add-assigned-arrow');
+    
+    categoryContent = document.getElementById('add-category-dropdown-container');
+    categoryText = document.getElementById('add-category-text');
+    categoryArrow = document.getElementById('add-category-arrow');
+    
+    taskInput = document.getElementById('add-subtask-input');
+    checkBtn = document.getElementById('add-subtask-check');
+    cancelBtn = document.getElementById('add-subtask-cancel');
+    subtaskList = document.getElementById('add-subtask-list');
+    
+    addTaskModal = document.getElementById('add-task-modal');
+    createBtn = document.getElementById('add-create-btn');
+    addtaskButton = document.getElementById('add-task-btn');
+    svgButtons = document.querySelectorAll('.svg-button');
+    modalClose = document.getElementById('modal-close');
+    closeButton = document.getElementById('add-modal-close');
+    priorityButtons = document.querySelectorAll('#add-priority-buttons .priority-frame');
+    
+    titleInput = document.getElementById('add-title-input');
+    titleError = document.getElementById('add-title-error');
+    
+    dueDateInput = document.getElementById('add-due-date-input');
+    dueDateDisplay = document.getElementById('add-due-date-display');
+    dueDateContainer = document.getElementById('add-due-date-content');
+    
+    // ===================== EVENT LISTENERS - MODAL =====================
+    
+    closeButton?.addEventListener('click', closeModal);
+    addtaskButton?.addEventListener('click', openModal);
+    modalClose?.addEventListener('click', closeModal);
+    
+    svgButtons.forEach(button => {
+        button.addEventListener('click', openModal);
     });
-});
-
-titleInput.addEventListener("blur", () => {
-    if (!titleInput.value.trim()) {
-        titleInput.style.borderBottom = "1px solid #FF4D4D";
-        titleError.style.display = "block";
-    } else {
-        titleInput.style.borderBottom = "1px solid #D1D1D1";
-        titleError.style.display = "none";
-    }
-});
-
-titleInput.addEventListener("input", () => {
-    if (titleInput.value.trim()) {
-        titleInput.style.borderBottom = "1px solid #005DFF";
-        titleError.style.display = "none";
-    }
-})
-
-// Priority Buttons
-priorityButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-        priorityButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
+    
+    addTaskModal?.addEventListener('click', (e) => {
+        if (e.target === addTaskModal) closeModal();
+    });
+    
+    // ===================== EVENT LISTENERS - ASSIGNED DROPDOWN =====================
+    
+    assignedTextContainer?.addEventListener('click', toggleDropdown);
+    arrowContainer?.addEventListener('click', toggleDropdown);
+    
+    document.addEventListener('click', (e) => {
+        if (!assignedTextContainer?.contains(e.target) && !arrowContainer?.contains(e.target)) {
+            assignedDropdown?.classList.remove('open');
+            if (assignedDropdown) assignedDropdown.style.display = 'none';
+            if (assignedInput) {
+                assignedInput.style.display = 'none';
+                assignedInput.value = '';
+            }
+            if (assignedText) assignedText.style.display = 'block';
+            if (arrowIcon) arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
+            
+            Array.from(assignedDropdown?.children || []).forEach(div => {
+                const checkboxWrapper = div.querySelector('.checkbox-wrapper');
+                if (!checkboxWrapper) return;
+                const checkbox = checkboxWrapper.querySelector('img');
+                if (!checkbox) return;
+                
+                if (checkbox.src.includes('checked')) {
+                    checkboxWrapper.style.display = 'flex';
+                } else {
+                    checkboxWrapper.style.display = 'none';
+                }
+            });
+        }
+    });
+    
+    assignedInput?.addEventListener('input', () => {
+        const filter = assignedInput.value.toLowerCase();
+        Array.from(assignedDropdown?.children || []).forEach(div => {
+            const nameEl = div.querySelector('span');
+            if (nameEl) {
+                const name = nameEl.textContent.toLowerCase();
+                div.style.display = name.includes(filter) ? 'flex' : 'none';
+            }
+        });
+    });
+    
+    // ===================== EVENT LISTENERS - CATEGORY DROPDOWN =====================
+    
+    categoryDropdown = document.createElement('div');
+    categoryDropdown.className = 'dropdown-menu';
+    
+    categories.forEach(cat => {
+        const div = document.createElement('div');
+        div.className = 'dropdown-item';
+        div.textContent = cat;
+        
+        div.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (categoryText) categoryText.textContent = cat;
+            categoryDropdown.classList.remove('show');
+            if (categoryArrow) categoryArrow.src = '/assets/icons-addtask/arrow_drop_down.png';
+        });
+        
+        categoryDropdown.appendChild(div);
+    });
+    
+    categoryContent?.appendChild(categoryDropdown);
+    
+    categoryContent?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = categoryDropdown.classList.contains('show');
+        categoryDropdown.classList.toggle('show', !isOpen);
+        if (categoryArrow) {
+            categoryArrow.src = !isOpen
+                ? '/assets/icons-addtask/arrow_drop_down_up.png'
+                : '/assets/icons-addtask/arrow_drop_down.png';
+        }
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!categoryContent?.contains(e.target)) {
+            categoryDropdown?.classList.remove('show');
+            if (categoryArrow) categoryArrow.src = '/assets/icons-addtask/arrow_drop_down.png';
+        }
+    });
+    
+    // ===================== EVENT LISTENERS - TITLE VALIDATION =====================
+    
+    titleInput?.addEventListener("blur", () => {
+        if (!titleInput.value.trim()) {
+            titleInput.style.borderBottom = "1px solid #FF4D4D";
+            if (titleError) titleError.style.display = "block";
+        } else {
+            titleInput.style.borderBottom = "1px solid #D1D1D1";
+            if (titleError) titleError.style.display = "none";
+        }
+    });
+    
+    titleInput?.addEventListener("input", () => {
+        if (titleInput.value.trim()) {
+            titleInput.style.borderBottom = "1px solid #005DFF";
+            if (titleError) titleError.style.display = "none";
+        }
+    });
+    
+    // ===================== EVENT LISTENERS - PRIORITY BUTTONS =====================
+    
+    priorityButtons?.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            priorityButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+        });
+    });
+    
+    // ===================== EVENT LISTENERS - DUE DATE =====================
+    
+    dueDateInput?.addEventListener("change", updateDisplay);
+    dueDateContainer?.addEventListener("click", openDatepicker);
+    
+    dueDateInput?.addEventListener("blur", () => {
+        const dueDateError = document.getElementById('add-due-date-error');
+        if (!dueDateInput.value.trim()) {
+            if (dueDateContainer) dueDateContainer.style.borderBottom = "1px solid #FF4D4D";
+            if (dueDateError) dueDateError.style.display = "block";
+        } else {
+            if (dueDateContainer) dueDateContainer.style.borderBottom = "1px solid #D1D1D1";
+            if (dueDateError) dueDateError.style.display = "none";
+        }
+    });
+    
+    // ===================== EVENT LISTENERS - SUBTASKS =====================
+    
+    taskInput?.addEventListener("input", () => {
+        if (taskInput.value.trim() !== "") {
+            if (checkBtn) checkBtn.style.display = "inline";
+            if (cancelBtn) cancelBtn.style.display = "inline";
+        } else {
+            resetInput();
+        }
+    });
+    
+    checkBtn?.addEventListener("click", () => {
+        const currentTask = taskInput.value.trim();
+        if (!currentTask) return;
+        
+        const li = document.createElement("li");
+        li.className = "subtask-item";
+        
+        const span = document.createElement("span");
+        span.textContent = currentTask;
+        span.className = "subtask-text";
+        li.appendChild(span);
+        
+        const icons = document.createElement("div");
+        icons.classList.add("subtask-icons");
+        
+        const editIcon = document.createElement("img");
+        editIcon.src = "./assets/icons-addtask/Property 1=edit.png";
+        editIcon.alt = "Edit";
+        editIcon.addEventListener("click", () => { startEditMode(li, span); });
+        
+        const deleteIcon = document.createElement("img");
+        deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
+        deleteIcon.alt = "Delete";
+        deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); });
+        
+        icons.appendChild(editIcon);
+        icons.appendChild(deleteIcon);
+        li.appendChild(icons);
+        subtaskList.appendChild(li);
+        resetInput();
+    });
+    
+    cancelBtn?.addEventListener("click", resetInput);
+    
+    // ===================== EVENT LISTENERS - CREATE BUTTON =====================
+    
+    createBtn?.addEventListener("click", async (event) => {
+        event.preventDefault();
+        createBtn.classList.add('active');
+        
+        const taskData = getTaskData();
+        let hasError = false;
+        
+        // Title Validation
+        if (!taskData.title) {
+            titleInput.style.borderBottom = "1px solid #FF4D4D";
+            if (titleError) titleError.style.display = "block";
+            hasError = true;
+        } else {
+            titleInput.style.borderBottom = "1px solid #D1D1D1";
+            if (titleError) titleError.style.display = "none";
+        }
+        
+        // Due Date Validation
+        const dueDateError = document.getElementById('add-due-date-error');
+        if (!taskData.dueDate) {
+            if (dueDateContainer) dueDateContainer.style.borderBottom = "1px solid #FF4D4D";
+            if (dueDateError) dueDateError.style.display = "block";
+            hasError = true;
+        } else {
+            if (dueDateContainer) dueDateContainer.style.borderBottom = "1px solid #D1D1D1";
+            if (dueDateError) dueDateError.style.display = "none";
+        }
+        
+        // Category Validation
+        const categoryError = document.getElementById('add-category-error');
+        if (!taskData.category || taskData.category === "Select task category") {
+            if (categoryContent) categoryContent.style.borderBottom = "1px solid #FF4D4D";
+            if (categoryError) categoryError.style.display = "block";
+            hasError = true;
+        } else {
+            if (categoryContent) categoryContent.style.borderBottom = "1px solid #D1D1D1";
+            if (categoryError) categoryError.style.display = "none";
+        }
+        
+        if (hasError) {
+            createBtn.classList.remove('active');
+            return;
+        }
+        
+        const originalText = createBtn.textContent;
+        createBtn.textContent = "Saving...";
+        createBtn.disabled = true;
+        
+        try {
+            const newTask = await saveTask(taskData);
+            if (newTask) {
+                showTaskAddedMessage(() => {
+                    closeModal();
+                    renderBoard();
+                });
+                resetForm();
+            }
+        } catch (err) {
+            console.error("Fehler beim Erstellen der Task:", err);
+        } finally {
+            createBtn.disabled = false;
+            createBtn.textContent = originalText;
+            createBtn.classList.remove('active');
+        }
     });
 });
