@@ -106,7 +106,7 @@ function addtaskModal() {
 }
 
 function taskDetailModal() {
-  return `
+    return `
     <div id="task-detail-overlay" class="hidden">
         <div id="task-detail-card">
             <div id="task-detail-body">
@@ -137,7 +137,7 @@ function taskDetailModal() {
 }
 
 function subtaskHTML({ title, isChecked, taskId, index }) {
-  return `
+    return `
     <li class="subtask-item">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
             <div class="subtask-row">
@@ -228,15 +228,16 @@ function taskEditTemplate(task, isoDate) {
         </div> 
         <div id="edit-avatars-container-overlay" class="avatars-container-overlay"></div>
 
-        <label class="assigned-header">Subtasks</label>
-        <div id="task-content-addtask">
-            <input type="text" id="edit-subtask-input" placeholder="Add new subtask">
-            <div id="assigned-arrow-container">
-                <img id="edit-cancel-btn" class="assigned-arrow-icon" style="display:none;" src="/assets/icons-addtask/Subtask cancel.png" alt="Cancel subtask">
-                <img id="edit-check-btn" class="assigned-arrow-icon" style="display:none;" src="/assets/icons-addtask/Subtask's icons (1).png" alt="Confirm subtask">
-            </div>
-        </div>
-        <div id="edit-subtask-list"></div>
+<label class="assigned-header">Subtasks</label>
+<div id="task-content-addtask">
+    <input type="text" id="edit-subtask-input" placeholder="Add new subtask">
+    <div id="assigned-arrow-container">
+        <img id="edit-cancel-btn" class="assigned-arrow-icon" style="display:none;" src="./assets/icons-addtask/Subtask cancel.png" alt="Cancel subtask">
+        <img id="edit-check-btn" class="assigned-arrow-icon" style="display:none;" src="./assets/icons-addtask/Subtask's icons (1).png" alt="Confirm subtask">
+    </div>
+</div>
+<ul id="edit-subtask-list" class="subtasks-list"></ul>
+
     `;
 }
 

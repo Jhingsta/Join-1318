@@ -95,6 +95,7 @@ main {
 }
 
 .title-input {
+    display:block;
     width: 100%;
     padding: 13px 16px;
     background: #FFFFFF;
@@ -715,7 +716,6 @@ main {
 }
 
 input {
-    display: none;
     border: none;
     outline: none;
     cursor: pointer;
