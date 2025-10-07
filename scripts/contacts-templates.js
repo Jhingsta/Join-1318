@@ -43,7 +43,7 @@ function getFloatingContactTemplate(user) {
       <div class="floating-contact-name">
         <div class="floating-contact-name-big">${user.name}</div>
         <div class="floating-contact-name-bottom">
-          <button class="edit-link" onclick='showEditContactOverlay(${JSON.stringify(user)})' 
+          <button class="edit-link" onclick='openEditContactModal(${JSON.stringify(user)})' 
             aria-label="Edit contact ${user.name}"
           >
             <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt=""> 
@@ -91,7 +91,7 @@ function getMobileMenuButtonTemplate(user) {
 function getMobileContactMenuTemplate(user) {
   return `
     <div class="mobile-contact-options">
-      <div class="mobile-edit-link" onclick='showEditContactOverlay(${JSON.stringify(user)})'>
+      <div class="mobile-edit-link" onclick='openEditContactModal(${JSON.stringify(user)})'>
         <img src="./assets/icons-contacts/edit.svg" class="icon-edit" alt="">
         <span>Edit</span>
       </div>

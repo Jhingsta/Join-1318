@@ -244,8 +244,7 @@ filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99
   transition: background 0.2s ease;
 }
 
-.overlay-close-button:hover,
-.overlay-close-button:focus {
+.overlay-close-button:hover {
   background: #4589FF;
   outline: none;
 }

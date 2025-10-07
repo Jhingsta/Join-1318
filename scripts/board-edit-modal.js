@@ -222,8 +222,12 @@ function renderEditSubtasks(task) {
         const deleteIcon = document.createElement("img");
         deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
         deleteIcon.alt = "Delete";
+
         deleteIcon.addEventListener("click", async () => {
             task.subtasks.items.splice(index, 1);
+            task.subtasks.total = task.subtasks.items.length;
+            task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
+            
             await updateTask(task.id, { subtasks: task.subtasks });
             renderEditSubtasks(task);
         });
@@ -249,10 +253,14 @@ function startEditSubtaskMode(task, li, span, index) {
     const saveIcon = document.createElement("img");
     saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
     saveIcon.alt = "Save";
+
     saveIcon.addEventListener("click", async () => {
         const newText = input.value.trim();
         if (newText) {
             task.subtasks.items[index].title = newText;
+            task.subtasks.total = task.subtasks.items.length;
+            task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
+            
             await updateTask(task.id, { subtasks: task.subtasks });
             renderEditSubtasks(task);
         }

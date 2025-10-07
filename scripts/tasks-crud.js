@@ -122,22 +122,26 @@ async function deleteTask(taskId) {
 
 /**
  * Processes subtasks to ensure consistent formatting.
- * @param {Array} subtasks - The subtasks to process.
+ * @param {Object} subtasks - The subtasks object with items array.
  */
-function processSubtasks(subtasks = []) {
-  let items = subtasks.map((st, i) => {
-    if (typeof st === "string" && st.trim() !== "") {
-      return { title: st.trim(), done: false };
-    } else if (st?.title?.trim()) {
-      return { title: st.title.trim(), done: st.done || false };
+function processSubtasks(subtasks = { items: [] }) {
+  if (!subtasks || !subtasks.items || !Array.isArray(subtasks.items)) {
+    return { total: 0, completed: 0, items: []
+    };
+  }
+  const validatedItems = subtasks.items.map((st, i) => {
+    if (st?.title?.trim()) {
+      return { 
+        title: st.title.trim(), 
+        done: st.done === true
+      };
     }
     return { title: `Subtask ${i + 1}`, done: false };
   });
-
   return {
-    total: items.length,
-    completed: items.filter(st => st.done).length,
-    items,
+    total: validatedItems.length,
+    completed: validatedItems.filter(st => st.done).length,
+    items: validatedItems
   };
 }
 

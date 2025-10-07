@@ -51,29 +51,48 @@ async function handleUserDeleted(userKey) {
 }
 
 /**
+ * Close a specific modal with ARIA adjustments and optional focus return.
+ * @param {HTMLElement} modalContainer - The container of the modal to close.
+ * @param {HTMLElement|null} triggerButton - The element that triggered the modal (for focus return).
+ */
+function closeModal(modalContainer, triggerButton = null) {
+    const overlayBackground = document.getElementById('overlay-contacts');
+
+    if (modalContainer && modalContainer.classList.contains('show')) {
+
+        if (triggerButton) {
+            triggerButton.focus();
+        } else {
+            document.body.focus();
+        }
+        modalContainer.classList.remove('show');
+        modalContainer.setAttribute('aria-hidden', 'true');
+        modalContainer.inert = true;
+
+        setTimeout(() => {
+            overlayBackground.classList.remove('show');
+            overlayBackground.setAttribute('aria-hidden', 'true');
+            overlayBackground.inert = true;
+
+            modalContainer.innerHTML = '';
+            document.body.classList.remove('no-scroll');
+        }, 300);
+    }
+}
+
+/**
  * Closes the contact overlay by removing the 'show' class from either the add or edit contact overlays.
  * Also clears the respective overlay container's inner HTML and removes the 'no-scroll' class from the body.
  */
 function closeContactOverlay() {
-  let addOverlay = document.getElementById('overlay-add-contact');
-  let editOverlay = document.getElementById('overlay-edit-contact');
-  
-  if (addOverlay && addOverlay.classList.contains('show')) {
-    addOverlay.classList.remove('show');
-    setTimeout(() => {
-      document.getElementById('overlay-contacts').classList.remove('show');
-      document.getElementById('overlay-add-contact-container').innerHTML = '';
-      document.body.classList.remove('no-scroll');
-    }, 300);
-  }
-  if (editOverlay && editOverlay.classList.contains('show')) {
-    editOverlay.classList.remove('show');
-    setTimeout(() => {
-      document.getElementById('overlay-contacts').classList.remove('show');
-      document.getElementById('overlay-edit-contact-container').innerHTML = '';
-      document.body.classList.remove('no-scroll');
-    }, 300);
-  }
+    const addOverlay = document.getElementById('overlay-add-contact');
+    const editOverlay = document.getElementById('overlay-edit-contact');
+
+    const addTrigger = document.querySelector('.add-contact-btn');
+    const editTrigger = document.querySelector('.edit-link[onclick*="edit"]');
+
+    closeModal(addOverlay, addTrigger);
+    closeModal(editOverlay, editTrigger);
 }
 
 /**
@@ -352,10 +371,8 @@ function renderFloatingContact(container, user) {
 function showFloatingContactPanel(container) {
     container.classList.add('show');
 
-    // 🔹 Originale Slide-in Animation
     slideInFloatingContact(container);
 
-    // 🔹 Screenreader ARIA adjustments
     const content = container.querySelectorAll('.floating-contact-second, .floating-contact-third');
     content.forEach(el => el.setAttribute('aria-live', 'polite'));
     container.setAttribute('aria-hidden', 'false');
