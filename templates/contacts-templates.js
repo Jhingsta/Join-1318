@@ -145,7 +145,7 @@ function getAddContactOverlayTemplate() {
                 <img src="./assets/icons-contacts/call.svg" alt="" class="input-icon">
               </div>
 
-              <div class="error-message"></div>
+              <div class="error-message" role="alert" aria-live="assertive"></div>
             </div>
 
             <div class="buttons-container">
@@ -205,7 +205,7 @@ function getEditContactOverlayTemplate(user) {
                         <img src="./assets/icons-contacts/call.svg" alt="" class="input-icon" aria-hidden="true">
                     </div>
 
-                    <div class="error-message"></div>
+                    <div class="error-message" role="alert" aria-live="assertive"></div>
                 </div>
 
                 <div class="buttons-container">

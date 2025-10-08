@@ -37,7 +37,7 @@
 
                         <div class="form-group">
                             <label for="email" class="visually-hidden">Email</label>
-                            <input id="email" name="email" type="text" placeholder="Email">
+                            <input id="email" name="email" type="text" placeholder="Email" inputmode="email">
                             <img src="./assets/icons-signup/mail.svg" alt="" class="input-icon">
                         </div>
 
@@ -54,13 +54,13 @@
                         </div>
                     </div>
 
-                    <div class="error-message"></div>
+                    <div class="error-message" role="alert" aria-live="assertive"></div>
 
                     <div class="sign-up-checkbox">
                         <div class="checkbox-container">
-                            <input type="checkbox" id="accept-privacy">
+                            <input type="checkbox" id="accept-privacy" aria-required="true">
                             <label for="accept-privacy" class="checkbox-label">
-                                <svg class="custom-checkbox" width="24" height="25" viewBox="0 0 24 25" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                <svg class="custom-checkbox" aria-hidden="true" focusable="false" width="24" height="25" viewBox="0 0 24 25" xmlns="http://www.w3.org/2000/svg">
                                     <!-- Default rectangular frame -->
                                     <rect class="box-default" x="4" y="4.96582" width="16" height="16" rx="3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                                     <!-- Checked-outline -->
@@ -82,7 +82,7 @@
     </main>
 
     <footer>
-        <nav>
+        <nav aria-label="Footer navigation">
             <ul>
                 <li><a href="privacypolicy.html?from=visitor">Privacy Policy</a></li>
                 <li><a href="legalnotice.html?from=visitor">Legal Notice</a></li>

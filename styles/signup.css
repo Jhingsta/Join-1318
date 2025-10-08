@@ -80,18 +80,6 @@ hr.solid {
   margin-bottom: 35px;
 }
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 form {
   display: flex;
   flex-direction: column;
@@ -183,7 +171,7 @@ input::placeholder {
   gap: 10px;
 }
 
-/* native checkbox unsichtbar, aber zugänglich */
+/* Checkbox */
 input[type="checkbox"] {
   position: absolute;
   opacity: 0;
@@ -196,7 +184,6 @@ input[type="checkbox"] {
   overflow: hidden;
 }
 
-/* Label & SVG */
 .checkbox-label {
   display: inline-flex;
   align-items: center;
@@ -214,7 +201,6 @@ input[type="checkbox"] {
   margin-bottom: 3px;  
 }
 
-/* Standardfarben (alle SVG-Pfade bekommen dieselbe Stroke-Farbe) */
 .custom-checkbox .box-default,
 .custom-checkbox .box-checked,
 .custom-checkbox .check {
@@ -222,18 +208,15 @@ input[type="checkbox"] {
   transition: opacity .12s ease, fill .12s ease;
 }
 
-/* Default: show rect, hide checked-outline + check */
 .custom-checkbox .box-default { opacity: 1; }
 .custom-checkbox .box-checked { opacity: 0; }
 .custom-checkbox .check { opacity: 0; }
 
-/* Hover über das Label -> nur Hintergrundfarbe der sichtbaren Box ändern */
 .checkbox-label:hover .custom-checkbox .box-default,
 .checkbox-label:hover .custom-checkbox .box-checked {
   fill: #EDF2FA;
 }
 
-/* Checked: show checked-outline + check, hide default rect */
 input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .box-default {
   opacity: 0;
 }
@@ -252,6 +235,7 @@ input[type="checkbox"]:checked + .checkbox-label .custom-checkbox .check {
   text-decoration: underline;
   font-weight: 700;
 }
+/* End Checkbox */
 
 .privacy-link {
   width: 110px;
@@ -318,14 +302,14 @@ nav a:hover {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, 100vh); /* Startet unterhalb */
+  transform: translate(-50%, 100vh);
   z-index: 9999;
   opacity: 1;
   transition: transform 400ms ease-out;
 }
 
 .signup-success-container.slide-in {
-  transform: translate(-50%, -50%); /* Mitte */
+  transform: translate(-50%, -50%);
 }
 
 .signup-success-container.fade-out {
@@ -336,6 +320,19 @@ nav a:hover {
 .signup-success-image {
   max-width: 320px;
   height: 74px;
+}
+/* End Signup Success Message */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (max-width: 1100px) {

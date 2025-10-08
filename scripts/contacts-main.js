@@ -166,7 +166,7 @@ function slideInFloatingContact(floatingContactElement) {
     floatingContactElement.style.opacity = '1';
   }, 10);
 
-  const content = floatingContactElement.querySelectorAll('.floating-contact-second, .floating-contact-third');
+  let content = floatingContactElement.querySelectorAll('.floating-contact-second, .floating-contact-third');
   content.forEach(el => el.setAttribute('aria-live', 'polite'));
   floatingContactElement.setAttribute('aria-hidden', 'false');
 }
@@ -176,25 +176,26 @@ function slideInFloatingContact(floatingContactElement) {
  */
 function closeFloatingContact() {
     if (window.innerWidth <= 768) {
-        const mobileContainer = document.getElementById('mobile-floating-contact');
-        const mobileTrigger = document.querySelector('.add-contact-btn-mobile');
+        let mobileContainer = document.getElementById('mobile-floating-contact');
+        let mobileTrigger = document.querySelector('.add-contact-btn-mobile');
         closeFloatingContactContainer(mobileContainer, mobileTrigger);
     } else {
-        const desktopContainer = document.getElementById('floating-contact');
-        const desktopTrigger = document.querySelector('.add-contact-btn');
+        let desktopContainer = document.getElementById('floating-contact');
+        let desktopTrigger = document.querySelector('.add-contact-btn');
         closeFloatingContactContainer(desktopContainer, desktopTrigger);
     }
 }
 
 /**
  * Close a single floating contact container with ARIA adjustments and optional focus return.
+ * 
  * @param {HTMLElement} container - The container to close.
  * @param {HTMLElement|null} triggerButton - The button that triggered the floating contact.
  */
 function closeFloatingContactContainer(container, triggerButton = null) {
     if (!container) return;
 
-    const floating = container.querySelector('.floating-contact');
+    let floating = container.querySelector('.floating-contact');
 
     if (triggerButton) triggerButton.focus();
 
@@ -202,7 +203,6 @@ function closeFloatingContactContainer(container, triggerButton = null) {
         floating.classList.remove('show');
         floating.setAttribute('aria-hidden', 'true');
     }
-
     container.classList.remove('show');
     container.setAttribute('aria-hidden', 'true');
     container.inert = true;
@@ -210,59 +210,6 @@ function closeFloatingContactContainer(container, triggerButton = null) {
     document.body.classList.remove('no-scroll');
     document.querySelectorAll('.contact').forEach(contact => contact.classList.remove('active'));
 }
-
-
-
-
-
-// /**
-//  * Closes the floating contact element on desktop view by removing the 'show' class
-//  * from the element with ID 'floating-contact', and removes the 'active' class from all contact elements.
-//  */
-// function closeDesktopFloatingContact() {
-//   const triggerButton = document.querySelector('.add-contact-btn');
-//   const floatingContact = document.getElementById('floating-contact');
-
-//   if (floatingContact) {
-//     floatingContact.classList.remove('show');
-//     floatingContact.setAttribute('aria-hidden', 'true');
-//   }
-//   document.querySelectorAll('.contact').forEach(contact => contact.classList.remove('active'));
-//   if (triggerButton) triggerButton.focus();
-// }
-
-// /**
-//  * Closes the mobile floating contact overlay by removing relevant CSS classes.
-//  */
-// function closeMobileFloatingContact() {
-//   const triggerButton = document.querySelector('.add-contact-btn-mobile');
-//   let mobileOverlay = document.getElementById('mobile-floating-contact');
-
-//   if (mobileOverlay) {
-//     mobileOverlay.classList.remove('show');
-//     document.body.classList.remove('no-scroll');
-
-//     const mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
-//     if (mobileFloatingContact) {
-//       mobileFloatingContact.classList.remove('show');
-//       mobileFloatingContact.setAttribute('aria-hidden', 'true');
-//     }
-//     mobileOverlay.setAttribute('aria-hidden', 'true');
-//   }
-//   document.querySelectorAll('.contact').forEach(contact => contact.classList.remove('active'));
-//   if (triggerButton) triggerButton.focus();
-// }
-
-// /**
-//  * Closes the floating contact panel based on the current window width.
-//  */
-// function closeFloatingContact() {
-//   if (window.innerWidth <= 768) {
-//     closeMobileFloatingContact();
-//   } else {
-//     closeDesktopFloatingContact();
-//   }
-// }
 
 /**
  * Opens the mobile contact options menu for a specific contact.
@@ -361,10 +308,9 @@ function deleteContact() {
  * Handles window resize events to close floating contact overlays based on the current viewport width.
  */
 function handleWindowResize() {
-    const mobileOverlay = document.getElementById('mobile-floating-contact');
-    const desktopFloatingContact = document.getElementById('floating-contact');
+    let mobileOverlay = document.getElementById('mobile-floating-contact');
+    let desktopFloatingContact = document.getElementById('floating-contact');
 
-    // Schließt das aktuell geöffnete Floating-Contact Overlay, falls eines offen ist
     if (
         (window.innerWidth > 768 && mobileOverlay?.querySelector('.floating-contact.show')) ||
         (window.innerWidth <= 768 && desktopFloatingContact?.classList.contains('show'))
@@ -381,8 +327,8 @@ function handleWindowResize() {
  * @param {string} triggerSelector - Selector for the element that triggered the modal.
  */
 function openModal(modalContainer, userData, getTemplateFunc, triggerSelector) {
-    const triggerButton = document.querySelector(triggerSelector);
-    const modalBackground = document.getElementById('overlay-contacts');
+    let triggerButton = document.querySelector(triggerSelector);
+    let modalBackground = document.getElementById('overlay-contacts');
 
     modalContainer.inert = false;
     modalContainer.setAttribute('aria-hidden', 'false');
@@ -393,30 +339,52 @@ function openModal(modalContainer, userData, getTemplateFunc, triggerSelector) {
     showModalWithFocus(modalContainer);
 }
 
+/**
+ * Renders a modal dialog inside the given container using a provided template function.
+ * Sets accessibility attributes for ARIA compliance.
+ *
+ * @param {HTMLElement} container - The DOM element that will contain the modal content.
+ * @param {Object} userData - The data object used to populate the modal template.
+ * @param {Function} getTemplateFunc - A function that returns an HTML template string for the modal.
+ */
 function renderModal(container, userData, getTemplateFunc) {
     container.innerHTML = getTemplateFunc(userData);
     container.setAttribute('role', 'dialog');
     container.setAttribute('aria-modal', 'true');
-    const titleElement = container.querySelector('[id]');
+    let titleElement = container.querySelector('[id]');
     if (titleElement) container.setAttribute('aria-labelledby', titleElement.id);
     container.setAttribute('aria-hidden', 'false');
 }
 
+/**
+ * Displays the modal background and prevents page scrolling while the modal is active.
+ *
+ * @param {HTMLElement} background - The background overlay element for the modal.
+ */
 function showModalBackground(background) {
     background.classList.add('show');
     background.setAttribute('aria-hidden', 'false');
     document.body.classList.add('no-scroll');
 }
 
+/**
+ * Displays the modal with a short delay and focuses the first interactive element for accessibility.
+ *
+ * @param {HTMLElement} container - The container element that holds the modal.
+ */
 function showModalWithFocus(container) {
     setTimeout(() => {
-        const modal = container.querySelector('.modal-add-contact, .modal-edit-contact');
+        let modal = container.querySelector('.modal-add-contact, .modal-edit-contact');
         modal.classList.add('show');
 
-        const firstInput = modal.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
+        let firstInput = modal.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
         if (firstInput) firstInput.focus();
     }, 10);
 }
+
+/**
+ * Opens the "Add Contact" modal using the add contact template. Automatically focuses the first input field after opening.
+ */
 
 function openAddContactModal() {
     openModal(
@@ -427,6 +395,11 @@ function openAddContactModal() {
     );
 }
 
+/**
+ * Opens the "Edit Contact" modal for a given user. Passes the user's data into the edit contact template.
+ *
+ * @param {Object} userData - The data of the user to edit.
+ */
 function openEditContactModal(userData) {
     openModal(
         document.getElementById('modal-edit-contact-container'),

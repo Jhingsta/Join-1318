@@ -56,7 +56,7 @@ async function handleUserDeleted(userKey) {
  * @param {HTMLElement|null} triggerButton - The element that triggered the modal (for focus return).
  */
 function closeModal(modalContainer, triggerButton = null) {
-    const overlayBackground = document.getElementById('overlay-contacts');
+    let overlayBackground = document.getElementById('overlay-contacts');
 
     if (modalContainer && modalContainer.classList.contains('show')) {
 
@@ -85,11 +85,11 @@ function closeModal(modalContainer, triggerButton = null) {
  * Also clears the respective overlay container's inner HTML and removes the 'no-scroll' class from the body.
  */
 function closeContactOverlay() {
-    const addOverlay = document.getElementById('modal-add-contact');
-    const editOverlay = document.getElementById('modal-edit-contact');
+    let addOverlay = document.getElementById('modal-add-contact');
+    let editOverlay = document.getElementById('modal-edit-contact');
 
-    const addTrigger = document.querySelector('.add-contact-btn');
-    const editTrigger = document.querySelector('.edit-link[onclick*="edit"]');
+    let addTrigger = document.querySelector('.add-contact-btn');
+    let editTrigger = document.querySelector('.edit-link[onclick*="edit"]');
 
     closeModal(addOverlay, addTrigger);
     closeModal(editOverlay, editTrigger);
@@ -338,7 +338,7 @@ function openFloatingContact(user) {
     deactivateAllContacts();
     highlightCurrentContact(user.id);
 
-    const floatingContact =
+    let floatingContact =
         window.innerWidth <= 768
             ? createMobileFloatingContact(user)
             : createDesktopFloatingContact();
@@ -373,7 +373,7 @@ function showFloatingContactPanel(container) {
 
     slideInFloatingContact(container);
 
-    const content = container.querySelectorAll('.floating-contact-second, .floating-contact-third');
+    let content = container.querySelectorAll('.floating-contact-second, .floating-contact-third');
     content.forEach(el => el.setAttribute('aria-live', 'polite'));
     container.setAttribute('aria-hidden', 'false');
 }
@@ -385,7 +385,7 @@ function showFloatingContactPanel(container) {
  */
 function focusFloatingContact(container) {
     setTimeout(() => {
-        const firstFocusable = container.querySelector('button, [href], input, [tabindex]:not([tabindex="-1"])');
+        let firstFocusable = container.querySelector('button, [href], input, [tabindex]:not([tabindex="-1"])');
         if (firstFocusable) firstFocusable.focus();
     }, 10);
 }
@@ -405,6 +405,6 @@ function deactivateAllContacts() {
  * @param {string} userId - The ID of the selected contact.
  */
 function highlightCurrentContact(userId) {
-    const currentContact = document.getElementById(`contact-${userId}`);
+    let currentContact = document.getElementById(`contact-${userId}`);
     if (currentContact) currentContact.classList.add('active');
 }
