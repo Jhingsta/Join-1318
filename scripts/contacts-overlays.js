@@ -85,8 +85,8 @@ function closeModal(modalContainer, triggerButton = null) {
  * Also clears the respective overlay container's inner HTML and removes the 'no-scroll' class from the body.
  */
 function closeContactOverlay() {
-    const addOverlay = document.getElementById('overlay-add-contact');
-    const editOverlay = document.getElementById('overlay-edit-contact');
+    const addOverlay = document.getElementById('modal-add-contact');
+    const editOverlay = document.getElementById('modal-edit-contact');
 
     const addTrigger = document.querySelector('.add-contact-btn');
     const editTrigger = document.querySelector('.edit-link[onclick*="edit"]');

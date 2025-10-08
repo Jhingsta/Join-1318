@@ -105,7 +105,7 @@ function getMobileContactMenuTemplate(user) {
 
 function getAddContactOverlayTemplate() {
   return `
-      <div class="overlay-add-contact" id="overlay-add-contact">
+      <div class="modal-add-contact" id="modal-add-contact">
         <div class="overlay-add-contact-top">
           <button class="overlay-close-button" onclick="closeContactOverlay()" aria-label="Close window">
             <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
@@ -165,8 +165,8 @@ function getAddContactOverlayTemplate() {
 
 function getEditContactOverlayTemplate(user) {
   return `
-    <div class="overlay-edit-contact" id="overlay-edit-contact"
-         role="dialog" aria-modal="true" aria-labelledby="overlay-edit-contact-title" aria-hidden="false">
+    <div class="modal-edit-contact" id="modal-edit-contact"
+         role="dialog" aria-modal="true" aria-labelledby="modal-edit-contact-title" aria-hidden="false">
 
         <div class="overlay-edit-contact-top">
             <button class="overlay-close-button" onclick="closeContactOverlay()" aria-label="Close window">

@@ -410,7 +410,7 @@ function showModalBackground(background) {
 
 function showModalWithFocus(container) {
     setTimeout(() => {
-        const modal = container.querySelector('.overlay-add-contact, .overlay-edit-contact');
+        const modal = container.querySelector('.modal-add-contact, .modal-edit-contact');
         modal.classList.add('show');
 
         const firstInput = modal.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
@@ -420,7 +420,7 @@ function showModalWithFocus(container) {
 
 function openAddContactModal() {
     openModal(
-        document.getElementById('overlay-add-contact-container'),
+        document.getElementById('modal-add-contact-container'),
         null,
         getAddContactOverlayTemplate,
         '.add-contact-btn'
@@ -429,7 +429,7 @@ function openAddContactModal() {
 
 function openEditContactModal(userData) {
     openModal(
-        document.getElementById('overlay-edit-contact-container'),
+        document.getElementById('modal-edit-contact-container'),
         userData,
         getEditContactOverlayTemplate,
         `.edit-link[onclick*="${userData.email}"]`

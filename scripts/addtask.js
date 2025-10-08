@@ -336,16 +336,11 @@ function getTaskData() {
     const category = categoryText ? categoryText.textContent.trim() : null;
 
     const subtaskInputs = document.querySelectorAll(".subtask-input");
-    const subtaskItems = Array.from(subtaskInputs)
+    const subtasks = Array.from(subtaskInputs)
         .map(input => input.value.trim())
         .filter(title => title.length > 0)
         .map(title => ({ title, done: false }));
 
-    const subtasks = {
-        total: subtaskItems.length,
-        completed: 0,
-        items: subtaskItems
-    };
     return {
         title,
         description,
