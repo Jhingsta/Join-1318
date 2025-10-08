@@ -135,7 +135,7 @@ function getAddContactOverlayTemplate() {
 
               <div class="form-group">
                 <label for="overlay-add-email" class="visually-hidden">Email</label>
-                <input id="overlay-add-email" name="email" type="text" placeholder="Email">
+                <input id="overlay-add-email" name="email" type="text" placeholder="Email" inputmode="email">
                 <img src="./assets/icons-signup/mail.svg" alt="" class="input-icon">
               </div>
 
@@ -195,7 +195,7 @@ function getEditContactOverlayTemplate(user) {
 
                     <div class="form-group">
                         <label for="overlay-edit-email" class="visually-hidden">Email</label>
-                        <input id="overlay-edit-email" name="email" type="text" placeholder="Email" value="${user.email}">                        
+                        <input id="overlay-edit-email" name="email" type="text" placeholder="Email" inputmode="email" value="${user.email}">                        
                         <img src="./assets/icons-signup/mail.svg" alt="" class="input-icon" aria-hidden="true">
                     </div>
 
