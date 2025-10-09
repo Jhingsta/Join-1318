@@ -330,45 +330,57 @@ function initSignupForm() {
  * Initializes password and confirm-password visibility toggle functionality.
  */
 function initPasswordToggle() {
-  let passwordInput = document.getElementById("password");
-  let confirmPasswordInput = document.getElementById("confirm-password");
-  let passwordIcon = passwordInput.nextElementSibling;
-  let confirmPasswordIcon = confirmPasswordInput.nextElementSibling;
+  const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirm-password");
+
+  const passwordButton = passwordInput.nextElementSibling;
+  const confirmPasswordButton = confirmPasswordInput.nextElementSibling;
+
+  const passwordIcon = passwordButton.querySelector("img");
+  const confirmPasswordIcon = confirmPasswordButton.querySelector("img");
 
   let passwordVisible = false;
   let confirmPasswordVisible = false;
 
-  setupPasswordVisibilityToggle(passwordInput, passwordIcon, () => passwordVisible = !passwordVisible, () => passwordVisible);
-  setupPasswordVisibilityToggle(confirmPasswordInput, confirmPasswordIcon, () => confirmPasswordVisible = !confirmPasswordVisible, () => confirmPasswordVisible);
+  setupPasswordVisibilityToggle(passwordInput, passwordButton, passwordIcon, () => {
+    passwordVisible = !passwordVisible;
+    return passwordVisible;
+  });
+
+  setupPasswordVisibilityToggle(confirmPasswordInput, confirmPasswordButton, confirmPasswordIcon, () => {
+    confirmPasswordVisible = !confirmPasswordVisible;
+    return confirmPasswordVisible;
+  });
 
   setupPasswordInputIconUpdate(passwordInput, passwordIcon, () => passwordVisible);
   setupPasswordInputIconUpdate(confirmPasswordInput, confirmPasswordIcon, () => confirmPasswordVisible);
 }
 
 /**
- * Sets up click listener on a password field and its icon to toggle visibility.
+ * Sets up click listener on a password field toggle button to show/hide password.
  *
  * @param {HTMLInputElement} input - The password input field.
- * @param {HTMLImageElement} icon - The icon element for toggling visibility.
- * @param {Function} toggleState - Function to update the visibility state.
- * @param {Function} getState - Function to get the current visibility state.
+ * @param {HTMLButtonElement} button - The toggle button element.
+ * @param {HTMLImageElement} icon - The icon inside the button.
+ * @param {Function} toggleVisibility - Function to toggle and return new visibility state.
  */
-function setupPasswordVisibilityToggle(input, icon, toggleState, getState) {
-  icon.addEventListener("click", () => {
-    toggleState();
-    input.type = getState() ? "text" : "password";
-    icon.src = getState()
+function setupPasswordVisibilityToggle(input, button, icon, toggleVisibility) {
+  button.addEventListener("click", () => {
+    const visible = toggleVisibility();
+    input.type = visible ? "text" : "password";
+    icon.src = visible
       ? "./assets/icons-signup/visibility_off.svg"
       : "./assets/icons-signup/visibility.svg";
+    button.setAttribute("aria-label", visible ? "Hide password" : "Show password");
   });
 }
 
 /**
- * Sets up input listener to update password icon based on the current value.
+ * Sets up input listener to update password icon based on current field value.
  *
  * @param {HTMLInputElement} input - The password input field.
  * @param {HTMLImageElement} icon - The icon element for visibility/lock.
- * @param {Function} getState - Function to get the current visibility state.
+ * @param {Function} getState - Function to get current visibility state.
  */
 function setupPasswordInputIconUpdate(input, icon, getState) {
   input.addEventListener("input", () => updateIcon(input, icon, getState()));
