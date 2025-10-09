@@ -1,16 +1,20 @@
-// Direkt beim Laden prüfen, ob ein User existiert, sonst zur Login-Seite weiterleiten
-// function enforceAuthentication() {
-//   let user = getCurrentUser();
+/**
+ * Ensures that only authenticated users can access protected pages.
+ *
+ * Checks whether a user is currently logged in by calling `getCurrentUser()`.
+ * If no user is found and the visitor is not in "visitor mode" (i.e., the URL does not contain `?from=visitor`),
+ * the function redirects the user to the login page (`/index.html`).
+ */
+function enforceAuthentication() {
+  let user = getCurrentUser();
 
-//   // Prüfen, ob URL-Parameter "from=visitor" gesetzt ist
-//   let urlParams = new URLSearchParams(window.location.search);
-//   let isVisitorMode = urlParams.get("from") === "visitor";
+  let urlParams = new URLSearchParams(window.location.search);
+  let isVisitorMode = urlParams.get("from") === "visitor";
 
-//   // Wenn kein User vorhanden ist UND kein Visitor-Modus aktiv → Redirect
-//   if (!user && !isVisitorMode) {
-//     window.location.href = "/index.html";
-//   }
-// }
+  if (!user && !isVisitorMode) {
+    window.location.href = "/index.html";
+  }
+}
 
 /**
  * Retrieves the current user from local storage.

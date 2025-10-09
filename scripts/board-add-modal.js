@@ -114,12 +114,17 @@ function getTaskData() {
     const categoryTextEl = document.getElementById('add-category-text');
     const category = categoryTextEl ? categoryTextEl.textContent.trim() : null;
     
-    const subtaskItems = subtaskList.querySelectorAll("li span.subtask-text");
-    const subtasks = Array.from(subtaskItems)
-        .map(span => span.textContent.trim())
+    const subtaskInputs = subtaskList.querySelectorAll("li span.subtask-text");
+    const subtaskItems = Array.from(subtaskInputs)
+        .map(input => input.value.trim())
         .filter(title => title.length > 0)
         .map(title => ({ title, done: false }));
-    
+
+    const subtasks = {
+        total: subtaskItems.length,
+        completed: 0,
+        items: subtaskItems
+    };
     return {
         title,
         description,

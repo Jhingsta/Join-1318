@@ -51,29 +51,48 @@ async function handleUserDeleted(userKey) {
 }
 
 /**
+ * Close a specific modal with ARIA adjustments and optional focus return.
+ * @param {HTMLElement} modalContainer - The container of the modal to close.
+ * @param {HTMLElement|null} triggerButton - The element that triggered the modal (for focus return).
+ */
+function closeModal(modalContainer, triggerButton = null) {
+    let overlayBackground = document.getElementById('overlay-contacts');
+
+    if (modalContainer && modalContainer.classList.contains('show')) {
+
+        if (triggerButton) {
+            triggerButton.focus();
+        } else {
+            document.body.focus();
+        }
+        modalContainer.classList.remove('show');
+        modalContainer.setAttribute('aria-hidden', 'true');
+        modalContainer.inert = true;
+
+        setTimeout(() => {
+            overlayBackground.classList.remove('show');
+            overlayBackground.setAttribute('aria-hidden', 'true');
+            overlayBackground.inert = true;
+
+            modalContainer.innerHTML = '';
+            document.body.classList.remove('no-scroll');
+        }, 300);
+    }
+}
+
+/**
  * Closes the contact overlay by removing the 'show' class from either the add or edit contact overlays.
  * Also clears the respective overlay container's inner HTML and removes the 'no-scroll' class from the body.
  */
 function closeContactOverlay() {
-  let addOverlay = document.getElementById('overlay-add-contact');
-  let editOverlay = document.getElementById('overlay-edit-contact');
-  
-  if (addOverlay && addOverlay.classList.contains('show')) {
-    addOverlay.classList.remove('show');
-    setTimeout(() => {
-      document.getElementById('overlay-contacts').classList.remove('show');
-      document.getElementById('overlay-add-contact-container').innerHTML = '';
-      document.body.classList.remove('no-scroll');
-    }, 300);
-  }
-  if (editOverlay && editOverlay.classList.contains('show')) {
-    editOverlay.classList.remove('show');
-    setTimeout(() => {
-      document.getElementById('overlay-contacts').classList.remove('show');
-      document.getElementById('overlay-edit-contact-container').innerHTML = '';
-      document.body.classList.remove('no-scroll');
-    }, 300);
-  }
+    let addOverlay = document.getElementById('modal-add-contact');
+    let editOverlay = document.getElementById('modal-edit-contact');
+
+    let addTrigger = document.querySelector('.add-contact-btn');
+    let editTrigger = document.querySelector('.edit-link[onclick*="edit"]');
+
+    closeModal(addOverlay, addTrigger);
+    closeModal(editOverlay, editTrigger);
 }
 
 /**
@@ -307,4 +326,85 @@ async function removeUserFromAllTasks(userKey) {
   } catch (error) {
     console.error("Error removing user from tasks:", error);
   }
+}
+
+/**
+ * Main function to open the floating contact panel.
+ * Handles rendering, focus management, and accessibility attributes.
+ * 
+ * @param {Object} user - The contact object containing name, email, etc.
+ */
+function openFloatingContact(user) {
+    deactivateAllContacts();
+    highlightCurrentContact(user.id);
+
+    let floatingContact =
+        window.innerWidth <= 768
+            ? createMobileFloatingContact(user)
+            : createDesktopFloatingContact();
+
+    renderFloatingContact(floatingContact, user);
+    showFloatingContactPanel(floatingContact);
+    focusFloatingContact(floatingContact);
+}
+
+/**
+ * Render floating contact HTML and set accessibility attributes.
+ * 
+ * @param {HTMLElement} container - The floating contact container element.
+ * @param {Object} user - Contact data.
+ */
+function renderFloatingContact(container, user) {
+    container.innerHTML = getFloatingContactTemplate(user);
+    container.setAttribute('role', 'dialog');
+    container.setAttribute('aria-modal', 'false');
+    container.setAttribute('aria-labelledby', 'floating-contact-title');
+    container.setAttribute('aria-hidden', 'false');
+}
+
+/**
+ * Visually show and activate the floating contact panel.
+ * Triggers the slide-in animation and sets ARIA attributes for screenreader.
+ * 
+ * @param {HTMLElement} container - The floating contact container element.
+ */
+function showFloatingContactPanel(container) {
+    container.classList.add('show');
+
+    slideInFloatingContact(container);
+
+    let content = container.querySelectorAll('.floating-contact-second, .floating-contact-third');
+    content.forEach(el => el.setAttribute('aria-live', 'polite'));
+    container.setAttribute('aria-hidden', 'false');
+}
+
+/**
+ * Focus the first interactive element (e.g., close button) after rendering.
+ * 
+ * @param {HTMLElement} container - The floating contact container element.
+ */
+function focusFloatingContact(container) {
+    setTimeout(() => {
+        let firstFocusable = container.querySelector('button, [href], input, [tabindex]:not([tabindex="-1"])');
+        if (firstFocusable) firstFocusable.focus();
+    }, 10);
+}
+
+/**
+ * Utility: Remove active state from all contacts.
+ */
+function deactivateAllContacts() {
+    document.querySelectorAll('.contact').forEach(contact =>
+        contact.classList.remove('active')
+    );
+}
+
+/**
+ * Utility: Highlight the selected contact.
+ * 
+ * @param {string} userId - The ID of the selected contact.
+ */
+function highlightCurrentContact(userId) {
+    let currentContact = document.getElementById(`contact-${userId}`);
+    if (currentContact) currentContact.classList.add('active');
 }

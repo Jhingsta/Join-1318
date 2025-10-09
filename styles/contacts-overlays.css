@@ -103,6 +103,9 @@
   display: flex;
   align-items: center;
   width: 85px;
+  border: none;
+  background: none;
+  outline: none;
 }
 
 .edit-link:hover,
@@ -164,7 +167,7 @@ filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99
 }
 
 /* Contacts Overlay Container */
-.overlay-add-contact {
+.modal-add-contact {
   position: fixed;
   top: 0;
   right: 0;
@@ -178,11 +181,11 @@ filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99
   flex-direction: column;
 }
 
-.overlay-add-contact.show {
+.modal-add-contact.show {
   transform: translateX(0);
 }
 
-.overlay-edit-contact {
+.modal-edit-contact {
   position: fixed;
   top: 0;
   left: 0;
@@ -196,7 +199,7 @@ filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99
   flex-direction: column;
 }
 
-.overlay-edit-contact.show {
+.modal-edit-contact.show {
   transform: translateX(0);
 }
 
@@ -241,8 +244,7 @@ filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99
   transition: background 0.2s ease;
 }
 
-.overlay-close-button:hover,
-.overlay-close-button:focus {
+.overlay-close-button:hover {
   background: #4589FF;
   outline: none;
 }
@@ -675,8 +677,8 @@ input::placeholder {
 }
 
 @media (max-width: 410px) {
-  .overlay-add-contact,
-  .overlay-edit-contact {
+  .modal-add-contact,
+  .modal-edit-contact {
     max-width: 100%;
     padding: 0 10px;
   }

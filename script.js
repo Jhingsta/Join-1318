@@ -175,8 +175,6 @@ function showError(message, ...fields) {
   fields.forEach(field => document.querySelector(`.input-container-${field}`).classList.add("input-error"));
 }
 
-
-
 /**
  * Handles guest login functionality
  * Creates a guest user session and redirects to summary page
@@ -199,41 +197,51 @@ async function handleGuestLogin() {
  * Sets up event listeners for the login form.
  */
 function setupEventListeners() {
-  let loginForm = document.querySelector('#login-form');
-  let guestLoginButton = document.querySelector('.guest-btn');
-  let emailInput = document.querySelector('input[name="email"]');
-  let passwordInput = document.querySelector('input[type="password"]');
-  let togglePasswordIcon = document.querySelector('.input-container-password .toggle-password');
+  const loginForm = document.querySelector('#login-form');
+  const guestLoginButton = document.querySelector('.guest-btn');
+  const emailInput = document.querySelector('input[name="email"]');
+  const passwordInput = document.querySelector('input[name="password"]');
+  const togglePasswordButton = document.querySelector('.input-container-password .toggle-password');
+  const togglePasswordIcon = togglePasswordButton?.querySelector('img');
 
   loginForm.addEventListener("submit", handleLogin);
   guestLoginButton.addEventListener("click", handleGuestLogin);
   emailInput.addEventListener("input", updateLoginButtonState);
   passwordInput.addEventListener("input", updateLoginButtonState);
 
-  setupPasswordToggle(passwordInput, togglePasswordIcon);
+  setupPasswordToggle(passwordInput, togglePasswordButton, togglePasswordIcon);
+
+  updateLoginButtonState();
 }
 
 /**
  * Sets up the password visibility toggle functionality.
  * @param {HTMLInputElement} passwordInput - The password input field.
- * @param {HTMLElement} togglePasswordIcon - The toggle icon element.
+ * @param {HTMLButtonElement} toggleButton - The toggle button element.
+ * @param {HTMLImageElement} icon - The image inside the toggle button.
  */
-function setupPasswordToggle(passwordInput, togglePasswordIcon) {
+function setupPasswordToggle(passwordInput, toggleButton, icon) {
   let passwordVisible = false;
 
-  togglePasswordIcon?.addEventListener("click", () => {
+  toggleButton?.addEventListener("click", () => {
     if (!passwordInput.value) return;
     passwordVisible = !passwordVisible;
     passwordInput.type = passwordVisible ? "text" : "password";
-    updatePasswordIcon(togglePasswordIcon, passwordVisible, passwordInput.value);
+    updatePasswordIcon(icon, passwordVisible, passwordInput.value);
+    toggleButton.setAttribute(
+      "aria-label",
+      passwordVisible ? "Hide password" : "Show password"
+    );
   });
 
-  passwordInput?.addEventListener("input", () => updatePasswordIcon(togglePasswordIcon, passwordVisible, passwordInput.value));
+  passwordInput?.addEventListener("input", () => {
+    updatePasswordIcon(icon, passwordVisible, passwordInput.value);
+  });
 }
 
 /**
- * Updates the password toggle icon based on visibility and input value.
- * @param {HTMLElement} icon - The toggle icon element.
+ * Updates the password icon based on visibility and input value.
+ * @param {HTMLImageElement} icon - The image element inside the toggle button.
  * @param {boolean} isVisible - Whether the password is visible.
  * @param {string} value - The current value of the password input.
  */
@@ -241,6 +249,8 @@ function updatePasswordIcon(icon, isVisible, value) {
   if (!value) {
     icon.src = "./assets/icons-signup/lock.svg";
   } else {
-    icon.src = isVisible ? "./assets/icons-signup/visibility_off.svg" : "./assets/icons-signup/visibility.svg";
+    icon.src = isVisible
+      ? "./assets/icons-signup/visibility_off.svg"
+      : "./assets/icons-signup/visibility.svg";
   }
 }

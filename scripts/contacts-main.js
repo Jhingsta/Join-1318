@@ -150,7 +150,7 @@ function updateMobileMenuButton(mobileOverlay, user) {
 }
 
 /**
- * Animates a floating contact element by sliding it in from the right and fading it in.
+ * Animates a floating contact element by sliding it in from the right + minimal ARIA adjustments.
  *
  * @param {HTMLElement} floatingContactElement - The DOM element representing the floating contact to animate.
  */
@@ -165,72 +165,50 @@ function slideInFloatingContact(floatingContactElement) {
     floatingContactElement.style.transform = 'translateX(0)';
     floatingContactElement.style.opacity = '1';
   }, 10);
+
+  let content = floatingContactElement.querySelectorAll('.floating-contact-second, .floating-contact-third');
+  content.forEach(el => el.setAttribute('aria-live', 'polite'));
+  floatingContactElement.setAttribute('aria-hidden', 'false');
 }
 
 /**
- * Displays a floating contact card for the selected contact.
- *
- * @param {Object} user - The contact object.
- */
-function showFloatingContact(user) {
-  let allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
-
-  let currentContact = document.getElementById(`contact-${user.id}`);
-  if (currentContact) {
-    currentContact.classList.add('active');
-  }
-  let floatingContactHtml = getFloatingContactTemplate(user);
-  let floatingContact =
-    window.innerWidth <= 768
-      ? createMobileFloatingContact(user)
-      : createDesktopFloatingContact();
-
-  floatingContact.innerHTML = floatingContactHtml;
-  slideInFloatingContact(floatingContact);
-}
-
-/**
- * Closes the floating contact element on desktop view by removing the 'show' class
- * from the element with ID 'floating-contact', and removes the 'active' class from all contact elements.
- */
-function closeDesktopFloatingContact() {
-  let floatingContact = document.getElementById('floating-contact');
-  if (floatingContact) {
-    floatingContact.classList.remove('show');
-  }
-  
-  let allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
-}
-
-/**
- * Closes the mobile floating contact overlay by removing relevant CSS classes.
- */
-function closeMobileFloatingContact() {
-  let mobileOverlay = document.getElementById('mobile-floating-contact');
-  if (mobileOverlay) {
-    mobileOverlay.classList.remove('show');
-    document.body.classList.remove('no-scroll');
-    
-    let mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
-    if (mobileFloatingContact) {
-      mobileFloatingContact.classList.remove('show');
-    }
-  }
-  let allContacts = document.querySelectorAll('.contact');
-  allContacts.forEach(contact => contact.classList.remove('active'));
-}
-
-/**
- * Closes the floating contact panel based on the current window width.
+ * Close the appropriate floating contact overlay (mobile or desktop) based on screen width.
  */
 function closeFloatingContact() {
-  if (window.innerWidth <= 768) {
-    closeMobileFloatingContact();
-  } else {
-    closeDesktopFloatingContact();
-  }
+    if (window.innerWidth <= 768) {
+        let mobileContainer = document.getElementById('mobile-floating-contact');
+        let mobileTrigger = document.querySelector('.add-contact-btn-mobile');
+        closeFloatingContactContainer(mobileContainer, mobileTrigger);
+    } else {
+        let desktopContainer = document.getElementById('floating-contact');
+        let desktopTrigger = document.querySelector('.add-contact-btn');
+        closeFloatingContactContainer(desktopContainer, desktopTrigger);
+    }
+}
+
+/**
+ * Close a single floating contact container with ARIA adjustments and optional focus return.
+ * 
+ * @param {HTMLElement} container - The container to close.
+ * @param {HTMLElement|null} triggerButton - The button that triggered the floating contact.
+ */
+function closeFloatingContactContainer(container, triggerButton = null) {
+    if (!container) return;
+
+    let floating = container.querySelector('.floating-contact');
+
+    if (triggerButton) triggerButton.focus();
+
+    if (floating) {
+        floating.classList.remove('show');
+        floating.setAttribute('aria-hidden', 'true');
+    }
+    container.classList.remove('show');
+    container.setAttribute('aria-hidden', 'true');
+    container.inert = true;
+
+    document.body.classList.remove('no-scroll');
+    document.querySelectorAll('.contact').forEach(contact => contact.classList.remove('active'));
 }
 
 /**
@@ -275,7 +253,7 @@ function updateMobileContactMenu(contactMenu, user) {
   if (editLink) {
     editLink.setAttribute(
       'onclick',
-      `showEditContactOverlay(${JSON.stringify(user)})`
+      `openEditContactModal(${JSON.stringify(user)})`
     );
   }
   let deleteLink = contactMenu.querySelector('.mobile-delete-link');
@@ -328,98 +306,107 @@ function deleteContact() {
 
 /**
  * Handles window resize events to close floating contact overlays based on the current viewport width.
- * - Closes the mobile floating contact if switching to desktop view.
- * - Closes the desktop floating contact if switching to mobile view.
  */
 function handleWindowResize() {
-  let mobileOverlay = document.getElementById('mobile-floating-contact');
-  let desktopFloatingContact = document.getElementById('floating-contact');
-  
-  if (window.innerWidth > 768) {
-    if (mobileOverlay) {
-      let mobileFloatingContact = mobileOverlay.querySelector('.floating-contact');
-      if (mobileFloatingContact && mobileFloatingContact.classList.contains('show')) {
-        closeMobileFloatingContact();
-      }
+    let mobileOverlay = document.getElementById('mobile-floating-contact');
+    let desktopFloatingContact = document.getElementById('floating-contact');
+
+    if (
+        (window.innerWidth > 768 && mobileOverlay?.querySelector('.floating-contact.show')) ||
+        (window.innerWidth <= 768 && desktopFloatingContact?.classList.contains('show'))
+    ) {
+        closeFloatingContact();
     }
-  } else {
-    if (desktopFloatingContact && desktopFloatingContact.classList.contains('show')) {
-      closeDesktopFloatingContact();
-    }
-  }
 }
 
 /**
- * Opens the "Add Contact" overlay by rendering its content, showing the background,
- * setting focus on the first input, and initializing keyboard support.
+ * Open a modal (Add or Edit) with ARIA and focus handling.
+ * @param {HTMLElement} modalContainer - The container element for the modal.
+ * @param {Object|null} userData - User data for Edit modal, null for Add modal.
+ * @param {Function} getTemplateFunc - Function returning the modal HTML template.
+ * @param {string} triggerSelector - Selector for the element that triggered the modal.
  */
-function openAddContactOverlay() {
-    const overlayContainer = document.getElementById('overlay-add-contact-container');
-    const overlayBackground = document.getElementById('overlay-contacts');
-    const triggerButton = document.querySelector('.add-contact-btn');
+function openModal(modalContainer, userData, getTemplateFunc, triggerSelector) {
+    let triggerButton = document.querySelector(triggerSelector);
+    let modalBackground = document.getElementById('overlay-contacts');
 
-    renderAddContactOverlay(overlayContainer);
-    showOverlayBackground(overlayBackground);
-    showOverlayWithFocus(overlayContainer);
-    setupOverlayKeyboard(overlayContainer, triggerButton, overlayBackground);
+    modalContainer.inert = false;
+    modalContainer.setAttribute('aria-hidden', 'false');
+    modalContainer.classList.add('show');
+
+    renderModal(modalContainer, userData, getTemplateFunc);
+    showModalBackground(modalBackground);
+    showModalWithFocus(modalContainer);
 }
 
 /**
- * Renders the "Add Contact" overlay HTML inside the given container
- * and sets ARIA attributes for accessibility.
- * 
- * @param {HTMLElement} container - The container element where the overlay HTML will be injected.
+ * Renders a modal dialog inside the given container using a provided template function.
+ * Sets accessibility attributes for ARIA compliance.
+ *
+ * @param {HTMLElement} container - The DOM element that will contain the modal content.
+ * @param {Object} userData - The data object used to populate the modal template.
+ * @param {Function} getTemplateFunc - A function that returns an HTML template string for the modal.
  */
-function renderAddContactOverlay(container) {
-    container.innerHTML = getAddContactOverlayTemplate();
+function renderModal(container, userData, getTemplateFunc) {
+    container.innerHTML = getTemplateFunc(userData);
     container.setAttribute('role', 'dialog');
     container.setAttribute('aria-modal', 'true');
-    container.setAttribute('aria-labelledby', 'overlay-add-contact-title');
+    let titleElement = container.querySelector('[id]');
+    if (titleElement) container.setAttribute('aria-labelledby', titleElement.id);
     container.setAttribute('aria-hidden', 'false');
 }
 
 /**
- * Shows the overlay background, marks it as visible to assistive technologies,
- * and prevents page scrolling while the overlay is open.
- * 
- * @param {HTMLElement} background - The background overlay element.
+ * Displays the modal background and prevents page scrolling while the modal is active.
+ *
+ * @param {HTMLElement} background - The background overlay element for the modal.
  */
-function showOverlayBackground(background) {
+function showModalBackground(background) {
     background.classList.add('show');
     background.setAttribute('aria-hidden', 'false');
     document.body.classList.add('no-scroll');
 }
 
 /**
- * Displays the overlay with a short delay for animations and sets focus
- * to the first focusable element within the overlay.
- * 
- * @param {HTMLElement} container - The container element of the overlay.
+ * Displays the modal with a short delay and focuses the first interactive element for accessibility.
+ *
+ * @param {HTMLElement} container - The container element that holds the modal.
  */
-function showOverlayWithFocus(container) {
+function showModalWithFocus(container) {
     setTimeout(() => {
-        const overlay = container.querySelector('.overlay-add-contact');
-        overlay.classList.add('show');
+        let modal = container.querySelector('.modal-add-contact, .modal-edit-contact');
+        modal.classList.add('show');
 
-        const firstInput = overlay.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
+        let firstInput = modal.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
         if (firstInput) firstInput.focus();
     }, 10);
 }
 
 /**
- * Displays the edit contact overlay with the provided user data.
- * Renders the overlay template, shows the overlay, and disables body scrolling.
- * 
- * @param {Object} userData - The data of the user to be edited.
+ * Opens the "Add Contact" modal using the add contact template. Automatically focuses the first input field after opening.
  */
-function showEditContactOverlay(userData) {
-  document.getElementById('overlay-edit-contact-container').innerHTML = getEditContactOverlayTemplate(userData);
-  document.getElementById('overlay-contacts').classList.add('show');
-  document.body.classList.add('no-scroll');
-  
-  setTimeout(() => {
-      document.getElementById('overlay-edit-contact').classList.add('show');
-  }, 10);
+
+function openAddContactModal() {
+    openModal(
+        document.getElementById('modal-add-contact-container'),
+        null,
+        getAddContactOverlayTemplate,
+        '.add-contact-btn'
+    );
+}
+
+/**
+ * Opens the "Edit Contact" modal for a given user. Passes the user's data into the edit contact template.
+ *
+ * @param {Object} userData - The data of the user to edit.
+ */
+function openEditContactModal(userData) {
+    openModal(
+        document.getElementById('modal-edit-contact-container'),
+        userData,
+        getEditContactOverlayTemplate,
+        `.edit-link[onclick*="${userData.email}"]`
+    );
 }
 
 /**

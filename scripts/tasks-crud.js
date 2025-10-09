@@ -7,6 +7,7 @@ async function loadTasks() {
   try {
     let response = await fetch(`${BASE_URL}tasks.json`);
     let data = await response.json();
+
     return data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
   } catch (error) {
     console.error("Error loading tasks:", error);
@@ -49,7 +50,9 @@ function prepareTaskPayload(taskData) {
     priority: "medium",
     dueDate: "",
     category: null,
-    assignedUsersFull: [],
+    assignedUsersFull: Array.isArray(taskData.assignedUsersFull) 
+      ? taskData.assignedUsersFull 
+      : [],
     createdAt: new Date().toISOString(),
     subtasks: { total: 0, completed: 0, items: [] },
   };
@@ -86,6 +89,11 @@ async function updateTask(taskId, updates) {
  * @param {string} taskId - The ID of the task to update.
  * @param {Object} updates - The updates to apply to the task.
  */
+/**
+ * Prepares the updated task by merging current task data and updates.
+ * @param {string} taskId - The ID of the task to update.
+ * @param {Object} updates - The updates to apply to the task.
+ */
 async function prepareUpdatedTask(taskId, updates) {
   const currentTask = await fetchTask(taskId);
   const updatedTask = { ...currentTask, ...updates };
@@ -114,22 +122,26 @@ async function deleteTask(taskId) {
 
 /**
  * Processes subtasks to ensure consistent formatting.
- * @param {Array} subtasks - The subtasks to process.
+ * @param {Object} subtasks - The subtasks object with items array.
  */
-function processSubtasks(subtasks = []) {
-  let items = subtasks.map((st, i) => {
-    if (typeof st === "string" && st.trim() !== "") {
-      return { title: st.trim(), done: false };
-    } else if (st?.title?.trim()) {
-      return { title: st.title.trim(), done: st.done || false };
+function processSubtasks(subtasks = { items: [] }) {
+  if (!subtasks || !subtasks.items || !Array.isArray(subtasks.items)) {
+    return { total: 0, completed: 0, items: []
+    };
+  }
+  const validatedItems = subtasks.items.map((st, i) => {
+    if (st?.title?.trim()) {
+      return { 
+        title: st.title.trim(), 
+        done: st.done === true
+      };
     }
     return { title: `Subtask ${i + 1}`, done: false };
   });
-
   return {
-    total: items.length,
-    completed: items.filter(st => st.done).length,
-    items,
+    total: validatedItems.length,
+    completed: validatedItems.filter(st => st.done).length,
+    items: validatedItems
   };
 }
 
