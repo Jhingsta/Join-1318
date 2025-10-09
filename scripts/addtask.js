@@ -25,10 +25,8 @@ function formatDateForDisplay(isoDate) {
 
 function handleDueDateValidation() {
     const hasValue = dueDateInput.value.trim();
-
     dueDateDisplay.textContent = hasValue ? formatDateForDisplay(dueDateInput.value) : "dd/mm/yyyy";
     dueDateDisplay.classList.toggle("has-value", !!hasValue);
-
     dueDateContainer.style.borderBottom = hasValue ? "1px solid #D1D1D1" : "1px solid #FF4D4D";
     dueDateError.style.display = hasValue ? "none" : "block";
 }
@@ -40,6 +38,7 @@ function openDatepicker() {
     if (dueDateInput.showPicker) dueDateInput.showPicker();
     else dueDateInput.click();
 }
+
 dueDateIcon.addEventListener("click", openDatepicker);
 dueDateContainer.addEventListener("click", openDatepicker);
 
@@ -80,15 +79,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
             const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
             const data = await res.json();
-
-            // IDs aus den Keys beibehalten
             users = data
                 ? Object.entries(data).map(([id, user]) => ({
                     id,
                     ...user
                 }))
                 : [];
-
             populateDropdown();
         } catch (e) {
             console.error("Fehler beim Laden der Users", e);
@@ -101,7 +97,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             const img = assignedDropdown.children[i].querySelector('img');
             return img.src.includes("checked");
         }).slice(0, 3);
-
         selected.forEach(user => {
             const a = document.createElement('div');
             a.className = 'selected-avatar';
@@ -112,78 +107,91 @@ document.addEventListener("DOMContentLoaded", async () => {
         selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
     }
 
-    function populateDropdown() {
-        assignedDropdown.innerHTML = "";
-
-        users.forEach(user => {
-            const div = document.createElement('div');
-            div.className = 'dropdown-item';
-            div.dataset.userId = user.id;
-
-            const wrapper = document.createElement('div');
-            wrapper.className = 'assigned-wrapper';
-
-            const avatar = document.createElement('div');
-            avatar.className = 'dropdown-avatar';
-            avatar.textContent = user.initials;
-            avatar.style.backgroundColor = user.color;
-
-            const span = document.createElement('span');
-            span.textContent = user.name;
-
-            wrapper.appendChild(avatar);
-            wrapper.appendChild(span);
-
-            const checkboxWrapper = document.createElement('div');
-            checkboxWrapper.className = 'checkbox-wrapper';
-            const checkbox = document.createElement('img');
-            checkbox.src = "./assets/icons-addtask/Property 1=Default.png";
-
-            const hoverOverlay = document.createElement('div');
-            hoverOverlay.className = 'hover-overlay';
-            checkboxWrapper.appendChild(hoverOverlay);
-            checkboxWrapper.appendChild(checkbox);
-
-            div.appendChild(wrapper);
-            div.appendChild(checkboxWrapper);
-            assignedDropdown.appendChild(div);
-
-            // Click-Handler für Checkbox
-            checkboxWrapper.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isChecked = checkboxWrapper.classList.contains('checked');
-                checkboxWrapper.classList.toggle('checked', !isChecked);
-                checkbox.src = isChecked
-                    ? "./assets/icons-addtask/Property 1=Default.png"
-                    : "./assets/icons-addtask/Property 1=checked.svg";
-                updateSelectedAvatars();
-            });
-        });
+    function createUserDropdownItem(user) {
+        const div = document.createElement('div');
+        div.className = 'dropdown-item';
+        div.dataset.userId = user.id;
+        div.appendChild(createAssignedWrapper(user));
+        div.appendChild(createCheckboxWrapper(user));
+        return div;
     }
 
+    function createAssignedWrapper(user) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'assigned-wrapper';
+        const avatar = document.createElement('div');
+        avatar.className = 'dropdown-avatar';
+        avatar.textContent = user.initials;
+        avatar.style.backgroundColor = user.color;
+        const name = document.createElement('span');
+        name.textContent = user.name;
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(name);
+        return wrapper;
+    }
+
+    function createCheckboxWrapper(user) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'checkbox-wrapper';
+        const overlay = document.createElement('div');
+        overlay.className = 'hover-overlay';
+        const checkbox = document.createElement('img');
+        checkbox.src = "./assets/icons-addtask/Property 1=Default.png";
+        wrapper.appendChild(overlay);
+        wrapper.appendChild(checkbox);
+        wrapper.addEventListener('click', (e) => toggleUserSelection(e, wrapper, checkbox));
+        return wrapper;
+    }
+
+    function toggleUserSelection(e, wrapper, checkbox) {
+        e.stopPropagation();
+        const isChecked = wrapper.classList.toggle('checked');
+        checkbox.src = isChecked
+            ? "./assets/icons-addtask/Property 1=checked.svg"
+            : "./assets/icons-addtask/Property 1=Default.png";
+        updateSelectedAvatars();
+    }
+
+    function populateDropdown() {
+        assignedDropdown.innerHTML = "";
+        users.forEach(user => {
+            const item = createUserDropdownItem(user);
+            assignedDropdown.appendChild(item);
+        });
+    }
 
     function toggleDropdown(e) {
         e.stopPropagation();
         const isOpen = assignedDropdown.classList.contains('open');
-        if (!isOpen) {
-            assignedDropdown.classList.add('open');
-            assignedDropdown.style.display = 'block';
-            assignedInput.style.display = 'inline';
-            assignedText.style.display = 'none';
-            arrowIcon.src = '/assets/icons-addtask/arrow_drop_down_up.png';
-            assignedInput.focus();
-            Array.from(assignedDropdown.children).forEach(div => {
-                div.querySelector('.checkbox-wrapper').style.display = 'flex';
-            });
-        } else {
-            assignedDropdown.classList.remove('open');
-            assignedDropdown.style.display = 'none';
-            assignedInput.style.display = 'none';
-            assignedText.style.display = 'block';
-            arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
-            assignedInput.value = '';
-        }
+        isOpen ? closeAssignedDropdown() : openAssignedDropdown();
     }
+
+    function openAssignedDropdown() {
+        assignedDropdown.classList.add('open');
+        assignedDropdown.style.display = 'block';
+        assignedInput.style.display = 'inline';
+        assignedText.style.display = 'none';
+        arrowIcon.src = '/assets/icons-addtask/arrow_drop_down_up.png';
+        assignedInput.focus();
+        showAllCheckboxes();
+    }
+
+    function closeAssignedDropdown() {
+        assignedDropdown.classList.remove('open');
+        assignedDropdown.style.display = 'none';
+        assignedInput.style.display = 'none';
+        assignedText.style.display = 'block';
+        arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
+        assignedInput.value = '';
+    }
+
+    function showAllCheckboxes() {
+        Array.from(assignedDropdown.children).forEach(div => {
+            div.querySelector('.checkbox-wrapper').style.display = 'flex';
+        });
+    }
+
+    // Events bleiben gleich
     assignedTextContainer.addEventListener('click', toggleDropdown);
     arrowContainer.addEventListener('click', toggleDropdown);
 
@@ -194,11 +202,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             assignedInput.style.display = 'none';
             assignedText.style.display = 'block';
             arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
-
             Array.from(assignedDropdown.children).forEach(div => {
                 const checkboxWrapper = div.querySelector('.checkbox-wrapper');
                 const checkbox = checkboxWrapper.querySelector('img');
-
                 if (checkbox.src.includes('checked')) {
                     checkboxWrapper.style.display = 'flex';
                 } else {
@@ -223,7 +229,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 const categoryContent = document.querySelector('.category-content');
 const categoryText = categoryContent.querySelector('.assigned-text');
 const categoryArrow = categoryContent.querySelector('#assigned-arrow-icon');
-
 const categoryDropdown = document.createElement('div');
 categoryDropdown.className = 'dropdown-menu';
 
@@ -267,89 +272,130 @@ taskInput.addEventListener("input", () => {
         checkBtn.style.display = "inline";
     } else { resetInput(); }
 });
-checkBtn.addEventListener("click", () => {
+checkBtn.addEventListener("click", () => handleAddSubtask());
+
+/* ---------- Subtask-Hinzufügen ---------- */
+
+function handleAddSubtask() {
     const currentTask = taskInput.value.trim();
-    if (!currentTask)
-        return;
-    const li = document.createElement("li");
-    const span = document.createElement("span");
-    span.textContent = currentTask;
-    li.appendChild(span);
-    const icons = document.createElement("div");
-    icons.classList.add("subtask-icons");
-    const editIcon = document.createElement("img");
-    editIcon.src = "./assets/icons-addtask/Property 1=edit.png";
-    editIcon.alt = "Edit";
-    editIcon.addEventListener("click", () => { startEditMode(li, span); });
-    const deleteIcon = document.createElement("img");
-    deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
-    deleteIcon.alt = "Delete";
-    deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); });
-    icons.appendChild(editIcon);
-    icons.appendChild(deleteIcon);
-    li.appendChild(icons);
+    if (!currentTask) return;
+
+    const li = createSubtaskElement(currentTask);
     subtaskList.appendChild(li);
     resetInput();
-});
+}
+
+/* ---------- Subtask-Element erstellen ---------- */
+
+function createSubtaskElement(text) {
+    const li = document.createElement("li");
+    const span = document.createElement("span");
+    span.textContent = text;
+    li.appendChild(span);
+    const icons = createSubtaskIcons(li, span);
+    li.appendChild(icons);
+    return li;
+}
+
+/* ---------- Icons + Events ---------- */
+
+function createSubtaskIcons(li, span) {
+    const icons = document.createElement("div");
+    icons.classList.add("subtask-icons");
+    const editIcon = createIcon(
+        "./assets/icons-addtask/Property 1=edit.png",
+        "Edit",
+        () => startEditMode(li, span)
+    );
+    const deleteIcon = createIcon(
+        "./assets/icons-addtask/Property 1=delete.png",
+        "Delete",
+        () => subtaskList.removeChild(li)
+    );
+    icons.append(editIcon, deleteIcon);
+    return icons;
+}
+
+function createIcon(src, alt, onClick) {
+    const icon = document.createElement("img");
+    icon.src = src;
+    icon.alt = alt;
+    icon.addEventListener("click", onClick);
+    return icon;
+}
+
 cancelBtn.addEventListener("click", resetInput);
 function resetInput() { taskInput.value = ""; checkBtn.style.display = "none"; cancelBtn.style.display = "none"; }
 function startEditMode(li, span) {
     const input = document.createElement("input"); input.type = "text"; input.value = span.textContent; input.classList.add("subtask-edit-input"); const saveIcon = document.createElement("img"); saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
     saveIcon.alt = "Save"; saveIcon.addEventListener("click", () => { span.textContent = input.value.trim() || span.textContent; li.replaceChild(span, input); li.replaceChild(defaultIcons, actionIcons); }); const deleteIcon = document.createElement("img"); deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png"; deleteIcon.alt = "Delete"; deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); }); const actionIcons = document.createElement("div"); actionIcons.classList.add("subtask-icons"); actionIcons.appendChild(saveIcon); actionIcons.appendChild(deleteIcon); const defaultIcons = li.querySelector(".subtask-icons"); li.replaceChild(input, span); li.replaceChild(actionIcons, defaultIcons); input.focus();
 }
-// const dropdown = document.getElementById("assigned-dropdown");
+
 // ----------------------------
 // Funktion: Task-Daten auslesen
 // ----------------------------
 function getTaskData() {
-    const titleInput = document.querySelector(".title-input");
-    const title = titleInput.value.trim();
+    return {
+        title: getTitle(),
+        description: getDescription(),
+        dueDate: getDueDate(),
+        priority: getPriority(),
+        assignedUsersFull: getAssignedUsers(),
+        category: getCategory(),
+        subtasks: getSubtasks(),
+    };
+}
 
-    const descriptionInput = document.querySelector(".description-input");
-    const description = descriptionInput.value.trim();
+function getTitle() {
+    const title = document.querySelector(".title-input").value.trim();
+    return title;
+}
 
-    const dueDateInput = document.querySelector(".due-date-input");
-    const dueDate = dueDateInput.value;
+function getDescription() {
+    return document.querySelector(".description-input").value.trim();
+}
 
+function getDueDate() {
+    return document.querySelector(".due-date-input").value;
+}
+
+function getPriority() {
     const priorityBtn = document.querySelector(".priority-frame.active");
-    const priority = priorityBtn ? priorityBtn.textContent.trim().toLowerCase() : "medium";
+    return priorityBtn ? priorityBtn.textContent.trim().toLowerCase() : "medium";
+}
 
-    // 🔹 Assigned Users Full
-    let assignedUsersFull = [];
-    if (assignedDropdown) {
-        assignedDropdown.querySelectorAll(".checkbox-wrapper.checked").forEach(wrapper => {
-            const div = wrapper.closest(".dropdown-item");
-            const userId = div.dataset.userId;
-            const user = users.find(u => u.id === userId);
-            if (user) {
-                assignedUsersFull.push({
-                    id: user.id,
-                    name: user.name,
-                    initials: user.initials,
-                    color: user.color
-                });
-            }
-        });
-    }
+function getAssignedUsers() {
+    if (!assignedDropdown) return [];
+    const selected = [];
+    assignedDropdown.querySelectorAll(".checkbox-wrapper.checked").forEach(wrapper => {
+        const div = wrapper.closest(".dropdown-item");
+        const userId = div.dataset.userId;
+        const user = users.find(u => u.id === userId);
+        if (user) selected.push(formatUser(user));
+    });
+    return selected;
+}
 
-    const categoryText = document.querySelector(".category-content .assigned-text");
-    const category = categoryText ? categoryText.textContent.trim() : null;
+function formatUser(user) {
+    return {
+        id: user.id,
+        name: user.name,
+        initials: user.initials,
+        color: user.color,
+    };
+}
 
+function getCategory() {
+    const categoryEl = document.querySelector(".category-content .assigned-text");
+    return categoryEl ? categoryEl.textContent.trim() : null;
+}
+
+function getSubtasks() {
     const subtaskInputs = document.querySelectorAll(".subtask-input");
-    const subtasks = Array.from(subtaskInputs)
+    return Array.from(subtaskInputs)
         .map(input => input.value.trim())
         .filter(title => title.length > 0)
         .map(title => ({ title, done: false }));
-
-    return {
-        title,
-        description,
-        dueDate,
-        priority,
-        assignedUsersFull,
-        category,
-        subtasks
-    };
 }
 
 
@@ -369,65 +415,78 @@ categoryContent.addEventListener("click", () => {
     }
 });
 const createBtn = document.getElementById('create-btn');
+// ===================== CREATE BUTTON HANDLER (refactored) =====================
+
 createBtn.addEventListener("click", async (event) => {
     event.preventDefault();
-    createBtn.classList.add('active');
+    createBtn.classList.add("active");
     const taskData = getTaskData();
-    let hasError = false;
-
-    const titleInput = document.querySelector(".title-input");
-    if (!taskData.title) {
-        titleInput.style.borderBottom = "1px solid #FF4D4D";
-        titleError.style.display = "block";
-        hasError = true;
-    } else {
-        titleInput.style.borderBottom = "1px solid #D1D1D1";
-        titleError.style.display = "none";
-    }
-
-    const dueDateContainer = document.querySelector(".due-date-content");
-    const dueDateError = document.querySelector(".due-date-container .error-message");
-    const dueDateValue = taskData.dueDate;
-    if (!dueDateValue) {
-        dueDateContainer.style.borderBottom = "1px solid #FF4D4D";
-        dueDateError.style.display = "block";
-        hasError = true;
-    } else {
-        dueDateContainer.style.borderBottom = "1px solid #D1D1D1";
-        dueDateError.style.display = "none";
-    }
-
-    const categoryError = document.querySelector(".category-container .error-message");
-    const categoryText = taskData.category;
-    if (!categoryText || categoryText === "Select task category") {
-        categoryContent.style.borderBottom = "1px solid #FF4D4D";
-        categoryError.style.display = "block";
-        hasError = true;
-    } else {
-        categoryContent.style.borderBottom = "1px solid #D1D1D1";
-        categoryError.style.display = "none";
-    }
-
+    const hasError = validateForm(taskData);
     if (hasError) return;
+    await handleTaskCreation(taskData);
+    createBtn.classList.remove("active");
+});
+
+/* ---------- VALIDIERUNG ---------- */
+function validateForm(taskData) {
+    let hasError = false;
+    if (!validateTitle(taskData.title)) hasError = true;
+    if (!validateDueDate(taskData.dueDate)) hasError = true;
+    if (!validateCategory(taskData.category)) hasError = true;
+    return hasError;
+}
+
+function validateTitle(title) {
+    const titleInput = document.querySelector(".title-input");
+    const titleError = document.querySelector(".error-message");
+    const valid = !!title.trim();
+    setValidationState(titleInput, titleError, valid);
+    return valid;
+}
+
+function validateDueDate(dueDate) {
+    const container = document.querySelector(".due-date-content");
+    const error = document.querySelector(".due-date-container .error-message");
+    const valid = !!dueDate;
+    setValidationState(container, error, valid);
+    return valid;
+}
+
+function validateCategory(category) {
+    const content = document.querySelector(".category-content");
+    const error = document.querySelector(".category-container .error-message");
+    const valid = category && category !== "Select task category";
+    setValidationState(content, error, valid);
+    return valid;
+}
+
+function setValidationState(element, errorEl, isValid) {
+    element.style.borderBottom = isValid
+        ? "1px solid #D1D1D1"
+        : "1px solid #FF4D4D";
+    errorEl.style.display = isValid ? "none" : "block";
+}
+
+/* ---------- SPEICHER- UND UI-LOGIK ---------- */
+
+async function handleTaskCreation(taskData) {
     const originalText = createBtn.textContent;
     createBtn.textContent = "Saving...";
     createBtn.disabled = true;
     try {
         const newTask = await saveTask(taskData);
         if (newTask) {
-            showTaskAddedMessage(() => {
-                closeModal();
-            });
+            showTaskAddedMessage(() => closeModal());
             resetForm();
         }
     } catch (err) {
-        console.error("Fehler beim Erstellen der Task:", err);
+        console.error("❌ Fehler beim Erstellen der Task:", err);
     } finally {
         createBtn.disabled = false;
         createBtn.textContent = originalText;
-        createBtn.classList.remove('active');
     }
-});
+}
+
 let tasks = [];
 async function saveTask(taskData) {
     try {
