@@ -48,15 +48,15 @@
                     <div class="due-date-content">
                         <!-- Verstecktes natives date input für Funktionalität -->
                         <input type="date" class="due-date-input" required>
-                        
+
                         <!-- Sichtbare, formatierte Anzeige -->
                         <span class="due-date-display" placeholder="dd/mm/yyyy">dd/mm/yyyy</span>
-                        
-                        
+
+
                         <div class="due-date-icon-container">
                             <div class="due-date-icon"></div>
                         </div>
-                        
+
                     </div>
                     <span class="error-message">This field is required</span>
                 </div>
@@ -68,8 +68,8 @@
                                 src="./assets/icons-addtask/Prio alta.svg" alt=""></button>
                         <button type="button" class="priority-frame active">Medium <img
                                 src="./assets/icons-addtask/Capa 2.svg" alt=""></button>
-                        <button type="button" class="priority-frame">Low <img 
-                                src="./assets/icons-addtask/Prio baja.svg" alt=""></button>
+                        <button type="button" class="priority-frame">Low <img src="./assets/icons-addtask/Prio baja.svg"
+                                alt=""></button>
                     </div>
                 </div>
 
@@ -89,8 +89,8 @@
 
                         <!-- Pfeil jetzt in separatem Container -->
                         <div class="assigned-arrow-container">
-                            <img id="assigned-arrow-icon" src="/assets/icons-addtask/arrow_drop_down.png" alt="Select contacts"
-                                class="arrow-dropdown">
+                            <img id="assigned-arrow-icon" src="/assets/icons-addtask/arrow_drop_down.png"
+                                alt="Select contacts" class="arrow-dropdown">
                         </div>
 
                         <!-- Dropdown -->
@@ -107,8 +107,8 @@
                     <div class="category-content">
                         <div class="assigned-text">Select task category</div>
                         <div class="assigned-arrow-container">
-                            <img id="assigned-arrow-icon" src="/assets/icons-addtask/arrow_drop_down.png" alt="Select contacts"
-                                class="arrow-dropdown">
+                            <img id="assigned-arrow-icon" src="/assets/icons-addtask/arrow_drop_down.png"
+                                alt="Select contacts" class="arrow-dropdown">
                         </div>
                     </div>
                     <span class="error-message">This field is required</span>
@@ -140,20 +140,27 @@
 
     <div class="button-container">
         <button class="clear-btn">Clear <img src="./assets/icons-addtask/iconoir_cancel (1).png" alt=""></button>
-        <button class="create-btn" id="create-btn">Create Task <img src="./assets/icons-addtask/check (1).png" alt=""></button>
-    </div>        
+        <button class="create-btn" id="create-btn">Create Task <img src="./assets/icons-addtask/check (1).png"
+                alt=""></button>
+    </div>
 
+    <div class="overlay-background"></div>
+    <dotlottie-wc src="https://lottie.host/995c5975-cad5-4553-955e-72e64e85e497/16Q1MEGlVj.lottie"
+        class="lottie-animation" autoplay loop>
+    </dotlottie-wc>
+
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.1/dist/dotlottie-wc.js" type="module"></script>
     <script src="./scripts/auth.js"></script>
     <script src="./scripts/header.js"></script>
     <script>
-        w3.includeHTML(() => {            
+        w3.includeHTML(() => {
             updateUserLogo();
             setActiveNavigation();
-            });
+        });
     </script>
     <script src="./scripts/tasks-crud.js"></script>
     <script src="./scripts/addtask.js"></script>
-    
 
 </body>
+
 </html>

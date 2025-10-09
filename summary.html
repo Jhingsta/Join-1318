@@ -35,7 +35,7 @@
                     <span id="greeting-animation-text" aria-live="polite" aria-atomic="true"></span>
                 </div>
             </div>
-        
+
             <div class="main-content-wrapper">
 
                 <div class="greeting-container">
@@ -46,93 +46,101 @@
                     <h2 id="summary-title" class="visually-hidden">Summary of Tasks</h2>
 
                     <div class="tasks-wrapper-grid" id="tasks-wrapper-grid">
-                            <!-- Urgent Tasks Card -->
-                            <a href="./board.html" class="urgent-card">
-                                <div class="middle-row-left">
-                                    <div class="middle-row-left-left">
-                                        <div class="middle-row-left-left-top">
-                                            <img src="./assets/icons-summary/tasks-urgent.png" alt="Urgent Tasks Icon" />
-                                            <span class="summary-urgent" aria-live="polite"></span>
-                                        </div>
-                                        <div class="middle-row-left-left-bottom">
-                                            <span class="middle-row-left-left-bottom-span">Tasks Urgent</span>
-                                        </div>
+                        <!-- Urgent Tasks Card -->
+                        <a href="./board.html" class="urgent-card">
+                            <div class="middle-row-left">
+                                <div class="middle-row-left-left">
+                                    <div class="middle-row-left-left-top">
+                                        <img src="./assets/icons-summary/tasks-urgent.png" alt="Urgent Tasks Icon" />
+                                        <span class="summary-urgent" aria-live="polite"></span>
                                     </div>
-                                    <div class="middle-row-left-middle"></div>
-                                    <div class="middle-row-left-right">
-                                        <span class="middle-row-left-right-top" id="deadline-date"></span>
-                                        <span class="middle-row-left-right-bottom" id="deadline-label"></span>
-                                    </div>     
-                                </div>
-                            </a>
-                            <!-- Task in Board Card -->
-                            <a href="./board.html" class="board-card">
-                                <div class="middle-row-right">
-                                    <div class="middle-row-right-top">
-                                        <img src="./assets/icons-summary/tasks-in-board.png" alt="Tasks in Board Icon" />
-                                        <span class="summary-total" aria-live="polite"></span>
-                                    </div>
-                                    <div class="middle-row-right-bottom">
-                                        <span>Tasks in Board</span>
+                                    <div class="middle-row-left-left-bottom">
+                                        <span class="middle-row-left-left-bottom-span">Tasks Urgent</span>
                                     </div>
                                 </div>
-                            </a>
-                            <!-- To-do Tasks Card -->
-                            <a href="./board.html" class="todo-card">
-                                <div class="bottom-row-type-1">
-                                    <div class="bottom-row-type-1-top">
-                                        <img src="./assets/icons-summary/tasks-to-do.png" alt="Tasks To-Do Icon">
-                                        <span class="summary-todo" aria-live="polite"></span>
-                                    </div>
-                                    <div class="bottom-row-type-1-bottom">
-                                        <span>Tasks To-do</span>
-                                    </div>
+                                <div class="middle-row-left-middle"></div>
+                                <div class="middle-row-left-right">
+                                    <span class="middle-row-left-right-top" id="deadline-date"></span>
+                                    <span class="middle-row-left-right-bottom" id="deadline-label"></span>
                                 </div>
-                            </a>
-                            <!-- Tasks in Progress Card -->
-                            <a href="./board.html" class="progress-card">
-                                <div class="bottom-row-type-2">
-                                    <div class="bottom-row-type-2-top">
-                                        <img src="./assets/icons-summary/tasks-in-progress.png" alt="Tasks in Progress Icon">
-                                        <span class="summary-inprogress" aria-live="polite"></span>
-                                    </div>
-                                    <div class="bottom-row-type-2-bottom">
-                                        <span>Tasks in Progress</span>
-                                    </div>
+                            </div>
+                        </a>
+                        <!-- Task in Board Card -->
+                        <a href="./board.html" class="board-card">
+                            <div class="middle-row-right">
+                                <div class="middle-row-right-top">
+                                    <img src="./assets/icons-summary/tasks-in-board.png" alt="Tasks in Board Icon" />
+                                    <span class="summary-total" aria-live="polite"></span>
                                 </div>
-                            </a>
-                            <!-- Awaiting Feedback Card -->
-                            <a href="./board.html" class="feedback-card">
-                                <div class="bottom-row-type-2">
-                                    <div class="bottom-row-type-2-top">
-                                        <img src="./assets/icons-summary/awaiting-feedback.png" alt="Awaiting Feedback Icon">
-                                        <span class="summary-feedback" aria-live="polite"></span>
-                                    </div>
-                                    <div class="bottom-row-type-2-bottom">
-                                        <span>Awaiting Feedback</span>
-                                    </div>
+                                <div class="middle-row-right-bottom">
+                                    <span>Tasks in Board</span>
                                 </div>
-                            </a>
-                            <!-- Tasks Done Card -->
-                            <a href="./board.html" class="done-card">
-                                <div class="bottom-row-type-2">
-                                    <div class="bottom-row-type-2-top">
-                                        <img src="./assets/icons-summary/tasks-done.png" alt="Tasks Done Icon">
-                                        <span class="summary-done" aria-live="polite"></span>
-                                    </div>
-                                    <div class="bottom-row-type-2-bottom">
-                                        <span>Tasks <br> Done</span>
-                                    </div>
+                            </div>
+                        </a>
+                        <!-- To-do Tasks Card -->
+                        <a href="./board.html" class="todo-card">
+                            <div class="bottom-row-type-1">
+                                <div class="bottom-row-type-1-top">
+                                    <img src="./assets/icons-summary/tasks-to-do.png" alt="Tasks To-Do Icon">
+                                    <span class="summary-todo" aria-live="polite"></span>
                                 </div>
-                            </a>
-                        
+                                <div class="bottom-row-type-1-bottom">
+                                    <span>Tasks To-do</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- Tasks in Progress Card -->
+                        <a href="./board.html" class="progress-card">
+                            <div class="bottom-row-type-2">
+                                <div class="bottom-row-type-2-top">
+                                    <img src="./assets/icons-summary/tasks-in-progress.png"
+                                        alt="Tasks in Progress Icon">
+                                    <span class="summary-inprogress" aria-live="polite"></span>
+                                </div>
+                                <div class="bottom-row-type-2-bottom">
+                                    <span>Tasks in Progress</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- Awaiting Feedback Card -->
+                        <a href="./board.html" class="feedback-card">
+                            <div class="bottom-row-type-2">
+                                <div class="bottom-row-type-2-top">
+                                    <img src="./assets/icons-summary/awaiting-feedback.png"
+                                        alt="Awaiting Feedback Icon">
+                                    <span class="summary-feedback" aria-live="polite"></span>
+                                </div>
+                                <div class="bottom-row-type-2-bottom">
+                                    <span>Awaiting Feedback</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- Tasks Done Card -->
+                        <a href="./board.html" class="done-card">
+                            <div class="bottom-row-type-2">
+                                <div class="bottom-row-type-2-top">
+                                    <img src="./assets/icons-summary/tasks-done.png" alt="Tasks Done Icon">
+                                    <span class="summary-done" aria-live="polite"></span>
+                                </div>
+                                <div class="bottom-row-type-2-bottom">
+                                    <span>Tasks <br> Done</span>
+                                </div>
+                            </div>
+                        </a>
+
                     </div>
                 </section>
             </div>
 
         </main>
     </div>
+    
+    <div class="overlay-background"></div>
+    <dotlottie-wc src="https://lottie.host/995c5975-cad5-4553-955e-72e64e85e497/16Q1MEGlVj.lottie"
+        class="lottie-animation" autoplay loop>
+    </dotlottie-wc>
 
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.1/dist/dotlottie-wc.js" type="module"></script>
     <script src="./scripts/auth.js"></script>
     <script src="./scripts/header.js"></script>
     <script>
@@ -146,4 +154,5 @@
     <script src="./scripts/summary-animation.js"></script>
 
 </body>
+
 </html>
