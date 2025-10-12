@@ -1,17 +1,18 @@
-// ===== DRAG AND DROP SYSTEM - Modernisiert für CRUD-Architektur =====
+// ===== DRAG AND DROP SYSTEM =====
 
-// Drag and Drop für alle Task-Karten aktivieren
+/**
+ * Enables drag and drop functionality for all task cards.
+ */
 function enableTaskDragAndDrop() {
-    // Alle Spalten als Drop-Zonen konfigurieren
     setupDropZones();
-    
-    // Alle Task-Karten draggable machen
     setupDraggableCards();
 }
 
-// Drop-Zonen (Spalten) konfigurieren
+/**
+ * Configures columns as drop zones.
+ */
 function setupDropZones() {
-    const columns = [
+    let columns = [
         document.getElementById('column-todo'),
         document.getElementById('column-inProgress'),
         document.getElementById('column-awaitFeedback'),
@@ -19,149 +20,197 @@ function setupDropZones() {
     ].filter(Boolean);
 
     columns.forEach(column => {
-        // Bestehende Listener entfernen (verhindert Duplikate)
         column.removeEventListener('dragover', handleDragOver);
         column.removeEventListener('dragleave', handleDragLeave);
         column.removeEventListener('drop', handleDrop);
-        
-        // Neue Listener hinzufügen
+
         column.addEventListener('dragover', handleDragOver);
         column.addEventListener('dragleave', handleDragLeave);
         column.addEventListener('drop', handleDrop);
     });
 }
 
-// Draggable Cards konfigurieren
+/**
+ * Makes task cards draggable and attaches event listeners.
+ */
 function setupDraggableCards() {
-    const cards = document.querySelectorAll('.task-card');
+    let cards = document.querySelectorAll('.task-card');
     
     cards.forEach(card => {
-        // Prüfe ob Card eine Task-ID hat
         if (!card.id || !card.id.startsWith('task-')) {
             console.warn('Task card missing proper ID:', card);
             return;
         }
-        
-        // Draggable aktivieren
         card.setAttribute('draggable', 'true');
-        
-        // Bestehende Listener entfernen
         card.removeEventListener('dragstart', handleDragStart);
         card.removeEventListener('dragend', handleDragEnd);
-        
-        // Neue Listener hinzufügen
+
         card.addEventListener('dragstart', handleDragStart);
         card.addEventListener('dragend', handleDragEnd);
     });
 }
 
-// Event Handler für Drag Start
+/**
+ * Handles the start of dragging a task card.
+ * 
+ * @param {DragEvent} e - The dragstart event.
+ */
 function handleDragStart(e) {
-    // Task-ID direkt aus DOM-ID extrahieren
-    const taskId = e.target.id.replace('task-', '');
+    let taskId = e.target.id.replace('task-', '');
     if (!taskId) {
         e.preventDefault();
         console.warn('Cannot drag - no task ID found');
         return;
     }
-    
+
     e.dataTransfer.setData('text/plain', taskId);
     e.dataTransfer.effectAllowed = 'move';
-    
-    // Visual feedback
+
     setTimeout(() => e.target.classList.add('dragging'), 0);
 }
 
-// Event Handler für Drag End
+/**
+ * Handles the end of dragging a task card.
+ * 
+ * @param {DragEvent} e - The dragend event.
+ */
 function handleDragEnd(e) {
     e.target.classList.remove('dragging');
 }
 
-// Event Handler für Drag Over (Drop Zone)
+/**
+ * Handles dragover event on a drop zone.
+ * 
+ * @param {DragEvent} e - The dragover event.
+ */
 function handleDragOver(e) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     e.currentTarget.classList.add('drag-over');
 }
 
-// Event Handler für Drag Leave (Drop Zone)
+/**
+ * Handles dragleave event on a drop zone.
+ * 
+ * @param {DragEvent} e - The dragleave event.
+ */
 function handleDragLeave(e) {
     e.currentTarget.classList.remove('drag-over');
 }
 
-// Event Handler für Drop (Drop Zone)
+/**
+ * Handles drop event on a drop zone.
+ * 
+ * @param {DragEvent} e - The drop event.
+ */
 async function handleDrop(e) {
     e.preventDefault();
     e.currentTarget.classList.remove('drag-over');
-    
-    const taskId = e.dataTransfer.getData('text/plain');
+
+    let taskId = e.dataTransfer.getData('text/plain');
     if (!taskId) return;
-    
-    const columnId = e.currentTarget.id;
+
+    let columnId = e.currentTarget.id;
     await moveTaskToColumn(taskId, columnId);
 }
 
-// Task in neue Spalte verschieben
-async function moveTaskToColumn(taskId, columnId) {
-    // Column ID zu Status mapping
-    const statusMap = {
+/**
+ * Maps column IDs to task status values.
+ * 
+ * @param {string} columnId - The ID of the column.
+ */
+function getStatusFromColumn(columnId) {
+    let statusMap = {
         'column-todo': 'todo',
         'column-inProgress': 'inProgress', 
         'column-awaitFeedback': 'awaitFeedback',
         'column-done': 'done'
     };
-    
-    const newStatus = statusMap[columnId];
-    if (!newStatus) {
-        console.error('Unknown column:', columnId);
-        return;
-    }
-    
+    return statusMap[columnId] || null;
+}
+
+/**
+ * Finds a task by its ID.
+ * 
+ * @param {string} taskId - The ID of the task to find.
+ */
+function findTaskById(taskId) {
+    return getTasks().find(t => t.id === taskId) || null;
+}
+
+/**
+ * Updates the task status both locally and in the database.
+ * 
+ * @param {Object} task - The task object to update.
+ * @param {string} newStatus - The new status to assign.
+ */
+async function updateTaskStatus(task, newStatus) {
+    task.status = newStatus;
+    await updateTask(task.id, { status: newStatus });
+}
+
+/**
+ * Renders the board and re-enables drag and drop.
+ */
+function refreshBoard() {
+    renderBoard();
+    setTimeout(enableTaskDragAndDrop, 0);
+}
+
+/**
+ * Attempts a rollback by reloading tasks and refreshing the board.
+ */
+async function rollbackBoard() {
     try {
-        // Task aus lokaler Liste finden
-        const task = getTasks().find(t => t.id === taskId);
-        if (!task) {
-            console.error('Task not found:', taskId);
-            return;
-        }
-        
-        // Prüfen ob Status-Änderung nötig
-        if (task.status === newStatus) {
-            console.log('Task already in target status');
-            return;
-        }
-        
-        // Status lokal aktualisieren
-        task.status = newStatus;
-        
-        // Firebase aktualisieren
-        await updateTask(taskId, { status: newStatus });
-        
-        // Board neu rendern
-        renderBoard();
-        
-        // Drag & Drop wieder aktivieren (nach Board-Render)
-        setTimeout(enableTaskDragAndDrop, 0);
-        
-        console.log(`Task ${taskId} moved to ${newStatus}`);
-        
+        await loadTasksForBoard();
+        refreshBoard();
     } catch (error) {
-        console.error('Error moving task:', error);
-        
-        // Rollback bei Fehler - Board neu laden
-        try {
-            await loadTasksForBoard();
-            renderBoard();
-            setTimeout(enableTaskDragAndDrop, 0);
-        } catch (reloadError) {
-            console.error('Error during rollback:', reloadError);
-        }
+        console.error('Error during rollback:', error);
     }
 }
 
-// Integration mit Board-Rendering
-// Wird vom Board-System aufgerufen, nachdem renderBoard() fertig ist
+/**
+ * Validates task and column, updates status if needed.
+ * 
+ * @param {string} taskId - ID of the task to update.
+ * @param {string} columnId - ID of the target column.
+ * @returns {Promise<boolean>} - Returns true if task was updated, false otherwise.
+ */
+async function tryUpdateTaskStatus(taskId, columnId) {
+    let newStatus = getStatusFromColumn(columnId);
+    if (!newStatus) {
+        console.error('Unknown column:', columnId);
+        return false;
+    }
+    let task = findTaskById(taskId);
+    if (!task) {
+        console.error('Task not found:', taskId);
+        return false;
+    }
+    if (task.status === newStatus) return false;
+    await updateTaskStatus(task, newStatus);
+    return true;
+}
+
+/**
+ * Moves a task to a new column with error handling and board refresh.
+ * 
+ * @param {string} taskId - ID of the task to move.
+ * @param {string} columnId - ID of the target column.
+ */
+async function moveTaskToColumn(taskId, columnId) {
+    try {
+        let updated = await tryUpdateTaskStatus(taskId, columnId);
+        if (updated) refreshBoard();
+    } catch (error) {
+        console.error('Error moving task:', error);
+        await rollbackBoard();
+    }
+}
+
+/**
+ * Initializes drag and drop after the board has been rendered.
+ */
 function initializeDragAndDrop() {
-    // Kurze Verzögerung um sicherzustellen dass DOM ready ist
     setTimeout(enableTaskDragAndDrop, 10);
 }
