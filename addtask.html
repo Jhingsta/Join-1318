@@ -17,121 +17,134 @@
 </head>
 
 <body>
-    <header>
+    <header role="banner">
         <div w3-include-html="./header.html"></div>
     </header>
 
-    <div class="layout">
+    <div class="layout" role="presentation">
 
-        <aside>
+        <aside role="complementary" aria-label="Sidebar navigation">
             <div w3-include-html="./sidebar.html"></div>
         </aside>
 
-        <main>
-            <div class="main-container">
+        <main role="main" aria-labelledby="page-title">
+            <h1 id="page-title" class="visually-hidden">Add Task</h1>
+            <div class="main-container" role="form" aria-describedby="form-hint">
+                <p id="form-hint" class="visually-hidden">
+                    Required fields are marked and must be filled before submitting the task.
+                </p>
 
+                <!-- TITLE -->
                 <div class="title-container">
-                    <input type="text" class="title-input" placeholder="Enter a title" required>
-                    <span class="error-message">This field is required</span>
+                    <label for="task-title" class="visually-hidden">Title</label>
+                    <input type="text" id="task-title" class="title-input" placeholder="Enter a title" required
+                        aria-required="true" aria-describedby="title-error">
+                    <span id="title-error" class="error-message" role="alert">This field is required</span>
                 </div>
 
+                <!-- DESCRIPTION -->
                 <div class="description-container">
                     <div class="description-header">
-                        <span class="desc-title">Description</span>
+                        <span class="desc-title" id="desc-label">Description</span>
                         <span class="desc-optional">(optional)</span>
                     </div>
-                    <textarea class="description-input" placeholder="Enter a description"></textarea>
+                    <textarea class="description-input" placeholder="Enter a description"
+                        aria-labelledby="desc-label"></textarea>
                 </div>
 
+                <!-- DUE DATE -->
                 <div class="due-date-container">
-                    <div class="due-date-header">Due date</div>
+                    <div class="due-date-header" id="due-date-label">Due date</div>
                     <div class="due-date-content">
-                        <!-- Verstecktes natives date input für Funktionalität -->
-                        <input type="date" class="due-date-input" required>
-
-                        <!-- Sichtbare, formatierte Anzeige -->
-                        <span class="due-date-display" placeholder="dd/mm/yyyy">dd/mm/yyyy</span>
-
-
-                        <div class="due-date-icon-container">
+                        <label for="due-date-input" class="visually-hidden">Select due date</label>
+                        <input type="date" id="due-date-input" class="due-date-input" required aria-required="true"
+                            aria-describedby="due-date-error">
+                        <span class="due-date-display" aria-hidden="true">dd/mm/yyyy</span>
+                        <div class="due-date-icon-container" aria-hidden="true">
                             <div class="due-date-icon"></div>
                         </div>
-
                     </div>
-                    <span class="error-message">This field is required</span>
+                    <span id="due-date-error" class="error-message" role="alert">This field is required</span>
                 </div>
 
+                <!-- PRIORITY -->
                 <div class="priority-container">
-                    <div class="priority-header">Priority</div>
-                    <div class="priority-content">
-                        <button type="button" class="priority-frame">Urgent <img
-                                src="./assets/icons-addtask/Prio alta.svg" alt=""></button>
-                        <button type="button" class="priority-frame active">Medium <img
-                                src="./assets/icons-addtask/Capa 2.svg" alt=""></button>
-                        <button type="button" class="priority-frame">Low <img src="./assets/icons-addtask/Prio baja.svg"
-                                alt=""></button>
+                    <div class="priority-header" id="priority-label">Priority</div>
+                    <div class="priority-content" role="radiogroup" aria-labelledby="priority-label">
+                        <button type="button" role="radio" aria-checked="false" class="priority-frame">
+                            Urgent <img src="./assets/icons-addtask/Prio alta.svg" alt="">
+                        </button>
+                        <button type="button" role="radio" aria-checked="true" class="priority-frame active">
+                            Medium <img src="./assets/icons-addtask/Capa 2.svg" alt="">
+                        </button>
+                        <button type="button" role="radio" aria-checked="false" class="priority-frame">
+                            Low <img src="./assets/icons-addtask/Prio baja.svg" alt="">
+                        </button>
                     </div>
                 </div>
 
+                <!-- ASSIGNED -->
                 <div class="assigned-container">
                     <div class="assigned-header">
-                        Assigned to <span class="optional">(optional)</span>
+                        <label for="assigned-input">Assigned to <span class="optional">(optional)</span></label>
                     </div>
 
                     <div class="assigned-content">
-                        <!-- Text bleibt im eigenen Container -->
                         <div class="assigned-text-container">
-                            <div class="assigned-text">Select contacts to assign</div>
-
-                            <!-- Input für Suche -->
-                            <input type="text" class="assigned-input" placeholder="">
+                            <div class="assigned-text" id="assigned-label">Select contacts to assign</div>
+                            <input type="text" class="assigned-input" id="assigned-input"
+                                aria-labelledby="assigned-label" role="combobox" aria-expanded="false"
+                                aria-controls="assigned-dropdown" autocomplete="off">
                         </div>
 
-                        <!-- Pfeil jetzt in separatem Container -->
-                        <div class="assigned-arrow-container">
-                            <img id="assigned-arrow-icon" src="/assets/icons-addtask/arrow_drop_down.png"
-                                alt="Select contacts" class="arrow-dropdown">
+                        <div class="assigned-arrow-container" role="button" tabindex="0"
+                            aria-label="Toggle contacts dropdown">
+                            <img src="/assets/icons-addtask/arrow_drop_down.png" alt="" class="arrow-dropdown">
                         </div>
 
-                        <!-- Dropdown -->
-                        <div class="dropdown-menu" id="assigned-dropdown"></div>
+                        <div class="dropdown-menu" id="assigned-dropdown" role="listbox"></div>
                     </div>
 
-                    <div class="selected-avatars-container"></div>
+                    <div class="selected-avatars-container" role="list"></div>
                 </div>
 
+                <!-- CATEGORY -->
                 <div class="category-container">
                     <div class="assigned-header">
-                        Category
+                        <label for="category-input">Category</label>
                     </div>
-                    <div class="category-content">
-                        <div class="assigned-text">Select task category</div>
-                        <div class="assigned-arrow-container">
-                            <img id="assigned-arrow-icon" src="/assets/icons-addtask/arrow_drop_down.png"
-                                alt="Select contacts" class="arrow-dropdown">
+                    <div class="category-content" role="combobox" aria-expanded="false" aria-controls="category-list">
+                        <div class="assigned-text" id="category-label">Select task category</div>
+                        <input type="text" id="category-input" class="visually-hidden" aria-labelledby="category-label">
+                        <div class="assigned-arrow-container" role="button" tabindex="0"
+                            aria-label="Toggle category dropdown">
+                            <img src="/assets/icons-addtask/arrow_drop_down.png" alt="" class="arrow-dropdown">
                         </div>
                     </div>
-                    <span class="error-message">This field is required</span>
+                    <span class="error-message" id="category-error" role="alert">This field is required</span>
                 </div>
 
+                <!-- SUBTASKS -->
                 <div class="subtask-container">
                     <div class="assigned-header">
-                        Subtasks <span class="optional">(optional)</span>
+                        <label for="subtask-text">Subtasks <span class="optional">(optional)</span></label>
                     </div>
 
                     <div class="subtask-content-addtask">
                         <input type="text" id="subtask-text" class="subtask-text" placeholder="Add new subtask">
                         <div class="assigned-arrow-container">
-                            <img id="cancel-btn" src="/assets/icons-addtask/cancel.png" alt="Cancel subtask"
-                                class="assigned-icon">
-                            <img id="check-btn" src="/assets/icons-addtask/check.png" alt="Confirm subtask"
-                                class="assigned-icon">
+                            <button id="cancel-btn" class="assigned-icon" aria-label="Cancel subtask">
+                                <img src="/assets/icons-addtask/cancel.png" alt="">
+                            </button>
+                            <button id="check-btn" class="assigned-icon" aria-label="Confirm subtask">
+                                <img src="/assets/icons-addtask/check.png" alt="">
+                            </button>
                         </div>
                     </div>
 
-                    <div id="task-dropdown" class="task-dropdown"></div>
+                    <div id="task-dropdown" class="task-dropdown" role="listbox"></div>
 
-                    <ul id="subtask-list" class="subtask-list"></ul>
+                    <ul id="subtask-list" class="subtask-list" role="list"></ul>
                 </div>
 
             </div>
@@ -139,15 +152,20 @@
     </div>
 
     <div class="button-container">
-        <button class="clear-btn">Clear <img src="./assets/icons-addtask/iconoir_cancel (1).png" alt=""></button>
-        <button class="create-btn" id="create-btn">Create Task <img src="./assets/icons-addtask/check (1).png"
-                alt=""></button>
+        <button class="clear-btn" type="reset">Clear
+            <img src="./assets/icons-addtask/iconoir_cancel (1).png" alt="">
+        </button>
+        <button class="create-btn" id="create-btn" type="submit">
+            Create Task
+            <img src="./assets/icons-addtask/check (1).png" alt="">
+        </button>
     </div>
 
-    <div class="overlay-background"></div>
+    <div class="overlay-background" role="presentation"></div>
     <dotlottie-wc src="https://lottie.host/995c5975-cad5-4553-955e-72e64e85e497/16Q1MEGlVj.lottie"
-        class="lottie-animation" autoplay loop>
+        class="lottie-animation" autoplay loop aria-hidden="true">
     </dotlottie-wc>
+
 
     <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.1/dist/dotlottie-wc.js" type="module"></script>
     <script src="./scripts/auth.js"></script>
@@ -159,7 +177,10 @@
         });
     </script>
     <script src="./scripts/tasks-crud.js"></script>
+    <script src="./scripts/addtask-validation.js"></script>
+    <script src="./scripts/addtask-get-data.js"></script>
     <script src="./scripts/addtask.js"></script>
+
 
 </body>
 
