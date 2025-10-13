@@ -116,7 +116,7 @@ function getTaskData() {
     
     const subtaskInputs = subtaskList.querySelectorAll("li span.subtask-text");
     const subtaskItems = Array.from(subtaskInputs)
-        .map(input => input.value.trim())
+        .map(span => span.textContent.trim())
         .filter(title => title.length > 0)
         .map(title => ({ title, done: false }));
 
