@@ -82,7 +82,7 @@ function activateNavItems(selector, activeClass, currentPage) {
  * When the device is outside of this range, the overlay is hidden again,
  * and the main content becomes accessible.
  * 
- * // Automatically update ARIA states on window resize
+ * Automatically update ARIA states on window resize
  * window.addEventListener('resize', updateAriaForLandscapeOverlay);
  */
 function updateAriaForLandscapeOverlay() {

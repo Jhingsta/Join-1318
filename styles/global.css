@@ -88,7 +88,7 @@ button, input, select, textarea {
 }
 
 @media (min-width: 701px) and (max-width: 1024px) {
-    .overlay-background,
+    .lottie-background,
     .lottie-animation {
         visibility: visible;
         opacity: 1;
