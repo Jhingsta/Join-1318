@@ -329,82 +329,91 @@ async function removeUserFromAllTasks(userKey) {
 }
 
 /**
- * Main function to open the floating contact panel.
- * Handles rendering, focus management, and accessibility attributes.
- * 
- * @param {Object} user - The contact object containing name, email, etc.
+ * Open a modal (Add or Edit) with ARIA and focus handling.
+ * @param {HTMLElement} modalContainer - The container element for the modal.
+ * @param {Object|null} userData - User data for Edit modal, null for Add modal.
+ * @param {Function} getTemplateFunc - Function returning the modal HTML template.
+ * @param {string} triggerSelector - Selector for the element that triggered the modal.
  */
-function openFloatingContact(user) {
-    deactivateAllContacts();
-    highlightCurrentContact(user.id);
+function openModal(modalContainer, userData, getTemplateFunc, triggerSelector) {
+    let triggerButton = document.querySelector(triggerSelector);
+    let modalBackground = document.getElementById('overlay-contacts');
 
-    let floatingContact =
-        window.innerWidth <= 768
-            ? createMobileFloatingContact(user)
-            : createDesktopFloatingContact();
+    modalContainer.inert = false;
+    modalContainer.setAttribute('aria-hidden', 'false');
+    modalContainer.classList.add('show');
 
-    renderFloatingContact(floatingContact, user);
-    showFloatingContactPanel(floatingContact);
-    focusFloatingContact(floatingContact);
+    renderModal(modalContainer, userData, getTemplateFunc);
+    showModalBackground(modalBackground);
+    showModalWithFocus(modalContainer);
 }
 
 /**
- * Render floating contact HTML and set accessibility attributes.
- * 
- * @param {HTMLElement} container - The floating contact container element.
- * @param {Object} user - Contact data.
+ * Renders a modal dialog inside the given container using a provided template function.
+ * Sets accessibility attributes for ARIA compliance.
+ *
+ * @param {HTMLElement} container - The DOM element that will contain the modal content.
+ * @param {Object} userData - The data object used to populate the modal template.
+ * @param {Function} getTemplateFunc - A function that returns an HTML template string for the modal.
  */
-function renderFloatingContact(container, user) {
-    container.innerHTML = getFloatingContactTemplate(user);
+function renderModal(container, userData, getTemplateFunc) {
+    container.innerHTML = getTemplateFunc(userData);
     container.setAttribute('role', 'dialog');
-    container.setAttribute('aria-modal', 'false');
-    container.setAttribute('aria-labelledby', 'floating-contact-title');
+    container.setAttribute('aria-modal', 'true');
+    let titleElement = container.querySelector('[id]');
+    if (titleElement) container.setAttribute('aria-labelledby', titleElement.id);
     container.setAttribute('aria-hidden', 'false');
 }
 
 /**
- * Visually show and activate the floating contact panel.
- * Triggers the slide-in animation and sets ARIA attributes for screenreader.
- * 
- * @param {HTMLElement} container - The floating contact container element.
+ * Displays the modal background and prevents page scrolling while the modal is active.
+ *
+ * @param {HTMLElement} background - The background overlay element for the modal.
  */
-function showFloatingContactPanel(container) {
-    container.classList.add('show');
-
-    slideInFloatingContact(container);
-
-    let content = container.querySelectorAll('.floating-contact-second, .floating-contact-third');
-    content.forEach(el => el.setAttribute('aria-live', 'polite'));
-    container.setAttribute('aria-hidden', 'false');
+function showModalBackground(background) {
+    background.classList.add('show');
+    background.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('no-scroll');
 }
 
 /**
- * Focus the first interactive element (e.g., close button) after rendering.
- * 
- * @param {HTMLElement} container - The floating contact container element.
+ * Displays the modal with a short delay and focuses the first interactive element for accessibility.
+ *
+ * @param {HTMLElement} container - The container element that holds the modal.
  */
-function focusFloatingContact(container) {
+function showModalWithFocus(container) {
     setTimeout(() => {
-        let firstFocusable = container.querySelector('button, [href], input, [tabindex]:not([tabindex="-1"])');
-        if (firstFocusable) firstFocusable.focus();
+        let modal = container.querySelector('.modal-add-contact, .modal-edit-contact');
+        modal.classList.add('show');
+
+        let firstInput = modal.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
+        if (firstInput) firstInput.focus();
     }, 10);
 }
 
 /**
- * Utility: Remove active state from all contacts.
+ * Opens the "Add Contact" modal using the add contact template. Automatically focuses the first input field after opening.
  */
-function deactivateAllContacts() {
-    document.querySelectorAll('.contact').forEach(contact =>
-        contact.classList.remove('active')
+
+function openAddContactModal() {
+    openModal(
+        document.getElementById('modal-add-contact-container'),
+        null,
+        getAddContactOverlayTemplate,
+        '.add-contact-btn'
     );
 }
 
 /**
- * Utility: Highlight the selected contact.
- * 
- * @param {string} userId - The ID of the selected contact.
+ * Opens the "Edit Contact" modal for a given user. Passes the user's data into the edit contact template.
+ *
+ * @param {Object} userData - The data of the user to edit.
  */
-function highlightCurrentContact(userId) {
-    let currentContact = document.getElementById(`contact-${userId}`);
-    if (currentContact) currentContact.classList.add('active');
+function openEditContactModal(userData) {
+    openModal(
+        document.getElementById('modal-edit-contact-container'),
+        userData,
+        getEditContactOverlayTemplate,
+        `.edit-link[onclick*="${userData.email}"]`
+    );
 }

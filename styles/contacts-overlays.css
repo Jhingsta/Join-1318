@@ -482,20 +482,6 @@ input::placeholder {
   filter: invert(49%) sepia(80%) saturate(7491%) hue-rotate(209deg) brightness(101%) contrast(101%);
 }
 
-/* Visually Hidden */
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Für größere Bildschirme mit Content-Begrenzung */
 @media (min-width: 1441px) {
   .overlay-add-contact {
     right: calc((100vw - 1440px) / 2);

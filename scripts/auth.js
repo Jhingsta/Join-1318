@@ -72,5 +72,42 @@ function activateNavItems(selector, activeClass, currentPage) {
   });
 }
 
+/**
+ * Updates ARIA attributes for the landscape overlay based on screen width.
+ * 
+ * When the device is in landscape mode (between 701px and 1024px),
+ * this function hides the main page content from assistive technologies
+ * and activates the overlay with an accessible live announcement.
+ * 
+ * When the device is outside of this range, the overlay is hidden again,
+ * and the main content becomes accessible.
+ * 
+ * Automatically update ARIA states on window resize
+ * window.addEventListener('resize', updateAriaForLandscapeOverlay);
+ */
+function updateAriaForLandscapeOverlay() {
+  const overlay = document.getElementById('landscape-overlay');
+  const pageRoot = document.getElementById('page-root');
+  const status = document.getElementById('landscape-status');
+
+  if (!overlay || !pageRoot || !status) return;
+
+  const isLandscape = window.matchMedia('(min-width: 701px) and (max-width: 1024px)').matches;
+
+  if (isLandscape) {
+    overlay.setAttribute('aria-hidden', 'false');
+    pageRoot.setAttribute('aria-hidden', 'true');
+    status.textContent = 'Landscape mode activated. Please rotate your device.';
+  } else {
+    overlay.setAttribute('aria-hidden', 'true');
+    pageRoot.setAttribute('aria-hidden', 'false');
+    status.textContent = 'Back to normal view.';
+  }
+}
+
 // Execute immediately after page load
 enforceAuthentication();
+updateAriaForLandscapeOverlay();
+
+// Update when screen size changes
+window.addEventListener('resize', updateAriaForLandscapeOverlay);
