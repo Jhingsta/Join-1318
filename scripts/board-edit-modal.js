@@ -1,429 +1,303 @@
-// ===================== HAUPTFUNKTION - EDIT MODE ÖFFNEN =====================
+// ===================== MAIN FUNCTION - OPEN EDIT MODE =====================
 
+/**
+ * Opens the edit mode for a given task.
+ * Delegates initialization and feature setup.
+ * 
+ * @param {Object} task - Task to edit
+ */
 async function openEditMode(task) {
-    if (users.length === 0) {
-        await loadUsers();
-    }
+    let elements = await initializeEditMode(task);
+    if (!elements) return;
 
-    const view = document.getElementById("task-view");
-    const edit = document.getElementById("task-edit");
-    const editForm = document.getElementById("edit-form-fields");
+    setupEditModeFeatures(task, elements);
+}
 
-    if (!view || !edit || !editForm) {
+/**
+ * Initializes the edit mode: loads users, prepares DOM, renders template.
+ * 
+ * @param {Object} task - Task to edit
+ */
+async function initializeEditMode(task) {
+    if (users.length === 0) await loadUsers();
+
+    let elements = getEditModeElements();
+    if (!elements.view || !elements.edit || !elements.editForm) {
         console.error('Edit modal elements not found');
-        return;
+        return null;
     }
 
-    view.classList.add("hidden");
-    edit.classList.remove("hidden");
+    elements.view.classList.add("hidden");
+    elements.edit.classList.remove("hidden");
+    elements.editForm.innerHTML = taskEditTemplate(task, task.dueDate || "");
 
-    let isoDate = task.dueDate || "";
-    const priority = (task.priority || "medium").trim().toLowerCase();
+    return elements;
+}
 
-    // Template einfügen
-    editForm.innerHTML = taskEditTemplate(task, isoDate);
+/**
+ * Sets up all interactive features of the edit mode.
+ * 
+ * @param {Object} task - Task to edit
+ * @param {Object} elements - Collected DOM elements
+ */
+function setupEditModeFeatures(task, elements) {
+    setupDueDateHandling();
+    setupAssignedUsersDropdown(task);
+    setupSubtaskHandling(task);
+    setupPriorityButtons(task, (task.priority || "medium").toLowerCase());
 
-    // ===================== DUE DATE HANDLING =====================
-    const editDueDateInput = document.getElementById("edit-due-date-input");
-    const dueDateContainer = document.getElementById("edit-due-date-container");
-
-    if (dueDateContainer && editDueDateInput) {
-        dueDateContainer.addEventListener("click", (e) => {
-            if (e.target === editDueDateInput) return;
-            editDueDateInput.focus();
-            editDueDateInput.click();
-        });
-    }
-
-    // ===================== ASSIGNED USERS DROPDOWN =====================
-    const placeholder = document.getElementById("edit-assigned-placeholder");
-    const input = document.getElementById("edit-assigned-input");
-    const arrow = document.getElementById("edit-assigned-arrow");
-    const dropdown = document.getElementById("edit-assigned-dropdown");
-
-    if (!dropdown) {
-        console.error('Edit assigned dropdown not found');
-        return;
-    }
-
-    function openDropdown() {
-        dropdown.classList.remove("hidden");
-        input.style.display = "inline";
-        placeholder.style.display = "none";
-        arrow.src = "./assets/icons-addtask/arrow_drop_down_up.png";
-        input.focus();
-    }
-
-    function closeDropdown() {
-        dropdown.classList.add("hidden");
-        input.style.display = "none";
-        placeholder.style.display = "block";
-        arrow.src = "./assets/icons-addtask/arrow_drop_down.png";
-        input.value = "";
-    }
-
-    if (placeholder) {
-        placeholder.addEventListener("click", (e) => {
-            e.stopPropagation();
-            openDropdown();
-        });
-    }
-
-    if (arrow) {
-        arrow.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dropdown.classList.contains("hidden") ? openDropdown() : closeDropdown();
-        });
-    }
-
-    // Klick außerhalb schließt Dropdown
-    document.addEventListener("click", (e) => {
-        if (!dropdown.contains(e.target) && e.target !== input && e.target !== placeholder && e.target !== arrow) {
-            closeDropdown();
-        }
-    });
-
-    // Live-Suche im Dropdown
-    if (input) {
-        input.addEventListener("input", () => {
-            const filter = input.value.toLowerCase();
-            Array.from(dropdown.children).forEach(div => {
-                const nameEl = div.querySelector("span");
-                if (nameEl) {
-                    const name = nameEl.textContent.toLowerCase();
-                    div.style.display = name.includes(filter) ? "flex" : "none";
-                }
-            });
-        });
-
-        input.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dropdown.classList.contains("hidden") ? openDropdown() : closeDropdown();
-        });
-    }
-
-    // ===================== SUBTASK HANDLING =====================
-    const subtaskInput = document.getElementById("edit-subtask-input");
-    const editCancelBtn = document.getElementById("edit-subtask-cancel");
-    const editCheckBtn = document.getElementById("edit-subtask-check");
-
-    if (subtaskInput && editCancelBtn && editCheckBtn) {
-        subtaskInput.addEventListener("input", () => {
-            const hasText = subtaskInput.value.trim().length > 0;
-            editCancelBtn.style.display = hasText ? "inline-block" : "none";
-            editCheckBtn.style.display = hasText ? "inline-block" : "none";
-        });
-
-        editCancelBtn.addEventListener("click", () => {
-            subtaskInput.value = "";
-            editCancelBtn.style.display = "none";
-            editCheckBtn.style.display = "none";
-        });
-
-        editCheckBtn.addEventListener("click", async () => {
-            const text = subtaskInput.value.trim();
-            if (text) {
-                await addSubtask(task.id, text);
-                renderEditSubtasks(task);
-                subtaskInput.value = "";
-                editCancelBtn.style.display = "none";
-                editCheckBtn.style.display = "none";
-            }
-        });
-    }
-
-    // ===================== PRIORITY BUTTONS =====================
-    const priorityButtons = document.querySelectorAll("#edit-priority-buttons .priority-frame");
-    priorityButtons.forEach((btn) => {
-        if (btn.dataset.priority.toLowerCase() === priority.toLowerCase()) {
-            btn.classList.add("active");
-        }
-        btn.addEventListener("click", () => {
-            priorityButtons.forEach((b) => b.classList.remove("active"));
-            btn.classList.add("active");
-            task.priority = btn.dataset.priority;
-        });
-    });
-
-    // ===================== TASK AKTUALISIEREN =====================
     currentTask = task;
 
-    await renderAssignedDropdownOverlay(task);
-    renderEditSubtasks(task);
-
-    // ===================== SAVE BUTTON =====================
-    const saveBtn = document.getElementById("save-task");
-    if (saveBtn) {
-        saveBtn.onclick = async () => {
-            if (!currentTask) return;
-
-            const titleInput = document.getElementById("edit-title-input");
-            const descInput = document.getElementById("edit-description-input");
-            const dueDateInput = document.getElementById("edit-due-date-input");
-
-            if (titleInput) currentTask.title = titleInput.value;
-            if (descInput) currentTask.description = descInput.value;
-            currentTask.priority = currentTask.priority || "medium";
-
-            if (dueDateInput && dueDateInput.value) {
-                currentTask.dueDate = dueDateInput.value;
-            }
-
-            dropdown.classList.add("hidden");
-
-            try {
-                await updateTask(currentTask.id, {
-                    title: currentTask.title,
-                    description: currentTask.description,
-                    priority: currentTask.priority,
-                    dueDate: currentTask.dueDate,
-                    assignedUsersFull: currentTask.assignedUsersFull
-                });
-
-                const localTaskIndex = tasks.findIndex(t => t.id === currentTask.id);
-                if (localTaskIndex > -1) {
-                    Object.assign(tasks[localTaskIndex], currentTask);
-                }
-
-                openTaskDetails(currentTask);
-                renderBoard();
-            } catch (error) {
-                console.error('Error updating task:', error);
-            }
-        };
-    }
+    renderAssignedDropdownOverlay(task).then(() => renderEditSubtasks(task));
+    setupSaveButton(task);
 }
 
-// ===================== SUBTASK RENDERING =====================
-
-function renderEditSubtasks(task) {
-    const list = document.getElementById("edit-subtask-list");
-    if (!list) return;
-
-    list.innerHTML = "";
-
-    if (!task.subtasks || !task.subtasks.items || !Array.isArray(task.subtasks.items)) {
-        task.subtasks = { items: [], completed: 0, total: 0 };
-    }
-
-    task.subtasks.items.forEach((st, index) => {
-        const li = document.createElement("li");
-        li.className = "subtask-item";
-
-        const span = document.createElement("span");
-        span.textContent = st.title;
-        span.className = "subtask-text";
-
-        const editIcon = document.createElement("img");
-        editIcon.src = "./assets/icons-addtask/Property 1=edit.png";
-        editIcon.alt = "Edit";
-        editIcon.addEventListener("click", () => startEditSubtaskMode(task, li, span, index));
-
-        const deleteIcon = document.createElement("img");
-        deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
-        deleteIcon.alt = "Delete";
-
-        deleteIcon.addEventListener("click", async () => {
-            task.subtasks.items.splice(index, 1);
-            task.subtasks.total = task.subtasks.items.length;
-            task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
-            
-            await updateTask(task.id, { subtasks: task.subtasks });
-            renderEditSubtasks(task);
-        });
-
-        const iconsDiv = document.createElement("div");
-        iconsDiv.className = "subtask-icons";
-        iconsDiv.appendChild(editIcon);
-        iconsDiv.appendChild(deleteIcon);
-
-        li.appendChild(span);
-        li.appendChild(iconsDiv);
-
-        list.appendChild(li);
-    });
+/**
+ * Collects main edit mode elements.
+ * 
+ * @returns {Object} - DOM elements
+ */
+function getEditModeElements() {
+    return {
+        view: document.getElementById("task-view"),
+        edit: document.getElementById("task-edit"),
+        editForm: document.getElementById("edit-form-fields"),
+    };
 }
 
-function startEditSubtaskMode(task, li, span, index) {
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = span.textContent;
-    input.className = "subtask-edit-input";
+// ===================== ELEMENT COLLECTION =====================
 
-    const saveIcon = document.createElement("img");
-    saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
-    saveIcon.alt = "Save";
+/**
+ * Collects main edit mode elements.
+ */
+function getEditModeElements() {
+    return {
+        view: document.getElementById("task-view"),
+        edit: document.getElementById("task-edit"),
+        editForm: document.getElementById("edit-form-fields"),
+    };
+}
 
-    saveIcon.addEventListener("click", async () => {
-        const newText = input.value.trim();
-        if (newText) {
-            task.subtasks.items[index].title = newText;
-            task.subtasks.total = task.subtasks.items.length;
-            task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
-            
-            await updateTask(task.id, { subtasks: task.subtasks });
-            renderEditSubtasks(task);
-        }
+// ===================== DUE DATE HANDLING =====================
+
+/**
+ * Sets up the due date input focus behavior.
+ */
+function setupDueDateHandling() {
+    let input = document.getElementById("edit-due-date-input");
+    let container = document.getElementById("edit-due-date-container");
+    if (!input || !container) return;
+
+    container.addEventListener("click", (e) => {
+        if (e.target === input) return;
+        input.focus();
+        input.click();
     });
-
-    const cancelIcon = document.createElement("img");
-    cancelIcon.src = "./assets/icons-addtask/Subtask cancel.png";
-    cancelIcon.alt = "Cancel";
-    cancelIcon.addEventListener("click", () => {
-        renderEditSubtasks(task);
-    });
-
-    const iconsDiv = document.createElement("div");
-    iconsDiv.className = "subtask-icons";
-    iconsDiv.appendChild(saveIcon);
-    iconsDiv.appendChild(cancelIcon);
-
-    li.innerHTML = "";
-    li.appendChild(input);
-    li.appendChild(iconsDiv);
-
-    input.focus();
 }
 
 // ===================== ASSIGNED USERS DROPDOWN =====================
 
-async function renderAssignedDropdownOverlay(task) {
-    const dropdown = document.getElementById("edit-assigned-dropdown");
-    if (!dropdown) return;
-
-    dropdown.innerHTML = "";
-
-    if (!task.assignedUsersFull) task.assignedUsersFull = [];
-
-    users.forEach(user => {
-        const initiallySelected = task.assignedUsersFull.some(u => u.id === user.id);
-
-        const item = document.createElement("div");
-        item.className = "dropdown-item";
-        if (initiallySelected) item.classList.add("selected");
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "assigned-wrapper";
-
-        const avatar = document.createElement("div");
-        avatar.className = "dropdown-avatar";
-        avatar.textContent = user.initials;
-        avatar.style.backgroundColor = user.color;
-
-        const label = document.createElement("span");
-        label.textContent = user.name;
-
-        wrapper.appendChild(avatar);
-        wrapper.appendChild(label);
-
-        const checkboxWrapper = document.createElement("div");
-        checkboxWrapper.className = "checkbox-wrapper";
-
-        const defaultIcon = document.createElement("img");
-        defaultIcon.className = "checkbox-default";
-        defaultIcon.src = "./assets/icons-addtask/Property 1=Default.png";
-        defaultIcon.alt = "unchecked";
-
-        const checkedIcon = document.createElement("img");
-        checkedIcon.className = "checkbox-checked";
-        checkedIcon.src = "./assets/icons-addtask/Property 1=checked.svg";
-        checkedIcon.alt = "checked";
-
-        defaultIcon.style.display = initiallySelected ? "none" : "block";
-        checkedIcon.style.display = initiallySelected ? "block" : "none";
-
-        checkboxWrapper.appendChild(defaultIcon);
-        checkboxWrapper.appendChild(checkedIcon);
-
-        item.appendChild(wrapper);
-        item.appendChild(checkboxWrapper);
-
-        item.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const nowSelected = item.classList.toggle("selected");
-
-            if (nowSelected) {
-                if (!task.assignedUsersFull.some(u => u.id === user.id)) {
-                    task.assignedUsersFull.push({
-                        id: user.id,
-                        name: user.name,
-                        initials: user.initials,
-                        color: user.color
-                    });
-                }
-                defaultIcon.style.display = "none";
-                checkedIcon.style.display = "block";
-            } else {
-                task.assignedUsersFull = task.assignedUsersFull.filter(u => u.id !== user.id);
-                defaultIcon.style.display = "block";
-                checkedIcon.style.display = "none";
-            }
-
-            renderAvatars(task);
-        });
-
-        dropdown.appendChild(item);
-    });
-
-    renderAvatars(task);
+/**
+ * Initializes the assigned users dropdown.
+ * 
+ * @param {Object} task - Current task
+ */
+function setupAssignedUsersDropdown(task) {
+    let elems = getAssignedDropdownElements();
+    if (!elems.dropdown) return;
+    attachDropdownEvents(elems);
 }
 
-// ===================== ADD SUBTASK =====================
-
-async function addSubtask(taskId, title) {
-    if (!taskId || !title) return;
-
-    try {
-        const task = getTasks().find(t => t.id === taskId);
-        if (!task) {
-            console.error('Task nicht gefunden:', taskId);
-            return;
-        }
-
-        if (!task.subtasks) {
-            task.subtasks = { items: [], total: 0, completed: 0 };
-        }
-        if (!Array.isArray(task.subtasks.items)) {
-            task.subtasks.items = [];
-        }
-
-        task.subtasks.items.push({ title, done: false });
-        task.subtasks.total = task.subtasks.items.length;
-        task.subtasks.completed = task.subtasks.items.filter(st => st.done).length;
-
-        await updateTask(taskId, {
-            subtasks: {
-                items: task.subtasks.items,
-                total: task.subtasks.total,
-                completed: task.subtasks.completed
-            }
-        });
-
-        renderBoard();
-    } catch (error) {
-        console.error("Fehler beim Hinzufügen der Subtask:", error);
-        throw error;
-    }
+/**
+ * Collects dropdown DOM elements.
+ */
+function getAssignedDropdownElements() {
+    return {
+        placeholder: document.getElementById("edit-assigned-placeholder"),
+        input: document.getElementById("edit-assigned-input"),
+        arrow: document.getElementById("edit-assigned-arrow"),
+        dropdown: document.getElementById("edit-assigned-dropdown"),
+    };
 }
 
-// ===================== AVATARS RENDERING =====================
+/**
+ * Attaches events to the dropdown elements.
+ * 
+ * @param {Object} elems - Dropdown elements
+ */
+function attachDropdownEvents({ placeholder, input, arrow, dropdown }) {
+    let open = () => { dropdown.classList.remove("hidden"); input.style.display = "inline"; placeholder.style.display = "none"; arrow.src = "./assets/icons-addtask/arrow_drop_down_up.png"; input.focus(); };
+    let close = () => { dropdown.classList.add("hidden"); input.style.display = "none"; placeholder.style.display = "block"; arrow.src = "./assets/icons-addtask/arrow_drop_down.png"; input.value = ""; };
 
-function renderAvatars(task) {
-    const avatarsContainer = document.getElementById("edit-avatars-container");
-    if (!avatarsContainer) return;
+    placeholder?.addEventListener("click", e => { e.stopPropagation(); open(); });
+    arrow?.addEventListener("click", e => { e.stopPropagation(); dropdown.classList.contains("hidden") ? open() : close(); });
+    input?.addEventListener("input", () => filterDropdown(input, dropdown));
+    input?.addEventListener("click", e => { e.stopPropagation(); dropdown.classList.contains("hidden") ? open() : close(); });
+    document.addEventListener("click", e => { if (!dropdown.contains(e.target) && e.target !== input && e.target !== placeholder && e.target !== arrow) close(); });
+}
 
-    avatarsContainer.innerHTML = "";
-
-    (task.assignedUsersFull || []).forEach(user => {
-        const avatarDiv = document.createElement("div");
-        avatarDiv.className = "selected-avatar";
-        avatarDiv.textContent = user.initials;
-        avatarDiv.style.backgroundColor = user.color;
-        avatarDiv.dataset.id = user.id;
-        avatarDiv.dataset.fullname = user.name;
-        avatarDiv.dataset.color = user.color;
-        avatarDiv.dataset.initials = user.initials;
-
-        avatarsContainer.appendChild(avatarDiv);
+/**
+ * Filters dropdown items based on input.
+ * 
+ * @param {HTMLElement} input
+ * @param {HTMLElement} dropdown
+ */
+function filterDropdown(input, dropdown) {
+    let filter = input.value.toLowerCase();
+    Array.from(dropdown.children).forEach(div => {
+        let nameEl = div.querySelector("span");
+        div.style.display = (nameEl && nameEl.textContent.toLowerCase().includes(filter)) ? "flex" : "none";
     });
+}
+
+// ===================== SUBTASK HANDLING =====================
+
+/**
+ * Sets up the subtask input and buttons.
+ * 
+ * @param {Object} task - Current task
+ */
+function setupSubtaskHandling(task) {
+    let elems = getSubtaskElements();
+    if (!elems.subtaskInput || !elems.editCancelBtn || !elems.editCheckBtn) return;
+
+    attachSubtaskInputEvents(elems);
+    attachSubtaskButtonEvents(elems, task);
+}
+
+/**
+ * Collects subtask DOM elements.
+ */
+function getSubtaskElements() {
+    return {
+        subtaskInput: document.getElementById("edit-subtask-input"),
+        editCancelBtn: document.getElementById("edit-subtask-cancel"),
+        editCheckBtn: document.getElementById("edit-subtask-check"),
+    };
+}
+
+/**
+ * Attaches input event to subtask input.
+ * 
+ * @param {Object} elems - Subtask elements
+ */
+function attachSubtaskInputEvents({ subtaskInput, editCancelBtn, editCheckBtn }) {
+    subtaskInput.addEventListener("input", () => {
+        let hasText = subtaskInput.value.trim().length > 0;
+        editCancelBtn.style.display = hasText ? "inline-block" : "none";
+        editCheckBtn.style.display = hasText ? "inline-block" : "none";
+    });
+}
+
+/**
+ * Attaches click events to subtask buttons.
+ * 
+ * @param {Object} elems - Subtask elements
+ * @param {Object} task - Current task
+ */
+function attachSubtaskButtonEvents({ subtaskInput, editCancelBtn, editCheckBtn }, task) {
+    editCancelBtn.addEventListener("click", () => { subtaskInput.value = ""; editCancelBtn.style.display = "none"; editCheckBtn.style.display = "none"; });
+    editCheckBtn.addEventListener("click", async () => {
+        let text = subtaskInput.value.trim(); if (!text) return;
+        await addSubtask(task.id, text);
+        renderEditSubtasks(task);
+        subtaskInput.value = ""; editCancelBtn.style.display = "none"; editCheckBtn.style.display = "none";
+    });
+}
+
+// ===================== PRIORITY BUTTONS =====================
+
+/**
+ * Sets up priority buttons and their click behavior.
+ * 
+ * @param {Object} task - Current task
+ * @param {string} priority - Current priority
+ */
+function setupPriorityButtons(task, priority) {
+    let buttons = document.querySelectorAll("#edit-priority-buttons .priority-frame");
+    buttons.forEach(btn => {
+        if (btn.dataset.priority.toLowerCase() === priority) btn.classList.add("active");
+        btn.addEventListener("click", () => {
+            buttons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            task.priority = btn.dataset.priority;
+        });
+    });
+}
+// ===================== SAVE BUTTON =====================
+
+/**
+ * Sets up the save button for updating the task.
+ * 
+ * @param {Object} task - Current task
+ */
+function setupSaveButton(task) {
+    let elems = getSaveButtonElements();
+    if (!elems.saveBtn) return;
+    attachSaveButtonClick(elems, task);
+}
+
+/**
+ * Collects save button DOM elements.
+ */
+function getSaveButtonElements() {
+    return {
+        saveBtn: document.getElementById("save-task"),
+        dropdown: document.getElementById("edit-assigned-dropdown"),
+    };
+}
+
+/**
+ * Attaches click event to the save button.
+ * Delegates to gather inputs and persist changes.
+ * 
+ * @param {Object} elems - Save button and dropdown
+ * @param {Object} task - Current task
+ */
+function attachSaveButtonClick({ saveBtn, dropdown }, task) {
+    saveBtn.onclick = async () => {
+        if (!currentTask) return;
+        gatherTaskInputValues();
+        dropdown?.classList.add("hidden");
+        try {
+            await persistTaskChanges(currentTask);
+        } catch (err) {
+            console.error('Error updating task:', err);
+        }
+    };
+}
+
+/**
+ * Reads input fields and updates the currentTask object.
+ */
+function gatherTaskInputValues() {
+    let titleInput = document.getElementById("edit-title-input");
+    let descInput = document.getElementById("edit-description-input");
+    let dueDateInput = document.getElementById("edit-due-date-input");
+
+    if (titleInput) currentTask.title = titleInput.value;
+    if (descInput) currentTask.description = descInput.value;
+    currentTask.priority = currentTask.priority || "medium";
+    if (dueDateInput && dueDateInput.value) currentTask.dueDate = dueDateInput.value;
+}
+
+/**
+ * Persists the current task changes to the backend and updates the UI.
+ * 
+ * @param {Object} task - Task to update
+ */
+async function persistTaskChanges(task) {
+    await updateTask(task.id, {
+        title: task.title,
+        description: task.description,
+        priority: task.priority,
+        dueDate: task.dueDate,
+        assignedUsersFull: task.assignedUsersFull
+    });
+
+    let idx = tasks.findIndex(t => t.id === task.id);
+    if (idx > -1) Object.assign(tasks[idx], task);
+
+    openTaskDetails(task);
+    renderBoard();
 }
