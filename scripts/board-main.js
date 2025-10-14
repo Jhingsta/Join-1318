@@ -3,6 +3,7 @@ let tasks = [];
 let users = [];
 let currentNewTask = null;
 let currentTask = null;
+const addButtons = document.querySelectorAll('.svg-button');
 
 // ===================== TEMPLATE INJECTION =====================
 document.body.insertAdjacentHTML("beforeend", addtaskModal());
@@ -105,7 +106,7 @@ function readableStatus(status) {
 function populateDropdown() {
     const assignedDropdown = document.getElementById('add-assigned-dropdown');
     const selectedAvatarsContainer = document.getElementById('add-selected-avatars-container');
-    
+
     if (!assignedDropdown) {
         console.warn('populateDropdown: #add-assigned-dropdown nicht gefunden.');
         return;
@@ -189,11 +190,11 @@ function populateDropdown() {
 function updateSelectedAvatars() {
     const assignedDropdown = document.getElementById('add-assigned-dropdown');
     const selectedAvatarsContainer = document.getElementById('add-selected-avatars-container');
-    
+
     if (!assignedDropdown || !selectedAvatarsContainer) return;
-    
+
     selectedAvatarsContainer.innerHTML = "";
-    
+
     const selected = users.filter((u, i) => {
         const dropdownItem = assignedDropdown.children[i];
         if (!dropdownItem) return false;
@@ -209,7 +210,7 @@ function updateSelectedAvatars() {
         a.style.backgroundColor = user.color;
         selectedAvatarsContainer.appendChild(a);
     });
-    
+
     selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
 }
 
@@ -237,11 +238,11 @@ function formatDateForDisplay(isoDate) {
 function updateDisplay() {
     const dueDateInput = document.getElementById('add-due-date-input');
     const dueDateDisplay = document.getElementById('add-due-date-display');
-    
+
     if (!dueDateInput || !dueDateDisplay) return;
-    
+
     const isoDate = dueDateInput.value;
-    
+
     if (isoDate) {
         dueDateDisplay.textContent = formatDateForDisplay(isoDate);
         dueDateDisplay.classList.add("has-value");
@@ -254,7 +255,7 @@ function updateDisplay() {
 function openDatepicker() {
     const dueDateInput = document.getElementById('add-due-date-input');
     if (!dueDateInput) return;
-    
+
     if (dueDateInput.showPicker) {
         dueDateInput.showPicker();
     } else {
@@ -268,4 +269,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadUsers();
     await loadTasksForBoard();
     renderBoard();
+});
+
+
+// ======= STEP 1: Init Add-Buttons so new task opens in the right column =======
+
+function initAddTaskButtons() {
+    addButtons.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            const column = btn.closest('.task-column');
+            const statusFromColumn = column?.dataset?.status;
+            const statusFromButton = btn.dataset?.status;
+            const status = statusFromColumn || statusFromButton || 'todo';
+
+            currentNewTask = currentNewTask || {};
+            currentNewTask.status = status;
+
+            const globalAddBtn = document.getElementById('add-task-btn');
+            if (globalAddBtn) {
+                globalAddBtn.click();
+            } else {
+                const evt = new CustomEvent('openAddTaskModal', { detail: { status } });
+                document.dispatchEvent(evt);
+            }
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadUsers();
+    await loadTasksForBoard();
+    renderBoard();
+    initAddTaskButtons();
 });
