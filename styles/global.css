@@ -105,6 +105,10 @@ button, input, select, textarea {
     display: none !important;
 }
 
+body:has(.lottie-background.active) {
+    overflow: hidden !important;
+}
+
 @media (min-width: 701px) and (max-width: 1024px) {
     .lottie-background.active,
     .lottie-background.active .lottie-animation {

@@ -72,8 +72,13 @@ function activateNavItems(selector, activeClass, currentPage) {
   });
 }
 
+// ===================== ANIMATION LANDSCAPE MODUS =====================
+
 let lottieScriptLoaded = false;
 
+/**
+ * Dynamically loads the Lottie web component script if not already loaded.
+ */
 function loadLottieScript() {
   return new Promise((resolve) => {
     if (lottieScriptLoaded) {
@@ -92,28 +97,54 @@ function loadLottieScript() {
   });
 }
 
-function updateAriaForLandscapeOverlay() {
-  const overlay = document.getElementById('landscape-overlay');
-  const pageRoot = document.getElementById('page-root');
-  const status = document.getElementById('landscape-status');
+/**
+ * Checks if the device is currently in landscape mode (specific width range).
+ */
+function isLandscapeMode() {
+  return window.matchMedia('(min-width: 701px) and (max-width: 1024px)').matches;
+}
 
+/**
+ * Activates the landscape overlay, updates ARIA attributes and status text, and loads Lottie.
+ */
+function showLandscapeOverlay() {
+  let overlay = document.getElementById('landscape-overlay');
+  let pageRoot = document.getElementById('page-root');
+  let status = document.getElementById('landscape-status');
   if (!overlay || !pageRoot || !status) return;
 
-  const isLandscape = window.matchMedia('(min-width: 701px) and (max-width: 1024px)').matches;
+  overlay.setAttribute('aria-hidden', 'false');
+  pageRoot.setAttribute('aria-hidden', 'true');
+  status.textContent = 'Landscape mode activated. Please rotate your device.';
+  overlay.classList.add('active');
 
-  if (isLandscape) {
-    overlay.setAttribute('aria-hidden', 'false');
-    pageRoot.setAttribute('aria-hidden', 'true');
-    status.textContent = 'Landscape mode activated. Please rotate your device.';
-    overlay.classList.add('active');
-    
-    loadLottieScript();
-    
+  loadLottieScript();
+}
+
+/**
+ * Deactivates the landscape overlay and restores ARIA attributes and status text.
+ */
+function hideLandscapeOverlay() {
+  let overlay = document.getElementById('landscape-overlay');
+  let pageRoot = document.getElementById('page-root');
+  let status = document.getElementById('landscape-status');
+  if (!overlay || !pageRoot || !status) return;
+
+  overlay.setAttribute('aria-hidden', 'true');
+  pageRoot.setAttribute('aria-hidden', 'false');
+  status.textContent = 'Back to normal view.';
+  overlay.classList.remove('active');
+}
+
+/**
+ * Updates ARIA attributes and UI for landscape mode based on current screen width.
+ * Delegates to show or hide overlay functions.
+ */
+function updateAriaForLandscapeOverlay() {
+  if (isLandscapeMode()) {
+    showLandscapeOverlay();
   } else {
-    overlay.setAttribute('aria-hidden', 'true');
-    pageRoot.setAttribute('aria-hidden', 'false');
-    status.textContent = 'Back to normal view.';
-    overlay.classList.remove('active');
+    hideLandscapeOverlay();
   }
 }
 
