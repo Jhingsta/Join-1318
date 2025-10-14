@@ -147,7 +147,7 @@
                         <div class="column-header">
                             <div class="title-text">In progress</div>
                             <div class="title-img">
-                                <button class="svg-button" aria-label="Add task to 'In progress'">
+                                <button class="svg-button" data-status="inProgress" aria-label="Add task to 'In progress'">
                                     <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                                         width="24" height="24">
                                         <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF" stroke-width="2"
@@ -176,75 +176,13 @@
                                 </button>
                             </div>
                         </div>
-                        <!-- Done -->
-                        <div class="task-header-title">
-                            <div class="title-text">Done</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Tablet/Mobile -->
-            <section class="bottom" id="board-columns">
-                <!-- To do -->
-                <div class="task-column" data-status="todo" aria-labelledby="todo-title">
-                    <div class="column-header">
-                        <div class="title-text">To do</div>
-                        <div class="title-img">
-                            <button class="svg-button" data-status="todo" aria-label="Add task to 'To do'">
-                                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                    width="24" height="24">
-                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF" stroke-width="2"
-                                        fill="none" />
-                                    <path d="M12 8v8M16 12H8" stroke="#4589FF" stroke-width="2"
-                                        stroke-linecap="round" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="tasks" id="column-todo" role="list"></div>
-                </div>
-                <!-- In progress -->
-                <div class="task-column" data-status="inProgress" aria-labelledby="inProgress-title">
-                    <div class="column-header">
-                        <div class="title-text">In progress</div>
-                        <div class="title-img">
-                            <button class="svg-button" data-status="inProgress" aria-label="Add task to 'In progress'">
-                                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                    width="24" height="24">
-                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF" stroke-width="2"
-                                        fill="none" />
-                                    <path d="M12 8v8M16 12H8" stroke="#4589FF" stroke-width="2"
-                                        stroke-linecap="round" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="tasks" id="column-inProgress" role="list"></div>
-                </div>
-                <!-- Await feedback -->
-                <div class="task-column" data-status="awaitFeedback" aria-labelledby="awaitFeedback-title">
-                    <div class="column-header">
-                        <div class="title-text">Await feedback</div>
-                        <div class="title-img">
-                            <button class="svg-button" data-status="awaitFeedback" aria-label="Add task to 'Await feedback'">
-                                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                    width="24" height="24">
-                                    <rect x="1" y="1" width="22" height="22" rx="7" stroke="#4589FF" stroke-width="2"
-                                        fill="none" />
-                                    <path d="M12 8v8M16 12H8" stroke="#4589FF" stroke-width="2"
-                                        stroke-linecap="round" />
-                                </svg>
-                            </button>
-                          </div>
-                      </div>
-                          <div class="tasks" id="column-awaitFeedback" role="list"></div>
+                        <div class="tasks" id="column-awaitFeedback" role="list"></div>
                     </div>
                     <!-- Done -->
-                    <div class="task-column" data-status="done" aria-labelledby="done-title">
+                    <div class="task-column" aria-labelledby="done-title">
                         <div class="column-header">
                             <div class="title-text">Done</div>
-                      </div>
+                        </div>
                         <div class="tasks" id="column-done" role="list"></div>
                     </div>
                 </section>
@@ -275,7 +213,7 @@
         });
     </script>
     <script src="./scripts/tasks-crud.js"></script>
-    <script src="./scripts/board-templates.js"></script>
+    <script src="./templates/board-templates.js"></script>
     <script src="./scripts/board-main.js"></script>
     <script src="./scripts/board-taskcard.js"></script>
     <script src="./scripts/board-detail-modal.js"></script>
