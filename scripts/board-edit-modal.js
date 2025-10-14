@@ -2,27 +2,26 @@
 
 /**
  * Opens the edit mode for a given task.
- * Coordinates all setup functions.
+ * Delegates initialization and feature setup.
  * 
- * @param {Object} task - The task object to edit
+ * @param {Object} task - Task to edit
  */
 async function openEditMode(task) {
-    const elements = await initializeEditMode(task);
-    if (!elements) return; // Abbruch, wenn Elemente fehlen
+    let elements = await initializeEditMode(task);
+    if (!elements) return;
 
     setupEditModeFeatures(task, elements);
 }
 
 /**
- * Initializes the edit mode: loads users, prepares DOM elements, renders template
+ * Initializes the edit mode: loads users, prepares DOM, renders template.
  * 
- * @param {Object} task
- * @returns {Object|null} DOM elements or null if missing
+ * @param {Object} task - Task to edit
  */
 async function initializeEditMode(task) {
     if (users.length === 0) await loadUsers();
 
-    const elements = getEditModeElements();
+    let elements = getEditModeElements();
     if (!elements.view || !elements.edit || !elements.editForm) {
         console.error('Edit modal elements not found');
         return null;
@@ -36,10 +35,10 @@ async function initializeEditMode(task) {
 }
 
 /**
- * Sets up all interactive features for the edit mode.
+ * Sets up all interactive features of the edit mode.
  * 
- * @param {Object} task
- * @param {Object} elements - DOM elements
+ * @param {Object} task - Task to edit
+ * @param {Object} elements - Collected DOM elements
  */
 function setupEditModeFeatures(task, elements) {
     setupDueDateHandling();
@@ -51,6 +50,19 @@ function setupEditModeFeatures(task, elements) {
 
     renderAssignedDropdownOverlay(task).then(() => renderEditSubtasks(task));
     setupSaveButton(task);
+}
+
+/**
+ * Collects main edit mode elements.
+ * 
+ * @returns {Object} - DOM elements
+ */
+function getEditModeElements() {
+    return {
+        view: document.getElementById("task-view"),
+        edit: document.getElementById("task-edit"),
+        editForm: document.getElementById("edit-form-fields"),
+    };
 }
 
 // ===================== ELEMENT COLLECTION =====================
@@ -72,8 +84,8 @@ function getEditModeElements() {
  * Sets up the due date input focus behavior.
  */
 function setupDueDateHandling() {
-    const input = document.getElementById("edit-due-date-input");
-    const container = document.getElementById("edit-due-date-container");
+    let input = document.getElementById("edit-due-date-input");
+    let container = document.getElementById("edit-due-date-container");
     if (!input || !container) return;
 
     container.addEventListener("click", (e) => {
@@ -91,7 +103,7 @@ function setupDueDateHandling() {
  * @param {Object} task - Current task
  */
 function setupAssignedUsersDropdown(task) {
-    const elems = getAssignedDropdownElements();
+    let elems = getAssignedDropdownElements();
     if (!elems.dropdown) return;
     attachDropdownEvents(elems);
 }
@@ -114,8 +126,8 @@ function getAssignedDropdownElements() {
  * @param {Object} elems - Dropdown elements
  */
 function attachDropdownEvents({ placeholder, input, arrow, dropdown }) {
-    const open = () => { dropdown.classList.remove("hidden"); input.style.display = "inline"; placeholder.style.display = "none"; arrow.src = "./assets/icons-addtask/arrow_drop_down_up.png"; input.focus(); };
-    const close = () => { dropdown.classList.add("hidden"); input.style.display = "none"; placeholder.style.display = "block"; arrow.src = "./assets/icons-addtask/arrow_drop_down.png"; input.value = ""; };
+    let open = () => { dropdown.classList.remove("hidden"); input.style.display = "inline"; placeholder.style.display = "none"; arrow.src = "./assets/icons-addtask/arrow_drop_down_up.png"; input.focus(); };
+    let close = () => { dropdown.classList.add("hidden"); input.style.display = "none"; placeholder.style.display = "block"; arrow.src = "./assets/icons-addtask/arrow_drop_down.png"; input.value = ""; };
 
     placeholder?.addEventListener("click", e => { e.stopPropagation(); open(); });
     arrow?.addEventListener("click", e => { e.stopPropagation(); dropdown.classList.contains("hidden") ? open() : close(); });
@@ -131,9 +143,9 @@ function attachDropdownEvents({ placeholder, input, arrow, dropdown }) {
  * @param {HTMLElement} dropdown
  */
 function filterDropdown(input, dropdown) {
-    const filter = input.value.toLowerCase();
+    let filter = input.value.toLowerCase();
     Array.from(dropdown.children).forEach(div => {
-        const nameEl = div.querySelector("span");
+        let nameEl = div.querySelector("span");
         div.style.display = (nameEl && nameEl.textContent.toLowerCase().includes(filter)) ? "flex" : "none";
     });
 }
@@ -146,7 +158,7 @@ function filterDropdown(input, dropdown) {
  * @param {Object} task - Current task
  */
 function setupSubtaskHandling(task) {
-    const elems = getSubtaskElements();
+    let elems = getSubtaskElements();
     if (!elems.subtaskInput || !elems.editCancelBtn || !elems.editCheckBtn) return;
 
     attachSubtaskInputEvents(elems);
@@ -171,7 +183,7 @@ function getSubtaskElements() {
  */
 function attachSubtaskInputEvents({ subtaskInput, editCancelBtn, editCheckBtn }) {
     subtaskInput.addEventListener("input", () => {
-        const hasText = subtaskInput.value.trim().length > 0;
+        let hasText = subtaskInput.value.trim().length > 0;
         editCancelBtn.style.display = hasText ? "inline-block" : "none";
         editCheckBtn.style.display = hasText ? "inline-block" : "none";
     });
@@ -186,7 +198,7 @@ function attachSubtaskInputEvents({ subtaskInput, editCancelBtn, editCheckBtn })
 function attachSubtaskButtonEvents({ subtaskInput, editCancelBtn, editCheckBtn }, task) {
     editCancelBtn.addEventListener("click", () => { subtaskInput.value = ""; editCancelBtn.style.display = "none"; editCheckBtn.style.display = "none"; });
     editCheckBtn.addEventListener("click", async () => {
-        const text = subtaskInput.value.trim(); if (!text) return;
+        let text = subtaskInput.value.trim(); if (!text) return;
         await addSubtask(task.id, text);
         renderEditSubtasks(task);
         subtaskInput.value = ""; editCancelBtn.style.display = "none"; editCheckBtn.style.display = "none";
@@ -202,7 +214,7 @@ function attachSubtaskButtonEvents({ subtaskInput, editCancelBtn, editCheckBtn }
  * @param {string} priority - Current priority
  */
 function setupPriorityButtons(task, priority) {
-    const buttons = document.querySelectorAll("#edit-priority-buttons .priority-frame");
+    let buttons = document.querySelectorAll("#edit-priority-buttons .priority-frame");
     buttons.forEach(btn => {
         if (btn.dataset.priority.toLowerCase() === priority) btn.classList.add("active");
         btn.addEventListener("click", () => {
@@ -220,7 +232,7 @@ function setupPriorityButtons(task, priority) {
  * @param {Object} task - Current task
  */
 function setupSaveButton(task) {
-    const elems = getSaveButtonElements();
+    let elems = getSaveButtonElements();
     if (!elems.saveBtn) return;
     attachSaveButtonClick(elems, task);
 }
@@ -259,9 +271,9 @@ function attachSaveButtonClick({ saveBtn, dropdown }, task) {
  * Reads input fields and updates the currentTask object.
  */
 function gatherTaskInputValues() {
-    const titleInput = document.getElementById("edit-title-input");
-    const descInput = document.getElementById("edit-description-input");
-    const dueDateInput = document.getElementById("edit-due-date-input");
+    let titleInput = document.getElementById("edit-title-input");
+    let descInput = document.getElementById("edit-description-input");
+    let dueDateInput = document.getElementById("edit-due-date-input");
 
     if (titleInput) currentTask.title = titleInput.value;
     if (descInput) currentTask.description = descInput.value;
@@ -283,7 +295,7 @@ async function persistTaskChanges(task) {
         assignedUsersFull: task.assignedUsersFull
     });
 
-    const idx = tasks.findIndex(t => t.id === task.id);
+    let idx = tasks.findIndex(t => t.id === task.id);
     if (idx > -1) Object.assign(tasks[idx], task);
 
     openTaskDetails(task);
