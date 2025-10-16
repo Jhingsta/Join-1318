@@ -439,7 +439,6 @@ function handleAddTaskButtonClick(btn) {
     let statusFromButton = btn.dataset?.status;
     let status = statusFromColumn || statusFromButton || 'todo';
 
-    // 👉 Responsive check
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
     if (isMobile) {
@@ -447,7 +446,6 @@ function handleAddTaskButtonClick(btn) {
         return;
     }
 
-    // Desktop: open modal
     currentNewTask = currentNewTask || {};
     currentNewTask.status = status;
 
