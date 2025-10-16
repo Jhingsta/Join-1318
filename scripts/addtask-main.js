@@ -1,6 +1,4 @@
-/* ================================================
-   TASK CREATION & UI LOGIC SCRIPT
-   ================================================ */
+/* ---TASK CREATION & UI LOGIC SCRIPT---*/
 
 /* ---------- GLOBAL VARIABLES ---------- */
 const categories = ["Technical Task", "User Story"];
@@ -20,10 +18,9 @@ const assignedContent = document.querySelector('.assigned-content');
 const assignedTextContainer = assignedContent.querySelector('.assigned-text-container');
 const assignedText = assignedTextContainer.querySelector('.assigned-text');
 const assignedInput = assignedContent.querySelector('.assigned-input');
-const arrowContainer = document.querySelector('.assigned-content');
+const arrowIcon = assignedContent.querySelector('img'); // Arrow direkt aus assignedContent
 const assignedDropdown = document.getElementById('assigned-dropdown');
 const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
-const arrowIcon = arrowContainer.querySelector('img');
 
 const categoryContent = document.querySelector('.category-content');
 const categoryText = categoryContent.querySelector('.assigned-text');
@@ -37,36 +34,23 @@ const subtaskList = document.querySelector("#subtask-list");
 const buttons = document.querySelectorAll(".priority-frame");
 const createBtn = document.getElementById('create-btn');
 
-
-/* ================================================
-   TITLE VALIDATION
-   ================================================ */
-/**
- * Validates the title input field.
- * Shows an error and red border if empty, otherwise hides error.
- */
+/* ---TITLE VALIDATION---*/
+/*** Shows an error and red border if empty, otherwise hides error.*/
 function handleTitleValidation() {
     const isEmpty = !titleInput.value.trim();
     titleInput.style.borderBottom = isEmpty ? "1px solid #FF4D4D" : "1px solid #D1D1D1";
     titleError.style.display = isEmpty ? "block" : "none";
 }
 
-
-/* ================================================
-   DUE DATE HANDLING
-   ================================================ */
-/**
- * Converts ISO date (YYYY-MM-DD) to display format (DD/MM/YYYY)
- */
+/* ---DUE DATE HANDLING---*/
+/*** Converts ISO date (YYYY-MM-DD) to display format (DD/MM/YYYY)*/
 function formatDateForDisplay(isoDate) {
     if (!isoDate) return "";
     const [year, month, day] = isoDate.split("-");
     return `${day}/${month}/${year}`;
 }
 
-/**
- * Validates due date input and updates displayed date format.
- */
+/*** Validates due date input and updates displayed date format.*/
 function handleDueDateValidation() {
     const hasValue = dueDateInput.value.trim();
     dueDateDisplay.textContent = hasValue ? formatDateForDisplay(dueDateInput.value) : "dd/mm/yyyy";
@@ -78,9 +62,7 @@ function handleDueDateValidation() {
 dueDateInput.addEventListener("input", handleDueDateValidation);
 dueDateInput.addEventListener("blur", handleDueDateValidation);
 
-/**
- * Opens the native date picker when clicking icon or container.
- */
+/*** Opens the native date picker when clicking icon or container. */
 function openDatepicker() {
     if (dueDateInput.showPicker) dueDateInput.showPicker();
     else dueDateInput.click();
@@ -88,13 +70,8 @@ function openDatepicker() {
 dueDateIcon.addEventListener("click", openDatepicker);
 dueDateContainer.addEventListener("click", openDatepicker);
 
-
-/* ================================================
-   PRIORITY BUTTON SELECTION
-   ================================================ */
-/**
- * Handles active state toggle between priority buttons.
- */
+/* ---PRIORITY BUTTON SELECTION---*/
+/*** Handles active state toggle between priority buttons. */
 buttons.forEach((btn) => {
     btn.addEventListener("click", () => {
         buttons.forEach(b => b.classList.remove("active"));
@@ -102,30 +79,21 @@ buttons.forEach((btn) => {
     });
 });
 
-
-/* ================================================
-   ASSIGN USERS DROPDOWN
-   ================================================ */
-/**
- * Toggles visibility of user dropdown on arrow click.
- */
-arrowContainer.addEventListener('click', (event) => {
+/* ---ASSIGN USERS DROPDOWN--- */
+/*** Toggles visibility of user dropdown on arrow click. */
+assignedContent.addEventListener('click', (event) => {
     event.stopPropagation();
     assignedDropdown.classList.toggle('show');
 });
 
-/**
- * Closes dropdown if click happens outside.
- */
+/*** Closes dropdown if click happens outside. */
 document.addEventListener('click', (event) => {
-    if (!assignedDropdown.contains(event.target) && event.target !== arrowContainer) {
+    if (!assignedDropdown.contains(event.target) && event.target !== assignedContent) {
         assignedDropdown.style.display = 'none';
     }
 });
 
-/**
- * Fetches users from Firebase Realtime Database and populates dropdown.
- */
+/*** Fetches users from Firebase Realtime Database and populates dropdown. */
 async function loadUsers() {
     try {
         const res = await fetch("https://join-1318-default-rtdb.europe-west1.firebasedatabase.app/users.json");
@@ -139,15 +107,13 @@ async function loadUsers() {
     }
 }
 
-/**
- * Updates displayed avatars of selected users (max. 3 shown).
- */
+/*** Updates displayed avatars of selected users (max. 8 shown). */
 function updateSelectedAvatars() {
     selectedAvatarsContainer.innerHTML = "";
     const selected = users.filter((u, i) => {
         const img = assignedDropdown.children[i].querySelector('img');
         return img.src.includes("checked");
-    }).slice(0, 3);
+    }).slice(0, 8);
 
     selected.forEach(user => {
         const a = document.createElement('div');
@@ -159,9 +125,7 @@ function updateSelectedAvatars() {
     selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
 }
 
-/**
- * Creates a single dropdown item for a user.
- */
+/*** Creates a single dropdown item for a user. */
 function createUserDropdownItem(user) {
     const div = document.createElement('div');
     div.className = 'dropdown-item';
@@ -171,9 +135,7 @@ function createUserDropdownItem(user) {
     return div;
 }
 
-/**
- * Creates avatar and name wrapper for dropdown.
- */
+/*** Creates avatar and name wrapper for dropdown.*/
 function createAssignedWrapper(user) {
     const wrapper = document.createElement('div');
     wrapper.className = 'assigned-wrapper';
@@ -187,9 +149,7 @@ function createAssignedWrapper(user) {
     return wrapper;
 }
 
-/**
- * Creates clickable checkbox wrapper for each dropdown item.
- */
+/*** Creates clickable checkbox wrapper for each dropdown item.*/
 function createCheckboxWrapper(user) {
     const wrapper = document.createElement('div');
     wrapper.className = 'checkbox-wrapper';
@@ -202,9 +162,8 @@ function createCheckboxWrapper(user) {
     return wrapper;
 }
 
-/**
- * Toggles user selection and updates avatar display.
- */
+
+/*** Toggles user selection and updates avatar display.*/
 function toggleUserSelection(e, wrapper, checkbox) {
     e.stopPropagation();
     const isChecked = wrapper.classList.toggle('checked');
@@ -214,9 +173,7 @@ function toggleUserSelection(e, wrapper, checkbox) {
     updateSelectedAvatars();
 }
 
-/**
- * Populates dropdown with all loaded users.
- */
+/*** Populates dropdown with all loaded users. */
 function populateDropdown() {
     assignedDropdown.innerHTML = "";
     users.forEach(user => {
@@ -224,18 +181,14 @@ function populateDropdown() {
     });
 }
 
-/**
- * Handles dropdown toggle behavior.
- */
+/*** Handles dropdown toggle behavior.*/
 function toggleDropdown(e) {
     e.stopPropagation();
     const isOpen = assignedDropdown.classList.contains('open');
     isOpen ? closeAssignedDropdown() : openAssignedDropdown();
 }
 
-/**
- * Opens assigned users dropdown.
- */
+/*** Opens assigned users dropdown. */
 function openAssignedDropdown() {
     assignedDropdown.classList.add('open');
     assignedDropdown.style.display = 'block';
@@ -246,9 +199,7 @@ function openAssignedDropdown() {
     showAllCheckboxes();
 }
 
-/**
- * Closes assigned users dropdown.
- */
+/*** Closes assigned users dropdown.*/
 function closeAssignedDropdown() {
     assignedDropdown.classList.remove('open');
     assignedDropdown.style.display = 'none';
@@ -258,9 +209,7 @@ function closeAssignedDropdown() {
     assignedInput.value = '';
 }
 
-/**
- * Ensures all checkboxes are visible.
- */
+/*** Ensures all checkboxes are visible.*/
 function showAllCheckboxes() {
     Array.from(assignedDropdown.children).forEach(div => {
         div.querySelector('.checkbox-wrapper').style.display = 'flex';
@@ -269,13 +218,11 @@ function showAllCheckboxes() {
 
 // Event bindings for open/close dropdown
 assignedTextContainer.addEventListener('click', toggleDropdown);
-arrowContainer.addEventListener('click', toggleDropdown);
+assignedContent.addEventListener('click', toggleDropdown);
 
-/**
- * Closes dropdown when clicking outside of it.
- */
+/*** Closes dropdown when clicking outside of it.*/
 document.addEventListener('click', e => {
-    if (!assignedTextContainer.contains(e.target) && !arrowContainer.contains(e.target)) {
+    if (!assignedTextContainer.contains(e.target) && !assignedContent.contains(e.target)) {
         closeAssignedDropdown();
         Array.from(assignedDropdown.children).forEach(div => {
             const checkboxWrapper = div.querySelector('.checkbox-wrapper');
@@ -285,9 +232,7 @@ document.addEventListener('click', e => {
     }
 });
 
-/**
- * Filters users in dropdown as you type.
- */
+/*** Filters users in dropdown as you type. */
 assignedInput.addEventListener('input', () => {
     const filter = assignedInput.value.toLowerCase();
     Array.from(assignedDropdown.children).forEach(div => {
@@ -295,13 +240,9 @@ assignedInput.addEventListener('input', () => {
         div.style.display = name.includes(filter) ? 'flex' : 'none';
     });
 });
-
 loadUsers();
 
-
-/* ================================================
-   CATEGORY DROPDOWN
-   ================================================ */
+/* ---CATEGORY DROPDOWN--- */
 categoryDropdown.className = 'dropdown-menu';
 categories.forEach(cat => {
     const div = document.createElement('div');
@@ -316,9 +257,7 @@ categories.forEach(cat => {
 });
 categoryContent.appendChild(categoryDropdown);
 
-/**
- * Opens and closes the category dropdown.
- */
+/*** Opens and closes the category dropdown. */
 categoryContent.addEventListener('click', (e) => {
     e.stopPropagation();
     const isOpen = categoryDropdown.classList.contains('show');
@@ -328,137 +267,11 @@ categoryContent.addEventListener('click', (e) => {
         : '/assets/icons-addtask/arrow_drop_down.png';
 });
 
-/**
- * Closes category dropdown on outside click.
- */
+/*** Closes category dropdown on outside click.*/
 document.addEventListener('click', (e) => {
     if (!categoryContent.contains(e.target)) {
         categoryDropdown.classList.remove('show');
         categoryArrow.src = '/assets/icons-addtask/arrow_drop_down.png';
-    }
-});
-
-
-/* ================================================
-   SUBTASK HANDLING
-   ================================================ */
-/**
- * Shows confirm button when typing new subtask.
- */
-taskInput.addEventListener("input", () => {
-    if (taskInput.value.trim() !== "") {
-        checkBtn.style.display = "inline";
-    } else { resetInput(); }
-});
-
-checkBtn.addEventListener("click", () => handleAddSubtask());
-
-/**
- * Adds a new subtask to the list.
- */
-function handleAddSubtask() {
-    const currentTask = taskInput.value.trim();
-    if (!currentTask) return;
-    const li = createSubtaskElement(currentTask);
-    subtaskList.appendChild(li);
-    resetInput();
-}
-
-/**
- * Creates a subtask <li> element with text and icons.
- */
-function createSubtaskElement(text) {
-    const li = document.createElement("li");
-    const span = document.createElement("span");
-    span.textContent = text;
-    li.appendChild(span);
-    const icons = createSubtaskIcons(li, span);
-    li.appendChild(icons);
-    return li;
-}
-
-/**
- * Creates edit and delete icons for a subtask.
- */
-function createSubtaskIcons(li, span) {
-    const icons = document.createElement("div");
-    icons.classList.add("subtask-icons");
-    const editIcon = createIcon("./assets/icons-addtask/Property 1=edit.png", "Edit", () => startEditMode(li, span));
-    const deleteIcon = createIcon("./assets/icons-addtask/Property 1=delete.png", "Delete", () => subtaskList.removeChild(li));
-    icons.append(editIcon, deleteIcon);
-    return icons;
-}
-
-/**
- * Helper for creating an <img> icon element.
- */
-function createIcon(src, alt, onClick) {
-    const icon = document.createElement("img");
-    icon.src = src;
-    icon.alt = alt;
-    icon.addEventListener("click", onClick);
-    return icon;
-}
-
-/**
- * Resets subtask input and hides buttons.
- */
-cancelBtn.addEventListener("click", resetInput);
-function resetInput() {
-    taskInput.value = "";
-    checkBtn.style.display = "none";
-    cancelBtn.style.display = "none";
-}
-
-/**
- * Enables editing mode for a subtask.
- */
-function startEditMode(li, span) {
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = span.textContent;
-    input.classList.add("subtask-edit-input");
-
-    const saveIcon = document.createElement("img");
-    saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
-    saveIcon.alt = "Save";
-    saveIcon.addEventListener("click", () => {
-        span.textContent = input.value.trim() || span.textContent;
-        li.replaceChild(span, input);
-        li.replaceChild(defaultIcons, actionIcons);
-    });
-    const deleteIcon = document.createElement("img");
-    deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
-    deleteIcon.alt = "Delete";
-    deleteIcon.addEventListener("click", () => { subtaskList.removeChild(li); });
-    const actionIcons = document.createElement("div");
-    actionIcons.classList.add("subtask-icons");
-    actionIcons.append(saveIcon, deleteIcon);
-    const defaultIcons = li.querySelector(".subtask-icons");
-    li.replaceChild(input, span);
-    li.replaceChild(actionIcons, defaultIcons);
-    input.focus();
-}
-
-/* ================================================
-   FORM VALIDATION & TASK CREATION
-   ================================================ */
-/**
- * Validates form fields before creating task.
- */
-const dueDateContent = document.querySelector(".due-date-content");
-dueDateContent.addEventListener("input", () => {
-    if (dueDateContent.textContent.trim()) {
-        dueDateContent.style.borderBottom = "1px solid #D1D1D1";
-        dueDateError.style.display = "none";
-    }
-});
-
-const categoryError = document.querySelector(".category-container .error-message");
-categoryContent.addEventListener("click", () => {
-    if (categoryContent.textContent.trim() && categoryContent.textContent !== "Select task category") {
-        categoryContent.style.borderBottom = "1px solid #D1D1D1";
-        categoryError.style.display = "none";
     }
 });
 
@@ -476,9 +289,7 @@ createBtn.addEventListener("click", async (event) => {
     createBtn.classList.remove("active");
 });
 
-/**
- * Handles asynchronous task saving and feedback UI.
- */
+/*** Handles asynchronous task saving and feedback UI.*/
 async function handleTaskCreation(taskData) {
     const originalText = createBtn.textContent;
     createBtn.textContent = "Saving...";
@@ -497,9 +308,7 @@ async function handleTaskCreation(taskData) {
     }
 }
 
-/**
- * Sends new task data to Firebase and stores locally.
- */
+/*** Sends new task data to Firebase and stores locally.*/
 let tasks = [];
 async function saveTask(taskData) {
     try {
@@ -520,26 +329,7 @@ async function saveTask(taskData) {
     }
 }
 
-/**
- * Resets the entire Add Task form to default state.
- */
-function resetForm() {
-    document.querySelector(".title-input").value = "";
-    document.querySelector(".description-input").value = "";
-    document.querySelector(".due-date-input").value = "";
-    dueDateDisplay.textContent = "dd/mm/yyyy";
-    dueDateDisplay.classList.remove("has-value");
-    document.querySelector(".selected-avatars-container").innerHTML = "";
-    document.querySelector("#subtask-list").innerHTML = "";
-    document.querySelectorAll(".priority-frame").forEach(btn => btn.classList.remove("active"));
-    document.querySelector(".priority-frame:nth-child(2)").classList.add("active");
-    const categoryText = document.querySelector(".category-content .assigned-text");
-    if (categoryText) categoryText.textContent = "Select task category";
-}
-
-/**
- * Displays a short visual feedback message when task is saved.
- */
+/*** Displays a short visual feedback message when task is saved.*/
 function showTaskAddedMessage() {
     const img = document.createElement("img");
     img.src = "./assets/icons-addtask/Added to board 1.png";

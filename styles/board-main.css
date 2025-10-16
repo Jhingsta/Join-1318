@@ -120,10 +120,29 @@ main {
     flex-direction: column;
     gap: 16px;
     width: 100%;
-    height:100%;
+    height: 100%;
 }
 
+.delete-btn {
+    all: unset;
+    gap: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 8px;
+    border-right: 1px solid #D1D1D1;
+}
 
+.delete-btn:hover, .edit-btn:hover {
+    font-weight: 700;
+    color: #005DFF;
+    cursor: pointer;
+}
+
+.delete-btn:hover .action-icon,
+.edit-btn:hover .action-icon {
+    filter: invert(18%) sepia(100%) saturate(7476%) hue-rotate(220deg) brightness(99%) contrast(106%);
+}
 
 .task-placeholder {
     display: flex;
@@ -136,16 +155,6 @@ main {
     background-color: #e7e7e7;
     font-size: 16px;
     color: #a8a8a8;
-}
-
-.delete-btn {
-    all: unset;
-    gap: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-right: 8px;
-    border-right: 1px solid #D1D1D1;
 }
 
 #task-detail-overlay {
@@ -168,12 +177,15 @@ main {
 
 #task-detail-card {
     background-color: white;
-    width: 528px;
+    max-width: 528px;
     display: flex;
     justify-content: center;
     border-radius: 30px;
     padding-top: 48px;
     padding-bottom: 48px;
+    padding-left:40px;
+    padding-right:40px;
+    max-height: 90vh;
 }
 
 .task-details-card {
@@ -238,8 +250,6 @@ main {
     margin-top: 8px;
 }
 
-
-
 .task-card.dragging {
     transform: none;
     opacity: 0.6;
@@ -247,7 +257,6 @@ main {
     box-shadow: 0px 8px 25px 5px #00000025;
     pointer-events: none;
 }
-
 
 .tasks.drag-over {
     background: #f0f6ff;
@@ -285,7 +294,6 @@ main {
     margin: 0 0 20px;
 }
 
-
 .task-bar {
     display: flex;
     flex-direction: row;
@@ -322,8 +330,6 @@ main {
     align-items: center;
 }
 
-
-
 .avatar {
     width: 32px;
     height: 32px;
@@ -353,8 +359,6 @@ main {
     margin-left: 10px;
 }
 
-
-
 .assigned-avatar-detail-view {
     width: 42px;
     height: 42px;
@@ -371,8 +375,6 @@ main {
     font-size: 19px;
     vertical-align: middle;
 }
-
-
 
 .add-task-btn {
     font-size: 23px;
@@ -556,12 +558,12 @@ main {
 }
 
 .task-card-assigned-avatar:first-child {
-  margin-left: 0;
+    margin-left: 0;
 }
 
 .task-card-avatar-plus {
-  background-color: #4589FF;
-  color: #FFFFFF;
+    background-color: #4589FF;
+    color: #FFFFFF;
 }
 
 .mobile-move-task-btn {
@@ -650,6 +652,7 @@ main {
     background-color: #E3EEFF;
     color: #4589FF;
 }
+
 /* Task Card End */
 
 /* Animation hereinschieben */
@@ -666,3 +669,22 @@ main {
 .hidden {
     display: none !important;
 }
+
+#task-detail-body {
+    overflow-y: auto;
+    /* vertikales Scrollen erlauben */
+    max-height: 800px;
+    /* maximale Höhe des Modals */
+    padding: 16px;
+    box-sizing: border-box;
+
+    /* Firefox: unsichtbar */
+    scrollbar-width: none;
+}
+
+/* Chrome, Edge, Safari: unsichtbar */
+#task-detail-body::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+

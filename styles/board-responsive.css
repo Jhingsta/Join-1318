@@ -1,10 +1,12 @@
-/* TABLET - 2x2 Grid */
+/* TABLET - 2x2 Grid Layout */
 @media (max-width: 1350px) {
+
+    /* Hide elements that are desktop-only */
     .desktop-only {
         display: none;
     }
 
-    /* Column-Header Styling (für Tablet/Mobile) */
+    /* Column header styling for tablet/mobile */
     .column-header {
         display: flex;
         justify-content: space-between;
@@ -12,52 +14,57 @@
         padding-bottom: 16px;
     }
 
-    /* Header-Bereich anpassen */
+    /* Adjust header area */
     .search-top {
         padding: 40px 0 32px 32px;
         gap: 20px;
     }
 
+    /* Adjust Add Task button size */
     .add-task-btn {
         font-size: 18px;
         padding: 12px 8px;
     }
 
-    /* Column-Header einblenden */
+    /* Make column header visible */
     .column-header {
         display: flex;
     }
 
-    /* 2x2 Grid Layout */
+    /* 2x2 Grid layout for main content */
     .bottom {
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
         padding: 0 32px;
     }
 
+    /* Stack tasks vertically within columns */
     .tasks {
         flex-direction: column;
     }
 }
 
-/* MOBILE - 1 Spalte, horizontale Tasks */
+/* MOBILE - single column layout with horizontal tasks */
 @media (max-width: 768px) {
 
+    /* Layout becomes single-column */
     .layout {
         grid-template-columns: 1fr;
     }
 
+    /* Move sidebar below main content */
     aside {
         order: 2;
     }
 
+    /* Main content appears first */
     main {
         order: 1;
         min-height: calc(100vh - 80px);
         margin-bottom: 80px;
     }
 
-    /* Für die ganze Seite im Mobile-Modus die vertikale Scrollbar verstecken: */
+    /* Hide vertical scrollbar for the entire page */
     html,
     body {
         scrollbar-width: none;
@@ -71,58 +78,66 @@
         display: none;
     }
 
-    /* Header-Bereich Mobile */
+    /* Mobile header styling */
     .search-top {
         flex-direction: column;
         gap: 16px;
         padding: 64px 1rem 32px;
     }
 
+    /* Make searchbar full width */
     .searchbar {
         width: 100%;
     }
 
+    /* Hide Add Task button on mobile */
     .add-task-btn {
         display: none;
     }
 
-    /* 1 Spalte vertikal */
+    /* Single-column grid */
     .bottom {
         grid-template-columns: 1fr;
         gap: 26px;
         padding: 0 1rem;
     }
 
-    /* Tasks horizontal scrollbar */
+    /* Tasks container scrolls horizontally */
     .tasks {
         flex-direction: row;
         align-items: stretch;
-        /* Cards gleiche Höhe */
         overflow-x: auto;
         overflow-y: hidden;
         gap: 16px;
-        /* scroll-behavior: smooth;
-        scroll-snap-type: x mandatory; */
-        /* um die horizontale Scrollbar zu verstecken */
+
+        /* Hide horizontal scrollbar */
         scrollbar-width: none;
         /* Firefox */
         -ms-overflow-style: none;
         /* IE/Edge */
     }
 
-    /* um die horizontale Scrollbar zu verstecken */
+    /* Hide horizontal scrollbar for WebKit browsers */
     .tasks::-webkit-scrollbar {
         display: none;
     }
 
-    /* Task-Cards müssen feste Breite haben */
+    /* Task cards need fixed width for horizontal scrolling */
     .tasks .task-card {
         flex: 0 0 252px;
         margin: 10px;
     }
+
+    /* Show mobile move task button */
     .mobile-move-task-btn {
         display: block;
     }
+
+    #task-detail-card {
+        padding-top: 24px;
+        padding-bottom: 24px;
+        padding-left: 20px;
+        padding-right: 20px;
+        margin: 0 16px;
+    }
 }
-
-
