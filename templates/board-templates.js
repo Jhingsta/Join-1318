@@ -130,13 +130,6 @@ function taskDetailModal() {
                         <!-- Dynamische Felder -->
                         <div id="edit-form-fields"></div>
 
-                        <!-- Actions -->
-                        <div class="edit-actions">
-                            <button class="create-btn" id="save-task">Ok
-                                <img src="./assets/icons-addtask/check (1).png" alt="">
-                            </button>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -193,7 +186,7 @@ function taskDetailTemplate(task, categoryImg) {
                 <img src="./assets/icons-board/Property 1=delete.png" alt="Delete Icon" class="action-icon">
                 Delete
             </button>
-            <button id="edit-header-btn">
+            <button id="edit-header-btn" class="edit-btn">
                 <img src="./assets/icons-board/Property 1=edit.png" alt="Edit Icon" class="action-icon">
                 Edit
             </button>
@@ -204,7 +197,7 @@ function taskDetailTemplate(task, categoryImg) {
 function taskEditTemplate(task, isoDate) {
     return `
         <!-- TITLE -->
-        <input class="input-title" type="text" id="edit-title-input" value="${task.title || ""}">
+        <input class="edit-title-input" type="text" id="edit-title-input" value="${task.title || ""}">
         
         <!-- DESCRIPTION -->
         <div class="description-container">
@@ -248,7 +241,7 @@ function taskEditTemplate(task, isoDate) {
                 </div> 
             </div> 
         </div> 
-        <div id="edit-avatars-container" class="avatars-container-overlay"></div>
+        <div id="edit-avatars-container" class="edit-avatars-container-overlay"></div>
         
         <!-- SUBTASKS -->
         <label class="assigned-header">Subtasks</label>
@@ -260,6 +253,13 @@ function taskEditTemplate(task, isoDate) {
             </div>
         </div>
         <div id="edit-subtask-list"></div>
+
+        <!-- Actions -->
+        <div class="edit-actions">
+            <button class="create-btn" id="save-task">Ok
+                    <img src="./assets/icons-addtask/check (1).png" alt="">
+            </button>
+        </div>
     `;
 }
 

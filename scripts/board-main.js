@@ -187,12 +187,12 @@ function populateDropdown() {
     let selectedAvatarsContainer = document.getElementById('add-selected-avatars-container');
 
     if (!assignedDropdown) {
-    console.warn('populateDropdown: #add-assigned-dropdown not found.');
-    return;
+        console.warn('populateDropdown: #add-assigned-dropdown not found.');
+        return;
     }
     if (!selectedAvatarsContainer) {
-    console.warn('populateDropdown: #add-selected-avatars-container not found.');
-    return;
+        console.warn('populateDropdown: #add-selected-avatars-container not found.');
+        return;
     }
 
     renderUserDropdownItems(assignedDropdown);
@@ -207,9 +207,9 @@ function renderUserDropdownItems(assignedDropdown) {
     assignedDropdown.innerHTML = "";
 
     (users || []).forEach((user) => {
-    let item = createDropdownItem(user);
-    assignedDropdown.appendChild(item);
-    attachDropdownItemEvents(item);
+        let item = createDropdownItem(user);
+        assignedDropdown.appendChild(item);
+        attachDropdownItemEvents(item);
     });
 }
 
@@ -428,7 +428,8 @@ function initAddTaskButtons() {
 
 /**
  * Handles the click event for a specific "Add Task" button.
- * Determines the correct status and triggers the add task modal.
+ * Determines the correct status and triggers the add task modal (desktop)
+ * or redirects to add-task.html (mobile).
  * 
  * @param {HTMLElement} btn - The clicked button element.
  */
@@ -438,6 +439,15 @@ function handleAddTaskButtonClick(btn) {
     let statusFromButton = btn.dataset?.status;
     let status = statusFromColumn || statusFromButton || 'todo';
 
+    // 👉 Responsive check
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+    if (isMobile) {
+        window.location.href = `addtask.html?status=${status}`;
+        return;
+    }
+
+    // Desktop: open modal
     currentNewTask = currentNewTask || {};
     currentNewTask.status = status;
 
@@ -450,8 +460,8 @@ function handleAddTaskButtonClick(btn) {
     }
 }
 
-// ===================== INITIALIZATION =====================
 
+// ===================== INITIALIZATION =====================
 document.addEventListener('DOMContentLoaded', async () => {
     await loadUsers();
     await loadTasksForBoard();

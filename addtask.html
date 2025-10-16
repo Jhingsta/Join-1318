@@ -100,9 +100,8 @@
                                     aria-controls="assigned-dropdown" autocomplete="off">
                             </div>
 
-                            <div class="assigned-arrow-container" role="button" tabindex="0"
-                                aria-label="Toggle contacts dropdown">
-                                <img src="/assets/icons-addtask/arrow_drop_down.png" alt="" class="arrow-dropdown">
+                            <div class="assigned-arrow-container" role="button" tabindex="0" aria-label="Toggle contacts dropdown">
+                                <img id="assigned-arrow-icon" src="/assets/icons-addtask/arrow_drop_down.png" alt="" class="arrow-dropdown">
                             </div>
 
                             <div class="dropdown-menu" id="assigned-dropdown" role="listbox"></div>
@@ -119,9 +118,8 @@
                         <div class="category-content" role="combobox" aria-expanded="false" aria-controls="category-list">
                             <div class="assigned-text" id="category-label">Select task category</div>
                             <input type="text" id="category-input" class="visually-hidden" aria-labelledby="category-label">
-                            <div class="assigned-arrow-container" role="button" tabindex="0"
-                                aria-label="Toggle category dropdown">
-                                <img src="/assets/icons-addtask/arrow_drop_down.png" alt="" class="arrow-dropdown">
+                            <div class="assigned-arrow-container" role="button" tabindex="0" aria-label="Toggle category dropdown">
+                                <img id="assigned-arrow-icon" src="/assets/icons-addtask/arrow_drop_down.png" alt="" class="arrow-dropdown">
                             </div>
                         </div>
                         <span class="error-message" id="category-error" role="alert">This field is required</span>
@@ -187,9 +185,11 @@
         });
     </script>
     <script src="./scripts/tasks-crud.js"></script>
+    <script src="./scripts/addtask-main.js"></script>
     <script src="./scripts/addtask-validation.js"></script>
     <script src="./scripts/addtask-get-data.js"></script>
-    <script src="./scripts/addtask.js"></script>
+    <script src="./scripts/addtask-subtask.js"></script>
+    
 
 
 </body>

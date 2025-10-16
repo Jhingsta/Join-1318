@@ -321,7 +321,7 @@ function renderAvatars(task) {
  */
 function createAvatarDiv(user) {
     let div = document.createElement("div");
-    div.className = "selected-avatar";
+    div.className = "edit-selected-avatar";
     div.textContent = user.initials;
     div.style.backgroundColor = user.color;
     div.dataset.id = user.id;

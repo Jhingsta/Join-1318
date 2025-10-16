@@ -355,7 +355,7 @@ main {
     margin-top: 5px;
 }
 
-.selected-avatar {
+.edit-selected-avatar {
     width: 42px;
     height: 42px;
     border-radius: 50%;
@@ -526,7 +526,6 @@ main {
 
 .selected-avatars-container {
     display: none;
-    width: 142px;
     height: 42px;
     gap: 8px;
 }
