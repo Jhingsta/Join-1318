@@ -151,11 +151,11 @@ function populateAssignedTo(element, task) {
     avatarsContainer.innerHTML = '';
     if (task.assignedUsersFull && task.assignedUsersFull.length > 0) {
         let totalUsers = task.assignedUsersFull.length;
-        if (totalUsers <= 2) {
+        if (totalUsers <= 3) {
             appendUserAvatars(avatarsContainer, task.assignedUsersFull);
         } else {
-            appendUserAvatars(avatarsContainer, task.assignedUsersFull.slice(0, 2));
-            appendPlusAvatar(avatarsContainer, totalUsers - 2);
+            appendUserAvatars(avatarsContainer, task.assignedUsersFull.slice(0, 3));
+            appendPlusAvatar(avatarsContainer, totalUsers - 3);
         }
     }
     if (priorityIconImg) {
