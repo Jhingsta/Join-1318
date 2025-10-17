@@ -159,12 +159,26 @@ function slideInFloatingContact(floatingContactElement) {
 function closeFloatingContact() {
     if (window.innerWidth <= 768) {
         let mobileContainer = document.getElementById('mobile-floating-contact');
-        let mobileTrigger = document.querySelector('.add-contact-btn-mobile');
-        closeFloatingContactContainer(mobileContainer, mobileTrigger);
+        closeFloatingContactContainer(mobileContainer);
     } else {
         let desktopContainer = document.getElementById('floating-contact');
-        let desktopTrigger = document.querySelector('.add-contact-btn');
-        closeFloatingContactContainer(desktopContainer, desktopTrigger);
+        closeFloatingContactContainer(desktopContainer);
+    }
+}
+
+/**
+ * Closes both mobile and desktop floating contacts.
+ * Used when window is resized to ensure clean state.
+ */
+function closeBothFloatingContacts() {
+    let mobileContainer = document.getElementById('mobile-floating-contact');
+    let desktopContainer = document.getElementById('floating-contact');
+    
+    if (mobileContainer) {
+        closeFloatingContactContainer(mobileContainer);
+    }
+    if (desktopContainer) {
+        closeFloatingContactContainer(desktopContainer);
     }
 }
 
@@ -297,11 +311,11 @@ function handleWindowResize() {
     let mobileOverlay = document.getElementById('mobile-floating-contact');
     let desktopFloatingContact = document.getElementById('floating-contact');
 
-    if (
-        (window.innerWidth > 768 && mobileOverlay?.querySelector('.floating-contact.show')) ||
-        (window.innerWidth <= 768 && desktopFloatingContact?.classList.contains('show'))
-    ) {
-        closeFloatingContact();
+    let mobileIsOpen = mobileOverlay && mobileOverlay.classList.contains('show');
+    let desktopIsOpen = desktopFloatingContact && desktopFloatingContact.classList.contains('show');
+
+    if (mobileIsOpen || desktopIsOpen) {
+        closeBothFloatingContacts();
     }
 }
 
