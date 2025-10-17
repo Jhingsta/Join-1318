@@ -9,6 +9,8 @@ titleInput.addEventListener("blur", handleTitleValidation);
 users = [];
 
 const dueDateInput = document.querySelector(".due-date-input");
+const today = new Date().toISOString().split("T")[0];
+dueDateInput.setAttribute("min", today);
 const dueDateDisplay = document.querySelector(".due-date-display");
 const dueDateIcon = document.querySelector(".due-date-icon-container");
 const dueDateContainer = document.querySelector(".due-date-content");
@@ -18,7 +20,7 @@ const assignedContent = document.querySelector('.assigned-content');
 const assignedTextContainer = assignedContent.querySelector('.assigned-text-container');
 const assignedText = assignedTextContainer.querySelector('.assigned-text');
 const assignedInput = assignedContent.querySelector('.assigned-input');
-const arrowIcon = assignedContent.querySelector('img'); // Arrow direkt aus assignedContent
+const arrowIcon = assignedContent.querySelector('img');
 const assignedDropdown = document.getElementById('assigned-dropdown');
 const selectedAvatarsContainer = document.querySelector(".selected-avatars-container");
 
@@ -63,9 +65,14 @@ dueDateInput.addEventListener("input", handleDueDateValidation);
 dueDateInput.addEventListener("blur", handleDueDateValidation);
 
 /*** Opens the native date picker when clicking icon or container. */
-function openDatepicker() {
-    if (dueDateInput.showPicker) dueDateInput.showPicker();
-    else dueDateInput.click();
+function openDatepicker(e) {
+    e.preventDefault();
+    try {
+        dueDateInput.showPicker?.();
+    } catch {
+        dueDateInput.focus();
+        dueDateInput.click();
+    }
 }
 dueDateIcon.addEventListener("click", openDatepicker);
 dueDateContainer.addEventListener("click", openDatepicker);
@@ -103,7 +110,7 @@ async function loadUsers() {
             : [];
         populateDropdown();
     } catch (e) {
-        console.error("Fehler beim Laden der Users", e);
+        console.error("Error loading users", e);
     }
 }
 
@@ -117,7 +124,7 @@ function updateSelectedAvatars() {
 
     selected.forEach(user => {
         const a = document.createElement('div');
-        a.className = 'selected-avatar';
+        a.className = 'edit-selected-avatar';
         a.textContent = user.initials;
         a.style.backgroundColor = user.color;
         selectedAvatarsContainer.appendChild(a);
@@ -130,10 +137,16 @@ function createUserDropdownItem(user) {
     const div = document.createElement('div');
     div.className = 'dropdown-item';
     div.dataset.userId = user.id;
-    div.appendChild(createAssignedWrapper(user));
-    div.appendChild(createCheckboxWrapper(user));
+    const assignedWrapper = createAssignedWrapper(user);
+    const checkboxWrapper = createCheckboxWrapper(user);
+    div.append(assignedWrapper, checkboxWrapper);
+    div.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleUserSelection(e, checkboxWrapper, checkboxWrapper.querySelector('img'));
+    });
     return div;
 }
+
 
 /*** Creates avatar and name wrapper for dropdown.*/
 function createAssignedWrapper(user) {
@@ -301,7 +314,7 @@ async function handleTaskCreation(taskData) {
             resetForm();
         }
     } catch (err) {
-        console.error("❌ Fehler beim Erstellen der Task:", err);
+        console.error("Error create task:", err);
     } finally {
         createBtn.disabled = false;
         createBtn.textContent = originalText;
@@ -324,7 +337,7 @@ async function saveTask(taskData) {
         tasks.push(newTask);
         return newTask;
     } catch (error) {
-        console.error("❌ Fehler beim Speichern:", error);
+        console.error("Error save task:", error);
         throw error;
     }
 }

@@ -5,10 +5,12 @@
 taskInput.addEventListener("input", () => {
     if (taskInput.value.trim() !== "") {
         checkBtn.style.display = "inline";
+        cancelBtn.style.display = "inline";
     } else {
         resetInput();
     }
 });
+
 
 /** Adds the current subtask when check button is clicked. */
 checkBtn.addEventListener("click", () => handleAddSubtask());
