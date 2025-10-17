@@ -224,5 +224,7 @@ function getEditContactOverlayTemplate(user) {
 }
 
 function getSuccessMessageTemplate() {
-  return `<div class="success-message">Contact successfully created</div>`;
+  return `<div class="success-message" role="status" aria-live="polite" aria-atomic="true">
+    Contact successfully created
+  </div>`;
 }

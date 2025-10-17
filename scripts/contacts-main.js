@@ -77,6 +77,40 @@ function createDesktopFloatingContact() {
   return document.getElementById('floating-contact');
 }
 
+
+/**
+ * Removes existing mobile overlay if present.
+ */
+function removeMobileOverlayIfExists() {
+  let existingOverlay = document.getElementById('mobile-floating-contact');
+  if (existingOverlay) {
+    existingOverlay.remove();
+  }
+}
+
+/**
+ * Creates and returns a new mobile overlay with floating contact element.
+ * 
+ * @param {Object} user - The contact user data.
+ */
+function createFreshMobileOverlay(user) {
+  let tempDiv = document.createElement('div');
+  tempDiv.innerHTML = getMobileOverlayTemplate(user);
+  document.body.appendChild(tempDiv.firstElementChild);
+  
+  let mobileOverlay = document.getElementById('mobile-floating-contact');
+  let floatingContact = mobileOverlay.querySelector('.floating-contact');
+  
+  if (!floatingContact) {
+    let newFloatingContact = document.createElement('div');
+    newFloatingContact.className = 'floating-contact';
+    mobileOverlay.appendChild(newFloatingContact);
+    floatingContact = newFloatingContact;
+  }
+  
+  return floatingContact;
+}
+
 /**
  * Creates and displays a mobile floating contact overlay with contact information.
  * Clears any existing mobile overlay before creating new one.
@@ -89,70 +123,14 @@ function createDesktopFloatingContact() {
  * @param {string} user.initials - The contact's initials.
  */
 function createMobileFloatingContact(user) {
-  let mobileOverlay = getOrCreateMobileOverlay(user);
-  let floatingContact = ensureFloatingContactElement(mobileOverlay);
-
+  removeMobileOverlayIfExists();
+  let floatingContact = createFreshMobileOverlay(user);
+  
+  let mobileOverlay = document.getElementById('mobile-floating-contact');
   mobileOverlay.classList.add('show');
   document.body.classList.add('no-scroll');
   
   return floatingContact;
-}
-
-/**
- * Gets an existing mobile overlay or creates a new one with the provided contact data.
- * 
- * @param {Object} user - The contact object.
- */
-function getOrCreateMobileOverlay(user) {
-  let mobileOverlay = document.getElementById('mobile-floating-contact');
-
-  if (!mobileOverlay) {
-    let tempDiv = document.createElement('div');
-    tempDiv.innerHTML = getMobileOverlayTemplate(user);
-    document.body.appendChild(tempDiv.firstElementChild);
-    mobileOverlay = document.getElementById('mobile-floating-contact');
-  } else {
-    updateMobileMenuButton(mobileOverlay, user);
-  }
-
-  return mobileOverlay;
-}
-
-/**
- * Ensures that a floating contact element exists within the given mobile overlay.
- * Clears old content before adding new.
- *
- * @param {HTMLElement} mobileOverlay - The container element to search for or append the floating contact.
- */
-function ensureFloatingContactElement(mobileOverlay) {
-  let floatingContact = mobileOverlay.querySelector('.floating-contact');
-  
-  if (!floatingContact) {
-    let tempDiv = document.createElement('div');
-    tempDiv.innerHTML = '<div class="floating-contact"></div>';
-    mobileOverlay.appendChild(tempDiv.firstElementChild);
-    floatingContact = mobileOverlay.querySelector('.floating-contact');
-  } else {
-    floatingContact.innerHTML = '';
-  }
-  
-  return floatingContact;
-}
-
-/**
- * Updates the mobile menu button's onclick attribute to open the contact menu with the provided contact details.
- *
- * @param {HTMLElement} mobileOverlay - The overlay element containing the mobile menu button.
- * @param {Object} user - The contact object.
- */
-function updateMobileMenuButton(mobileOverlay, user) {
-  let menuBtn = mobileOverlay.querySelector('.mobile-overlay-menu-btn');
-  if (menuBtn) {
-    menuBtn.setAttribute(
-      'onclick',
-      `openMobileContactMenu(${JSON.stringify(user)})`
-    );
-  }
 }
 
 /**
