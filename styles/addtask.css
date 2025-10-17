@@ -324,6 +324,7 @@ main {
     flex-direction: column;
     gap: 8px;
     margin-bottom: 24px;
+    cursor: pointer;
 }
 
 .category-container {
@@ -457,18 +458,17 @@ main {
 }
 
 .assigned-icon {
-    display: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 15px;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-    cursor: pointer;
-    padding: 4px;
+    display:none;
+    border: none;
+    background-color: white;
+    align-items: center;
+    justify-content: center;
 }
 
 .assigned-icon:hover {
     background-color: #D2E3FF;
     transform: scale(1.1);
+    border-radius:50%;
 }
 
 .arrow-dropdown {
