@@ -200,11 +200,14 @@ function closeFloatingContact() {
 function closeFloatingContactContainer(container, triggerButton = null) {
     if (!container) return;
 
-    container.setAttribute('aria-hidden', 'true');
+    if (triggerButton && triggerButton.focus) {
+        triggerButton.focus();
+    } else {
+        document.body.focus();
+    }
     
+    container.setAttribute('aria-hidden', 'true');
     container.classList.remove('show');
-
-    if (triggerButton) triggerButton.focus();
 
     setTimeout(() => {
         container.innerHTML = '';
@@ -281,7 +284,7 @@ function closeMobileContactMenu() {
         contactMenu.remove();
       }
       document.removeEventListener('click', closeMobileMenuOnOutsideClick);
-    }, 300);
+    }, 100);
   }
 }
 
@@ -367,7 +370,6 @@ function showFloatingContactPanel(container) {
     container.classList.add('show');
     slideInFloatingContact(container);
 }
-
 
 /**
  * Focus the first interactive element (e.g., close button) after rendering.

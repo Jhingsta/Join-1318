@@ -52,6 +52,7 @@ async function handleUserDeleted(userKey) {
 
 /**
  * Close a specific modal with ARIA adjustments and optional focus return.
+ * 
  * @param {HTMLElement} modalContainer - The container of the modal to close.
  * @param {HTMLElement|null} triggerButton - The element that triggered the modal (for focus return).
  */
@@ -60,11 +61,12 @@ function closeModal(modalContainer, triggerButton = null) {
 
     if (modalContainer && modalContainer.classList.contains('show')) {
 
-        if (triggerButton) {
+        if (triggerButton && triggerButton.focus) {
             triggerButton.focus();
         } else {
             document.body.focus();
         }
+
         modalContainer.classList.remove('show');
         modalContainer.setAttribute('aria-hidden', 'true');
         modalContainer.inert = true;
@@ -76,7 +78,7 @@ function closeModal(modalContainer, triggerButton = null) {
 
             modalContainer.innerHTML = '';
             document.body.classList.remove('no-scroll');
-        }, 300);
+        }, 100);
     }
 }
 
@@ -85,14 +87,21 @@ function closeModal(modalContainer, triggerButton = null) {
  * Also clears the respective overlay container's inner HTML and removes the 'no-scroll' class from the body.
  */
 function closeContactOverlay() {
-    let addOverlay = document.getElementById('modal-add-contact');
-    let editOverlay = document.getElementById('modal-edit-contact');
+    let addContainer = document.getElementById('modal-add-contact-container');
+    let editContainer = document.getElementById('modal-edit-contact-container');
 
-    let addTrigger = document.querySelector('.add-contact-btn');
-    let editTrigger = document.querySelector('.edit-link[onclick*="edit"]');
+    let addOverlay = addContainer?.querySelector('.modal-add-contact');
+    let editOverlay = editContainer?.querySelector('.modal-edit-contact');
 
-    closeModal(addOverlay, addTrigger);
-    closeModal(editOverlay, editTrigger);
+    if (addOverlay) {
+        let addTrigger = document.querySelector('.add-contact-btn, .add-contact-btn-mobile');
+        closeModal(addContainer, addTrigger);
+    }
+    
+    if (editOverlay) {
+        let editTrigger = document.querySelector('.edit-link');
+        closeModal(editContainer, editTrigger);
+    }
 }
 
 /**
@@ -330,14 +339,18 @@ async function removeUserFromAllTasks(userKey) {
 
 /**
  * Open a modal (Add or Edit) with ARIA and focus handling.
+ * 
  * @param {HTMLElement} modalContainer - The container element for the modal.
  * @param {Object|null} userData - User data for Edit modal, null for Add modal.
  * @param {Function} getTemplateFunc - Function returning the modal HTML template.
- * @param {string} triggerSelector - Selector for the element that triggered the modal.
+ * @param {HTMLElement|null} triggerButton - The button that triggered the modal (for focus return).
  */
-function openModal(modalContainer, userData, getTemplateFunc, triggerSelector) {
-    let triggerButton = document.querySelector(triggerSelector);
+function openModal(modalContainer, userData, getTemplateFunc, triggerButton = null) {
     let modalBackground = document.getElementById('overlay-contacts');
+
+    if (triggerButton) {
+        modalContainer.dataset.triggerElement = triggerButton;
+    }
 
     modalContainer.inert = false;
     modalContainer.setAttribute('aria-hidden', 'false');
@@ -347,6 +360,7 @@ function openModal(modalContainer, userData, getTemplateFunc, triggerSelector) {
     showModalBackground(modalBackground);
     showModalWithFocus(modalContainer);
 }
+
 
 /**
  * Renders a modal dialog inside the given container using a provided template function.
@@ -358,10 +372,7 @@ function openModal(modalContainer, userData, getTemplateFunc, triggerSelector) {
  */
 function renderModal(container, userData, getTemplateFunc) {
     container.innerHTML = getTemplateFunc(userData);
-    container.setAttribute('role', 'dialog');
-    container.setAttribute('aria-modal', 'true');
-    let titleElement = container.querySelector('[id]');
-    if (titleElement) container.setAttribute('aria-labelledby', titleElement.id);
+    
     container.setAttribute('aria-hidden', 'false');
 }
 
@@ -373,6 +384,7 @@ function renderModal(container, userData, getTemplateFunc) {
 function showModalBackground(background) {
     background.classList.add('show');
     background.setAttribute('aria-hidden', 'false');
+    background.inert = false;
     document.body.classList.add('no-scroll');
 }
 
@@ -384,23 +396,27 @@ function showModalBackground(background) {
 function showModalWithFocus(container) {
     setTimeout(() => {
         let modal = container.querySelector('.modal-add-contact, .modal-edit-contact');
-        modal.classList.add('show');
+        if (modal) {
+            modal.classList.add('show');
 
-        let firstInput = modal.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
-        if (firstInput) firstInput.focus();
+            let firstInput = modal.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
+            if (firstInput) firstInput.focus();
+        }
     }, 10);
 }
 
 /**
- * Opens the "Add Contact" modal using the add contact template. Automatically focuses the first input field after opening.
+ * Opens the "Add Contact" modal using the add contact template. 
+ * Automatically focuses the first input field after opening.
  */
-
 function openAddContactModal() {
+    let triggerButton = document.activeElement;
+    
     openModal(
         document.getElementById('modal-add-contact-container'),
         null,
         getAddContactOverlayTemplate,
-        '.add-contact-btn'
+        triggerButton
     );
 }
 
@@ -410,10 +426,12 @@ function openAddContactModal() {
  * @param {Object} userData - The data of the user to edit.
  */
 function openEditContactModal(userData) {
+    let triggerButton = document.activeElement;
+    
     openModal(
         document.getElementById('modal-edit-contact-container'),
         userData,
         getEditContactOverlayTemplate,
-        `.edit-link[onclick*="${userData.email}"]`
+        triggerButton
     );
 }
