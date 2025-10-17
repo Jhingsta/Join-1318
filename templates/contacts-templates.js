@@ -26,7 +26,7 @@ function getContactTemplate(user) {
 function getFloatingContactTemplate(user) {
   return `
     <div class="floating-contact-first">
-      <h2 id="floating-contact-title">Contact Information</h2>
+      <h2>Contact Information</h2>
       <button 
         onclick="closeFloatingContact()" 
         class="arrow-left" 
@@ -35,8 +35,7 @@ function getFloatingContactTemplate(user) {
     </div>
 
     <div class="floating-contact-second">
-      <div class="avatar-big" style="background-color: ${user.color};" aria-hidden="true"
-      >
+      <div class="avatar-big" style="background-color: ${user.color};" aria-hidden="true">
         ${user.initials}
       </div>
 
@@ -105,7 +104,7 @@ function getMobileContactMenuTemplate(user) {
 
 function getAddContactOverlayTemplate() {
   return `
-      <div class="modal-add-contact" id="modal-add-contact">
+      <div class="modal-add-contact" role="dialog" aria-modal="true" aria-label="Add contact">
         <div class="overlay-add-contact-top">
           <button class="overlay-close-button" onclick="closeContactOverlay()" aria-label="Close window">
             <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
@@ -115,7 +114,7 @@ function getAddContactOverlayTemplate() {
 
           <div class="overlay-contact-top-box">
             <img src="./assets/icons-header/logo-all-white.svg" alt="" class="icon-logo">
-            <div class="overlay-contact-top-box-title" id="overlay-add-contact-title">Add contact</div>
+            <div class="overlay-contact-top-box-title">Add contact</div>
             <div class="overlay-add-contact-top-box-subtitle">Tasks are better with a team!</div>
           </div>
         </div>
@@ -165,9 +164,7 @@ function getAddContactOverlayTemplate() {
 
 function getEditContactOverlayTemplate(user) {
   return `
-    <div class="modal-edit-contact" id="modal-edit-contact"
-         role="dialog" aria-modal="true" aria-labelledby="modal-edit-contact-title" aria-hidden="false">
-
+    <div class="modal-edit-contact" role="dialog" aria-modal="true" aria-label="Edit contact">
         <div class="overlay-edit-contact-top">
             <button class="overlay-close-button" onclick="closeContactOverlay()" aria-label="Close window">
                 <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -177,7 +174,7 @@ function getEditContactOverlayTemplate(user) {
 
             <div class="overlay-contact-top-box">
                 <img src="./assets/icons-header/logo-all-white.svg" alt="" class="icon-logo" aria-hidden="true">
-                <div id="overlay-edit-contact-title" class="overlay-contact-top-box-title">Edit contact</div>
+                <div class="overlay-contact-top-box-title">Edit contact</div>
                 <div class="overlay-add-contact-top-box-subtitle">Tasks are better with a team!</div>
             </div>
         </div>

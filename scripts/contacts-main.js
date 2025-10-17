@@ -38,7 +38,6 @@ async function loadUsers() {
  * Contacts are sorted by name before grouping.
  *
  * @param {Array<Object>} contacts - Array of contact objects, each with at least a 'name' property.
- * @returns {string} HTML string of grouped contacts.
  */
 function renderContacts(contacts) {
   let sorted = contacts.sort((a, b) => a.name.localeCompare(b.name));
@@ -67,20 +66,20 @@ function renderContactList(users) {
 
 /**
  * Creates and returns a floating contact element within the right panel on desktop.
+ * Clears any existing content before creating new element.
  */
 function createDesktopFloatingContact() {
   let rightPanel = document.getElementById('right-panel');
   
-  let floatingContact = document.getElementById('floating-contact');
-  if (!floatingContact) {
-    rightPanel.innerHTML += '<div class="floating-contact" id="floating-contact"></div>';
-    floatingContact = document.getElementById('floating-contact');
-  }
-  return floatingContact;
+  rightPanel.innerHTML = '';
+  
+  rightPanel.innerHTML = '<div class="floating-contact" id="floating-contact"></div>';
+  return document.getElementById('floating-contact');
 }
 
 /**
  * Creates and displays a mobile floating contact overlay with contact information.
+ * Clears any existing mobile overlay before creating new one.
  * 
  * @param {Object} user - The contact object.
  * @param {string} user.name - The contact's full name.
@@ -108,7 +107,9 @@ function getOrCreateMobileOverlay(user) {
   let mobileOverlay = document.getElementById('mobile-floating-contact');
 
   if (!mobileOverlay) {
-    document.body.innerHTML += getMobileOverlayTemplate(user);
+    let tempDiv = document.createElement('div');
+    tempDiv.innerHTML = getMobileOverlayTemplate(user);
+    document.body.appendChild(tempDiv.firstElementChild);
     mobileOverlay = document.getElementById('mobile-floating-contact');
   } else {
     updateMobileMenuButton(mobileOverlay, user);
@@ -119,6 +120,7 @@ function getOrCreateMobileOverlay(user) {
 
 /**
  * Ensures that a floating contact element exists within the given mobile overlay.
+ * Clears old content before adding new.
  *
  * @param {HTMLElement} mobileOverlay - The container element to search for or append the floating contact.
  */
@@ -126,8 +128,12 @@ function ensureFloatingContactElement(mobileOverlay) {
   let floatingContact = mobileOverlay.querySelector('.floating-contact');
   
   if (!floatingContact) {
-    mobileOverlay.innerHTML += '<div class="floating-contact"></div>';
+    let tempDiv = document.createElement('div');
+    tempDiv.innerHTML = '<div class="floating-contact"></div>';
+    mobileOverlay.appendChild(tempDiv.firstElementChild);
     floatingContact = mobileOverlay.querySelector('.floating-contact');
+  } else {
+    floatingContact.innerHTML = '';
   }
   
   return floatingContact;
@@ -144,13 +150,13 @@ function updateMobileMenuButton(mobileOverlay, user) {
   if (menuBtn) {
     menuBtn.setAttribute(
       'onclick',
-      `openMobileContactMenu('${user.name}', '${user.email}', '${user.phone || ''}', '${user.color}', '${user.initials}')`
+      `openMobileContactMenu(${JSON.stringify(user)})`
     );
   }
 }
 
 /**
- * Animates a floating contact element by sliding it in from the right + minimal ARIA adjustments.
+ * Animates a floating contact element by sliding it in from the right + ARIA adjustments.
  *
  * @param {HTMLElement} floatingContactElement - The DOM element representing the floating contact to animate.
  */
@@ -166,8 +172,6 @@ function slideInFloatingContact(floatingContactElement) {
     floatingContactElement.style.opacity = '1';
   }, 10);
 
-  let content = floatingContactElement.querySelectorAll('.floating-contact-second, .floating-contact-third');
-  content.forEach(el => el.setAttribute('aria-live', 'polite'));
   floatingContactElement.setAttribute('aria-hidden', 'false');
 }
 
@@ -188,6 +192,7 @@ function closeFloatingContact() {
 
 /**
  * Close a single floating contact container with ARIA adjustments and optional focus return.
+ * Clears innerHTML after animation completes.
  * 
  * @param {HTMLElement} container - The container to close.
  * @param {HTMLElement|null} triggerButton - The button that triggered the floating contact.
@@ -195,17 +200,15 @@ function closeFloatingContact() {
 function closeFloatingContactContainer(container, triggerButton = null) {
     if (!container) return;
 
-    let floating = container.querySelector('.floating-contact');
+    container.setAttribute('aria-hidden', 'true');
+    
+    container.classList.remove('show');
 
     if (triggerButton) triggerButton.focus();
 
-    if (floating) {
-        floating.classList.remove('show');
-        floating.setAttribute('aria-hidden', 'true');
-    }
-    container.classList.remove('show');
-    container.setAttribute('aria-hidden', 'true');
-    container.inert = true;
+    setTimeout(() => {
+        container.innerHTML = '';
+    }, 300);
 
     document.body.classList.remove('no-scroll');
     document.querySelectorAll('.contact').forEach(contact => contact.classList.remove('active'));
@@ -235,7 +238,10 @@ function openMobileContactMenu(user) {
  * @param {Object} user - The contact object.
  */
 function createMobileContactMenu(mobileOverlay, user) {
-  mobileOverlay.innerHTML += getMobileContactMenuTemplate(user);
+  let tempDiv = document.createElement('div');
+  tempDiv.innerHTML = getMobileContactMenuTemplate(user);
+  mobileOverlay.appendChild(tempDiv.firstElementChild);
+  
   let contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
 
   setTimeout(() => contactMenu.classList.add('show'), 10);
@@ -264,7 +270,6 @@ function updateMobileContactMenu(contactMenu, user) {
 
 /**
  * Closes the mobile contact menu by removing the 'show' class and then removing the menu element from the DOM after a delay.
- * Also removes the event listener for outside clicks.
  */
 function closeMobileContactMenu() {
   let contactMenu = document.querySelector('.mobile-contact-options');
@@ -347,9 +352,8 @@ function openFloatingContact(user) {
  */
 function renderFloatingContact(container, user) {
     container.innerHTML = getFloatingContactTemplate(user);
-    container.setAttribute('role', 'dialog');
-    container.setAttribute('aria-modal', 'false');
-    container.setAttribute('aria-labelledby', 'floating-contact-title');
+    container.setAttribute('role', 'region');
+    container.setAttribute('aria-label', 'Contact Information');
     container.setAttribute('aria-hidden', 'false');
 }
 
@@ -361,13 +365,9 @@ function renderFloatingContact(container, user) {
  */
 function showFloatingContactPanel(container) {
     container.classList.add('show');
-
     slideInFloatingContact(container);
-
-    let content = container.querySelectorAll('.floating-contact-second, .floating-contact-third');
-    content.forEach(el => el.setAttribute('aria-live', 'polite'));
-    container.setAttribute('aria-hidden', 'false');
 }
+
 
 /**
  * Focus the first interactive element (e.g., close button) after rendering.
@@ -378,7 +378,7 @@ function focusFloatingContact(container) {
     setTimeout(() => {
         let firstFocusable = container.querySelector('button, [href], input, [tabindex]:not([tabindex="-1"])');
         if (firstFocusable) firstFocusable.focus();
-    }, 10);
+    }, 100);
 }
 
 /**
