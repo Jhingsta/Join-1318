@@ -178,6 +178,7 @@ main {
 #task-detail-card {
     background-color: white;
     max-width: 528px;
+    width: 100%;
     display: flex;
     justify-content: center;
     border-radius: 30px;
@@ -652,15 +653,12 @@ main {
     background-color: #E3EEFF;
     color: #4589FF;
 }
-
 /* Task Card End */
 
-/* Animation hereinschieben */
 @keyframes slideIn {
     from {
         transform: translateX(100%);
     }
-
     to {
         transform: translateX(0);
     }
@@ -672,17 +670,14 @@ main {
 
 #task-detail-body {
     overflow-y: auto;
-    /* vertikales Scrollen erlauben */
     max-height: 800px;
-    /* maximale Höhe des Modals */
     padding: 16px;
-    box-sizing: border-box;
-
-    /* Firefox: unsichtbar */
+    width: 100%;
+    /* Firefox: invisible */
     scrollbar-width: none;
 }
 
-/* Chrome, Edge, Safari: unsichtbar */
+/* Chrome, Edge, Safari: invisible */
 #task-detail-body::-webkit-scrollbar {
     width: 0px;
     background: transparent;

@@ -599,8 +599,8 @@ input::placeholder {
   .floating-contact-name-bottom {
     display: none;
   }
-  .overlay-add-contact,
-  .overlay-edit-contact {
+  .modal-add-contact,
+  .modal-edit-contact {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -609,8 +609,8 @@ input::placeholder {
     transform: translate(-50%, -50%) translateX(120%);
     transition: transform 0.3s ease;
   }
-  .overlay-add-contact.show,
-  .overlay-edit-contact.show {
+  .modal-add-contact.show,
+  .modal-edit-contact.show {
     transform: translate(-50%, -50%) translateX(0);
   }
   .overlay-edit-contact-top,

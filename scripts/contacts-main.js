@@ -38,7 +38,6 @@ async function loadUsers() {
  * Contacts are sorted by name before grouping.
  *
  * @param {Array<Object>} contacts - Array of contact objects, each with at least a 'name' property.
- * @returns {string} HTML string of grouped contacts.
  */
 function renderContacts(contacts) {
   let sorted = contacts.sort((a, b) => a.name.localeCompare(b.name));
@@ -67,20 +66,54 @@ function renderContactList(users) {
 
 /**
  * Creates and returns a floating contact element within the right panel on desktop.
+ * Clears any existing content before creating new element.
  */
 function createDesktopFloatingContact() {
   let rightPanel = document.getElementById('right-panel');
   
-  let floatingContact = document.getElementById('floating-contact');
-  if (!floatingContact) {
-    rightPanel.innerHTML += '<div class="floating-contact" id="floating-contact"></div>';
-    floatingContact = document.getElementById('floating-contact');
+  rightPanel.innerHTML = '';
+  
+  rightPanel.innerHTML = '<div class="floating-contact" id="floating-contact"></div>';
+  return document.getElementById('floating-contact');
+}
+
+
+/**
+ * Removes existing mobile overlay if present.
+ */
+function removeMobileOverlayIfExists() {
+  let existingOverlay = document.getElementById('mobile-floating-contact');
+  if (existingOverlay) {
+    existingOverlay.remove();
   }
+}
+
+/**
+ * Creates and returns a new mobile overlay with floating contact element.
+ * 
+ * @param {Object} user - The contact user data.
+ */
+function createFreshMobileOverlay(user) {
+  let tempDiv = document.createElement('div');
+  tempDiv.innerHTML = getMobileOverlayTemplate(user);
+  document.body.appendChild(tempDiv.firstElementChild);
+  
+  let mobileOverlay = document.getElementById('mobile-floating-contact');
+  let floatingContact = mobileOverlay.querySelector('.floating-contact');
+  
+  if (!floatingContact) {
+    let newFloatingContact = document.createElement('div');
+    newFloatingContact.className = 'floating-contact';
+    mobileOverlay.appendChild(newFloatingContact);
+    floatingContact = newFloatingContact;
+  }
+  
   return floatingContact;
 }
 
 /**
  * Creates and displays a mobile floating contact overlay with contact information.
+ * Clears any existing mobile overlay before creating new one.
  * 
  * @param {Object} user - The contact object.
  * @param {string} user.name - The contact's full name.
@@ -90,9 +123,10 @@ function createDesktopFloatingContact() {
  * @param {string} user.initials - The contact's initials.
  */
 function createMobileFloatingContact(user) {
-  let mobileOverlay = getOrCreateMobileOverlay(user);
-  let floatingContact = ensureFloatingContactElement(mobileOverlay);
-
+  removeMobileOverlayIfExists();
+  let floatingContact = createFreshMobileOverlay(user);
+  
+  let mobileOverlay = document.getElementById('mobile-floating-contact');
   mobileOverlay.classList.add('show');
   document.body.classList.add('no-scroll');
   
@@ -100,57 +134,7 @@ function createMobileFloatingContact(user) {
 }
 
 /**
- * Gets an existing mobile overlay or creates a new one with the provided contact data.
- * 
- * @param {Object} user - The contact object.
- */
-function getOrCreateMobileOverlay(user) {
-  let mobileOverlay = document.getElementById('mobile-floating-contact');
-
-  if (!mobileOverlay) {
-    document.body.innerHTML += getMobileOverlayTemplate(user);
-    mobileOverlay = document.getElementById('mobile-floating-contact');
-  } else {
-    updateMobileMenuButton(mobileOverlay, user);
-  }
-
-  return mobileOverlay;
-}
-
-/**
- * Ensures that a floating contact element exists within the given mobile overlay.
- *
- * @param {HTMLElement} mobileOverlay - The container element to search for or append the floating contact.
- */
-function ensureFloatingContactElement(mobileOverlay) {
-  let floatingContact = mobileOverlay.querySelector('.floating-contact');
-  
-  if (!floatingContact) {
-    mobileOverlay.innerHTML += '<div class="floating-contact"></div>';
-    floatingContact = mobileOverlay.querySelector('.floating-contact');
-  }
-  
-  return floatingContact;
-}
-
-/**
- * Updates the mobile menu button's onclick attribute to open the contact menu with the provided contact details.
- *
- * @param {HTMLElement} mobileOverlay - The overlay element containing the mobile menu button.
- * @param {Object} user - The contact object.
- */
-function updateMobileMenuButton(mobileOverlay, user) {
-  let menuBtn = mobileOverlay.querySelector('.mobile-overlay-menu-btn');
-  if (menuBtn) {
-    menuBtn.setAttribute(
-      'onclick',
-      `openMobileContactMenu('${user.name}', '${user.email}', '${user.phone || ''}', '${user.color}', '${user.initials}')`
-    );
-  }
-}
-
-/**
- * Animates a floating contact element by sliding it in from the right + minimal ARIA adjustments.
+ * Animates a floating contact element by sliding it in from the right + ARIA adjustments.
  *
  * @param {HTMLElement} floatingContactElement - The DOM element representing the floating contact to animate.
  */
@@ -166,8 +150,6 @@ function slideInFloatingContact(floatingContactElement) {
     floatingContactElement.style.opacity = '1';
   }, 10);
 
-  let content = floatingContactElement.querySelectorAll('.floating-contact-second, .floating-contact-third');
-  content.forEach(el => el.setAttribute('aria-live', 'polite'));
   floatingContactElement.setAttribute('aria-hidden', 'false');
 }
 
@@ -177,17 +159,32 @@ function slideInFloatingContact(floatingContactElement) {
 function closeFloatingContact() {
     if (window.innerWidth <= 768) {
         let mobileContainer = document.getElementById('mobile-floating-contact');
-        let mobileTrigger = document.querySelector('.add-contact-btn-mobile');
-        closeFloatingContactContainer(mobileContainer, mobileTrigger);
+        closeFloatingContactContainer(mobileContainer);
     } else {
         let desktopContainer = document.getElementById('floating-contact');
-        let desktopTrigger = document.querySelector('.add-contact-btn');
-        closeFloatingContactContainer(desktopContainer, desktopTrigger);
+        closeFloatingContactContainer(desktopContainer);
+    }
+}
+
+/**
+ * Closes both mobile and desktop floating contacts.
+ * Used when window is resized to ensure clean state.
+ */
+function closeBothFloatingContacts() {
+    let mobileContainer = document.getElementById('mobile-floating-contact');
+    let desktopContainer = document.getElementById('floating-contact');
+    
+    if (mobileContainer) {
+        closeFloatingContactContainer(mobileContainer);
+    }
+    if (desktopContainer) {
+        closeFloatingContactContainer(desktopContainer);
     }
 }
 
 /**
  * Close a single floating contact container with ARIA adjustments and optional focus return.
+ * Clears innerHTML after animation completes.
  * 
  * @param {HTMLElement} container - The container to close.
  * @param {HTMLElement|null} triggerButton - The button that triggered the floating contact.
@@ -195,17 +192,18 @@ function closeFloatingContact() {
 function closeFloatingContactContainer(container, triggerButton = null) {
     if (!container) return;
 
-    let floating = container.querySelector('.floating-contact');
-
-    if (triggerButton) triggerButton.focus();
-
-    if (floating) {
-        floating.classList.remove('show');
-        floating.setAttribute('aria-hidden', 'true');
+    if (triggerButton && triggerButton.focus) {
+        triggerButton.focus();
+    } else {
+        document.body.focus();
     }
-    container.classList.remove('show');
+    
     container.setAttribute('aria-hidden', 'true');
-    container.inert = true;
+    container.classList.remove('show');
+
+    setTimeout(() => {
+        container.innerHTML = '';
+    }, 300);
 
     document.body.classList.remove('no-scroll');
     document.querySelectorAll('.contact').forEach(contact => contact.classList.remove('active'));
@@ -235,7 +233,10 @@ function openMobileContactMenu(user) {
  * @param {Object} user - The contact object.
  */
 function createMobileContactMenu(mobileOverlay, user) {
-  mobileOverlay.innerHTML += getMobileContactMenuTemplate(user);
+  let tempDiv = document.createElement('div');
+  tempDiv.innerHTML = getMobileContactMenuTemplate(user);
+  mobileOverlay.appendChild(tempDiv.firstElementChild);
+  
   let contactMenu = mobileOverlay.querySelector('.mobile-contact-options');
 
   setTimeout(() => contactMenu.classList.add('show'), 10);
@@ -264,7 +265,6 @@ function updateMobileContactMenu(contactMenu, user) {
 
 /**
  * Closes the mobile contact menu by removing the 'show' class and then removing the menu element from the DOM after a delay.
- * Also removes the event listener for outside clicks.
  */
 function closeMobileContactMenu() {
   let contactMenu = document.querySelector('.mobile-contact-options');
@@ -276,7 +276,7 @@ function closeMobileContactMenu() {
         contactMenu.remove();
       }
       document.removeEventListener('click', closeMobileMenuOnOutsideClick);
-    }, 300);
+    }, 100);
   }
 }
 
@@ -311,11 +311,11 @@ function handleWindowResize() {
     let mobileOverlay = document.getElementById('mobile-floating-contact');
     let desktopFloatingContact = document.getElementById('floating-contact');
 
-    if (
-        (window.innerWidth > 768 && mobileOverlay?.querySelector('.floating-contact.show')) ||
-        (window.innerWidth <= 768 && desktopFloatingContact?.classList.contains('show'))
-    ) {
-        closeFloatingContact();
+    let mobileIsOpen = mobileOverlay && mobileOverlay.classList.contains('show');
+    let desktopIsOpen = desktopFloatingContact && desktopFloatingContact.classList.contains('show');
+
+    if (mobileIsOpen || desktopIsOpen) {
+        closeBothFloatingContacts();
     }
 }
 
@@ -347,9 +347,8 @@ function openFloatingContact(user) {
  */
 function renderFloatingContact(container, user) {
     container.innerHTML = getFloatingContactTemplate(user);
-    container.setAttribute('role', 'dialog');
-    container.setAttribute('aria-modal', 'false');
-    container.setAttribute('aria-labelledby', 'floating-contact-title');
+    container.setAttribute('role', 'region');
+    container.setAttribute('aria-label', 'Contact Information');
     container.setAttribute('aria-hidden', 'false');
 }
 
@@ -361,12 +360,7 @@ function renderFloatingContact(container, user) {
  */
 function showFloatingContactPanel(container) {
     container.classList.add('show');
-
     slideInFloatingContact(container);
-
-    let content = container.querySelectorAll('.floating-contact-second, .floating-contact-third');
-    content.forEach(el => el.setAttribute('aria-live', 'polite'));
-    container.setAttribute('aria-hidden', 'false');
 }
 
 /**
@@ -378,7 +372,7 @@ function focusFloatingContact(container) {
     setTimeout(() => {
         let firstFocusable = container.querySelector('button, [href], input, [tabindex]:not([tabindex="-1"])');
         if (firstFocusable) firstFocusable.focus();
-    }, 10);
+    }, 100);
 }
 
 /**
