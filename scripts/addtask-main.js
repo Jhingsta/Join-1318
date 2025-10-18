@@ -357,3 +357,10 @@ function showTaskAddedMessage() {
         window.location.href = "board.html";
     }, 800);
 }
+
+// --- CLEAR BUTTON HANDLING ---
+const clearBtn = document.querySelector(".clear-btn");
+clearBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    resetForm();
+});
