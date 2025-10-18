@@ -354,5 +354,6 @@ function showTaskAddedMessage() {
         img.classList.remove("show");
         img.classList.add("hide");
         img.addEventListener("transitionend", () => img.remove());
+        window.location.href = "board.html";
     }, 800);
 }
