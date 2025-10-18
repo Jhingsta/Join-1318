@@ -306,7 +306,7 @@ input {
 .due-date-icon {
     width: 18px;
     height: 20px;
-    background-image: url("/assets/icons-addTask/event.png");
+    background-image: url("/assets/icons-addtask/event.png");
     background-size: contain;
     background-repeat: no-repeat;
 }

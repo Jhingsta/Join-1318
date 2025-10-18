@@ -274,7 +274,7 @@ function createCheckboxSection() {
     wrapper.className = 'checkbox-wrapper';
 
     let checkbox = document.createElement('img');
-    checkbox.src = "./assets/icons-addTask/Property 1=Default.png";
+    checkbox.src = "./assets/icons-addtask/Property 1=Default.png";
     checkbox.alt = "Check user";
 
     let hoverOverlay = document.createElement('div');
@@ -315,8 +315,8 @@ function attachDropdownItemEvents(div) {
 function toggleUserSelection(div, checkboxWrapper, checkbox) {
     let isChecked = checkboxWrapper.classList.toggle('checked');
     checkbox.src = isChecked
-        ? "./assets/icons-addTask/Property 1=checked.svg"
-        : "./assets/icons-addTask/Property 1=Default.png";
+        ? "./assets/icons-addtask/Property 1=checked.svg"
+        : "./assets/icons-addtask/Property 1=Default.png";
     div.classList.toggle('active', isChecked);
 
     if (typeof updateSelectedAvatars === "function") {
