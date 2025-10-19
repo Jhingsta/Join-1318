@@ -70,6 +70,10 @@ function closeAssignedDropdown() {
     assignedText.style.display = 'block';
     arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
     assignedInput.value = '';
+
+    Array.from(assignedDropdown.children).forEach(div => {
+        div.style.display = 'flex';
+    });
 }
 
 // ===================== SUCCESS MESSAGE =====================

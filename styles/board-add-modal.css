@@ -537,13 +537,13 @@ input {
 }
 
 .selected-avatar {
-    width: 28px;
-    height: 28px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 12px;
     color: white;
     margin-right: 4px;
     flex: 0 0 auto;
