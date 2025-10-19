@@ -238,7 +238,11 @@ function initAssignedDropdownListeners() {
     assignedTextContainer?.addEventListener('click', toggleDropdown);
     arrowContainer?.addEventListener('click', toggleDropdown);
     document.addEventListener('click', e => {
-        if (!assignedTextContainer?.contains(e.target) && !arrowContainer?.contains(e.target)) {
+        if (
+            !assignedTextContainer?.contains(e.target) &&
+            !arrowContainer?.contains(e.target) &&
+            !assignedDropdown?.contains(e.target)
+        ) {
             closeAssignedDropdown();
         }
     });
@@ -266,7 +270,7 @@ function initCategoryDropdownListeners() {
 function createCategoryDropdownItems() {
     categoryDropdown = document.createElement('div');
     categoryDropdown.className = 'dropdown-menu';
-    
+
     categories.forEach(cat => {
         let div = document.createElement('div');
         div.className = 'dropdown-item';
@@ -279,7 +283,7 @@ function createCategoryDropdownItems() {
         });
         categoryDropdown.appendChild(div);
     });
-    
+
     categoryContent?.appendChild(categoryDropdown);
 }
 
