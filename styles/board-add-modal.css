@@ -555,6 +555,11 @@ input {
     margin-top: 8px;
 }
 
+.selected-avatar-plus {
+    background-color: #4589FF;
+    font-size: 14px;
+}
+
 .dropdown-menu {
     display: none;
     overflow-y: auto;

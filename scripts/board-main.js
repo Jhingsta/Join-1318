@@ -342,6 +342,7 @@ function updateSelectedAvatars() {
  * Retrieves all users that are currently selected in the dropdown.
  * 
  * @param {HTMLElement} assignedDropdown - The dropdown element.
+ * @returns {Array} Array of selected user objects.
  */
 function getSelectedUsersFromDropdown(assignedDropdown) {
     return users.filter((u, i) => {
@@ -349,26 +350,82 @@ function getSelectedUsersFromDropdown(assignedDropdown) {
         if (!dropdownItem) return false;
         let img = dropdownItem.querySelector('img');
         return img && img.src.includes("checked");
-    }).slice(0, 3);
+    });
 }
 
 /**
  * Renders selected user avatars into the container.
+ * Shows up to 5 individual avatars, then a "+X" avatar if 6 or more are selected.
  * 
  * @param {Array} selectedUsers - Array of selected users.
  * @param {HTMLElement} container - Container for the avatars.
  */
 function renderSelectedAvatars(selectedUsers, container) {
     container.innerHTML = "";
-    selectedUsers.forEach(user => {
-        let avatar = document.createElement('div');
-        avatar.className = 'selected-avatar assigned-text';
-        avatar.dataset.fullname = user.name;
-        avatar.textContent = user.initials;
-        avatar.style.backgroundColor = user.color;
+
+    if (selectedUsers.length >= 6) {
+        renderAvatarsWithLimit(selectedUsers, container);
+    } else {
+        renderAllAvatars(selectedUsers, container);
+    }
+
+    container.style.display = selectedUsers.length > 0 ? 'flex' : 'none';
+}
+
+/**
+ * Renders all user avatars without any limit.
+ * 
+ * @param {Array} users - Array of user objects to render as avatars.
+ * @param {HTMLElement} container - Container for the avatars.
+ */
+function renderAllAvatars(users, container) {
+    users.forEach(user => {
+        let avatar = createAvatarElement(user);
         container.appendChild(avatar);
     });
-    container.style.display = selectedUsers.length > 0 ? 'flex' : 'none';
+}
+
+/**
+ * Renders the first 5 user avatars and a "+X" avatar for remaining users.
+ * 
+ * @param {Array} users - Array of user objects (must contain at least 6 users).
+ * @param {HTMLElement} container - Container for the avatars.
+ */
+function renderAvatarsWithLimit(users, container) {
+    users.slice(0, 5).forEach(user => {
+        let avatar = createAvatarElement(user);
+        container.appendChild(avatar);
+    });
+
+    let remaining = users.length - 5;
+    let plusAvatar = createPlusAvatarElement(remaining);
+    container.appendChild(plusAvatar);
+}
+
+/**
+ * Creates a single avatar element for a user.
+ * 
+ * @param {Object} user - User object containing initials, name, and color properties.
+ */
+function createAvatarElement(user) {
+    let avatar = document.createElement('div');
+    avatar.className = 'selected-avatar';
+    avatar.dataset.fullname = user.name;
+    avatar.textContent = user.initials;
+    avatar.style.backgroundColor = user.color;
+    return avatar;
+}
+
+/**
+ * Creates a "+X" avatar element showing the count of additional users.
+ * 
+ * @param {number} count - The number of additional users not displayed.
+ */
+function createPlusAvatarElement(count) {
+    let avatar = document.createElement('div');
+    avatar.className = 'selected-avatar selected-avatar-plus';
+    avatar.textContent = `+${count}`;
+    return avatar;
 }
 
 // ===================== DATE UTILITIES =====================

@@ -114,22 +114,77 @@ async function loadUsers() {
     }
 }
 
-/*** Updates displayed avatars of selected users (max. 8 shown). */
+/**
+ * Updates the display of selected user avatars below the dropdown.
+ * Shows up to 5 individual avatars, then a "+X" avatar if more are selected.
+ */
 function updateSelectedAvatars() {
     selectedAvatarsContainer.innerHTML = "";
     const selected = users.filter((u, i) => {
         const img = assignedDropdown.children[i].querySelector('img');
         return img.src.includes("checked");
-    }).slice(0, 8);
-
-    selected.forEach(user => {
-        const a = document.createElement('div');
-        a.className = 'edit-selected-avatar';
-        a.textContent = user.initials;
-        a.style.backgroundColor = user.color;
-        selectedAvatarsContainer.appendChild(a);
     });
+
+    if (selected.length >= 6) {
+        renderAvatarsWithLimit(selected);
+    } else {
+        renderAllAvatars(selected);
+    }
+
     selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
+}
+
+/**
+ * Renders all user avatars without any limit.
+ * 
+ * @param {Array} users - Array of user objects to render as avatars.
+ */
+function renderAllAvatars(users) {
+    users.forEach(user => {
+        const avatar = createAvatarElement(user);
+        selectedAvatarsContainer.appendChild(avatar);
+    });
+}
+
+/**
+ * Renders the first 5 user avatars and a "+X" avatar for remaining users.
+ * 
+ * @param {Array} users - Array of user objects (must contain at least 6 users).
+ */
+function renderAvatarsWithLimit(users) {
+    users.slice(0, 5).forEach(user => {
+        const avatar = createAvatarElement(user);
+        selectedAvatarsContainer.appendChild(avatar);
+    });
+
+    const remaining = users.length - 5;
+    const plusAvatar = createPlusAvatarElement(remaining);
+    selectedAvatarsContainer.appendChild(plusAvatar);
+}
+
+/**
+ * Creates a single avatar element for a user.
+ * 
+ * @param {Object} user - User object containing initials and color properties.
+ */
+function createAvatarElement(user) {
+    const avatar = document.createElement('div');
+    avatar.className = 'edit-selected-avatar';
+    avatar.textContent = user.initials;
+    avatar.style.backgroundColor = user.color;
+    return avatar;
+}
+
+/**
+ * Creates a "+X" avatar element showing the count of additional users.
+ * 
+ * @param {number} count - The number of additional users not displayed.
+ */
+function createPlusAvatarElement(count) {
+    const avatar = document.createElement('div');
+    avatar.className = 'edit-selected-avatar dropdown-avatar-plus';
+    avatar.textContent = `+${count}`;
+    return avatar;
 }
 
 /*** Creates a single dropdown item for a user. */

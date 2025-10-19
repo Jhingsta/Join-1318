@@ -413,6 +413,11 @@ main {
     border: 2px solid white;
 }
 
+.dropdown-avatar-plus {
+    background-color: #4589FF;
+    font-size: 14px;
+}
+
 .dropdown-item:last-child {
     border-bottom: none;
 }
