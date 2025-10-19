@@ -20,6 +20,7 @@ main {
     display: flex;
     width: 100%;
     height: calc(100vh - 100px);
+    position: relative;
 }
 
 .main-container {
@@ -412,6 +413,11 @@ main {
     border: 2px solid white;
 }
 
+.dropdown-avatar-plus {
+    background-color: #4589FF;
+    font-size: 14px;
+}
+
 .dropdown-item:last-child {
     border-bottom: none;
 }
@@ -454,7 +460,6 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
 }
 
 .assigned-icon {
@@ -463,6 +468,7 @@ main {
     background-color: white;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 .assigned-icon:hover {
@@ -531,7 +537,7 @@ main {
 }
 
 .button-container {
-    position: fixed;
+    position: absolute;
     bottom: 55px;
     right: 42px;
     display: flex;
