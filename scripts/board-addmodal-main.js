@@ -323,10 +323,9 @@ function initSubtaskListeners() {
 
         const li = createSubtaskElement(currentTask);
         subtaskList.appendChild(li);
-        resetInput(); // Reset input nach Hinzufügen
+        resetInput();
     }
 
-    // Zeige Check/Cancel Buttons beim Tippen
     taskInput?.addEventListener("input", () => {
         if (taskInput.value.trim()) {
             checkBtn.style.display = "inline";
@@ -334,7 +333,6 @@ function initSubtaskListeners() {
         } else resetInput();
     });
 
-    // Enter-Event
     taskInput?.addEventListener("keydown", e => {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -342,10 +340,7 @@ function initSubtaskListeners() {
         }
     });
 
-    // Click-Event auf Check-Button
     checkBtn?.addEventListener("click", handleAddSubtask);
-
-    // Click-Event auf Cancel-Button
     cancelBtn?.addEventListener("click", resetInput);
 }
 
