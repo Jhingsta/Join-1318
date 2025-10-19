@@ -201,6 +201,8 @@ function initTitleAndDueDateElements() {
     titleInput = document.getElementById('add-title-input');
     titleError = document.getElementById('add-title-error');
     dueDateInput = document.getElementById('add-due-date-input');
+    const today = new Date().toISOString().split("T")[0];
+    dueDateInput.setAttribute("min", today);
     dueDateDisplay = document.getElementById('add-due-date-display');
     dueDateContainer = document.getElementById('add-due-date-content');
 }
@@ -315,13 +317,134 @@ function addDocumentClickListenerForCategory() {
  * Initializes subtask input listeners. 
  */
 function initSubtaskListeners() {
+    function handleAddSubtask() {
+        const currentTask = taskInput.value.trim();
+        if (!currentTask) return;
+
+        const li = createSubtaskElement(currentTask);
+        subtaskList.appendChild(li);
+        resetInput(); // Reset input nach Hinzufügen
+    }
+
+    // Zeige Check/Cancel Buttons beim Tippen
     taskInput?.addEventListener("input", () => {
-        if (taskInput.value.trim()) { checkBtn.style.display = "inline"; cancelBtn.style.display = "inline"; }
-        else resetSubtaskInput();
+        if (taskInput.value.trim()) {
+            checkBtn.style.display = "inline";
+            cancelBtn.style.display = "inline";
+        } else resetInput();
     });
-    taskInput?.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); checkBtn.click(); } });
-    checkBtn?.addEventListener("click", () => addSubtask(taskInput.value));
-    cancelBtn?.addEventListener("click", resetSubtaskInput);
+
+    // Enter-Event
+    taskInput?.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            handleAddSubtask();
+        }
+    });
+
+    // Click-Event auf Check-Button
+    checkBtn?.addEventListener("click", handleAddSubtask);
+
+    // Click-Event auf Cancel-Button
+    cancelBtn?.addEventListener("click", resetInput);
+}
+
+
+/**
+ * Creates a single subtask <li> element with text and icons.
+ * @param {string} text - The subtask text.
+ * @returns {HTMLElement} The <li> element representing the subtask.
+ */
+function createSubtaskElement(text) {
+    const li = document.createElement("li");
+
+    const span = document.createElement("span");
+    span.textContent = text;
+    li.appendChild(span);
+
+    const icons = document.createElement("div");
+    icons.classList.add("subtask-icons");
+
+    const editIcon = createIcon("./assets/icons-addtask/Property 1=edit.png", "Edit", () => startEditMode(li, span));
+    const deleteIcon = createIcon("./assets/icons-addtask/Property 1=delete.png", "Delete", () => li.remove());
+
+    icons.append(editIcon, deleteIcon);
+    li.appendChild(icons);
+
+    return li;
+}
+
+/**
+ * Creates edit and delete icons for a subtask.
+ * @param {HTMLElement} li - The subtask <li> element.
+ * @param {HTMLElement} span - The span containing subtask text.
+ * @returns {HTMLElement} A div containing the action icons.
+ */
+function createSubtaskIcons(li, span) {
+    const icons = document.createElement("div");
+    icons.classList.add("subtask-icons");
+
+    const editIcon = document.createElement("img");
+    editIcon.src = "./assets/icons-addtask/Property 1=edit.png";
+    editIcon.alt = "Edit";
+    editIcon.addEventListener("click", () => startEditSubtaskMode(li, span));
+
+    const deleteIcon = document.createElement("img");
+    deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
+    deleteIcon.alt = "Delete";
+    deleteIcon.addEventListener("click", () => li.remove());
+
+    icons.append(editIcon, deleteIcon);
+    return icons;
+}
+
+/**
+ * Helper function to create an <img> element as an icon.
+ * @param {string} src - Image source path.
+ * @param {string} alt - Alt text for the image.
+ * @param {Function} onClick - Click handler function.
+ * @returns {HTMLElement} The created <img> element.
+ */
+function createIcon(src, alt, onClick) {
+    const icon = document.createElement("img");
+    icon.src = src;
+    icon.alt = alt;
+    icon.addEventListener("click", onClick);
+    return icon;
+}
+
+/**
+ * Resets the subtask input field and hides the action buttons.
+ */
+function resetInput() {
+    taskInput.value = "";
+    checkBtn.style.display = "none";
+    cancelBtn.style.display = "none";
+}
+
+function startEditMode(li, span) {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = span.textContent;
+    input.classList.add("subtask-edit-input");
+
+    const saveIcon = createIcon("./assets/icons-addtask/Subtask's icons (1).png", "Save", () => {
+        span.textContent = input.value.trim() || span.textContent;
+        li.replaceChild(span, input);
+        li.replaceChild(defaultIcons, actionIcons);
+    });
+
+    const deleteIcon = createIcon("./assets/icons-addtask/Property 1=delete.png", "Delete", () => subtaskList.removeChild(li));
+
+    const actionIcons = document.createElement("div");
+    actionIcons.classList.add("subtask-icons");
+    actionIcons.append(saveIcon, deleteIcon);
+
+    const defaultIcons = li.querySelector(".subtask-icons");
+    li.replaceChild(input, span);
+    li.replaceChild(actionIcons, defaultIcons);
+
+    input.focus();
 }
 
 /** 
