@@ -460,7 +460,6 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
 }
 
 .assigned-icon {
@@ -469,6 +468,7 @@ main {
     background-color: white;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 .assigned-icon:hover {

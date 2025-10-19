@@ -117,7 +117,7 @@ input {
     font-size: 16px;
     outline: none;
     color: black;
-    border-right: 1px solid #d1d1d1;
+    /* border-right: 1px solid #d1d1d1; */
     width: 100%;
     background-color: transparent;
 }
@@ -520,7 +520,7 @@ input {
 
 .assigned-input {
     width: 100%;
-    padding: 8px;
+    padding: 0;
     border-radius: 8px;
     border: none;
 }
@@ -534,6 +534,13 @@ input {
 .assigned-arrow-icon {
     width: 24px;
     height: 24px;
+    cursor: pointer;
+}
+
+.assigned-arrow-icon:hover {
+    background-color: #D2E3FF;
+    transform: scale(1.1);
+    border-radius:50%;
 }
 
 .selected-avatar {
@@ -631,4 +638,22 @@ input {
     height: 23px;
     display: flex;
     align-items: center;
+}
+
+#add-subtask-input-container {
+    position: relative;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #D1D1D1;
+    overflow: visible;
+}
+
+#add-subtask-input {
+    font-size: 19px;
+    color: #000000;
+    outline: none;
+    border: none;
 }

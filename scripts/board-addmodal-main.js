@@ -51,6 +51,7 @@ function openAssignedDropdown() {
     assignedDropdown.style.display = 'block';
     assignedInput.style.display = 'inline';
     assignedText.style.display = 'none';
+    assignedTextContainer.style.display = 'none';
     arrowIcon.src = '/assets/icons-addtask/arrow_drop_down_up.png';
     assignedInput.focus();
 
@@ -68,6 +69,7 @@ function closeAssignedDropdown() {
     assignedDropdown.style.display = 'none';
     assignedInput.style.display = 'none';
     assignedText.style.display = 'block';
+    assignedTextContainer.style.display = 'flex';
     arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
     assignedInput.value = '';
 
