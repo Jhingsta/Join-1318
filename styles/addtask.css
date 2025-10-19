@@ -20,6 +20,7 @@ main {
     display: flex;
     width: 100%;
     height: calc(100vh - 100px);
+    position: relative;
 }
 
 .main-container {
@@ -531,7 +532,7 @@ main {
 }
 
 .button-container {
-    position: fixed;
+    position: absolute;
     bottom: 55px;
     right: 42px;
     display: flex;
