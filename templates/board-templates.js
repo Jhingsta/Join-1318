@@ -160,7 +160,7 @@ function taskDetailTemplate(task, categoryImg) {
         <div class="top-bar">
             <img src="${categoryImg}" alt="${task.category || "Category"}" class="category-image">
             <button class="close-button-overlay" onclick="document.getElementById('task-detail-overlay').classList.add('hidden')">
-                <img src="./assets/icons-board/close.svg" alt="Schließen" class="close-icon">
+                <img src="./assets/icons-board/close.svg" alt="Close" class="close-icon">
             </button>
         </div>
 
@@ -197,7 +197,12 @@ function taskDetailTemplate(task, categoryImg) {
 function taskEditTemplate(task, isoDate) {
     return `
         <!-- TITLE -->
-        <input class="edit-title-input" type="text" id="edit-title-input" value="${task.title || ""}">
+        <div class="top-bar">
+            <input class="edit-title-input" type="text" id="edit-title-input" value="${task.title || ""}">
+            <button class="close-button-overlay" onclick="document.getElementById('task-detail-overlay').classList.add('hidden')">
+                <img src="./assets/icons-board/close.svg" alt="Close" class="close-icon">
+            </button>
+        </div>    
         
         <!-- DESCRIPTION -->
         <div class="description-container">

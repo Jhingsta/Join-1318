@@ -4,7 +4,6 @@
     color: #000000;
     border: none;
     border-bottom: 1px solid #D1D1D1;
-    margin-bottom: 24px;
     background: transparent;
     outline: none;
 }
@@ -152,6 +151,8 @@
     color: #4589FF;
     display:flex;
     align-items: center;
+    width: 32px;
+    height: 32px;
 }
 
 .close-button-overlay:hover {
