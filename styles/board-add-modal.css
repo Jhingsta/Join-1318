@@ -657,3 +657,53 @@ input {
     outline: none;
     border: none;
 }
+
+.subtask-list {
+    list-style: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    z-index: 10;
+}
+
+.subtask-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 16px;
+    border-radius: 10px;
+    height: 32px;
+    width: 100%;
+    transition: background 0.2s ease;
+}
+
+.subtask-icons {
+    display: none;
+    gap: 8px;
+}
+
+.subtask-list li:hover .subtask-icons {
+    display: flex;
+}
+
+.subtask-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 16px;
+    border-radius: 10px;
+    min-height: 32px;
+    width: 100%;
+    transition: background 0.2s ease;
+}
+
+.subtask-list li:hover {
+    background-color: #F0F4FF;
+}
+
+.subtask-edit-input {
+    padding:4px;
+    height:15px;
+}

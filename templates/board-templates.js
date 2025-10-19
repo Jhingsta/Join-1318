@@ -98,8 +98,8 @@ function addtaskModal() {
                                 <img id="add-subtask-cancel" src="/assets/icons-addtask/Subtask cancel.png" alt="Cancel subtask" class="assigned-arrow-icon" style="display:none;">
                                 <img id="add-subtask-check" src="/assets/icons-addtask/Subtask's icons (1).png" alt="Confirm subtask" class="assigned-arrow-icon" style="display:none;">
                             </div>
+                            <ul id="add-subtask-list" class="subtask-list"></ul>
                         </div>
-                        <ul id="add-subtask-list" class="subtask-list"></ul>
                     </div>
 
                     <!-- FOOTER -->
@@ -141,7 +141,7 @@ function taskDetailModal() {
 function subtaskHTML({ title, isChecked, taskId, index }) {
     return `
     <li class="subtask-item">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+        <div>
             <div class="subtask-row">
                 <div class="checkbox-wrapper" onclick="toggleCheckbox(this, '${taskId}', ${index})">
                     <input type="checkbox" class="real-checkbox" style="display:none;" ${isChecked ? 'checked' : ''}>
