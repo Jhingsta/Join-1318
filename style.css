@@ -272,13 +272,28 @@ body.loaded #splash {
   opacity: 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .logo {
     width: 64px;
     top: 37px;
     left: 38px;
   }
+  .signup-box {
+    top: 50px;
+    right: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo {
+    width: 48px;
+    top: 28px;
+    left: 28px;
+  }
   .login-box {
+    position: static;
+    transform: none;
+    margin-top: 40px;
     padding: 32px 16px;
     max-width: 90%;
   }
@@ -301,12 +316,12 @@ body.loaded #splash {
     border: 1px solid #42526E;
   }
   .signup-box {
-    top: auto;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: static;
+    margin-top: 10px;
     font-size: 19px;
-    width: 280px;
+    text-align: center;
+    width: auto;
+    transform: none;
   }
   .sign-up-btn {
     font-size: 19px;
