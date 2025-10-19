@@ -458,11 +458,27 @@ function handleAddTaskButtonClick(btn) {
     }
 }
 
+// ===================== DETAIL MODAL CLOSING (outside click + ESC) =====================
+document.addEventListener("click", function (event) {
+    const overlay = document.getElementById("task-detail-overlay");
+    const card = document.getElementById("task-detail-card");
+
+    if (
+        overlay &&
+        !overlay.classList.contains("hidden") &&
+        overlay.contains(event.target) &&
+        !card.contains(event.target)
+    ) {
+        overlay.classList.add("hidden");
+    }
+});
 
 // ===================== INITIALIZATION =====================
 document.addEventListener('DOMContentLoaded', async () => {
     await loadUsers();
     await loadTasksForBoard();
     renderBoard();
+    
+    addButtons = document.querySelectorAll('.svg-button');
     initAddTaskButtons();
 });
