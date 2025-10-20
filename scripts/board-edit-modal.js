@@ -54,21 +54,6 @@ function setupEditModeFeatures(task, elements) {
 
 /**
  * Collects main edit mode elements.
- * 
- * @returns {Object} - DOM elements
- */
-function getEditModeElements() {
-    return {
-        view: document.getElementById("task-view"),
-        edit: document.getElementById("task-edit"),
-        editForm: document.getElementById("edit-form-fields"),
-    };
-}
-
-// ===================== ELEMENT COLLECTION =====================
-
-/**
- * Collects main edit mode elements.
  */
 function getEditModeElements() {
     return {
@@ -114,6 +99,7 @@ function setupAssignedUsersDropdown(task) {
 function getAssignedDropdownElements() {
     return {
         placeholder: document.getElementById("edit-assigned-placeholder"),
+        container: document.getElementById("edit-assigned-text-container"),
         input: document.getElementById("edit-assigned-input"),
         arrow: document.getElementById("edit-assigned-arrow"),
         dropdown: document.getElementById("edit-assigned-dropdown"),
@@ -125,11 +111,21 @@ function getAssignedDropdownElements() {
  * 
  * @param {Object} elems - Dropdown elements
  */
-function attachDropdownEvents({ placeholder, input, arrow, dropdown }) {
-    let open = () => { dropdown.classList.remove("hidden"); input.style.display = "inline"; placeholder.style.display = "none"; arrow.src = "./assets/icons-addtask/arrow_drop_down_up.png"; input.focus(); };
-    let close = () => { dropdown.classList.add("hidden"); input.style.display = "none"; placeholder.style.display = "block"; arrow.src = "./assets/icons-addtask/arrow_drop_down.png"; input.value = ""; };
+function attachDropdownEvents({ placeholder, container, input, arrow, dropdown }) {
+    let open = () => { dropdown.classList.remove("hidden"); 
+        input.style.display = "inline"; placeholder.style.display = "none"; 
+        arrow.src = "./assets/icons-addtask/arrow_drop_down_up.png"; 
+        input.focus(); 
+    };
+    let close = () => { dropdown.classList.add("hidden"); 
+        input.style.display = "none"; placeholder.style.display = "block"; 
+        arrow.src = "./assets/icons-addtask/arrow_drop_down.png"; 
+        input.value = "";
+        Array.from(dropdown.children).forEach(div => div.style.display = "flex");
+    }; 
 
     placeholder?.addEventListener("click", e => { e.stopPropagation(); open(); });
+    container?.addEventListener("click", e => { e.stopPropagation(); open(); });
     arrow?.addEventListener("click", e => { e.stopPropagation(); dropdown.classList.contains("hidden") ? open() : close(); });
     input?.addEventListener("input", () => filterDropdown(input, dropdown));
     input?.addEventListener("click", e => { e.stopPropagation(); dropdown.classList.contains("hidden") ? open() : close(); });

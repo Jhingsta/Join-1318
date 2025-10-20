@@ -1,69 +1,139 @@
 // ===================== SUBTASK HANDLING =====================
 
-/**
- * Resets the subtask input field and hides action buttons.
+// Global elements
+let taskInput, checkBtn, cancelBtn, subtaskList;
+
+/** 
+ * Initializes subtask input and list elements. 
  */
-function resetSubtaskInput() {
-    taskInput.value = "";
-    checkBtn.style.display = "none";
-    cancelBtn.style.display = "none";
+function initSubtaskElements() {
+    taskInput = document.getElementById('add-subtask-input');
+    checkBtn = document.getElementById('add-subtask-check');
+    cancelBtn = document.getElementById('add-subtask-cancel');
+    subtaskList = document.getElementById('add-subtask-list');
+}
+
+/** 
+ * Initializes subtask input listeners. 
+ */
+function initSubtaskListeners() {
+    taskInput?.addEventListener("input", () => {
+        if (taskInput.value.trim()) {
+            checkBtn.style.display = "inline";
+            cancelBtn.style.display = "inline";
+        } else {
+            resetInput();
+        }
+    });
+
+    taskInput?.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            handleAddSubtask();
+        }
+    });
+
+    checkBtn?.addEventListener("click", handleAddSubtask);
+    cancelBtn?.addEventListener("click", resetInput);
 }
 
 /**
- * Creates a new subtask list item with edit and delete functionality.
+ * Adds a new subtask to the list.
+ */
+function handleAddSubtask() {
+    const currentTask = taskInput.value.trim();
+    if (!currentTask) return;
+
+    const li = createSubtaskElement(currentTask);
+    subtaskList.appendChild(li);
+    resetInput();
+}
+
+/**
+ * Creates a single subtask <li> element with text and icons.
  * 
  * @param {string} text - The subtask text.
  */
-function addSubtask(text) {
-    if (!text.trim()) return;
-
-    let li = document.createElement("li");
+function createSubtaskElement(text) {
+    const li = document.createElement("li");
     li.className = "subtask-item";
 
-    let span = document.createElement("span");
-    span.textContent = text.trim();
+    const span = document.createElement("span");
+    span.textContent = text;
     span.className = "subtask-text";
     li.appendChild(span);
 
-    let icons = createSubtaskIcons(li, span);
+    const icons = createSubtaskIcons(li, span);
     li.appendChild(icons);
-    subtaskList.appendChild(li);
 
-    resetSubtaskInput();
+    return li;
 }
 
 /**
- * Creates the edit and delete icons for a subtask item.
+ * Creates edit and delete icons for a subtask.
  * 
- * @param {HTMLElement} li - The subtask list item.
- * @param {HTMLElement} span - The span containing the subtask text.
+ * @param {HTMLElement} li - The subtask <li> element.
+ * @param {HTMLElement} span - The span containing subtask text.
  */
 function createSubtaskIcons(li, span) {
-    let icons = document.createElement("div");
+    const icons = document.createElement("div");
     icons.classList.add("subtask-icons");
 
-    let editIcon = document.createElement("img");
-    editIcon.src = "./assets/icons-addtask/Property 1=edit.png";
-    editIcon.alt = "Edit";
-    editIcon.addEventListener("click", () => startEditSubtask(li, span));
+    const editIcon = createIcon(
+        "./assets/icons-addtask/Property 1=edit.png", 
+        "Edit", 
+        () => startEditMode(li, span)
+    );
 
-    let deleteIcon = document.createElement("img");
-    deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
-    deleteIcon.alt = "Delete";
-    deleteIcon.addEventListener("click", () => subtaskList.removeChild(li));
+    const deleteIcon = createIcon(
+        "./assets/icons-addtask/Property 1=delete.png", 
+        "Delete", 
+        () => li.remove()
+    );
 
-    icons.appendChild(editIcon);
-    icons.appendChild(deleteIcon);
+    icons.append(editIcon, deleteIcon);
     return icons;
 }
 
 /**
- * Creates an input element for editing a subtask.
+ * Helper function to create an <img> element as an icon.
  * 
- * @param {string} text - Current subtask text.
+ * @param {string} src - Image source path.
+ * @param {string} alt - Alt text for the image.
+ * @param {Function} onClick - Click handler function.
  */
-function createSubtaskEditInput(text) {
-    let input = document.createElement("input");
+function createIcon(src, alt, onClick) {
+    const icon = document.createElement("img");
+    icon.src = src;
+    icon.alt = alt;
+    icon.addEventListener("click", onClick);
+    return icon;
+}
+
+/**
+ * Switches a subtask list item into edit mode.
+ * 
+ * @param {HTMLLIElement} li - The <li> element representing the subtask.
+ * @param {HTMLSpanElement} span - The <span> element containing the subtask text.
+ */
+function startEditMode(li, span) {
+    const defaultIcons = li.querySelector(".subtask-icons");
+    const input = createEditInput(span.textContent);
+    const actionIcons = createEditActionIcons(li, input, span, defaultIcons);
+
+    li.replaceChild(input, span);
+    li.replaceChild(actionIcons, defaultIcons);
+
+    input.focus();
+}
+
+/**
+ * Creates a text input element for editing a subtask.
+ * 
+ * @param {string} text - The current text of the subtask.
+ */
+function createEditInput(text) {
+    const input = document.createElement("input");
     input.type = "text";
     input.value = text;
     input.classList.add("subtask-edit-input");
@@ -71,62 +141,70 @@ function createSubtaskEditInput(text) {
 }
 
 /**
- * Creates save and cancel icons for editing a subtask and binds event listeners.
+ * Creates the action icons (save and cancel) for editing a subtask.
  * 
- * @param {HTMLElement} li - The subtask list item.
- * @param {HTMLElement} input - The input element.
- * @param {HTMLElement} span - The original span element.
+ * @param {HTMLLIElement} li - The <li> element containing the subtask.
+ * @param {HTMLInputElement} input - The input element for editing.
+ * @param {HTMLSpanElement} span - The original span element with subtask text.
  * @param {HTMLElement} defaultIcons - The original icons container.
+ * @returns {HTMLDivElement} The container div with save and cancel icons.
  */
 function createEditActionIcons(li, input, span, defaultIcons) {
-    let saveIcon = document.createElement("img");
-    saveIcon.src = "./assets/icons-addtask/Subtask's icons (1).png";
-    saveIcon.alt = "Save";
-
-    let cancelIcon = document.createElement("img");
-    cancelIcon.src = "./assets/icons-addtask/Subtask cancel.png";
-    cancelIcon.alt = "Cancel";
-
-    let actionIcons = document.createElement("div");
+    const actionIcons = document.createElement("div");
     actionIcons.classList.add("subtask-icons");
+
+    const saveIcon = createIcon(
+        "./assets/icons-addtask/Subtask's icons (1).png",
+        "Save",
+        () => finishEditSubtask(li, input, span, defaultIcons, actionIcons)
+    );
+
+    const cancelIcon = createIcon(
+        "./assets/icons-addtask/Subtask cancel.png",
+        "Cancel",
+        () => cancelEditSubtask(li, input, span, defaultIcons, actionIcons)
+    );
+
     actionIcons.append(saveIcon, cancelIcon);
-
-    saveIcon.addEventListener("click", () => finishEditSubtask(li, input, span, defaultIcons, actionIcons));
-    cancelIcon.addEventListener("click", () => cancelEditSubtask(li, input, span, defaultIcons, actionIcons));
-
     return actionIcons;
 }
 
 /**
- * Replaces the subtask span with input and action icons, entering edit mode.
+ * Completes the subtask edit by applying the new text and restoring original icons.
  * 
- * @param {HTMLElement} li - The subtask list item.
- * @param {HTMLElement} span - The subtask text span.
- */
-function startEditSubtask(li, span) {
-    let input = createSubtaskEditInput(span.textContent);
-    let defaultIcons = li.querySelector(".subtask-icons");
-    let actionIcons = createEditActionIcons(li, input, span, defaultIcons);
-
-    li.replaceChild(input, span);
-    li.replaceChild(actionIcons, defaultIcons);
-    input.focus();
-}
-
-/**
- * Finishes editing a subtask and updates its text.
+ * @param {HTMLLIElement} li
+ * @param {HTMLInputElement} input
+ * @param {HTMLSpanElement} span
+ * @param {HTMLElement} defaultIcons
+ * @param {HTMLDivElement} actionIcons
  */
 function finishEditSubtask(li, input, span, defaultIcons, actionIcons) {
-    let newText = input.value.trim();
+    const newText = input.value.trim();
     if (newText) span.textContent = newText;
+
     li.replaceChild(span, input);
     li.replaceChild(defaultIcons, actionIcons);
 }
 
 /**
- * Cancels editing a subtask and restores original text.
+ * Cancels editing a subtask and restores the original state.
+ * 
+ * @param {HTMLLIElement} li
+ * @param {HTMLInputElement} input
+ * @param {HTMLSpanElement} span
+ * @param {HTMLElement} defaultIcons
+ * @param {HTMLDivElement} actionIcons
  */
 function cancelEditSubtask(li, input, span, defaultIcons, actionIcons) {
     li.replaceChild(span, input);
     li.replaceChild(defaultIcons, actionIcons);
+}
+
+/**
+ * Resets the subtask input field and hides the action buttons.
+ */
+function resetInput() {
+    taskInput.value = "";
+    checkBtn.style.display = "none";
+    cancelBtn.style.display = "none";
 }

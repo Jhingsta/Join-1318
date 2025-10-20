@@ -178,14 +178,9 @@ main {
   gap: 7px;
 }
 
-.board-card:hover img{
-  scale: 1.2;
-  transition: all 0.1s ease-in-out;
-}
-
 .board-card:hover{
   border-radius: 0px 30px 30px 30px;
-  transform: scaleX(1.2);  
+  scale: 1.055;
   transition: all 0.1s ease-in-out;
   background-color: #005DFF;
 }
@@ -272,7 +267,7 @@ main {
 
 .todo-card:hover{
   border-radius: 0px 30px 30px 30px;
-  transform: scaleX(1.2);
+  scale: 1.055;
   background-color: #ffffff;
 }
 
