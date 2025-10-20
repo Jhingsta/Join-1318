@@ -672,12 +672,15 @@ input {
 
 .dropdown-item.active {
     background-color: #4589FF;
+    color:white;
 }
 
 .dropdown-item.active:hover {
     background-color: #005DFF;
     color: white;
 }
+
+
 
 .dropdown-item.active.mouse-leave {
     background-color: #4589FF;
@@ -758,10 +761,8 @@ input {
     z-index: 1;
 }
 
-.dropdown-item.active .checkbox-wrapper.checked:hover img {
-    opacity: 1;
+.dropdown-item.active .checkbox-wrapper.checked img {
     filter: brightness(0) invert(1);
-    z-index: 0;
 }
 
 .task-added-message {

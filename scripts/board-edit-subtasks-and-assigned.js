@@ -181,20 +181,45 @@ async function renderAssignedDropdownOverlay(task) {
  * @param {Object} user
  * @param {Object} task
  */
+/**
+ * Creates a dropdown item for a user in the assigned users list.
+ * Behaves exactly like AddTask: click row → active + check; click checkbox → toggle only checkbox.
+ */
+
+function toggleUserAssignment(user, task, defaultIcon, checkedIcon, value) {
+    defaultIcon.style.display = value ? "none" : "block";
+    checkedIcon.style.display = value ? "block" : "none";
+    if (value && !task.assignedUsersFull.some(u => u.id === user.id)) {
+        task.assignedUsersFull.push({ ...user });
+    } 
+    if (!value) {
+        task.assignedUsersFull = task.assignedUsersFull.filter(u => u.id !== user.id);
+    }
+    renderAvatars(task);
+}
+
 function createAssignedDropdownItem(user, task) {
-    let selected = task.assignedUsersFull.some(u => u.id === user.id);
-
-    let item = document.createElement("div");
-    item.className = "dropdown-item";
-    if (selected) item.classList.add("selected");
-
-    let wrapper = createAssignedWrapper(user);
-    let checkboxWrapper = createAssignedCheckbox(selected);
-
-    item.append(wrapper, checkboxWrapper);
-    item.addEventListener("click", e => toggleAssignedUser(task, user, item, checkboxWrapper.querySelector(".checkbox-default"), checkboxWrapper.querySelector(".checkbox-checked"), e));
-
-    return item;
+    const div = document.createElement("div"),
+          checkboxWrapper = createAssignedCheckbox(false);
+    div.className = "dropdown-item";
+    div.append(createAssignedWrapper(user), checkboxWrapper);
+    const defaultIcon = checkboxWrapper.querySelector(".checkbox-default"),
+          checkedIcon = checkboxWrapper.querySelector(".checkbox-checked");
+    div.addEventListener("click", e => {
+        if (!e.target.closest(".checkbox-wrapper")) {
+            const nowActive = !div.classList.contains("active");
+            div.classList.toggle("active", nowActive);
+            toggleUserAssignment(user, task, defaultIcon, checkedIcon, nowActive);
+        }
+    });
+    checkboxWrapper.addEventListener("click", e => {
+        e.stopPropagation();
+        toggleUserAssignment(user, task, defaultIcon, checkedIcon, checkedIcon.style.display === "none");
+    });
+    if (task.assignedUsersFull.some(u => u.id === user.id)) {
+        toggleUserAssignment(user, task, defaultIcon, checkedIcon, true);
+    }
+    return div;
 }
 
 /**

@@ -250,7 +250,7 @@ function taskEditTemplate(task, isoDate) {
         
         <!-- SUBTASKS -->
         <label class="assigned-header">Subtasks</label>
-        <div id="edit-subtask-input-container">
+        <div id="edit-subtask-input-container" class="edit-subtask-input">
             <input type="text" id="edit-subtask-input" placeholder="Add new subtask">
             <div id="edit-subtask-action-container">
                 <img id="edit-subtask-cancel" class="assigned-arrow-icon" style="display:none;" src="/assets/icons-addtask/Subtask cancel.png" alt="Cancel subtask">

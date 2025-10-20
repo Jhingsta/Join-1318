@@ -1,5 +1,4 @@
 /* ---TASK CREATION & UI LOGIC SCRIPT---*/
-
 /* ---------- GLOBAL VARIABLES ---------- */
 const categories = ["Technical Task", "User Story"];
 const titleInput = document.querySelector(".title-input");
@@ -114,31 +113,24 @@ async function loadUsers() {
     }
 }
 
-/**
- * Updates the display of selected user avatars below the dropdown.
- * Shows up to 5 individual avatars, then a "+X" avatar if more are selected.
- */
+/*** Updates the display of selected user avatars below the dropdown.
+ * Shows up to 5 individual avatars, then a "+X" avatar if more are selected.*/
 function updateSelectedAvatars() {
     selectedAvatarsContainer.innerHTML = "";
     const selected = users.filter((u, i) => {
         const img = assignedDropdown.children[i].querySelector('img');
         return img.src.includes("checked");
     });
-
     if (selected.length >= 6) {
         renderAvatarsWithLimit(selected);
     } else {
         renderAllAvatars(selected);
     }
-
     selectedAvatarsContainer.style.display = selected.length > 0 ? 'flex' : 'none';
 }
 
-/**
- * Renders all user avatars without any limit.
- * 
- * @param {Array} users - Array of user objects to render as avatars.
- */
+/*** Renders all user avatars without any limit.* 
+ * @param {Array} users - Array of user objects to render as avatars.*/
 function renderAllAvatars(users) {
     users.forEach(user => {
         const avatar = createAvatarElement(user);
@@ -146,27 +138,20 @@ function renderAllAvatars(users) {
     });
 }
 
-/**
- * Renders the first 5 user avatars and a "+X" avatar for remaining users.
- * 
- * @param {Array} users - Array of user objects (must contain at least 6 users).
- */
+/*** Renders the first 5 user avatars and a "+X" avatar for remaining users.* 
+ * @param {Array} users - Array of user objects (must contain at least 6 users).*/
 function renderAvatarsWithLimit(users) {
     users.slice(0, 5).forEach(user => {
         const avatar = createAvatarElement(user);
         selectedAvatarsContainer.appendChild(avatar);
     });
-
     const remaining = users.length - 5;
     const plusAvatar = createPlusAvatarElement(remaining);
     selectedAvatarsContainer.appendChild(plusAvatar);
 }
 
-/**
- * Creates a single avatar element for a user.
- * 
- * @param {Object} user - User object containing initials and color properties.
- */
+/*** Creates a single avatar element for a user.* 
+ * @param {Object} user - User object containing initials and color properties.*/
 function createAvatarElement(user) {
     const avatar = document.createElement('div');
     avatar.className = 'edit-selected-avatar';
@@ -175,11 +160,8 @@ function createAvatarElement(user) {
     return avatar;
 }
 
-/**
- * Creates a "+X" avatar element showing the count of additional users.
- * 
- * @param {number} count - The number of additional users not displayed.
- */
+/*** Creates a "+X" avatar element showing the count of additional users.* 
+ * @param {number} count - The number of additional users not displayed.*/
 function createPlusAvatarElement(count) {
     const avatar = document.createElement('div');
     avatar.className = 'edit-selected-avatar dropdown-avatar-plus';
@@ -194,14 +176,20 @@ function createUserDropdownItem(user) {
     div.dataset.userId = user.id;
     const assignedWrapper = createAssignedWrapper(user);
     const checkboxWrapper = createCheckboxWrapper(user);
+    const checkbox = checkboxWrapper.querySelector('img');
     div.append(assignedWrapper, checkboxWrapper);
     div.addEventListener('click', (e) => {
+        if (e.target === checkboxWrapper || e.target.classList.contains('hover-overlay')) return;
         e.stopPropagation();
-        toggleUserSelection(e, checkboxWrapper, checkboxWrapper.querySelector('img'));
+        const isActive = div.classList.toggle('active');
+        checkboxWrapper.classList.toggle('checked', isActive);
+        checkbox.src = isActive
+            ? "./assets/icons-addtask/Property 1=checked.svg"
+            : "./assets/icons-addtask/Property 1=Default.png";
+        updateSelectedAvatars();
     });
     return div;
 }
-
 
 /*** Creates avatar and name wrapper for dropdown.*/
 function createAssignedWrapper(user) {
@@ -230,7 +218,6 @@ function createCheckboxWrapper(user) {
     return wrapper;
 }
 
-
 /*** Toggles user selection and updates avatar display.*/
 function toggleUserSelection(e, wrapper, checkbox) {
     e.stopPropagation();
@@ -239,6 +226,7 @@ function toggleUserSelection(e, wrapper, checkbox) {
         ? "./assets/icons-addtask/Property 1=checked.svg"
         : "./assets/icons-addtask/Property 1=Default.png";
     updateSelectedAvatars();
+    return isChecked;
 }
 
 /*** Populates dropdown with all loaded users. */
@@ -275,7 +263,6 @@ function closeAssignedDropdown() {
     assignedText.style.display = 'block';
     arrowIcon.src = '/assets/icons-addtask/arrow_drop_down.png';
     assignedInput.value = '';
-
     Array.from(assignedDropdown.children).forEach(div => {
         div.style.display = 'flex';
     });
@@ -291,8 +278,6 @@ function showAllCheckboxes() {
 // Event bindings for open/close dropdown
 assignedTextContainer.addEventListener('click', toggleDropdown);
 assignedContent.addEventListener('click', toggleDropdown);
-
-/*** Closes dropdown when clicking outside of it.*/
 document.addEventListener('click', e => {
     if (!assignedTextContainer.contains(e.target) && !assignedContent.contains(e.target)) {
         closeAssignedDropdown();
@@ -338,8 +323,6 @@ categoryContent.addEventListener('click', (e) => {
         ? '/assets/icons-addtask/arrow_drop_down_up.png'
         : '/assets/icons-addtask/arrow_drop_down.png';
 });
-
-/*** Closes category dropdown on outside click.*/
 document.addEventListener('click', (e) => {
     if (!categoryContent.contains(e.target)) {
         categoryDropdown.classList.remove('show');
@@ -347,10 +330,8 @@ document.addEventListener('click', (e) => {
     }
 });
 
-/**
- * Handles Create Task button click.
- * Validates form, then saves task via Firebase.
- */
+/*** Handles Create Task button click.
+ * Validates form, then saves task via Firebase.*/
 createBtn.addEventListener("click", async (event) => {
     event.preventDefault();
     createBtn.classList.add("active");
