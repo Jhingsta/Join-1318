@@ -66,3 +66,12 @@ function logout() {
     console.error("Logout error:", error);
   }
 }
+
+/**
+ * Ensures dropdown is closed when page is restored from back/forward cache
+ */
+window.addEventListener('pageshow', function(event) {
+  if (isDropdownOpen || document.getElementById('header-dropdown-menu')?.classList.contains('show')) {
+    closeDropdown();
+  }
+});

@@ -101,13 +101,17 @@ function addtaskModal() {
                             <ul id="add-subtask-list" class="subtask-list"></ul>
                         </div>
                     </div>
+                </div>
 
-                    <!-- FOOTER -->
-                    <div class="modal-footer">
-                        <button class="create-btn" id="add-create-btn">
-                            Create Task <img src="./assets/icons-addtask/check (1).png" alt="">
-                        </button>
-                    </div>
+                <!-- FOOTER -->
+                <div class="modal-footer">
+                    <button type="button" class="clear-btn" id="add-clear-btn" type="reset">
+                        Clear
+                        <img src="./assets/icons-addtask/iconoir_cancel (1).png" alt="">
+                    </button>
+                    <button class="create-btn" id="add-create-btn">
+                        Create Task <img src="./assets/icons-addtask/check (1).png" alt="">
+                    </button>
                 </div>
             </div>
         </div>

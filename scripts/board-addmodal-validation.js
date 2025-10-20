@@ -20,9 +20,7 @@ function resetInputs() {
 function resetSubtasksAndAvatars() {
     subtaskList.replaceChildren();
     document.getElementById('add-selected-avatars-container')?.replaceChildren();
-    taskInput.value = "";
-    checkBtn.style.display = "none";
-    cancelBtn.style.display = "none";
+    resetInput();
 }
 
 /**
@@ -43,7 +41,7 @@ function resetAssignedDropdown() {
         let checkboxWrapper = item.querySelector('.checkbox-wrapper');
         if (!checkboxWrapper) return;
         checkboxWrapper.classList.remove('checked');
-        checkboxWrapper.querySelector('img')?.setAttribute('src', "./assets/icons-addTask/Property 1=Default.png");
+        checkboxWrapper.querySelector('img')?.setAttribute('src', "./assets/icons-addtask/Property 1=Default.png");
     });
 }
 
@@ -97,4 +95,25 @@ function validateCategory() {
     if (categoryTextEl) categoryContent.style.borderBottom = valid ? "1px solid #D1D1D1" : "1px solid #FF4D4D";
     if (categoryError) categoryError.style.display = valid ? "none" : "block";
     return valid;
+}
+
+/** 
+ * Initializes title and due date validation listeners. 
+ */
+function initValidationListeners() {
+    titleInput?.addEventListener("blur", validateTitle);
+    titleInput?.addEventListener("input", validateTitle);
+    dueDateInput?.addEventListener("blur", validateDueDate);
+    dueDateInput?.addEventListener("change", updateDueDateDisplay);
+    dueDateContainer?.addEventListener("click", openDatepicker);
+}
+
+/**
+ * Validates the form inputs (title, due date, category).
+ */
+function validateForm() {
+    let validTitle = validateTitle();
+    let validDue = validateDueDate();
+    let validCategory = validateCategory();
+    return validTitle && validDue && validCategory;
 }

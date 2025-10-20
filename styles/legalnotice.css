@@ -108,11 +108,11 @@ h3 {
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 420px) {
   h1 {
-    font-size: 42px;
+    font-size: 35px;
   }
   .arrow-left {
-    right: 5px;
+    right: 0px;
   }
 }

@@ -2,7 +2,6 @@
 
 let assignedContent, assignedTextContainer, assignedText, assignedInput, assignedDropdown, arrowContainer, arrowIcon;
 let categoryContent, categoryText, categoryArrow, categoryDropdown;
-let taskInput, checkBtn, cancelBtn, subtaskList;
 let addTaskModal, createBtn, addtaskButton, svgButtons, modalClose, closeButton, priorityButtons;
 let titleInput, titleError, dueDateInput, dueDateDisplay, dueDateContainer;
 
@@ -149,7 +148,7 @@ function animateTaskAddedOut(img, onFinished) {
 function initDOMElements() {
     initModalElements();
     initDropdownElements();
-    initSubtaskElements();
+    !initSubtaskElements();    
     initPriorityElements();
     initTitleAndDueDateElements();
 }
@@ -167,6 +166,17 @@ function initModalElements() {
 }
 
 /** 
+ * Initializes modal open/close event listeners. 
+ */
+function initModalEventListeners() {
+    closeButton?.addEventListener('click', closeModal);
+    addtaskButton?.addEventListener('click', openModal);
+    modalClose?.addEventListener('click', closeModal);
+    svgButtons.forEach(btn => btn.addEventListener('click', openModal));
+    addTaskModal?.addEventListener('click', e => { if (e.target === addTaskModal) closeModal(); });
+}
+
+/** 
  * Initializes dropdown elements for assigned users and category. 
  */
 function initDropdownElements() {
@@ -181,16 +191,6 @@ function initDropdownElements() {
     categoryContent = document.getElementById('add-category-dropdown-container');
     categoryText = document.getElementById('add-category-text');
     categoryArrow = document.getElementById('add-category-arrow');
-}
-
-/** 
- * Initializes subtask input and list elements. 
- */
-function initSubtaskElements() {
-    taskInput = document.getElementById('add-subtask-input');
-    checkBtn = document.getElementById('add-subtask-check');
-    cancelBtn = document.getElementById('add-subtask-cancel');
-    subtaskList = document.getElementById('add-subtask-list');
 }
 
 /** 
@@ -226,17 +226,6 @@ function initEventListeners() {
     initPriorityListeners();
     initValidationListeners();
     initCreateButtonListener();
-}
-
-/** 
- * Initializes modal open/close event listeners. 
- */
-function initModalEventListeners() {
-    closeButton?.addEventListener('click', closeModal);
-    addtaskButton?.addEventListener('click', openModal);
-    modalClose?.addEventListener('click', closeModal);
-    svgButtons.forEach(btn => btn.addEventListener('click', openModal));
-    addTaskModal?.addEventListener('click', e => { if (e.target === addTaskModal) closeModal(); });
 }
 
 /** 
@@ -320,135 +309,6 @@ function addDocumentClickListenerForCategory() {
 }
 
 /** 
- * Initializes subtask input listeners. 
- */
-function initSubtaskListeners() {
-    function handleAddSubtask() {
-        const currentTask = taskInput.value.trim();
-        if (!currentTask) return;
-
-        const li = createSubtaskElement(currentTask);
-        subtaskList.appendChild(li);
-        resetInput();
-    }
-
-    taskInput?.addEventListener("input", () => {
-        if (taskInput.value.trim()) {
-            checkBtn.style.display = "inline";
-            cancelBtn.style.display = "inline";
-        } else resetInput();
-    });
-
-    taskInput?.addEventListener("keydown", e => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            handleAddSubtask();
-        }
-    });
-
-    checkBtn?.addEventListener("click", handleAddSubtask);
-    cancelBtn?.addEventListener("click", resetInput);
-}
-
-
-/**
- * Creates a single subtask <li> element with text and icons.
- * @param {string} text - The subtask text.
- * @returns {HTMLElement} The <li> element representing the subtask.
- */
-function createSubtaskElement(text) {
-    const li = document.createElement("li");
-
-    const span = document.createElement("span");
-    span.textContent = text;
-    li.appendChild(span);
-
-    const icons = document.createElement("div");
-    icons.classList.add("subtask-icons");
-
-    const editIcon = createIcon("./assets/icons-addtask/Property 1=edit.png", "Edit", () => startEditMode(li, span));
-    const deleteIcon = createIcon("./assets/icons-addtask/Property 1=delete.png", "Delete", () => li.remove());
-
-    icons.append(editIcon, deleteIcon);
-    li.appendChild(icons);
-
-    return li;
-}
-
-/**
- * Creates edit and delete icons for a subtask.
- * @param {HTMLElement} li - The subtask <li> element.
- * @param {HTMLElement} span - The span containing subtask text.
- * @returns {HTMLElement} A div containing the action icons.
- */
-function createSubtaskIcons(li, span) {
-    const icons = document.createElement("div");
-    icons.classList.add("subtask-icons");
-
-    const editIcon = document.createElement("img");
-    editIcon.src = "./assets/icons-addtask/Property 1=edit.png";
-    editIcon.alt = "Edit";
-    editIcon.addEventListener("click", () => startEditSubtaskMode(li, span));
-
-    const deleteIcon = document.createElement("img");
-    deleteIcon.src = "./assets/icons-addtask/Property 1=delete.png";
-    deleteIcon.alt = "Delete";
-    deleteIcon.addEventListener("click", () => li.remove());
-
-    icons.append(editIcon, deleteIcon);
-    return icons;
-}
-
-/**
- * Helper function to create an <img> element as an icon.
- * @param {string} src - Image source path.
- * @param {string} alt - Alt text for the image.
- * @param {Function} onClick - Click handler function.
- * @returns {HTMLElement} The created <img> element.
- */
-function createIcon(src, alt, onClick) {
-    const icon = document.createElement("img");
-    icon.src = src;
-    icon.alt = alt;
-    icon.addEventListener("click", onClick);
-    return icon;
-}
-
-/**
- * Resets the subtask input field and hides the action buttons.
- */
-function resetInput() {
-    taskInput.value = "";
-    checkBtn.style.display = "none";
-    cancelBtn.style.display = "none";
-}
-
-function startEditMode(li, span) {
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = span.textContent;
-    input.classList.add("subtask-edit-input");
-
-    const saveIcon = createIcon("./assets/icons-addtask/Subtask's icons (1).png", "Save", () => {
-        span.textContent = input.value.trim() || span.textContent;
-        li.replaceChild(span, input);
-        li.replaceChild(defaultIcons, actionIcons);
-    });
-
-    const deleteIcon = createIcon("./assets/icons-addtask/Property 1=delete.png", "Delete", () => subtaskList.removeChild(li));
-
-    const actionIcons = document.createElement("div");
-    actionIcons.classList.add("subtask-icons");
-    actionIcons.append(saveIcon, deleteIcon);
-
-    const defaultIcons = li.querySelector(".subtask-icons");
-    li.replaceChild(input, span);
-    li.replaceChild(actionIcons, defaultIcons);
-
-    input.focus();
-}
-
-/** 
  * Initializes priority button listeners. 
  */
 function initPriorityListeners() {
@@ -456,17 +316,6 @@ function initPriorityListeners() {
         priorityButtons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
     }));
-}
-
-/** 
- * Initializes title and due date validation listeners. 
- */
-function initValidationListeners() {
-    titleInput?.addEventListener("blur", validateTitle);
-    titleInput?.addEventListener("input", validateTitle);
-    dueDateInput?.addEventListener("blur", validateDueDate);
-    dueDateInput?.addEventListener("change", updateDueDateDisplay);
-    dueDateContainer?.addEventListener("click", openDatepicker);
 }
 
 /** 
@@ -511,16 +360,6 @@ function setCreateButtonActive(isActive) {
 }
 
 /**
- * Validates the form inputs (title, due date, category).
- */
-function validateForm() {
-    let validTitle = validateTitle();
-    let validDue = validateDueDate();
-    let validCategory = validateCategory();
-    return validTitle && validDue && validCategory;
-}
-
-/**
  * Prepares the create button UI for saving (disable, show "Saving...").
  */
 function prepareCreateButtonForSaving() {
@@ -548,6 +387,11 @@ function resetCreateButton() {
     createBtn.textContent = createBtn.dataset.originalText || "Create";
     setCreateButtonActive(false);
 }
+
+// --- CLEAR BUTTON HANDLING ---
+
+const clearBtn = document.getElementById("add-clear-btn");
+clearBtn?.addEventListener("click", resetForm);
 
 initDOMElements();
 initEventListeners();

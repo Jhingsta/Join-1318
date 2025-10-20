@@ -131,6 +131,20 @@ main {
     align-items: center;
     padding-right: 8px;
     border-right: 1px solid #D1D1D1;
+    width: 95px;
+}
+
+.edit-btn {
+    border: none;
+    background-color: transparent;
+    margin-left: 8px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    width: 70px;
 }
 
 .delete-btn:hover, .edit-btn:hover {
@@ -436,10 +450,22 @@ main {
     font-size: 23px;
     cursor: pointer;
     gap: 4px;
+    justify-content: center;
+    align-items: center;
 }
 
 .create-btn:hover {
-    background-color: #1c2533;
+    background-color: #005DFF;
+    box-shadow: 0px 6px 12px 0px #00000040;
+}
+
+.create-btn:active {
+    background-color: #FFFFFF;
+    color: #005DFF;
+}
+
+.create-btn:active img {
+    filter: invert(34%) sepia(91%) saturate(5000%) hue-rotate(200deg);
 }
 
 .close,
