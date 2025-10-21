@@ -57,43 +57,63 @@ function handleAddSubtask() {
 function createSubtaskElement(text) {
     const li = document.createElement("li");
     li.className = "subtask-item";
-
     const span = document.createElement("span");
     span.textContent = text;
     span.className = "subtask-text";
     li.appendChild(span);
-
-    const icons = createSubtaskIcons(li, span);
+    const icons = createAddModalSubtaskIcons(li, span);
     li.appendChild(icons);
 
     return li;
 }
 
+
 /**
- * Creates edit and delete icons for a subtask.
- * 
- * @param {HTMLElement} li - The subtask <li> element.
- * @param {HTMLElement} span - The span containing subtask text.
+ * Creates icons for Add-Modal subtasks.
+ * These functions access Add-Modal data **locally only**.
  */
-function createSubtaskIcons(li, span) {
+function createAddModalSubtaskIcons(li, span) {
     const icons = document.createElement("div");
-    icons.classList.add("subtask-icons");
-
+    icons.classList.add("add-subtask-icons");
     const editIcon = createIcon(
-        "./assets/icons-addtask/Property 1=edit.png", 
-        "Edit", 
-        () => startEditMode(li, span)
+        "./assets/icons-addtask/Property 1=edit.png",
+        "Edit",
+        () => startAddModalEditMode(li, span)
     );
-
     const deleteIcon = createIcon(
-        "./assets/icons-addtask/Property 1=delete.png", 
-        "Delete", 
+        "./assets/icons-addtask/Property 1=delete.png",
+        "Delete",
         () => li.remove()
     );
-
     icons.append(editIcon, deleteIcon);
     return icons;
 }
+
+/**
+ * Local edit function for Add-Modal subtasks.
+ */
+function startAddModalEditMode(li, span) {
+    const defaultIcons = li.querySelector(".add-subtask-icons");
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = span.textContent;
+    input.classList.add("add-subtask-edit-input");
+    const replaceElements = (text) => {
+        if (text !== null) span.textContent = text.trim() || span.textContent;
+        li.replaceChild(span, input);
+        li.replaceChild(defaultIcons, actionIcons);
+    };
+    const actionIcons = document.createElement("div");
+    actionIcons.classList.add("add-subtask-icons");
+    const saveIcon = createIcon("./assets/icons-addtask/Subtask's icons (1).png", "Save", () => replaceElements(input.value));
+    const cancelIcon = createIcon("./assets/icons-addtask/Subtask cancel.png", "Cancel", () => replaceElements(null));
+    actionIcons.append(saveIcon, cancelIcon);
+    li.replaceChild(input, span);
+    li.replaceChild(actionIcons, defaultIcons);
+    input.focus();
+}
+
+
 
 /**
  * Helper function to create an <img> element as an icon.

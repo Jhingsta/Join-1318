@@ -15,6 +15,7 @@ function openModal() {
     addtaskButton?.classList.add('active-style');
     currentNewTask = currentNewTask || { assignedUsersFull: [] };
     svgButtons.forEach(btn => btn.querySelector('svg')?.classList.add('disabled'));
+    document.body.classList.add('no-scroll');
 }
 
 /**
@@ -25,6 +26,7 @@ function closeModal() {
     createBtn?.classList.remove('active');
     addtaskButton?.classList.remove('active-style');
     svgButtons.forEach(btn => btn.querySelector('svg')?.classList.remove('disabled'));
+    document.body.classList.remove('no-scroll');
 }
 
 // ===================== DROPDOWN HANDLING =====================

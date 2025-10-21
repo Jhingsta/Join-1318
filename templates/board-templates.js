@@ -253,7 +253,7 @@ function taskEditTemplate(task, isoDate) {
         <div id="edit-avatars-container" class="edit-avatars-container-overlay"></div>
         
         <!-- SUBTASKS -->
-        <label class="assigned-header">Subtasks</label>
+        <label class="assigned-header">Subtasks (optional)</label>
         <div id="edit-subtask-input-container" class="edit-subtask-input">
             <input type="text" id="edit-subtask-input" placeholder="Add new subtask">
             <div id="edit-subtask-action-container">

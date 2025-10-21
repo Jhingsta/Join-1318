@@ -422,10 +422,6 @@ main {
     border-bottom: none;
 }
 
-.dropdown-item:hover {
-    background-color: #D2E3FF;
-}
-
 .assigned-content.active .dropdown-menu {
     display: flex;
 }
@@ -463,7 +459,7 @@ main {
 }
 
 .assigned-icon {
-    display:none;
+    display: none;
     border: none;
     background-color: white;
     align-items: center;
@@ -474,7 +470,7 @@ main {
 .assigned-icon:hover {
     background-color: #D2E3FF;
     transform: scale(1.1);
-    border-radius:50%;
+    border-radius: 50%;
 }
 
 .arrow-dropdown {
@@ -521,6 +517,8 @@ main {
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
+    margin-bottom: 1px;
+    border-radius: 10px;
 }
 
 .subtask-text {
@@ -672,7 +670,7 @@ input {
 
 .dropdown-item.active {
     background-color: #4589FF;
-    color:white;
+    color: white;
 }
 
 .dropdown-item.active:hover {

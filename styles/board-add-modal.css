@@ -95,6 +95,11 @@
     background: #fff;
     gap: 25px;
     width: 100%;
+    margin-top: auto;
+}
+
+body.no-scroll {
+    overflow: hidden;
 }
 
 .clear-btn {
@@ -625,6 +630,8 @@ input {
     justify-content: space-between;
     cursor: pointer;
     transition: background-color 0.2s;
+    margin-bottom: 1px;
+    border-radius: 10px;
 }
 
 .dropdown-item:hover {
@@ -687,6 +694,10 @@ input {
     color: #000000;
     outline: none;
     border: none;
+}
+
+.add-subtask-icons{
+    display:flex;
 }
 
 .subtask-list {

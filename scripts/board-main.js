@@ -118,11 +118,11 @@ const readableStatus = s => STATUS_LABELS[s] || s;
 /*** Returns the path to the icon that represents the given priority.* 
  * @param {string} priority - The task priority (urgent, medium, low).*/
 const PRIORITY_ICONS = {
-  urgent: './assets/icons-board/priority-urgent.svg',
-  medium: './assets/icons-board/priority-medium.svg',
-  low: './assets/icons-board/priority-low.svg'
+    urgent: './assets/icons-board/priority-urgent.svg',
+    medium: './assets/icons-board/priority-medium.svg',
+    low: './assets/icons-board/priority-low.svg'
 };
-const priorityIcon = p => PRIORITY_ICONS[(p||'medium').toLowerCase()] || PRIORITY_ICONS.medium;
+const priorityIcon = p => PRIORITY_ICONS[(p || 'medium').toLowerCase()] || PRIORITY_ICONS.medium;
 
 // ===================== USER DROPDOWN =====================
 /*** Main entry point for populating the user assignment dropdown.
@@ -228,6 +228,7 @@ function attachDropdownItemEvents(div) {
         if (typeof updateSelectedAvatars === "function") updateSelectedAvatars();
     });
 }
+
 
 /*** Toggles a user selection in the dropdown.* 
  * @param {HTMLElement} div - Dropdown item.
